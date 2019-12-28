@@ -4,11 +4,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "uploadcare-swift",
+    name: "Uploadcare",
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
-            name: "UploadcareSwift",
+            name: "Uploadcare",
             targets: ["uploadcare-swift"]),
     ],
     dependencies: [
