@@ -1,7 +1,7 @@
 import Alamofire
 
 public struct Uploadcare {
-	public func start() {
-		print("start")
+	public static func sayHi() {
+		print("hi!")
 	}
 }
