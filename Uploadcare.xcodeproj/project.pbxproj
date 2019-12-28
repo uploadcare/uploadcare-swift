@@ -25,53 +25,19 @@
 		2495948223B78B3F006BB9BF /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2495945623B7801A006BB9BF /* Alamofire.framework */; };
 		2495948323B78B3F006BB9BF /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2495945623B7801A006BB9BF /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		OBJ_101 /* Uploadcare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Uploadcare::Uploadcare::Product" /* Uploadcare.framework */; };
-		OBJ_102 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Alamofire::Alamofire::Product" /* Alamofire.framework */; };
-		OBJ_49 /* AFError.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* AFError.swift */; };
-		OBJ_50 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* Alamofire.swift */; };
-		OBJ_51 /* DispatchQueue+Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* DispatchQueue+Alamofire.swift */; };
-		OBJ_52 /* MultipartFormData.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_20 /* MultipartFormData.swift */; };
-		OBJ_53 /* NetworkReachabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* NetworkReachabilityManager.swift */; };
-		OBJ_54 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_22 /* Notifications.swift */; };
-		OBJ_55 /* ParameterEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_23 /* ParameterEncoding.swift */; };
-		OBJ_56 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_24 /* Request.swift */; };
-		OBJ_57 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_25 /* Response.swift */; };
-		OBJ_58 /* ResponseSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_26 /* ResponseSerialization.swift */; };
-		OBJ_59 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_27 /* Result.swift */; };
-		OBJ_60 /* ServerTrustPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_28 /* ServerTrustPolicy.swift */; };
-		OBJ_61 /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_29 /* SessionDelegate.swift */; };
-		OBJ_62 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* SessionManager.swift */; };
-		OBJ_63 /* TaskDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* TaskDelegate.swift */; };
-		OBJ_64 /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_32 /* Timeline.swift */; };
-		OBJ_65 /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_33 /* Validation.swift */; };
-		OBJ_72 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* Package.swift */; };
 		OBJ_78 /* Uploadcare.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Uploadcare.swift */; };
-		OBJ_80 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Alamofire::Alamofire::Product" /* Alamofire.framework */; };
 		OBJ_87 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_98 /* UploadcareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* UploadcareTests.swift */; };
 		OBJ_99 /* XCTestManifests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* XCTestManifests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2495943923B77D07006BB9BF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = OBJ_1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = "Alamofire::Alamofire";
-			remoteInfo = Alamofire;
-		};
 		2495943A23B77D07006BB9BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = "Uploadcare::Uploadcare";
 			remoteInfo = Uploadcare;
-		};
-		2495943B23B77D07006BB9BF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = OBJ_1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = "Alamofire::Alamofire";
-			remoteInfo = Alamofire;
 		};
 		2495943C23B77D08006BB9BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -99,7 +65,6 @@
 /* Begin PBXFileReference section */
 		2495945323B77F51006BB9BF /* Uploadcare.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2495945623B7801A006BB9BF /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
-		"Alamofire::Alamofire::Product" /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_12 /* UploadcareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadcareTests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
 		OBJ_16 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; name = Package.swift; path = "/Users/mak/Projects/uploadcare-swift/.build/checkouts/Alamofire/Package.swift"; sourceTree = "<group>"; };
@@ -146,14 +111,6 @@
 			buildActionMask = 0;
 			files = (
 				OBJ_101 /* Uploadcare.framework in Frameworks */,
-				OBJ_102 /* Alamofire.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_66 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 0;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,7 +118,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_80 /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,7 +187,6 @@
 		OBJ_34 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				"Alamofire::Alamofire::Product" /* Alamofire.framework */,
 				"Uploadcare::UploadcareTests::Product" /* UploadcareTests.xctest */,
 				"Uploadcare::Uploadcare::Product" /* Uploadcare.framework */,
 				2495945323B77F51006BB9BF /* Uploadcare.framework */,
@@ -297,36 +252,6 @@
 			productReference = 2495945323B77F51006BB9BF /* Uploadcare.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		"Alamofire::Alamofire" /* Alamofire */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_45 /* Build configuration list for PBXNativeTarget "Alamofire" */;
-			buildPhases = (
-				OBJ_48 /* Sources */,
-				OBJ_66 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = Alamofire;
-			productName = Alamofire;
-			productReference = "Alamofire::Alamofire::Product" /* Alamofire.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		"Alamofire::SwiftPMPackageDescription" /* AlamofirePackageDescription */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_68 /* Build configuration list for PBXNativeTarget "AlamofirePackageDescription" */;
-			buildPhases = (
-				OBJ_71 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = AlamofirePackageDescription;
-			productName = AlamofirePackageDescription;
-			productType = "com.apple.product-type.framework";
-		};
 		"Uploadcare::SwiftPMPackageDescription" /* UploadcarePackageDescription */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = OBJ_83 /* Build configuration list for PBXNativeTarget "UploadcarePackageDescription" */;
@@ -351,7 +276,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				OBJ_81 /* PBXTargetDependency */,
 			);
 			name = Uploadcare;
 			productName = Uploadcare;
@@ -369,7 +293,6 @@
 			);
 			dependencies = (
 				OBJ_103 /* PBXTargetDependency */,
-				OBJ_104 /* PBXTargetDependency */,
 			);
 			name = UploadcareTests;
 			productName = UploadcareTests;
@@ -400,8 +323,6 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				"Alamofire::Alamofire" /* Alamofire */,
-				"Alamofire::SwiftPMPackageDescription" /* AlamofirePackageDescription */,
 				"Uploadcare::Uploadcare" /* Uploadcare */,
 				2495944923B77F51006BB9BF /* Uploadcare-Carthage */,
 				"Uploadcare::SwiftPMPackageDescription" /* UploadcarePackageDescription */,
@@ -417,38 +338,6 @@
 			buildActionMask = 0;
 			files = (
 				2495944D23B77F51006BB9BF /* Uploadcare.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_48 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 0;
-			files = (
-				OBJ_49 /* AFError.swift in Sources */,
-				OBJ_50 /* Alamofire.swift in Sources */,
-				OBJ_51 /* DispatchQueue+Alamofire.swift in Sources */,
-				OBJ_52 /* MultipartFormData.swift in Sources */,
-				OBJ_53 /* NetworkReachabilityManager.swift in Sources */,
-				OBJ_54 /* Notifications.swift in Sources */,
-				OBJ_55 /* ParameterEncoding.swift in Sources */,
-				OBJ_56 /* Request.swift in Sources */,
-				OBJ_57 /* Response.swift in Sources */,
-				OBJ_58 /* ResponseSerialization.swift in Sources */,
-				OBJ_59 /* Result.swift in Sources */,
-				OBJ_60 /* ServerTrustPolicy.swift in Sources */,
-				OBJ_61 /* SessionDelegate.swift in Sources */,
-				OBJ_62 /* SessionManager.swift in Sources */,
-				OBJ_63 /* TaskDelegate.swift in Sources */,
-				OBJ_64 /* Timeline.swift in Sources */,
-				OBJ_65 /* Validation.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_71 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 0;
-			files = (
-				OBJ_72 /* Package.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,16 +373,6 @@
 			isa = PBXTargetDependency;
 			target = "Uploadcare::Uploadcare" /* Uploadcare */;
 			targetProxy = 2495943A23B77D07006BB9BF /* PBXContainerItemProxy */;
-		};
-		OBJ_104 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = "Alamofire::Alamofire" /* Alamofire */;
-			targetProxy = 2495943B23B77D07006BB9BF /* PBXContainerItemProxy */;
-		};
-		OBJ_81 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = "Alamofire::Alamofire" /* Alamofire */;
-			targetProxy = 2495943923B77D07006BB9BF /* PBXContainerItemProxy */;
 		};
 		OBJ_92 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -620,86 +499,6 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				USE_HEADERMAP = NO;
-			};
-			name = Release;
-		};
-		OBJ_46 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = Uploadcare.xcodeproj/Alamofire_Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				OTHER_CFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = Alamofire;
-				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
-				SWIFT_VERSION = 5.0;
-				TARGET_NAME = Alamofire;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
-			};
-			name = Debug;
-		};
-		OBJ_47 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = Uploadcare.xcodeproj/Alamofire_Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				OTHER_CFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = Alamofire;
-				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
-				SWIFT_VERSION = 5.0;
-				TARGET_NAME = Alamofire;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
-			};
-			name = Release;
-		};
-		OBJ_69 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				LD = /usr/bin/true;
-				OTHER_SWIFT_FLAGS = "-swift-version 5 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -package-description-version 5";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		OBJ_70 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				LD = /usr/bin/true;
-				OTHER_SWIFT_FLAGS = "-swift-version 5 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -package-description-version 5";
-				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -870,24 +669,6 @@
 			buildConfigurations = (
 				OBJ_3 /* Debug */,
 				OBJ_4 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		OBJ_45 /* Build configuration list for PBXNativeTarget "Alamofire" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_46 /* Debug */,
-				OBJ_47 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		OBJ_68 /* Build configuration list for PBXNativeTarget "AlamofirePackageDescription" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_69 /* Debug */,
-				OBJ_70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
