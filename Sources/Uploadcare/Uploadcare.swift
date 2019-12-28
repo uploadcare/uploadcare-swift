@@ -1,3 +1,5 @@
 struct Uploadcare {
-    var text = "Hello, World!"
+	func start() {
+		print("start")
+	}
 }

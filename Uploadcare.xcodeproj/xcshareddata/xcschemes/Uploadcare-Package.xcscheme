@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "uploadcare-swift::uploadcare-swift"
-               BuildableName = "uploadcare_swift.framework"
-               BlueprintName = "uploadcare-swift"
-               ReferencedContainer = "container:uploadcare-swift.xcodeproj">
+               BlueprintIdentifier = "Uploadcare::Uploadcare"
+               BuildableName = "Uploadcare.framework"
+               BlueprintName = "Uploadcare"
+               ReferencedContainer = "container:Uploadcare.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "uploadcare-swift::uploadcare-swiftTests"
-               BuildableName = "uploadcare-swiftTests.xctest"
-               BlueprintName = "uploadcare-swiftTests"
-               ReferencedContainer = "container:uploadcare-swift.xcodeproj">
+               BlueprintIdentifier = "Uploadcare::UploadcareTests"
+               BuildableName = "UploadcareTests.xctest"
+               BlueprintName = "UploadcareTests"
+               ReferencedContainer = "container:Uploadcare.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
