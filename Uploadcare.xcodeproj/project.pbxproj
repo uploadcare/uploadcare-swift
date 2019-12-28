@@ -22,7 +22,8 @@
 
 /* Begin PBXBuildFile section */
 		2495944D23B77F51006BB9BF /* Uploadcare.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Uploadcare.swift */; };
-		2495945C23B784AF006BB9BF /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 2495945B23B784AF006BB9BF /* Alamofire */; };
+		2495948223B78B3F006BB9BF /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2495945623B7801A006BB9BF /* Alamofire.framework */; };
+		2495948323B78B3F006BB9BF /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2495945623B7801A006BB9BF /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		OBJ_101 /* Uploadcare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Uploadcare::Uploadcare::Product" /* Uploadcare.framework */; };
 		OBJ_102 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Alamofire::Alamofire::Product" /* Alamofire.framework */; };
 		OBJ_49 /* AFError.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* AFError.swift */; };
@@ -81,6 +82,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		2495948423B78B3F006BB9BF /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2495948323B78B3F006BB9BF /* Alamofire.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		2495945323B77F51006BB9BF /* Uploadcare.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2495945623B7801A006BB9BF /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
@@ -122,7 +137,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
-				2495945C23B784AF006BB9BF /* Alamofire in Frameworks */,
+				2495948223B78B3F006BB9BF /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,6 +284,7 @@
 			buildPhases = (
 				2495944C23B77F51006BB9BF /* Sources */,
 				2495944E23B77F51006BB9BF /* Frameworks */,
+				2495948423B78B3F006BB9BF /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -276,7 +292,6 @@
 			);
 			name = "Uploadcare-Carthage";
 			packageProductDependencies = (
-				2495945B23B784AF006BB9BF /* Alamofire */,
 			);
 			productName = Uploadcare;
 			productReference = 2495945323B77F51006BB9BF /* Uploadcare.framework */;
@@ -925,14 +940,6 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		2495945B23B784AF006BB9BF /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = OBJ_1 /* Project object */;
 }
