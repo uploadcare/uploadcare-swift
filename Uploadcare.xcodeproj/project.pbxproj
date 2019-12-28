@@ -518,6 +518,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Uploadcare;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
@@ -547,6 +548,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Uploadcare;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
@@ -575,7 +577,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -DXcode";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
+				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE DEBUG";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -599,7 +601,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_SWIFT_FLAGS = "$(inherited) -DXcode";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
+				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
