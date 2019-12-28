@@ -1,3 +1,3 @@
-struct uploadcare_swift {
+struct Uploadcare {
     var text = "Hello, World!"
 }

@@ -30,7 +30,7 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '10.0'
 
-  s.source_files = 'Sources/uploadcare-swift/**/*'
+  s.source_files = 'Sources/Uploadcare/**/*'
   
   # s.resource_bundles = {
   #   'TestLibPod' => ['TestLibPod/Assets/*.png']
