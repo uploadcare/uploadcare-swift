@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Uploadcare::Uploadcare"
+               BlueprintIdentifier = "2495944923B77F51006BB9BF"
                BuildableName = "Uploadcare.framework"
-               BlueprintName = "Uploadcare"
+               BlueprintName = "Uploadcare-Carthage"
                ReferencedContainer = "container:Uploadcare.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -60,9 +60,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "Uploadcare::Uploadcare"
+            BlueprintIdentifier = "2495944923B77F51006BB9BF"
             BuildableName = "Uploadcare.framework"
-            BlueprintName = "Uploadcare"
+            BlueprintName = "Uploadcare-Carthage"
             ReferencedContainer = "container:Uploadcare.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
