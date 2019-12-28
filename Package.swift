@@ -22,6 +22,6 @@ let package = Package(
             dependencies: ["Alamofire"]),
         .testTarget(
             name: "UploadcareTests",
-            dependencies: ["uploadcare-swift"]),
+            dependencies: ["Uploadcare"]),
     ]
 )
