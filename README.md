@@ -1,3 +1,3 @@
 # uploadcare-swift
 
-A description of this package.
+Work in progress.
