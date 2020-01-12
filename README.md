@@ -4,8 +4,8 @@ Work in progress.
 
 
 Dependency managers support:
-* ✓Swift Package Manager
-* ✓Carthage
-* ✓CocoaPods
+- [x] Swift Package Manager
+- [x] Carthage
+- [x] CocoaPods
 
 Check DemoApp dir for demo app.
