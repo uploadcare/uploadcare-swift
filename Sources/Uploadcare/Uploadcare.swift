@@ -1,6 +1,10 @@
 import Alamofire
 
 
+/// Upload API base url
+let uploadAPIBaseUrl: String = "https://upload.uploadcare.com"
+
+
 public struct Uploadcare {
 	
 	/// Public Key.  It is required when using Upload API.
