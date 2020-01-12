@@ -90,7 +90,7 @@
 		OBJ_40 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		OBJ_41 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		OBJ_42 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		OBJ_43 /* uploadcare-swift.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = "uploadcare-swift.podspec"; sourceTree = "<group>"; };
+		OBJ_43 /* Uploadcare.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Uploadcare.podspec; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* Uploadcare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Uploadcare.swift; sourceTree = "<group>"; };
 		"Uploadcare::Uploadcare::Product" /* Uploadcare.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Uploadcare.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -194,7 +194,7 @@
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -207,10 +207,9 @@
 				OBJ_40 /* LICENSE */,
 				OBJ_41 /* Cartfile */,
 				OBJ_42 /* README.md */,
-				OBJ_43 /* uploadcare-swift.podspec */,
+				OBJ_43 /* Uploadcare.podspec */,
 				2495945523B7801A006BB9BF /* Frameworks */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_7 /* Sources */ = {
@@ -315,7 +314,7 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			packageReferences = (
 				2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);

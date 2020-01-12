@@ -7,7 +7,7 @@
 #
 
 Pod::Spec.new do |s|
-  s.name             = 'uploadcare-swift'
+  s.name             = 'Uploadcare'
   s.version          = '1.0.0'
   s.summary          = 'Uploadcare lib written on Swift.'
 
