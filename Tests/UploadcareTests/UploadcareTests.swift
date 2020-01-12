@@ -1,15 +1,17 @@
 import XCTest
-@testable import uploadcare_swift
+@testable import Uploadcare
 
 final class uploadcare_swiftTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(uploadcare_swift().text, "Hello, World!")
+    func testInitWithPublicKey() {
+		let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+		let randomGeneratedKey = String((0..<10).map{ _ in letters.randomElement()! })
+		
+		
+        let uploadcare = Uploadcare(withPublicKey: randomGeneratedKey)
+		XCTAssertEqual(randomGeneratedKey, uploadcare.publicKey)
     }
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testInitWithPublicKey", testInitWithPublicKey),
     ]
 }
