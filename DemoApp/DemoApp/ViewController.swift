@@ -14,7 +14,7 @@ class ViewController: UIViewController {
 	private lazy var uploadcare: Uploadcare = {
 		// Define your Public Key here
 		let publicKey = ""
-		let api = Uploadcare(withPublicKey: publicKey)
+		return Uploadcare(withPublicKey: publicKey)
 	}()
 
 	override func viewDidLoad() {

@@ -1,3 +1,4 @@
+import Foundation
 import Alamofire
 
 
@@ -9,6 +10,9 @@ public struct Uploadcare {
 	
 	/// Public Key.  It is required when using Upload API.
 	internal var publicKey: String
+	
+	/// Alamofire session manager
+	private var manager = SessionManager()
 	
 	
 	/// Initialization
