@@ -8,14 +8,21 @@
 import Foundation
 
 
+/// Geo-location of image from EXIF.
 public struct GeoLocation: Codable {
+	
+	/// Location latitude.
 	public var latitude: Double
+	
+	/// Location longitude.
 	public var longitude: Double
+	
 	
 	enum CodingKeys: String, CodingKey {
 		case latitude
 		case longitude
 	}
+	
 	
 	init(latitude: Double, longitude: Double) {
 		self.latitude = latitude
@@ -30,4 +37,5 @@ public struct GeoLocation: Codable {
 		
 		self.init(latitude: latitude, longitude: longitude)
 	}
+	
 }
