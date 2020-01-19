@@ -44,6 +44,11 @@ private extension Uploadcare {
 
 
 extension Uploadcare {
+	
+	/// File info
+	/// - Parameters:
+	///   - fileId: File ID
+	///   - completionHandler: completion handler
 	public func fileInfo(
 		withFileId fileId: String,
 		_ completionHandler: @escaping (FileInfo?, Error?) -> Void
@@ -72,14 +77,68 @@ extension Uploadcare {
 				}
 		}
 	}
+	
+	public enum StoringBehavior: String {
+		case doNotstore = "0"
+		case store = "1"
+		case auto = "auto"
+	}
+	
+	public func upload(
+		fromUrl fileUrl: URL,
+		store: StoringBehavior? = nil,
+		filename: String? = nil,
+		checkURLDuplicates: Bool? = nil,
+		saveURLDuplicates: Bool? = nil,
+		signature: String? = nil,
+		expire: TimeInterval? = nil,
+		_ completionHandler: @escaping (UploadFromURLResponse?, Error?) -> Void
+	) {
+		var urlString = uploadAPIBaseUrl + "/from_url?pub_key=\(self.publicKey)&source_url=\(fileUrl.absoluteString)"
+		guard let url = URL(string: urlString) else { return }
+		var urlRequest = URLRequest(url: url)
+		urlRequest.httpMethod = HTTPMethod.post.rawValue
+		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+		
+		if let storeVal = store {
+			urlString += "&store=\(storeVal.rawValue)"
+		}
+		if let filenameVal = filename {
+			urlString += "&filename=\(filenameVal)"
+		}
+		if let checkURLDuplicatesVal = checkURLDuplicates {
+			let val = checkURLDuplicatesVal == true ? "1" : "0"
+			urlString += "&check_URL_duplicates=\(val)"
+		}
+		if let saveURLDuplicatesVal = saveURLDuplicates {
+			let val = saveURLDuplicatesVal == true ? "1" : "0"
+			urlString += "&save_URL_duplicates=\(val)"
+		}
+		if let signatureVal = signature {
+			urlString += "&signature=\(signatureVal)"
+		}
+		if let expireVal = expire {
+			urlString += "&expire=\(Int(expireVal))"
+		}
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(UploadFromURLResponse.self, from: data)
+
+					guard let responseData = decodedData else {
+						completionHandler(nil, Error.defaultError())
+						return
+					}
+
+					completionHandler(responseData, nil)
+					break
+				case .failure(_):
+					let error = self.makeError(fromResponse: response)
+					completionHandler(nil, error)
+				}
+		}
+	}
 }
-
-
-//public protocol Uploadable {
-//	func directUpload()
-//}
-
-
-//extension Uploadcare: Uploadable {
-//	func directUpload()
-//}
