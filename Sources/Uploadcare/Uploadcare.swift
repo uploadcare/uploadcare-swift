@@ -78,46 +78,34 @@ extension Uploadcare {
 		}
 	}
 	
-	public enum StoringBehavior: String {
-		case doNotstore = "0"
-		case store = "1"
-		case auto = "auto"
-	}
-	
 	public func upload(
-		fromUrl fileUrl: URL,
-		store: StoringBehavior? = nil,
-		filename: String? = nil,
-		checkURLDuplicates: Bool? = nil,
-		saveURLDuplicates: Bool? = nil,
-		signature: String? = nil,
-		expire: TimeInterval? = nil,
+		task: UploadFromURLTask,
 		_ completionHandler: @escaping (UploadFromURLResponse?, Error?) -> Void
 	) {
-		var urlString = uploadAPIBaseUrl + "/from_url?pub_key=\(self.publicKey)&source_url=\(fileUrl.absoluteString)"
+		var urlString = uploadAPIBaseUrl + "/from_url?pub_key=\(self.publicKey)&source_url=\(task.sourceUrl.absoluteString)"
 		guard let url = URL(string: urlString) else { return }
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = HTTPMethod.post.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
 		
-		if let storeVal = store {
+		if let storeVal = task.store {
 			urlString += "&store=\(storeVal.rawValue)"
 		}
-		if let filenameVal = filename {
+		if let filenameVal = task.filename {
 			urlString += "&filename=\(filenameVal)"
 		}
-		if let checkURLDuplicatesVal = checkURLDuplicates {
+		if let checkURLDuplicatesVal = task.checkURLDuplicates {
 			let val = checkURLDuplicatesVal == true ? "1" : "0"
 			urlString += "&check_URL_duplicates=\(val)"
 		}
-		if let saveURLDuplicatesVal = saveURLDuplicates {
+		if let saveURLDuplicatesVal = task.saveURLDuplicates {
 			let val = saveURLDuplicatesVal == true ? "1" : "0"
 			urlString += "&save_URL_duplicates=\(val)"
 		}
-		if let signatureVal = signature {
+		if let signatureVal = task.signature {
 			urlString += "&signature=\(signatureVal)"
 		}
-		if let expireVal = expire {
+		if let expireVal = task.expire {
 			urlString += "&expire=\(Int(expireVal))"
 		}
 		
