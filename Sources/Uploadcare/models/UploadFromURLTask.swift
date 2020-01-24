@@ -31,7 +31,7 @@ public struct UploadFromURLTask {
 	public let sourceUrl: URL
 	
 	/// Sets the file storing behavior.
-	public var store: StoringBehavior?
+	public var store: StoringBehavior = .auto
 	
 	/// Sets the name for a file uploaded from URL. If not defined, the filename is obtained from either response headers or a source URL.
 	public var filename: String?
@@ -59,7 +59,7 @@ public struct UploadFromURLTask {
 		expire: TimeInterval? = nil
 	) {
 		self.sourceUrl = sourceUrl
-		self.store = store
+		self.store = store ?? .auto
 		self.filename = filename
 		self.checkURLDuplicates = checkURLDuplicates
 		self.saveURLDuplicates = saveURLDuplicates

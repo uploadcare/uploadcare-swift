@@ -88,9 +88,8 @@ extension Uploadcare {
 		urlRequest.httpMethod = HTTPMethod.post.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
 		
-		if let storeVal = task.store {
-			urlString += "&store=\(storeVal.rawValue)"
-		}
+		urlString += "&store=\(task.store.rawValue)"
+		
 		if let filenameVal = task.filename {
 			urlString += "&filename=\(filenameVal)"
 		}
