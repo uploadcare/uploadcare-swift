@@ -12,9 +12,11 @@ import Foundation
 	Struct that defines params for uploading a file from url.
 
 	**Example:**
-	`var task = UploadFromURLTask(sourceUrl: URL(string: "https://example.com/file.png")!)`
-	`task.filename = "newname.png"`
-	`task.store = .store`
+	```
+	var task = UploadFromURLTask(sourceUrl: URL(string: "https://example.com/file.png")!)
+	task.filename = "newname.png"
+	task.store = .store
+	```
 */
 public struct UploadFromURLTask {
 	

@@ -78,6 +78,10 @@ extension Uploadcare {
 		}
 	}
 	
+	/// Direct upload from url
+	/// - Parameters:
+	///   - task: upload settings
+	///   - completionHandler: callback
 	public func upload(
 		task: UploadFromURLTask,
 		_ completionHandler: @escaping (UploadFromURLResponse?, Error?) -> Void
@@ -114,6 +118,41 @@ extension Uploadcare {
 				switch response.result {
 				case .success(let data):
 					let decodedData = try? JSONDecoder().decode(UploadFromURLResponse.self, from: data)
+
+					guard let responseData = decodedData else {
+						completionHandler(nil, Error.defaultError())
+						return
+					}
+
+					completionHandler(responseData, nil)
+					break
+				case .failure(_):
+					let error = self.makeError(fromResponse: response)
+					completionHandler(nil, error)
+				}
+		}
+	}
+	
+	/// Get status for file upload from URL
+	/// - Parameters:
+	///   - token: token recieved from upload method
+	///   - completionHandler: callback
+	public func uploadStatus(
+		forToken token: String,
+		_ completionHandler: @escaping (UploadFromURLStatus?, Error?) -> Void
+	) {
+		let urlString = uploadAPIBaseUrl + "/from_url/status/?token=\(token)"
+		guard let url = URL(string: urlString) else { return }
+		var urlRequest = URLRequest(url: url)
+		urlRequest.httpMethod = HTTPMethod.get.rawValue
+		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(UploadFromURLStatus.self, from: data)
 
 					guard let responseData = decodedData else {
 						completionHandler(nil, Error.defaultError())
