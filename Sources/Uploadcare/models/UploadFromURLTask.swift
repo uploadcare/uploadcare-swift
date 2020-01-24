@@ -51,7 +51,7 @@ public struct UploadFromURLTask {
 	// MARK: - Init
 	public init(
 		sourceUrl: URL,
-		store: StoringBehavior? = nil,
+		store: StoringBehavior? = .auto,
 		filename: String? = nil,
 		checkURLDuplicates: Bool? = nil,
 		saveURLDuplicates: Bool? = nil,

@@ -4,4 +4,6 @@ import uploadcare_swiftTests
 
 var tests = [XCTestCaseEntry]()
 tests += uploadcare_swiftTests.allTests()
+tests += UploadFromURLTaskTests.allTests()
+
 XCTMain(tests)
