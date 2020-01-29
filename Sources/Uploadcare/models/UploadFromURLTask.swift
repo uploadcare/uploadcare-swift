@@ -8,6 +8,14 @@
 import Foundation
 
 
+/// Storing behavior enum
+public enum StoringBehavior: String {
+	case doNotstore = "0"
+	case store = "1"
+	case auto = "auto"
+}
+
+
 /**
 	Struct that defines params for uploading a file from url.
 
@@ -19,13 +27,6 @@ import Foundation
 	```
 */
 public struct UploadFromURLTask {
-	
-	/// Storing behavior enum
-	public enum StoringBehavior: String {
-		case doNotstore = "0"
-		case store = "1"
-		case auto = "auto"
-	}
 	
 	// MARK: - Public properties
 	

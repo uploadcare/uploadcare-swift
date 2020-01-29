@@ -168,4 +168,70 @@ extension Uploadcare {
 				}
 		}
 	}
+	
+	public func upload(
+		files: [String:Data],
+		store: StoringBehavior? = nil,
+		signature: String? = nil,
+		expire: Int? = nil,
+		_ completionHandler: @escaping ([String: String]?, Error?) -> Void
+	) {
+		let urlString = uploadAPIBaseUrl + "/base/"
+		manager.upload(
+			multipartFormData: { (multipartFormData) in
+				if let publicKeyData = self.publicKey.data(using: .utf8) {
+					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
+				}
+				
+				for file in files {
+					multipartFormData.append(file.value, withName: file.key, fileName: file.key, mimeType: mimeType(for: file.value))
+				}
+				
+				if let storeVal = store, let data = storeVal.rawValue.data(using: .utf8) {
+					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
+				}
+				
+				if let signatureVal = signature, let data = signatureVal.data(using: .utf8) {
+					multipartFormData.append(data, withName: "signature")
+				}
+				if var expireVal = expire {
+					let data = Data(bytes: &expireVal, count: MemoryLayout.size(ofValue: expireVal))
+					multipartFormData.append(data, withName: "expire")
+				}
+		},
+			to: urlString
+		) { (result) in
+			switch result {
+			case .success(let upload, _, _):
+				
+//				upload.uploadProgress(closure: { (progress) in
+//					DLog("Upload progress: \(progress.fractionCompleted)")
+//				})
+				
+				upload.response { (response) in
+					if response.response?.statusCode == 200, let data = response.data {
+						let decodedData = try? JSONDecoder().decode([String:String].self, from: data)
+						guard let resultData = decodedData else {
+							completionHandler(nil, Error.defaultError())
+							return
+						}
+						completionHandler(resultData, nil)
+						return
+					}
+					
+					// error happened
+					let status: Int = response.response?.statusCode ?? 0
+					var message = ""
+					if let data = response.data {
+						message = String(data: data, encoding: .utf8) ?? ""
+					}
+					let error = Error(status: status, message: message)
+					completionHandler(nil, error)
+				}
+
+			case .failure(let encodingError):
+				completionHandler(nil, Error(status: 0, message: encodingError.localizedDescription))
+			}
+		}
+	}
 }
