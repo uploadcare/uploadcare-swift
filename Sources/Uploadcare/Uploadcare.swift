@@ -5,6 +5,9 @@ import Alamofire
 /// Upload API base url
 let uploadAPIBaseUrl: String = "https://upload.uploadcare.com"
 
+/// REST API base URL
+let RESTAPIBaseUrl: String = "https://api.uploadcare.com"
+
 
 public struct Uploadcare {
 	
