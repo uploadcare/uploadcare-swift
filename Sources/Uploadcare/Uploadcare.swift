@@ -87,11 +87,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (UploadFromURLResponse?, Error?) -> Void
 	) {
 		var urlString = uploadAPIBaseUrl + "/from_url?pub_key=\(self.publicKey)&source_url=\(task.sourceUrl.absoluteString)"
-		guard let url = URL(string: urlString) else { return }
-		var urlRequest = URLRequest(url: url)
-		urlRequest.httpMethod = HTTPMethod.post.rawValue
-		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
-		
+			
 		urlString += "&store=\(task.store.rawValue)"
 		
 		if let filenameVal = task.filename {
@@ -111,6 +107,11 @@ extension Uploadcare {
 		if let expireVal = task.expire {
 			urlString += "&expire=\(Int(expireVal))"
 		}
+		
+		guard let url = URL(string: urlString) else { return }
+		var urlRequest = URLRequest(url: url)
+		urlRequest.httpMethod = HTTPMethod.post.rawValue
+		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
 		
 		request(urlRequest)
 			.validate(statusCode: 200..<300)
