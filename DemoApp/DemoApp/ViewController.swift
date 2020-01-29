@@ -26,9 +26,11 @@ class ViewController: UIViewController {
 		queue.async { [unowned self] in
 			self.testFileInfo()
 		}
-		
 		queue.async { [unowned self] in
 			self.testUploadFile()
+		}
+		queue.async { [unowned self] in
+			self.testDirectUpload()
 		}
 		
 	}
@@ -93,5 +95,20 @@ private extension ViewController {
 			semaphore.signal()
 		}
 		semaphore.wait()
+	}
+	
+	func testDirectUpload() {
+		print("<------ testDirectUpload ------>")
+		if let image = UIImage(named: "MonaLisa.jpg"), let data = image.jpegData(compressionQuality: 1) {
+			print("size of file: \(sizeString(ofData: data))")
+			uploadcare.upload(files: ["file2.jpg": data]) { (resultDictionary, error) in
+				if let error = error {
+					print(error)
+					return
+				}
+				
+				print(resultDictionary ?? "nil")
+			}
+		}
 	}
 }

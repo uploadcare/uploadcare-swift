@@ -15,6 +15,7 @@
 		240427E423CB93DD00885BC9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 240427E223CB93DD00885BC9 /* LaunchScreen.storyboard */; };
 		240427EE23CB941800885BC9 /* Uploadcare in Frameworks */ = {isa = PBXBuildFile; productRef = 240427ED23CB941800885BC9 /* Uploadcare */; };
 		24BFA55923E22B96005722CB /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BFA55823E22B96005722CB /* Utils.swift */; };
+		24BFA55E23E23C90005722CB /* MonaLisa.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 24BFA55D23E23C90005722CB /* MonaLisa.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		240427E523CB93DD00885BC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		240427EB23CB940200885BC9 /* uploadcare-swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "uploadcare-swift"; path = ..; sourceTree = "<group>"; };
 		24BFA55823E22B96005722CB /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		24BFA55D23E23C90005722CB /* MonaLisa.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = MonaLisa.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 		240427D623CB93DC00885BC9 /* DemoApp */ = {
 			isa = PBXGroup;
 			children = (
+				24BFA55C23E22C8A005722CB /* Resources */,
 				240427D723CB93DC00885BC9 /* AppDelegate.swift */,
 				240427D923CB93DC00885BC9 /* SceneDelegate.swift */,
 				240427DB23CB93DC00885BC9 /* ViewController.swift */,
@@ -80,6 +83,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		24BFA55C23E22C8A005722CB /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				24BFA55D23E23C90005722CB /* MonaLisa.jpg */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -146,6 +157,7 @@
 				240427E423CB93DD00885BC9 /* LaunchScreen.storyboard in Resources */,
 				240427E123CB93DD00885BC9 /* Assets.xcassets in Resources */,
 				240427DF23CB93DC00885BC9 /* Main.storyboard in Resources */,
+				24BFA55E23E23C90005722CB /* MonaLisa.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
