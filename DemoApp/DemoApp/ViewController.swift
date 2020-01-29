@@ -9,18 +9,89 @@
 import UIKit
 import Uploadcare
 
+
 class ViewController: UIViewController {
-	
 	private lazy var uploadcare: Uploadcare = {
 		// Define your Public Key here
+		#warning("Set your public key here")
 		let publicKey = ""
 		return Uploadcare(withPublicKey: publicKey)
 	}()
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		
+		let queue = DispatchQueue(label: "Serial queue")
+
+		queue.async { [unowned self] in
+			self.testFileInfo()
+		}
+		
+		queue.async { [unowned self] in
+			self.testUploadFile()
+		}
+		
 	}
-
-
 }
 
+
+private extension ViewController {
+	func testFileInfo() {
+		print("<------ testFileInfo ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		uploadcare.fileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { (info, error) in
+			defer {
+				semaphore.signal()
+			}
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(info ?? "nil")
+		}
+		semaphore.wait()
+	}
+	
+	func testUploadFile() {
+		print("<------ testUploadFile ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		// upload from url
+		let url = URL(string: "https://spaceinbox.me/images/select-like-a-boss.png")
+		var task = UploadFromURLTask(sourceUrl: url!)
+		task.checkURLDuplicates = true
+		task.saveURLDuplicates = true
+		task.store = .store
+		
+		uploadcare.upload(task: task) { [unowned self] (result, error) in
+			print(result ?? "")
+			
+			guard let token = result?.token else {
+				semaphore.signal()
+				return
+			}
+			
+			delay(1.0) { [unowned self] in
+				self.uploadcare.uploadStatus(forToken: token) { (status, error) in
+					print(status ?? "no data")
+					print(error ?? "no error")
+					semaphore.signal()
+				}
+			}
+			
+		}
+		semaphore.wait()
+	}
+	
+	func testUploadStatus() {
+		print("<------ testUploadFile ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		uploadcare.uploadStatus(forToken: "ede4e436-9ff4-4027-8ffe-3b3e4d4a7f5b") { (status, error) in
+			print(status ?? "no data")
+			print(status?.error ?? "no error")
+			semaphore.signal()
+		}
+		semaphore.wait()
+	}
+}

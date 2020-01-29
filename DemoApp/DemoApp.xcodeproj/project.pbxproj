@@ -14,6 +14,7 @@
 		240427E123CB93DD00885BC9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 240427E023CB93DD00885BC9 /* Assets.xcassets */; };
 		240427E423CB93DD00885BC9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 240427E223CB93DD00885BC9 /* LaunchScreen.storyboard */; };
 		240427EE23CB941800885BC9 /* Uploadcare in Frameworks */ = {isa = PBXBuildFile; productRef = 240427ED23CB941800885BC9 /* Uploadcare */; };
+		24BFA55923E22B96005722CB /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BFA55823E22B96005722CB /* Utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		240427E323CB93DD00885BC9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		240427E523CB93DD00885BC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		240427EB23CB940200885BC9 /* uploadcare-swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "uploadcare-swift"; path = ..; sourceTree = "<group>"; };
+		24BFA55823E22B96005722CB /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 				240427D723CB93DC00885BC9 /* AppDelegate.swift */,
 				240427D923CB93DC00885BC9 /* SceneDelegate.swift */,
 				240427DB23CB93DC00885BC9 /* ViewController.swift */,
+				24BFA55823E22B96005722CB /* Utils.swift */,
 				240427DD23CB93DC00885BC9 /* Main.storyboard */,
 				240427E023CB93DD00885BC9 /* Assets.xcassets */,
 				240427E223CB93DD00885BC9 /* LaunchScreen.storyboard */,
@@ -156,6 +159,7 @@
 				240427DC23CB93DC00885BC9 /* ViewController.swift in Sources */,
 				240427D823CB93DC00885BC9 /* AppDelegate.swift in Sources */,
 				240427DA23CB93DC00885BC9 /* SceneDelegate.swift in Sources */,
+				24BFA55923E22B96005722CB /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
