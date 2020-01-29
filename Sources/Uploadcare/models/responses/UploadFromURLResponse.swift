@@ -12,14 +12,17 @@ public struct UploadFromURLResponse: Codable {
 	
 	public enum UploadFromURLResponseType: String, Codable {
 		case token
-		case file
+		case fileInfo = "file_info"
 	}
 	
 	/// Type of response
 	public var type: UploadFromURLResponseType
 	
 	/// A token to identify a file for the upload status request.
-	public var token: String
+	public var token: String?
+	
+	/// File info (if type == .fileInfo)
+	public var fileInfo: FileInfo?
 	
 	
 	enum CodingKeys: String, CodingKey {
@@ -28,18 +31,21 @@ public struct UploadFromURLResponse: Codable {
 	}
 	
 	
-	init(type: UploadFromURLResponseType, token: String) {
+	init(type: UploadFromURLResponseType, token: String?, fileInfo: FileInfo?) {
 		self.type = type
 		self.token = token
+		self.fileInfo = fileInfo
 	}
 	
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		
 		let type = try container.decodeIfPresent(UploadFromURLResponseType.self, forKey: .type) ?? UploadFromURLResponseType.token
-		let token = try container.decodeIfPresent(String.self, forKey: .token) ?? ""
+		let token = try container.decodeIfPresent(String.self, forKey: .token)
 		
-		self.init(type: type, token: token)
+		let fileInfo = try? FileInfo(from: decoder)
+		
+		self.init(type: type, token: token, fileInfo: fileInfo)
 	}
 	
 }
