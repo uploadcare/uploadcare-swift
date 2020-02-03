@@ -318,4 +318,37 @@ extension Uploadcare {
 				}
 		}
 	}
+	
+	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
+	/// - Parameters:
+	///   - uuid: FILE UUID
+	///   - completionHandler: callback
+	public func fileInfo(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (FilesListResult?, Error?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
+		guard let url = URL(string: urlString) else { return }
+		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					
+					let decodedData = try? JSONDecoder().decode(FilesListResult.self, from: data)
+					
+					guard let responseData = decodedData else {
+						completionHandler(nil, Error.defaultError())
+						return
+					}
+					
+					completionHandler(responseData, nil)
+				case .failure(_):
+					let error = self.makeError(fromResponse: response)
+					completionHandler(nil, error)
+				}
+		}
+	}
 }

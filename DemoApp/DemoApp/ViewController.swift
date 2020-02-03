@@ -25,7 +25,7 @@ class ViewController: UIViewController {
 		let queue = DispatchQueue(label: "Serial queue")
 
 		queue.async { [unowned self] in
-			self.testFileInfo()
+			self.testUploadFileInfo()
 		}
 		queue.async { [unowned self] in
 			self.testUploadFile()
@@ -33,13 +33,19 @@ class ViewController: UIViewController {
 		queue.async { [unowned self] in
 			self.testDirectUpload()
 		}
+		queue.async { [unowned self] in
+			self.testListOfFiles()
+		}
+		queue.async { [unowned self] in
+			self.testRESTFileInfo()
+		}
 		
 	}
 }
 
 
 private extension ViewController {
-	func testFileInfo() {
+	func testUploadFileInfo() {
 		print("<------ testFileInfo ------>")
 		let semaphore = DispatchSemaphore(value: 0)
 		uploadcare.uploadedFileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { (info, error) in
@@ -142,7 +148,26 @@ private extension ViewController {
 				return
 			}
 			
-			print(list)
+			print(list ?? "")
+		}
+		semaphore.wait()
+	}
+	
+	func testRESTFileInfo() {
+		print("<------ testListOfFiles ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(file ?? "")
 		}
 		semaphore.wait()
 	}
