@@ -11,9 +11,10 @@ let RESTAPIBaseUrl: String = "https://api.uploadcare.com"
 
 public struct Uploadcare {
 	
-	public enum AuthScheme {
-		case simple
-		case signed
+	/// Authorization scheme for REST API requests
+	public enum AuthScheme: String {
+		case simple = "Uploadcare.Simple"
+		case signed = "Uploadcare"
 	}
 	
 	/// Public Key.  It is required when using Upload API.
@@ -249,5 +250,33 @@ extension Uploadcare {
 				completionHandler(nil, Error(status: 0, message: encodingError.localizedDescription))
 			}
 		}
+	}
+}
+
+
+// MARK: - Private methods
+private extension Uploadcare {
+	/// Build url request for REST API
+	/// - Parameter fromURL: request url
+	private func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
+		let dateString = GMTDate()
+		
+		var urlRequest = URLRequest(url: url)
+		urlRequest.httpMethod = HTTPMethod.post.rawValue
+		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+		urlRequest.addValue("application/vnd.uploadcare-v0.6+json", forHTTPHeaderField: "Accept")
+		urlRequest.addValue(dateString, forHTTPHeaderField: "Date")
+		
+		
+		
+		switch authScheme {
+		case .simple:
+			urlRequest.addValue("\(authScheme.rawValue) \(publicKey):\(secretKey)", forHTTPHeaderField: "Authorization")
+		case .signed:
+			// TODO: - implement
+			break
+		}
+		
+		return urlRequest
 	}
 }
