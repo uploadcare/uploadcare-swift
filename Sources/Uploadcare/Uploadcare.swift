@@ -66,7 +66,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - fileId: File ID
 	///   - completionHandler: completion handler
-	public func fileInfo(
+	public func uploadedFileInfo(
 		withFileId fileId: String,
 		_ completionHandler: @escaping (FileInfo?, Error?) -> Void
 	) {

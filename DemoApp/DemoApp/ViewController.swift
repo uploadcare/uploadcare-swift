@@ -42,7 +42,7 @@ private extension ViewController {
 	func testFileInfo() {
 		print("<------ testFileInfo ------>")
 		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.fileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { (info, error) in
+		uploadcare.uploadedFileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { (info, error) in
 			defer {
 				semaphore.signal()
 			}
