@@ -258,16 +258,14 @@ extension Uploadcare {
 private extension Uploadcare {
 	/// Build url request for REST API
 	/// - Parameter fromURL: request url
-	private func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
+	internal func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
 		let dateString = GMTDate()
 		
 		var urlRequest = URLRequest(url: url)
-		urlRequest.httpMethod = HTTPMethod.post.rawValue
+		urlRequest.httpMethod = method.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
 		urlRequest.addValue("application/vnd.uploadcare-v0.6+json", forHTTPHeaderField: "Accept")
 		urlRequest.addValue(dateString, forHTTPHeaderField: "Date")
-		
-		
 		
 		switch authScheme {
 		case .simple:
