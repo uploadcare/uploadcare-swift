@@ -10,12 +10,17 @@ import XCTest
 
 final class PaginationQueryTests: XCTestCase {
     func testOrderingInit() {
-		let query1 = PaginationQuery(removed: false, stored: true, limit: 10, ordering: nil)
-		let query2 = PaginationQuery(removed: false, stored: true, limit: 30000, ordering: nil)
+		let query = PaginationQuery(removed: true, stored: false, limit: 10, ordering: .sizeDESC)
+		let query1 = PaginationQuery()
+			.removed(false)
+			.stored(true)
+			.limit(10)
 		
 		XCTAssertFalse(query1.removed!)
 		XCTAssertTrue(query1.stored!)
 		XCTAssertEqual(10, query1.limit!)
+		
+		let query2 = PaginationQuery().limit(30000)
 		XCTAssertEqual(PaginationQuery.maxLimitValue, query2.limit!)
     }
 	

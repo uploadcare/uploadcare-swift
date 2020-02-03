@@ -8,7 +8,22 @@
 import Foundation
 
 
-public struct PaginationQuery {
+/**
+	Defines params for files list query
+
+	**Example:**
+	```
+	// Might be used with init method with values:
+	let query = PaginationQuery(removed: true, stored: false, limit: 10, ordering: .sizeDESC)
+
+	// Might be used with chaining methods
+	let query1 = PaginationQuery()
+		.removed(false)
+		.stored(true)
+		.limit(10)
+	```
+*/
+public class PaginationQuery {
 	
 	/// Max value for limit
 	internal static let maxLimitValue: Int = 10000
@@ -19,7 +34,7 @@ public struct PaginationQuery {
 		case sizeASC(from: Int)
 		case sizeDESC
 		
-		public var stringValue: String {
+		internal var stringValue: String {
 			switch self {
 			case .dateTimeUploadedASC(let date):
 				let formatter = DateFormatter()
@@ -39,20 +54,44 @@ public struct PaginationQuery {
 		}
 	}
 	
+	// MARK: - Private properties
+	
 	/// true to only include removed files in the response, false to include existing files. Defaults to false.
 	public var removed: Bool?
-	
 	/// true to only include files that were stored, false to include temporary ones. The default is unset: both stored and not stored files are returned.
 	public var stored: Bool?
-	
 	/// A preferred amount of files in a list for a single response. Defaults to 100, while the maximum is 1000.
 	public var limit: Int?
-	
 	/// Specifies the way files are sorted in a returned list. The default ordering option is .dateTimeUploadedASC.
 	public var ordering: Ordering?
 	
 	
-	public init(removed: Bool?, stored: Bool?, limit: Int?, ordering: Ordering?) {
+	// MARK: - Public properties
+	public var stringValue: String {
+		var array = [String]()
+		
+		if let removedValue = removed {
+			array.append("removed=\(removedValue)")
+		}
+		
+		if let storedValue = stored {
+			array.append("stored=\(storedValue)")
+		}
+		
+		if let limitValue = limit {
+			array.append("limit=\(limitValue)")
+		}
+		
+		if let orderingValue = ordering {
+			array.append(orderingValue.stringValue)
+		}
+		
+		return array.joined(separator: "&")
+	}
+	
+	
+	// MARK: - Init
+	public init(removed: Bool? = nil, stored: Bool? = nil, limit: Int? = nil, ordering: Ordering? = nil) {
 		self.removed = removed
 		self.stored = stored
 		
@@ -65,5 +104,33 @@ public struct PaginationQuery {
 		}
 		
 		self.ordering = ordering
+	}
+	
+	
+	// MARK: - Public methods
+	public func removed(_ val: Bool?) -> Self {
+		removed = val
+		return self
+	}
+	
+	public func stored(_ val: Bool?) -> Self {
+		stored = val
+		return self
+	}
+	
+	public func limit(_ val: Int?) -> Self {
+		if let limitValue = val {
+			if limitValue >= 0 {
+				limit = limitValue > Self.maxLimitValue ? Self.maxLimitValue : limitValue
+			} else {
+				limit = 0
+			}
+		}
+		return self
+	}
+	
+	public func ordering(_ val: Ordering) -> Self {
+		ordering = val
+		return self
 	}
 }
