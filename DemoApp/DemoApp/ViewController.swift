@@ -99,16 +99,20 @@ private extension ViewController {
 	
 	func testDirectUpload() {
 		print("<------ testDirectUpload ------>")
-		if let image = UIImage(named: "MonaLisa.jpg"), let data = image.jpegData(compressionQuality: 1) {
-			print("size of file: \(sizeString(ofData: data))")
-			uploadcare.upload(files: ["file2.jpg": data]) { (resultDictionary, error) in
-				if let error = error {
-					print(error)
-					return
-				}
-				
-				print(resultDictionary ?? "nil")
+		guard let image = UIImage(named: "MonaLisa.jpg"), let data = image.jpegData(compressionQuality: 1) else { return }
+		
+		print("size of file: \(sizeString(ofData: data))")
+		uploadcare.upload(files: ["random_file_name.jpg": data], store: .store) { (resultDictionary, error) in
+			if let error = error {
+				print(error)
+				return
 			}
+			
+			guard let files = resultDictionary else { return }
+			for file in files {
+				print("uploaded file name: \(file.key) | file id: \(file.value)")
+			}
+			print(resultDictionary ?? "nil")
 		}
 	}
 }
