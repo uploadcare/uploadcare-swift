@@ -11,8 +11,19 @@ let RESTAPIBaseUrl: String = "https://api.uploadcare.com"
 
 public struct Uploadcare {
 	
+	public enum AuthScheme {
+		case simple
+		case signed
+	}
+	
 	/// Public Key.  It is required when using Upload API.
 	internal var publicKey: String
+	
+	/// Secret Key. Is used for authorization
+	internal var secretKey: String
+	
+	/// Auth scheme
+	internal var authScheme: AuthScheme = .simple
 	
 	/// Alamofire session manager
 	private var manager = SessionManager()
@@ -20,8 +31,9 @@ public struct Uploadcare {
 	
 	/// Initialization
 	/// - Parameter publicKey: Public Key.  It is required when using Upload API.
-	public init(withPublicKey publicKey: String) {
+	public init(withPublicKey publicKey: String, secretKey: String) {
 		self.publicKey = publicKey
+		self.secretKey = secretKey
 	}
 	
 	
@@ -46,6 +58,7 @@ private extension Uploadcare {
 }
 
 
+// MARK: - Upload API
 extension Uploadcare {
 	
 	/// File info
