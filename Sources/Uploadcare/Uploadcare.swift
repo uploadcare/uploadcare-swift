@@ -258,7 +258,7 @@ extension Uploadcare {
 private extension Uploadcare {
 	/// Build url request for REST API
 	/// - Parameter fromURL: request url
-	internal func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
+	func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
 		let dateString = GMTDate()
 		
 		var urlRequest = URLRequest(url: url)
@@ -276,5 +276,46 @@ private extension Uploadcare {
 		}
 		
 		return urlRequest
+	}
+}
+
+
+// MARK: - REST API
+extension Uploadcare {
+	
+	/// Get list of files
+	/// - Parameters:
+	///   - query: query object
+	///   - completionHandler: callback
+	public func listOfFiles(
+		withQuery query: PaginationQuery?,
+		_ completionHandler: @escaping (FilesListResponse?, Error?) -> Void
+	) {
+		var urlString = RESTAPIBaseUrl + "/files/"
+		if let queryValue = query {
+			urlString += "?\(queryValue.stringValue)"
+		}
+		
+		guard let url = URL(string: urlString) else { return }
+		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(FilesListResponse.self, from: data)
+
+					guard let responseData = decodedData else {
+						completionHandler(nil, Error.defaultError())
+						return
+					}
+
+					completionHandler(responseData, nil)
+				case .failure(_):
+					let error = self.makeError(fromResponse: response)
+					completionHandler(nil, error)
+				}
+		}
 	}
 }

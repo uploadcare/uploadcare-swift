@@ -103,17 +103,47 @@ private extension ViewController {
 		guard let image = UIImage(named: "MonaLisa.jpg"), let data = image.jpegData(compressionQuality: 1) else { return }
 		
 		print("size of file: \(sizeString(ofData: data))")
+		
+		let semaphore = DispatchSemaphore(value: 0)
 		uploadcare.upload(files: ["random_file_name.jpg": data], store: .store) { (resultDictionary, error) in
+			defer {
+				semaphore.signal()
+			}
+			
 			if let error = error {
 				print(error)
 				return
 			}
 			
 			guard let files = resultDictionary else { return }
+			
 			for file in files {
 				print("uploaded file name: \(file.key) | file id: \(file.value)")
 			}
 			print(resultDictionary ?? "nil")
 		}
+		semaphore.wait()
+	}
+	
+	func testListOfFiles() {
+		print("<------ testListOfFiles ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		let query = PaginationQuery()
+			.stored(true)
+			.ordering(.sizeDESC)
+		uploadcare.listOfFiles(withQuery: query) { (list, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(list)
+		}
+		semaphore.wait()
 	}
 }

@@ -10,7 +10,6 @@ import XCTest
 
 final class PaginationQueryTests: XCTestCase {
     func testOrderingInit() {
-		let query = PaginationQuery(removed: true, stored: false, limit: 10, ordering: .sizeDESC)
 		let query1 = PaginationQuery()
 			.removed(false)
 			.stored(true)
