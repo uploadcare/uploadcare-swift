@@ -24,6 +24,14 @@ func DLog(_ messages: Any..., fullPath: String = #file, line: Int = #line, funct
 	#endif
 }
 
+/// Time format for headers should be in format "Fri, 30 Sep 2016 11:10:54 GMT"
+internal func GMTDate() -> String {
+	let date = Date()
+	let formatter = DateFormatter()
+	formatter.timeZone = TimeZone(identifier: "GMT")
+	formatter.dateFormat = "E, dd MMM yyyy HH:mm:ss"
+	return formatter.string(from: date) + " GMT"
+}
 
 /// Get mime type from Data
 /// - Parameter data: data
