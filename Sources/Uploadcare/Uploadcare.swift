@@ -384,4 +384,37 @@ extension Uploadcare {
 				}
 		}
 	}
+	
+	/// Store a single file by UUID.
+	/// - Parameters:
+	///   - uuid: file UUID
+	///   - completionHandler: callback
+	public func storeFile(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (FilesListResult?, Error?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/storage/"
+		guard let url = URL(string: urlString) else { return }
+		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					
+					let decodedData = try? JSONDecoder().decode(FilesListResult.self, from: data)
+					
+					guard let responseData = decodedData else {
+						completionHandler(nil, Error.defaultError())
+						return
+					}
+					
+					completionHandler(responseData, nil)
+				case .failure(_):
+					let error = self.makeError(fromResponse: response)
+					completionHandler(nil, error)
+				}
+		}
+	}
 }
