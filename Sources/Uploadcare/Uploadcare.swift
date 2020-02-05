@@ -298,7 +298,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func listOfFiles(
 		withQuery query: PaginationQuery?,
-		_ completionHandler: @escaping (FilesListResponse?, Error?) -> Void
+		_ completionHandler: @escaping (FilesListResponse?, RESTAPIError?) -> Void
 	) {
 		var urlString = RESTAPIBaseUrl + "/files/"
 		if let queryValue = query {
@@ -319,14 +319,17 @@ extension Uploadcare {
 					let decodedData = try? JSONDecoder().decode(FilesListResponse.self, from: data)
 
 					guard let responseData = decodedData else {
-						completionHandler(nil, Error.defaultError())
+						completionHandler(nil, RESTAPIError.defaultError())
 						return
 					}
 
 					completionHandler(responseData, nil)
 				case .failure(_):
-					let error = self.makeError(fromResponse: response)
-					completionHandler(nil, error)
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
 				}
 		}
 	}
@@ -337,7 +340,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func fileInfo(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (FileInfo?, Error?) -> Void
+		_ completionHandler: @escaping (FileInfo?, RESTAPIError?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
 		guard let url = URL(string: urlString) else {
@@ -355,14 +358,17 @@ extension Uploadcare {
 					let decodedData = try? JSONDecoder().decode(FileInfo.self, from: data)
 					
 					guard let responseData = decodedData else {
-						completionHandler(nil, Error.defaultError())
+						completionHandler(nil, RESTAPIError.defaultError())
 						return
 					}
 					
 					completionHandler(responseData, nil)
 				case .failure(_):
-					let error = self.makeError(fromResponse: response)
-					completionHandler(nil, error)
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
 				}
 		}
 	}
@@ -373,7 +379,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func deleteFile(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (FileInfo?, Error?) -> Void
+		_ completionHandler: @escaping (FileInfo?, RESTAPIError?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
 		guard let url = URL(string: urlString) else {
@@ -391,14 +397,17 @@ extension Uploadcare {
 					let decodedData = try? JSONDecoder().decode(FileInfo.self, from: data)
 					
 					guard let responseData = decodedData else {
-						completionHandler(nil, Error.defaultError())
+						completionHandler(nil, RESTAPIError.defaultError())
 						return
 					}
 					
 					completionHandler(responseData, nil)
 				case .failure(_):
-					let error = self.makeError(fromResponse: response)
-					completionHandler(nil, error)
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
 				}
 		}
 	}
@@ -409,7 +418,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func storeFile(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (FileInfo?, Error?) -> Void
+		_ completionHandler: @escaping (FileInfo?, RESTAPIError?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/storage/"
 		guard let url = URL(string: urlString) else {
@@ -427,14 +436,59 @@ extension Uploadcare {
 					let decodedData = try? JSONDecoder().decode(FileInfo.self, from: data)
 					
 					guard let responseData = decodedData else {
-						completionHandler(nil, Error.defaultError())
+						completionHandler(nil, RESTAPIError.defaultError())
 						return
 					}
 					
 					completionHandler(responseData, nil)
 				case .failure(_):
-					let error = self.makeError(fromResponse: response)
-					completionHandler(nil, error)
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
+				}
+		}
+	}
+	
+	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
+	/// - Parameters:
+	///   - uuids: List of files UUIDs to store.
+	///   - completionHandler: callback
+	public func storeFiles(
+		withUUIDs uuids: [String],
+		_ completionHandler: @escaping (BatchFileStoringResponse?, RESTAPIError?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/files/storage/"
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
+		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		
+		if let body = try? JSONEncoder().encode(uuids) {
+			urlRequest.httpBody = body
+		}
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(BatchFileStoringResponse.self, from: data)
+					
+					guard let responseData = decodedData else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					
+					completionHandler(responseData, nil)
+				case .failure(_):
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
 				}
 		}
 	}
@@ -445,7 +499,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func listOfGroups(
 		withQuery query: GroupsListQuery?,
-		_ completionHandler: @escaping (GroupsListResponse?, Error?) -> Void
+		_ completionHandler: @escaping (GroupsListResponse?, RESTAPIError?) -> Void
 	) {
 		var urlString = RESTAPIBaseUrl + "/groups/"
 		if let queryValue = query {
@@ -466,14 +520,17 @@ extension Uploadcare {
 					let decodedData = try? JSONDecoder().decode(GroupsListResponse.self, from: data)
 					
 					guard let responseData = decodedData else {
-						completionHandler(nil, Error.defaultError())
+						completionHandler(nil, RESTAPIError.defaultError())
 						return
 					}
 
 					completionHandler(responseData, nil)
 				case .failure(_):
-					let error = self.makeError(fromResponse: response)
-					completionHandler(nil, error)
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
 				}
 		}
 	}
@@ -484,7 +541,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func groupInfo(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (Group?, Error?) -> Void
+		_ completionHandler: @escaping (Group?, RESTAPIError?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/groups/\(uuid)/"
 		guard let url = URL(string: urlString) else {
@@ -502,14 +559,17 @@ extension Uploadcare {
 					let decodedData = try? JSONDecoder().decode(Group.self, from: data)
 					
 					guard let responseData = decodedData else {
-						completionHandler(nil, Error.defaultError())
+						completionHandler(nil, RESTAPIError.defaultError())
 						return
 					}
 					
 					completionHandler(responseData, nil)
 				case .failure(_):
-					let error = self.makeError(fromResponse: response)
-					completionHandler(nil, error)
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
 				}
 		}
 	}
@@ -520,7 +580,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func storeGroup(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (Error?) -> Void
+		_ completionHandler: @escaping (RESTAPIError?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/groups/\(uuid)/storage/"
 		guard let url = URL(string: urlString) else {
@@ -536,8 +596,11 @@ extension Uploadcare {
 				case .success(_):
 					completionHandler(nil)
 				case .failure(_):
-					let error = self.makeError(fromResponse: response)
-					completionHandler(error)
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(decodedData)
 				}
 		}
 	}

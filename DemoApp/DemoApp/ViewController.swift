@@ -224,6 +224,25 @@ private extension ViewController {
 		semaphore.wait()
 	}
 	
+	func testRESTBatchStoreFiles() {
+		print("<------ testRESTBatchStoreFiles ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.storeFiles(withUUIDs: ["1bac376c-aa7e-4356-861b-dd2657b5bfd2", "shouldBeInProblems"]) { (response, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(response ?? "")
+		}
+		semaphore.wait()
+	}
+	
 	func testListOfGroups() {
 		print("<------ testListOfGroups ------>")
 		let semaphore = DispatchSemaphore(value: 0)
