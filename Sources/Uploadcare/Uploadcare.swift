@@ -477,4 +477,41 @@ extension Uploadcare {
 				}
 		}
 	}
+	
+	/// Get a file group by UUID.
+	/// - Parameters:
+	///   - uuid: Group UUID.
+	///   - completionHandler: callback
+	public func groupInfo(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (Group?, Error?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/groups/\(uuid)/"
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
+		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					
+					let decodedData = try? JSONDecoder().decode(Group.self, from: data)
+					
+					guard let responseData = decodedData else {
+						completionHandler(nil, Error.defaultError())
+						return
+					}
+					
+					completionHandler(responseData, nil)
+				case .failure(_):
+					let error = self.makeError(fromResponse: response)
+					completionHandler(nil, error)
+				}
+		}
+	}
+	
 }
