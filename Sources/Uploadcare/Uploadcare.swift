@@ -646,4 +646,56 @@ extension Uploadcare {
 				}
 		}
 	}
+	
+	/// Copy file to local storage. Used to copy original files or their modified versions to default storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
+	/// - Parameters:
+	///   - source: A CDN URL or just UUID of a file subjected to copy.
+	///   - store: The parameter only applies to the Uploadcare storage. Default: "false"
+	///   - makePublic: Applicable to custom storage only. True to make copied files available via public links, false to reverse the behavior. Default: "true"
+	///   - completionHandler: <#completionHandler description#>
+	public func copyFileToLocalStorage(
+		source: String,
+		store: Bool? = nil,
+		makePublic: Bool? = nil,
+		_ completionHandler: @escaping (CopyFileToLocalStorageResponse?, RESTAPIError?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/files/local_copy/"
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
+		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+		
+		let bodyDictionary = [
+			"source": source,
+			"store": "\(store ?? false)",
+			"make_public": "\(makePublic ?? true)"
+		]
+		if let body = try? JSONEncoder().encode(bodyDictionary) {
+			urlRequest.httpBody = body
+		}
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(CopyFileToLocalStorageResponse.self, from: data)
+					
+					guard let responseData = decodedData else {
+						DLog(String(data: data, encoding: .utf8) ?? "")
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					
+					completionHandler(responseData, nil)
+				case .failure(_):
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
+				}
+		}
+	}
 }

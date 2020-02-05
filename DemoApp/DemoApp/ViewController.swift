@@ -60,6 +60,9 @@ class ViewController: UIViewController {
 		queue.async { [unowned self] in
 			self.testStoreGroup()
 		}
+		queue.async { [unowned self] in
+			self.testCopyFileToLocalStorage()
+		}
 	}
 }
 
@@ -324,6 +327,24 @@ private extension ViewController {
 				return
 			}
 			print("store group success")
+		}
+		semaphore.wait()
+	}
+	
+	func testCopyFileToLocalStorage() {
+		print("<------ testCopyFileToLocalStorage ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { (response, error) in
+			defer {
+				semaphore.signal()
+			}
+
+			if let error = error {
+				print(error)
+				return
+			}
+			print(response ?? "")
 		}
 		semaphore.wait()
 	}
