@@ -27,7 +27,7 @@ public struct FilesListResult: Codable {
 	/// Dictionary of file categories with it's confidence.
 	public var rekognitionInfo: [String: Int]?
 	/// File info
-	public var fileInfo: FileInfo?
+	public var fileInfo: UploadedFileInfo?
 	
 	
 	enum CodingKeys: String, CodingKey {
@@ -51,7 +51,7 @@ public struct FilesListResult: Codable {
 		source: String?,
 		variations: [String: String]?,
 		rekognitionInfo: [String: Int]?,
-		fileInfo: FileInfo?
+		fileInfo: UploadedFileInfo?
 	) {
 		self.datetimeRemoved = datetimeRemoved
 		self.datetimeStored = datetimeStored
@@ -95,7 +95,7 @@ public struct FilesListResult: Codable {
 		let variations = try container.decodeIfPresent([String: String].self, forKey: .variations)
 		let rekognitionInfo = try container.decodeIfPresent([String: Int].self, forKey: .rekognitionInfo)
 		
-		let fileInfo = try? FileInfo(from: decoder)
+		let fileInfo = try? UploadedFileInfo(from: decoder)
 
 		self.init(
 			datetimeRemoved: datetimeRemoved,

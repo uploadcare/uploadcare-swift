@@ -33,7 +33,7 @@ public struct UploadFromURLStatus: Codable {
 	public var error: String?
 	
 	/// Uploaded file info. Not nil if status is "success"
-	public var fileInfo: FileInfo?
+	public var fileInfo: UploadedFileInfo?
 	
 	
 	enum CodingKeys: String, CodingKey {
@@ -49,7 +49,7 @@ public struct UploadFromURLStatus: Codable {
 		done: Int?,
 		total: Int?,
 		error: String?,
-		fileInfo: FileInfo?
+		fileInfo: UploadedFileInfo?
 	) {
 		self.status = status
 		self.done = done
@@ -66,7 +66,7 @@ public struct UploadFromURLStatus: Codable {
 		let total = try container.decodeIfPresent(Int.self, forKey: .total)
 		let error = try container.decodeIfPresent(String.self, forKey: .error)
 		
-		let fileInfo = try? FileInfo(from: decoder)
+		let fileInfo = try? UploadedFileInfo(from: decoder)
 
 		self.init(
 			status: status,

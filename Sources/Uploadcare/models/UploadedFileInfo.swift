@@ -1,5 +1,5 @@
 //
-//  FileInfo.swift
+//  UploadedFileInfo.swift
 //  
 //
 //  Created by Sergey Armodin on 13.01.2020.
@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct FileInfo: Codable {
+public struct UploadedFileInfo: Codable {
 	
 	/// File size in bytes.
 	public var size: Int
