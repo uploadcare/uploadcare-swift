@@ -16,7 +16,7 @@ import Foundation
 	// Might be used with init method with values:
 	let query = PaginationQuery(removed: true, stored: false, limit: 10, ordering: .sizeDESC)
 
-	// Might be used with chaining methods
+	// Might be used with chaining
 	let query1 = PaginationQuery()
 		.removed(false)
 		.stored(true)
@@ -54,7 +54,7 @@ public class PaginationQuery {
 		}
 	}
 	
-	// MARK: - Private properties
+	// MARK: - Public properties
 	
 	/// true to only include removed files in the response, false to include existing files. Defaults to false.
 	public var removed: Bool?
@@ -66,7 +66,6 @@ public class PaginationQuery {
 	public var ordering: Ordering?
 	
 	
-	// MARK: - Public properties
 	public var stringValue: String {
 		var array = [String]()
 		
@@ -108,16 +107,23 @@ public class PaginationQuery {
 	
 	
 	// MARK: - Public methods
+	
+	/// Sets removed param to query
+	/// - Parameter val: value
 	public func removed(_ val: Bool?) -> Self {
 		removed = val
 		return self
 	}
 	
+	/// Sets stored param to query
+	/// - Parameter val: value
 	public func stored(_ val: Bool?) -> Self {
 		stored = val
 		return self
 	}
 	
+	/// Sets limit param to query
+	/// - Parameter val: value
 	public func limit(_ val: Int?) -> Self {
 		if let limitValue = val {
 			if limitValue >= 0 {
@@ -129,6 +135,8 @@ public class PaginationQuery {
 		return self
 	}
 	
+	/// Sets ordering param to query
+	/// - Parameter val: value
 	public func ordering(_ val: Ordering) -> Self {
 		ordering = val
 		return self
