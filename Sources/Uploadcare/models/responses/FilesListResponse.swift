@@ -14,7 +14,7 @@ public struct FilesListResponse: Codable {
 	public var previous: String?
 	public var total: Int
 	public var perPage: Int
-	public var results: [FilesListResult]
+	public var results: [FileInfo]
 
 	
 	enum CodingKeys: String, CodingKey {
@@ -31,7 +31,7 @@ public struct FilesListResponse: Codable {
 		previous: String?,
 		total: Int,
 		perPage: Int,
-		results: [FilesListResult]
+		results: [FileInfo]
 	) {
 		self.next = next
 		self.previous = previous
@@ -47,7 +47,7 @@ public struct FilesListResponse: Codable {
 		let previous = try container.decodeIfPresent(String.self, forKey: .previous)
 		let total = try container.decodeIfPresent(Int.self, forKey: .total) ?? 0
 		let perPage = try container.decodeIfPresent(Int.self, forKey: .perPage) ?? 0
-		let results = try container.decodeIfPresent([FilesListResult].self, forKey: .results) ?? [FilesListResult]()
+		let results = try container.decodeIfPresent([FileInfo].self, forKey: .results) ?? [FileInfo]()
 
 		self.init(
 			next: next,

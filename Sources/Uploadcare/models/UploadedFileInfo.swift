@@ -8,6 +8,7 @@
 import Foundation
 
 
+/// File Info model that is used for Upload API
 public struct UploadedFileInfo: Codable {
 	
 	/// File size in bytes.
