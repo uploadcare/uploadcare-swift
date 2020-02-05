@@ -71,7 +71,10 @@ extension Uploadcare {
 		_ completionHandler: @escaping (FileInfo?, Error?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/info?pub_key=\(self.publicKey)&file_id=\(fileId)"
-		guard let url = URL(string: urlString) else { return }
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = HTTPMethod.get.rawValue
 		
@@ -125,7 +128,10 @@ extension Uploadcare {
 			urlString += "&expire=\(Int(expireVal))"
 		}
 		
-		guard let url = URL(string: urlString) else { return }
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = HTTPMethod.post.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -160,7 +166,10 @@ extension Uploadcare {
 		_ completionHandler: @escaping (UploadFromURLStatus?, Error?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/from_url/status/?token=\(token)"
-		guard let url = URL(string: urlString) else { return }
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = HTTPMethod.get.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -296,7 +305,10 @@ extension Uploadcare {
 			urlString += "?\(queryValue.stringValue)"
 		}
 		
-		guard let url = URL(string: urlString) else { return }
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
 		request(urlRequest)
@@ -328,7 +340,10 @@ extension Uploadcare {
 		_ completionHandler: @escaping (FilesListResult?, Error?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
-		guard let url = URL(string: urlString) else { return }
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
 		request(urlRequest)
@@ -361,7 +376,10 @@ extension Uploadcare {
 		_ completionHandler: @escaping (FilesListResult?, Error?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
-		guard let url = URL(string: urlString) else { return }
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .delete)
 		
 		request(urlRequest)
@@ -394,7 +412,10 @@ extension Uploadcare {
 		_ completionHandler: @escaping (FilesListResult?, Error?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/storage/"
-		guard let url = URL(string: urlString) else { return }
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
 		
 		request(urlRequest)
