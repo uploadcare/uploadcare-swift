@@ -1,5 +1,5 @@
 //
-//  BatchFileStoringResponse.swift
+//  BatchFilesOperationResponse.swift
 //  
 //
 //  Created by Sergey Armodin on 05.02.2020.
@@ -8,12 +8,12 @@
 import Foundation
 
 
-public struct BatchFileStoringResponse: Codable {
+public struct BatchFilesOperationResponse: Codable {
 	
 	/// Dictionary of passed files UUIDs and problems associated with these UUIDs.
 	public var problems: [String: String]
 	
-	/// List of file objects that has been stored.
+	/// List of file objects that has been updated.
 	public var result: [FileInfo]
 	
 	
@@ -45,10 +45,10 @@ public struct BatchFileStoringResponse: Codable {
 }
 
 
-extension BatchFileStoringResponse: CustomStringConvertible {
+extension BatchFilesOperationResponse: CustomStringConvertible {
 	public var description: String {
 		return """
-		BatchFileStoringResponse:
+		BatchFilesOperationResponse:
 			problems: \(problems)
 			result: \(String(describing: result))
 		"""

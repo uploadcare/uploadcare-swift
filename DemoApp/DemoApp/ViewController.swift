@@ -43,7 +43,13 @@ class ViewController: UIViewController {
 			self.testRESTDeleteFile()
 		}
 		queue.async { [unowned self] in
+			self.testRESTBatchDeleteFiles()
+		}
+		queue.async { [unowned self] in
 			self.testRESTStoreFile()
+		}
+		queue.async { [unowned self] in
+			self.testRESTBatchStoreFiles()
 		}
 		queue.async { [unowned self] in
 			self.testListOfGroups()
@@ -201,6 +207,25 @@ private extension ViewController {
 			}
 			
 			print(file ?? "")
+		}
+		semaphore.wait()
+	}
+	
+	func testRESTBatchDeleteFiles() {
+		print("<------ testRESTBatchDeleteFiles ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.deleteFiles(withUUIDs: ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "shouldBeInProblems"]) { (response, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(response ?? "")
 		}
 		semaphore.wait()
 	}

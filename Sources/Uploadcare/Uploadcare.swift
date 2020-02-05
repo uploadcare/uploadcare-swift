@@ -412,6 +412,48 @@ extension Uploadcare {
 		}
 	}
 	
+	/// Batch file delete. Used to delete multiple files in one go. Up to 100 files are supported per request.
+	/// - Parameters:
+	///   - uuids: List of files UUIDs to store.
+	///   - completionHandler: callback
+	public func deleteFiles(
+		withUUIDs uuids: [String],
+		_ completionHandler: @escaping (BatchFilesOperationResponse?, RESTAPIError?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/files/storage/"
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
+		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
+		
+		if let body = try? JSONEncoder().encode(uuids) {
+			urlRequest.httpBody = body
+		}
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(BatchFilesOperationResponse.self, from: data)
+					
+					guard let responseData = decodedData else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					
+					completionHandler(responseData, nil)
+				case .failure(_):
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
+				}
+		}
+	}
+	
 	/// Store a single file by UUID.
 	/// - Parameters:
 	///   - uuid: file UUID
@@ -457,7 +499,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func storeFiles(
 		withUUIDs uuids: [String],
-		_ completionHandler: @escaping (BatchFileStoringResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (BatchFilesOperationResponse?, RESTAPIError?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/files/storage/"
 		guard let url = URL(string: urlString) else {
@@ -475,7 +517,7 @@ extension Uploadcare {
 			.responseData { response in
 				switch response.result {
 				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(BatchFileStoringResponse.self, from: data)
+					let decodedData = try? JSONDecoder().decode(BatchFilesOperationResponse.self, from: data)
 					
 					guard let responseData = decodedData else {
 						completionHandler(nil, RESTAPIError.defaultError())
