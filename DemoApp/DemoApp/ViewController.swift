@@ -22,7 +22,7 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		let queue = DispatchQueue(label: "Serial queue")
+		let queue = DispatchQueue(label: "uploadcare.test.queue")
 
 		queue.async { [unowned self] in
 			self.testUploadFileInfo()
@@ -50,6 +50,9 @@ class ViewController: UIViewController {
 		}
 		queue.async { [unowned self] in
 			self.testGroupInfo()
+		}
+		queue.async { [unowned self] in
+			self.testStoreGroup()
 		}
 	}
 }
@@ -259,6 +262,24 @@ private extension ViewController {
 			}
 
 			print(group ?? "")
+		}
+		semaphore.wait()
+	}
+	
+	func testStoreGroup() {
+		print("<------ testStoreGroup ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (error) in
+			defer {
+				semaphore.signal()
+			}
+
+			if let error = error {
+				print(error)
+				return
+			}
+			print("store group success")
 		}
 		semaphore.wait()
 	}

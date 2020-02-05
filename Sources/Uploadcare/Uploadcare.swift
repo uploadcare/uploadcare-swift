@@ -514,4 +514,31 @@ extension Uploadcare {
 		}
 	}
 	
+	/// Mark all files in a group as stored.
+	/// - Parameters:
+	///   - uuid: Group UUID.
+	///   - completionHandler: callback
+	public func storeGroup(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (Error?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/groups/\(uuid)/storage/"
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
+		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					completionHandler(nil)
+				case .failure(_):
+					let error = self.makeError(fromResponse: response)
+					completionHandler(error)
+				}
+		}
+	}
 }
