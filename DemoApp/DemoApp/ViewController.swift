@@ -45,6 +45,9 @@ class ViewController: UIViewController {
 		queue.async { [unowned self] in
 			self.testRESTStoreFile()
 		}
+		queue.async { [unowned self] in
+			self.testListOfGroups()
+		}
 	}
 }
 
@@ -211,6 +214,29 @@ private extension ViewController {
 			}
 			
 			print(file ?? "")
+		}
+		semaphore.wait()
+	}
+	
+	func testListOfGroups() {
+		print("<------ testListOfGroups ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		let query = GroupsListQuery()
+			.limit(100)
+			.ordering(.datetimeCreatedDESC)
+		
+		uploadcare.listOfGroups(withQuery: query) { (list, error) in
+			defer {
+				semaphore.signal()
+			}
+
+			if let error = error {
+				print(error)
+				return
+			}
+
+			print(list ?? "")
 		}
 		semaphore.wait()
 	}

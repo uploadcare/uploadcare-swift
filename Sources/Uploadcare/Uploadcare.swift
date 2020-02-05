@@ -438,4 +438,43 @@ extension Uploadcare {
 				}
 		}
 	}
+	
+	/// Get list of groups
+	/// - Parameters:
+	///   - query: query object
+	///   - completionHandler: callback
+	public func listOfGroups(
+		withQuery query: GroupsListQuery?,
+		_ completionHandler: @escaping (GroupsListResponse?, Error?) -> Void
+	) {
+		var urlString = RESTAPIBaseUrl + "/groups/"
+		if let queryValue = query {
+			urlString += "?\(queryValue.stringValue)"
+		}
+		
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
+		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(GroupsListResponse.self, from: data)
+					
+					guard let responseData = decodedData else {
+						completionHandler(nil, Error.defaultError())
+						return
+					}
+
+					completionHandler(responseData, nil)
+				case .failure(_):
+					let error = self.makeError(fromResponse: response)
+					completionHandler(nil, error)
+				}
+		}
+	}
 }
