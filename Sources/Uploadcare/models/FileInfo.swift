@@ -179,3 +179,28 @@ public struct FileInfo: Codable {
 	}
 	
 }
+
+
+extension FileInfo: CustomStringConvertible {
+	public var description: String {
+		return """
+		FileInfo:
+			size: \(size),
+			uuid: \(uuid),
+			originalFilename: \(originalFilename),
+			mimeType: \(mimeType),
+			isImage: \(isImage),
+			isReady: \(isReady),
+			datetimeRemoved: \(String(describing: datetimeRemoved)),
+			datetimeStored: \(String(describing: datetimeStored)),
+			datetimeUploaded: \(datetimeUploaded),
+			originalFileUrl: \(String(describing: originalFileUrl)),
+			url: \(url),
+			source: \(String(describing: source)),
+			variations: \(String(describing: variations)),
+			rekognitionInfo: \(String(describing: rekognitionInfo)),
+			imageInfo: \(String(describing: imageInfo)),
+			videoInfo: \(String(describing: videoInfo))
+		"""
+	}
+}

@@ -20,3 +20,15 @@ public struct Error {
 		return Error(status: 0, message: "Unknown error")
 	}
 }
+
+
+extension Error: CustomStringConvertible {
+	public var description: String {
+		return """
+		Error:
+			status: \(status),
+			message: \(message)
+		"""
+	}
+}
+

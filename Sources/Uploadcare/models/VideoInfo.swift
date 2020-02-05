@@ -31,6 +31,20 @@ public struct AudioMetadata: Codable {
 	}
 }
 
+
+extension AudioMetadata: CustomStringConvertible {
+	public var description: String {
+		return """
+			AudioMetadata:
+					bitrate: \(String(describing: bitrate))
+					codec: \(String(describing: codec))
+					sampleRate: \(String(describing: sampleRate))
+					channels: \(String(describing: channels))
+		"""
+	}
+}
+
+
 /// Video stream metadata.
 public struct VideoMetadata: Codable {
 	/// Video stream image height.
@@ -87,6 +101,20 @@ public struct VideoMetadata: Codable {
 			bitrate: bitrate,
 			codec: codec
 		)
+	}
+}
+
+
+extension VideoMetadata: CustomStringConvertible {
+	public var description: String {
+		return """
+			VideoMetadata:
+					height: \(height)
+					width: \(width)
+					frameRate: \(frameRate)
+					bitrate: \(bitrate)
+					codec: \(codec)
+		"""
 	}
 }
 
@@ -151,4 +179,18 @@ public struct VideoInfo: Codable {
 		)
 	}
 	
+}
+
+
+extension VideoInfo: CustomStringConvertible {
+	public var description: String {
+		return """
+		VideoInfo:
+				duration: \(duration)
+				format: \(format)
+				bitrate: \(bitrate)
+				audio: \(String(describing: audio))
+				video: \(video)
+		"""
+	}
 }

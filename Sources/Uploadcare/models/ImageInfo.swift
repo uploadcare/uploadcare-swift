@@ -116,3 +116,21 @@ public struct ImageInfo: Codable {
 		)
 	}
 }
+
+
+extension ImageInfo: CustomStringConvertible {
+	public var description: String {
+		return """
+		ImageInfo:
+				height: \(height)
+				width: \(width)
+				geoLocation: \(String(describing: geoLocation))
+				datetimeOriginal: \(String(describing: datetimeOriginal))
+				format: \(format)
+				colorMode: \(colorMode)
+				dpi: \(String(describing: dpi))
+				orientation: \(String(describing: orientation))
+				sequence: \(String(describing: sequence))
+		"""
+	}
+}
