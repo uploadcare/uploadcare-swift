@@ -32,10 +32,10 @@ public struct AudioMetadata: Codable {
 }
 
 
-extension AudioMetadata: CustomStringConvertible {
-	public var description: String {
+extension AudioMetadata: CustomDebugStringConvertible {
+	public var debugDescription: String {
 		return """
-			AudioMetadata:
+			\(type(of: self)):
 					bitrate: \(String(describing: bitrate))
 					codec: \(String(describing: codec))
 					sampleRate: \(String(describing: sampleRate))
@@ -105,10 +105,10 @@ public struct VideoMetadata: Codable {
 }
 
 
-extension VideoMetadata: CustomStringConvertible {
-	public var description: String {
+extension VideoMetadata: CustomDebugStringConvertible {
+	public var debugDescription: String {
 		return """
-			VideoMetadata:
+			\(type(of: self)):
 					height: \(height)
 					width: \(width)
 					frameRate: \(frameRate)
@@ -182,10 +182,10 @@ public struct VideoInfo: Codable {
 }
 
 
-extension VideoInfo: CustomStringConvertible {
-	public var description: String {
+extension VideoInfo: CustomDebugStringConvertible {
+	public var debugDescription: String {
 		return """
-		VideoInfo:
+		\(type(of: self)):
 				duration: \(duration)
 				format: \(format)
 				bitrate: \(bitrate)

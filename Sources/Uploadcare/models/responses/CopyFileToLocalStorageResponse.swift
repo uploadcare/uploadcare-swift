@@ -42,8 +42,8 @@ public struct CopyFileToLocalStorageResponse: Codable {
 }
 
 
-extension CopyFileToLocalStorageResponse: CustomStringConvertible {
-	public var description: String {
+extension CopyFileToLocalStorageResponse: CustomDebugStringConvertible {
+	public var debugDescription: String {
 		return """
 		CopyFileToLocalStorageResponse:
 			type: \(type)

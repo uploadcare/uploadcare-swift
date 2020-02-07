@@ -118,10 +118,10 @@ public struct ImageInfo: Codable {
 }
 
 
-extension ImageInfo: CustomStringConvertible {
-	public var description: String {
+extension ImageInfo: CustomDebugStringConvertible {
+	public var debugDescription: String {
 		return """
-		ImageInfo:
+		\(type(of: self)):
 				height: \(height)
 				width: \(width)
 				geoLocation: \(String(describing: geoLocation))

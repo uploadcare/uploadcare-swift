@@ -45,10 +45,10 @@ public struct BatchFilesOperationResponse: Codable {
 }
 
 
-extension BatchFilesOperationResponse: CustomStringConvertible {
-	public var description: String {
+extension BatchFilesOperationResponse: CustomDebugStringConvertible {
+	public var debugDescription: String {
 		return """
-		BatchFilesOperationResponse:
+		\(type(of: self)):
 			problems: \(problems)
 			result: \(String(describing: result))
 		"""

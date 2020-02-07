@@ -22,10 +22,10 @@ public struct Error {
 }
 
 
-extension Error: CustomStringConvertible {
-	public var description: String {
+extension Error: CustomDebugStringConvertible {
+	public var debugDescription: String {
 		return """
-		Error:
+		\(type(of: self)):
 			status: \(status),
 			message: \(message)
 		"""

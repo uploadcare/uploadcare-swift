@@ -40,10 +40,10 @@ public struct RESTAPIError: Codable {
 }
 
 
-extension RESTAPIError: CustomStringConvertible {
-	public var description: String {
+extension RESTAPIError: CustomDebugStringConvertible {
+	public var debugDescription: String {
 		return """
-		RESTAPIError:
+		\(type(of: self)):
 			detail: \(detail)
 		"""
 	}

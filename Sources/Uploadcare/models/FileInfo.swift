@@ -181,10 +181,10 @@ public struct FileInfo: Codable {
 }
 
 
-extension FileInfo: CustomStringConvertible {
-	public var description: String {
+extension FileInfo: CustomDebugStringConvertible {
+	public var debugDescription: String {
 		return """
-		FileInfo:
+		\(type(of: self)):
 			size: \(size),
 			uuid: \(uuid),
 			originalFilename: \(originalFilename),

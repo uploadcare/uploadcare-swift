@@ -80,10 +80,10 @@ public struct UploadFromURLStatus: Codable {
 }
 
 
-extension UploadFromURLStatus: CustomStringConvertible {
-	public var description: String {
+extension UploadFromURLStatus: CustomDebugStringConvertible {
+	public var debugDescription: String {
 		return """
-		UploadFromURLStatus:
+		\(type(of: self)):
 			status: \(status),
 			done: \(String(describing: done)),
 			total: \(String(describing: total)),
