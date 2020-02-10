@@ -1,0 +1,57 @@
+//
+//  CopyFileToRemoteStorageResponse.swift
+//  
+//
+//  Created by Sergey Armodin on 10.02.2020.
+//
+
+import Foundation
+
+
+public struct CopyFileToRemoteStorageResponse: Codable {
+	
+	/// Default: "file"
+	public var type: String
+		
+	/// For the url type, the result is a URL with the s3 scheme. Your bucket name is put as a host, and an s3 object path follows.
+	public var result: String
+	
+	
+	enum CodingKeys: String, CodingKey {
+		case type
+		case result
+	}
+	
+	
+	init(
+		type: String,
+		result: String
+	) {
+		self.type = type
+		self.result = result
+	}
+
+	public init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+
+		let type = try container.decodeIfPresent(String.self, forKey: .type) ?? "file"
+		let result = try container.decodeIfPresent(String.self, forKey: .result) ?? ""
+
+		self.init(
+			type: type,
+			result: result
+		)
+	}
+}
+
+
+extension CopyFileToRemoteStorageResponse: CustomDebugStringConvertible {
+	public var debugDescription: String {
+		return """
+		CopyFileToRemoteStorageResponse:
+			type: \(type)
+			result: \(String(describing: result))
+		"""
+	}
+}
+
