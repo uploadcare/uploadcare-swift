@@ -20,7 +20,7 @@ public struct Group: Codable {
 	/// Public CDN URL for a group.
 	public var cdnUrl: String
 	/// List of files in a group. Deleted files are represented as null to always preserve a number of files in a group in line with a group ID. This property is not available for group lists.
-	public var files: [FileInfo]?
+	public var files: [File]?
 	/// API resource URL for a group.
 	public var url: String
 	/// Group identifier.
@@ -43,7 +43,7 @@ public struct Group: Codable {
 		datetimeStored: Date?,
 		filesCount: Int,
 		cdnUrl: String,
-		files: [FileInfo]?,
+		files: [File]?,
 		url: String,
 		id: String
 	) {
@@ -78,7 +78,7 @@ public struct Group: Codable {
 		
 		let filesCount = try container.decodeIfPresent(Int.self, forKey: .filesCount) ?? 1
 		let cdnUrl = try container.decodeIfPresent(String.self, forKey: .cdnUrl) ?? ""
-		let files = try container.decodeIfPresent([FileInfo].self, forKey: .files)
+		let files = try container.decodeIfPresent([File].self, forKey: .files)
 		let url = try container.decodeIfPresent(String.self, forKey: .url) ?? ""
 		let id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
 		

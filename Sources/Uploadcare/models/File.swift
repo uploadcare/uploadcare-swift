@@ -9,7 +9,7 @@ import Foundation
 
 
 /// File info model that is used for REST API
-public struct FileInfo: Codable {
+public struct File: Codable {
 	
 	/// File size in bytes.
 	public var size: Int
@@ -181,7 +181,7 @@ public struct FileInfo: Codable {
 }
 
 
-extension FileInfo: CustomDebugStringConvertible {
+extension File: CustomDebugStringConvertible {
 	public var debugDescription: String {
 		return """
 		\(type(of: self)):

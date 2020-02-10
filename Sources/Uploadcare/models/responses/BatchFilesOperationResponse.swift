@@ -14,7 +14,7 @@ public struct BatchFilesOperationResponse: Codable {
 	public var problems: [String: String]
 	
 	/// List of file objects that has been updated.
-	public var result: [FileInfo]
+	public var result: [File]
 	
 	
 	enum CodingKeys: String, CodingKey {
@@ -25,7 +25,7 @@ public struct BatchFilesOperationResponse: Codable {
 	
 	init(
 		problems: [String: String],
-		result: [FileInfo]
+		result: [File]
 	) {
 		self.problems = problems
 		self.result = result
@@ -35,7 +35,7 @@ public struct BatchFilesOperationResponse: Codable {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 
 		let problems = try container.decodeIfPresent([String: String].self, forKey: .problems) ?? [:]
-		let result = try container.decodeIfPresent([FileInfo].self, forKey: .result) ?? [FileInfo]()
+		let result = try container.decodeIfPresent([File].self, forKey: .result) ?? [File]()
 
 		self.init(
 			problems: problems,

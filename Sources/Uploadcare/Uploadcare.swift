@@ -11,6 +11,9 @@ let RESTAPIBaseUrl: String = "https://api.uploadcare.com"
 
 public struct Uploadcare {
 	
+	// TODO: log turn on or off
+	// TODO: add logs
+	
 	/// Authorization scheme for REST API requests
 	public enum AuthScheme: String {
 		case simple = "Uploadcare.Simple"
@@ -340,7 +343,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func fileInfo(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (FileInfo?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
 		guard let url = URL(string: urlString) else {
@@ -355,7 +358,7 @@ extension Uploadcare {
 				switch response.result {
 				case .success(let data):
 					
-					let decodedData = try? JSONDecoder().decode(FileInfo.self, from: data)
+					let decodedData = try? JSONDecoder().decode(File.self, from: data)
 					
 					guard let responseData = decodedData else {
 						completionHandler(nil, RESTAPIError.defaultError())
@@ -379,7 +382,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func deleteFile(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (FileInfo?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
 		guard let url = URL(string: urlString) else {
@@ -394,7 +397,7 @@ extension Uploadcare {
 				switch response.result {
 				case .success(let data):
 					
-					let decodedData = try? JSONDecoder().decode(FileInfo.self, from: data)
+					let decodedData = try? JSONDecoder().decode(File.self, from: data)
 					
 					guard let responseData = decodedData else {
 						completionHandler(nil, RESTAPIError.defaultError())
@@ -460,7 +463,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func storeFile(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (FileInfo?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
 	) {
 		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/storage/"
 		guard let url = URL(string: urlString) else {
@@ -475,7 +478,7 @@ extension Uploadcare {
 				switch response.result {
 				case .success(let data):
 					
-					let decodedData = try? JSONDecoder().decode(FileInfo.self, from: data)
+					let decodedData = try? JSONDecoder().decode(File.self, from: data)
 					
 					guard let responseData = decodedData else {
 						completionHandler(nil, RESTAPIError.defaultError())
