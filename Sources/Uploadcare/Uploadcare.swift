@@ -198,6 +198,7 @@ extension Uploadcare {
 		}
 	}
 	
+	// TODO: Signature
 	public func upload(
 		files: [String:Data],
 		store: StoringBehavior? = nil,
@@ -655,7 +656,7 @@ extension Uploadcare {
 	///   - source: A CDN URL or just UUID of a file subjected to copy.
 	///   - store: The parameter only applies to the Uploadcare storage. Default: "false"
 	///   - makePublic: Applicable to custom storage only. True to make copied files available via public links, false to reverse the behavior. Default: "true"
-	///   - completionHandler: <#completionHandler description#>
+	///   - completionHandler: completion handler
 	public func copyFileToLocalStorage(
 		source: String,
 		store: Bool? = nil,
