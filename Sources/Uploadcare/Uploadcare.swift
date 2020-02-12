@@ -48,8 +48,11 @@ public struct Uploadcare {
 }
 
 
-private extension Uploadcare {
-	func makeError(fromResponse response: DataResponse<Data>) -> Error {
+// MARK: - Upload API
+extension Uploadcare {
+	/// Make UploadError from data response
+	/// - Parameter response: Data response
+	private func makeUploadError(fromResponse response: DataResponse<Data>) -> UploadError {
 		let status: Int = response.response?.statusCode ?? 0
 		
 		var message = ""
@@ -57,13 +60,8 @@ private extension Uploadcare {
 			message = String(data: data, encoding: .utf8) ?? ""
 		}
 		
-		return Error(status: status, message: message)
+		return UploadError(status: status, message: message)
 	}
-}
-
-
-// MARK: - Upload API
-extension Uploadcare {
 	
 	/// File info
 	/// - Parameters:
@@ -71,14 +69,14 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func uploadedFileInfo(
 		withFileId fileId: String,
-		_ completionHandler: @escaping (UploadedFile?, Error?) -> Void
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/info?pub_key=\(self.publicKey)&file_id=\(fileId)"
 		guard let url = URL(string: urlString) else {
 			assertionFailure("Incorrect url")
 			return
 		}
-		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
 		
 		request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -88,13 +86,13 @@ extension Uploadcare {
 					let decodedData = try? JSONDecoder().decode(UploadedFile.self, from: data)
 		
 					guard let fileInfo = decodedData else {
-						completionHandler(nil, Error.defaultError())
+						completionHandler(nil, UploadError.defaultError())
 						return
 					}
 
 					completionHandler(fileInfo, nil)
 				case .failure(_):
-					let error = self.makeError(fromResponse: response)
+					let error = self.makeUploadError(fromResponse: response)
 					completionHandler(nil, error)
 				}
 		}
@@ -106,7 +104,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func upload(
 		task: UploadFromURLTask,
-		_ completionHandler: @escaping (UploadFromURLResponse?, Error?) -> Void
+		_ completionHandler: @escaping (UploadFromURLResponse?, UploadError?) -> Void
 	) {
 		var urlString = uploadAPIBaseUrl + "/from_url?pub_key=\(self.publicKey)&source_url=\(task.sourceUrl.absoluteString)"
 			
@@ -144,14 +142,14 @@ extension Uploadcare {
 					let decodedData = try? JSONDecoder().decode(UploadFromURLResponse.self, from: data)
 
 					guard let responseData = decodedData else {
-						completionHandler(nil, Error.defaultError())
+						completionHandler(nil, UploadError.defaultError())
 						return
 					}
 
 					completionHandler(responseData, nil)
 					break
 				case .failure(_):
-					let error = self.makeError(fromResponse: response)
+					let error = self.makeUploadError(fromResponse: response)
 					completionHandler(nil, error)
 				}
 		}
@@ -163,7 +161,7 @@ extension Uploadcare {
 	///   - completionHandler: callback
 	public func uploadStatus(
 		forToken token: String,
-		_ completionHandler: @escaping (UploadFromURLStatus?, Error?) -> Void
+		_ completionHandler: @escaping (UploadFromURLStatus?, UploadError?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/from_url/status/?token=\(token)"
 		guard let url = URL(string: urlString) else {
@@ -180,14 +178,14 @@ extension Uploadcare {
 					let decodedData = try? JSONDecoder().decode(UploadFromURLStatus.self, from: data)
 
 					guard let responseData = decodedData else {
-						completionHandler(nil, Error.defaultError())
+						completionHandler(nil, UploadError.defaultError())
 						return
 					}
 
 					completionHandler(responseData, nil)
 					break
 				case .failure(_):
-					let error = self.makeError(fromResponse: response)
+					let error = self.makeUploadError(fromResponse: response)
 					completionHandler(nil, error)
 				}
 		}
@@ -199,7 +197,7 @@ extension Uploadcare {
 		store: StoringBehavior? = nil,
 		signature: String? = nil,
 		expire: Int? = nil,
-		_ completionHandler: @escaping ([String: String]?, Error?) -> Void
+		_ completionHandler: @escaping ([String: String]?, UploadError?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/base/"
 		manager.upload(
@@ -237,7 +235,7 @@ extension Uploadcare {
 					if response.response?.statusCode == 200, let data = response.data {
 						let decodedData = try? JSONDecoder().decode([String:String].self, from: data)
 						guard let resultData = decodedData else {
-							completionHandler(nil, Error.defaultError())
+							completionHandler(nil, UploadError.defaultError())
 							return
 						}
 						completionHandler(resultData, nil)
@@ -250,12 +248,12 @@ extension Uploadcare {
 					if let data = response.data {
 						message = String(data: data, encoding: .utf8) ?? ""
 					}
-					let error = Error(status: status, message: message)
+					let error = UploadError(status: status, message: message)
 					completionHandler(nil, error)
 				}
 
 			case .failure(let encodingError):
-				completionHandler(nil, Error(status: 0, message: encodingError.localizedDescription))
+				completionHandler(nil, UploadError(status: 0, message: encodingError.localizedDescription))
 			}
 		}
 	}

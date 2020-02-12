@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Group.swift
 //  
 //
 //  Created by Sergey Armodin on 05.02.2020.
