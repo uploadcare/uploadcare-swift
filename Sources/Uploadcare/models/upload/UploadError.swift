@@ -15,6 +15,7 @@ public struct UploadError {
 	/// Error message
 	public var message: String
 	
+	
 	/// Default error
 	public static func defaultError() -> UploadError {
 		return UploadError(status: 0, message: "Unknown error")

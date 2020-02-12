@@ -18,9 +18,7 @@ public struct RESTAPIError: Codable {
 	}
 	
 	
-	init(
-		detail: String
-	) {
+	init(detail: String) {
 		self.detail = detail
 	}
 
@@ -34,6 +32,8 @@ public struct RESTAPIError: Codable {
 		)
 	}
 	
+	
+	/// Default error
 	static func defaultError() -> RESTAPIError {
 		return RESTAPIError(detail: "Unknown error")
 	}

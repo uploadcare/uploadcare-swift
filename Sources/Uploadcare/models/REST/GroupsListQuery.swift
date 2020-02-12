@@ -50,6 +50,8 @@ public class GroupsListQuery {
 	
 	
 	// MARK: - Public properties
+	
+	/// String value for adding query params to url
 	public var stringValue: String {
 		var array = [String]()
 		

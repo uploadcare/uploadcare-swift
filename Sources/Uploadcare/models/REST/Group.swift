@@ -13,16 +13,22 @@ public struct Group: Codable {
 	
 	/// Date and time when a group was created.
 	public var datetimeCreated: Date
+	
 	/// Date and time when files in a group were stored.
 	public var datetimeStored: Date?
+	
 	/// Number of files in a group.
 	public var filesCount: Int
+	
 	/// Public CDN URL for a group.
 	public var cdnUrl: String
+	
 	/// List of files in a group. Deleted files are represented as null to always preserve a number of files in a group in line with a group ID. This property is not available for group lists.
 	public var files: [File]?
+	
 	/// API resource URL for a group.
 	public var url: String
+	
 	/// Group identifier.
 	public var id: String
 	

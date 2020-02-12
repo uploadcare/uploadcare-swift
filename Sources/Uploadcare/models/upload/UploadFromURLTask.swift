@@ -28,8 +28,6 @@ public enum StoringBehavior: String {
 */
 public struct UploadFromURLTask {
 	
-	// MARK: - Public properties
-	
 	/// Defines your source file URL, which should be a public HTTP or HTTPS link.
 	public let sourceUrl: URL
 	
@@ -50,6 +48,7 @@ public struct UploadFromURLTask {
 	
 	/// expire sets the time until your signature is valid. It is timestamp. See Signed uploads for details.
 	public var expire: TimeInterval?
+	
 	
 	// MARK: - Init
 	public init(

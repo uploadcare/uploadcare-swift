@@ -54,6 +54,7 @@ public class PaginationQuery {
 		}
 	}
 	
+	
 	// MARK: - Public properties
 	
 	/// true to only include removed files in the response, false to include existing files. Defaults to false.
@@ -66,6 +67,7 @@ public class PaginationQuery {
 	public var ordering: Ordering?
 	
 	
+	/// String value for adding query params to url
 	public var stringValue: String {
 		var array = [String]()
 		
