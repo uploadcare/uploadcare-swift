@@ -22,7 +22,7 @@ public struct UploadFromURLResponse: Codable {
 	public var token: String?
 	
 	/// File info (if type == .fileInfo)
-	public var fileInfo: UploadedFileInfo?
+	public var fileInfo: UploadedFile?
 	
 	
 	enum CodingKeys: String, CodingKey {
@@ -31,7 +31,7 @@ public struct UploadFromURLResponse: Codable {
 	}
 	
 	
-	init(type: UploadFromURLResponseType, token: String?, fileInfo: UploadedFileInfo?) {
+	init(type: UploadFromURLResponseType, token: String?, fileInfo: UploadedFile?) {
 		self.type = type
 		self.token = token
 		self.fileInfo = fileInfo
@@ -43,7 +43,7 @@ public struct UploadFromURLResponse: Codable {
 		let type = try container.decodeIfPresent(UploadFromURLResponseType.self, forKey: .type) ?? UploadFromURLResponseType.token
 		let token = try container.decodeIfPresent(String.self, forKey: .token)
 		
-		let fileInfo = try? UploadedFileInfo(from: decoder)
+		let fileInfo = try? UploadedFile(from: decoder)
 		
 		self.init(type: type, token: token, fileInfo: fileInfo)
 	}

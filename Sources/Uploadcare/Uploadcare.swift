@@ -71,7 +71,7 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func uploadedFileInfo(
 		withFileId fileId: String,
-		_ completionHandler: @escaping (UploadedFileInfo?, Error?) -> Void
+		_ completionHandler: @escaping (UploadedFile?, Error?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/info?pub_key=\(self.publicKey)&file_id=\(fileId)"
 		guard let url = URL(string: urlString) else {
@@ -86,7 +86,7 @@ extension Uploadcare {
 			.responseData { response in
 				switch response.result {
 				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(UploadedFileInfo.self, from: data)
+					let decodedData = try? JSONDecoder().decode(UploadedFile.self, from: data)
 		
 					guard let fileInfo = decodedData else {
 						completionHandler(nil, Error.defaultError())
