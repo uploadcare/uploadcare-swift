@@ -24,47 +24,50 @@ class ViewController: UIViewController {
 		
 		let queue = DispatchQueue(label: "uploadcare.test.queue")
 
+//		queue.async { [unowned self] in
+//			self.testUploadFileInfo()
+//		}
+//		queue.async { [unowned self] in
+//			self.testUploadFile()
+//		}
+//		queue.async { [unowned self] in
+//			self.testDirectUpload()
+//		}
+//		queue.async { [unowned self] in
+//			self.testListOfFiles()
+//		}
+//		queue.async { [unowned self] in
+//			self.testRESTFileInfo()
+//		}
+//		queue.async { [unowned self] in
+//			self.testRESTDeleteFile()
+//		}
+//		queue.async { [unowned self] in
+//			self.testRESTBatchDeleteFiles()
+//		}
+//		queue.async { [unowned self] in
+//			self.testRESTStoreFile()
+//		}
+//		queue.async { [unowned self] in
+//			self.testRESTBatchStoreFiles()
+//		}
+//		queue.async { [unowned self] in
+//			self.testListOfGroups()
+//		}
+//		queue.async { [unowned self] in
+//			self.testGroupInfo()
+//		}
+//		queue.async { [unowned self] in
+//			self.testStoreGroup()
+//		}
+//		queue.async { [unowned self] in
+//			self.testCopyFileToLocalStorage()
+//		}
+//		queue.async { [unowned self] in
+//			self.testCreateFileGroups()
+//		}
 		queue.async { [unowned self] in
-			self.testUploadFileInfo()
-		}
-		queue.async { [unowned self] in
-			self.testUploadFile()
-		}
-		queue.async { [unowned self] in
-			self.testDirectUpload()
-		}
-		queue.async { [unowned self] in
-			self.testListOfFiles()
-		}
-		queue.async { [unowned self] in
-			self.testRESTFileInfo()
-		}
-		queue.async { [unowned self] in
-			self.testRESTDeleteFile()
-		}
-		queue.async { [unowned self] in
-			self.testRESTBatchDeleteFiles()
-		}
-		queue.async { [unowned self] in
-			self.testRESTStoreFile()
-		}
-		queue.async { [unowned self] in
-			self.testRESTBatchStoreFiles()
-		}
-		queue.async { [unowned self] in
-			self.testListOfGroups()
-		}
-		queue.async { [unowned self] in
-			self.testGroupInfo()
-		}
-		queue.async { [unowned self] in
-			self.testStoreGroup()
-		}
-		queue.async { [unowned self] in
-			self.testCopyFileToLocalStorage()
-		}
-		queue.async { [unowned self] in
-			self.testCreateFileGroups()
+			self.testFileGroupInfo()
 		}
 	}
 }
@@ -373,6 +376,23 @@ private extension ViewController {
 				}
 				print(response ?? "")
 			}
+		}
+		semaphore.wait()
+	}
+	
+	func testFileGroupInfo() {
+		print("<------ testFileGroupInfo ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.filesGroupInfo(groupId: "060d3492-0471-4d97-a68a-05aeacbc3ada~1") { (group, error) in
+			defer {
+				semaphore.signal()
+			}
+			if let error = error {
+				print(error)
+				return
+			}
+			print(group ?? "")
 		}
 		semaphore.wait()
 	}

@@ -265,15 +265,73 @@ extension Uploadcare {
 		expire: Int? = nil,
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
+		let fileIds: [String] = files.map { (file) -> String in
+			return file.fileId
+		}
+		createFilesGroup(fileIds: fileIds, completionHandler)
+	}
+	
+	/// Create files group from a set of files by using their UUIDs.
+	/// - Parameters:
+	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
+	///   - signature: signature
+	///   - expire: expire
+	///   - completionHandler: callback
+	public func createFilesGroup(
+		fileIds: [String],
+		signature: String? = nil,
+		expire: Int? = nil,
+		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
+	) {
 		var urlString = uploadAPIBaseUrl + "/group/?pub_key=\(self.publicKey)"
-		for (index, file) in files.enumerated() {
-			urlString += "&files[\(index)]=\(file.fileId)"
+		for (index, fileId) in fileIds.enumerated() {
+			urlString += "&files[\(index)]=\(fileId)"
 		}
 		guard let url = URL(string: urlString) else {
 			assertionFailure("Incorrect url")
 			return
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(UploadedFilesGroup.self, from: data)
+
+					guard let responseData = decodedData else {
+						completionHandler(nil, UploadError.defaultError())
+						return
+					}
+
+					completionHandler(responseData, nil)
+					break
+				case .failure(_):
+					let error = self.makeUploadError(fromResponse: response)
+					completionHandler(nil, error)
+				}
+		}
+	}
+	
+	/// Files group info
+	/// - Parameters:
+	///   - groupId: Group ID. Group IDs look like UUID~N.
+	///   - signature: signature
+	///   - expire: expire
+	///   - completionHandler: callback
+	public func filesGroupInfo(
+		groupId: String,
+		signature: String? = nil,
+		expire: Int? = nil,
+		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
+	) {
+		let urlString = uploadAPIBaseUrl + "/group/info/?pub_key=\(self.publicKey)&group_id=\(groupId)"
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
 		
 		request(urlRequest)
 			.validate(statusCode: 200..<300)
