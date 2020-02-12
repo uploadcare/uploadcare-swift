@@ -77,7 +77,7 @@ private extension ViewController {
 	func testUploadFileInfo() {
 		print("<------ testFileInfo ------>")
 		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadedFileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { (info, error) in
+		uploadcare.uploadAPI.uploadedFileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { (info, error) in
 			defer {
 				semaphore.signal()
 			}
@@ -102,7 +102,7 @@ private extension ViewController {
 		task.saveURLDuplicates = true
 		task.store = .store
 		
-		uploadcare.upload(task: task) { [unowned self] (result, error) in
+		uploadcare.uploadAPI.upload(task: task) { [unowned self] (result, error) in
 			print(result ?? "")
 			
 			guard let token = result?.token else {
@@ -111,7 +111,7 @@ private extension ViewController {
 			}
 			
 			delay(1.0) { [unowned self] in
-				self.uploadcare.uploadStatus(forToken: token) { (status, error) in
+				self.uploadcare.uploadAPI.uploadStatus(forToken: token) { (status, error) in
 					print(status ?? "no data")
 					print(error ?? "no error")
 					semaphore.signal()
@@ -125,7 +125,7 @@ private extension ViewController {
 	func testUploadStatus() {
 		print("<------ testUploadFile ------>")
 		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadStatus(forToken: "ede4e436-9ff4-4027-8ffe-3b3e4d4a7f5b") { (status, error) in
+		uploadcare.uploadAPI.uploadStatus(forToken: "ede4e436-9ff4-4027-8ffe-3b3e4d4a7f5b") { (status, error) in
 			print(status ?? "no data")
 			print(status?.error ?? "no error")
 			semaphore.signal()
@@ -140,7 +140,7 @@ private extension ViewController {
 		print("size of file: \(sizeString(ofData: data))")
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.upload(files: ["random_file_name.jpg": data], store: .store) { (resultDictionary, error) in
+		uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store) { (resultDictionary, error) in
 			defer {
 				semaphore.signal()
 			}
@@ -359,14 +359,14 @@ private extension ViewController {
 		print("<------ testCreateFileGroups ------>")
 		let semaphore = DispatchSemaphore(value: 0)
 		
-		uploadcare.uploadedFileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { [unowned self] (file, error) in
+		uploadcare.uploadAPI.uploadedFileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { [unowned self] (file, error) in
 			guard let uploadedFile = file, error == nil else {
 				assertionFailure("wrong file id")
 				semaphore.signal()
 				return
 			}
 			
-			self.uploadcare.createFilesGroup(files: [uploadedFile]) { (response, error) in
+			self.uploadcare.uploadAPI.createFilesGroup(files: [uploadedFile]) { (response, error) in
 				defer {
 					semaphore.signal()
 				}
@@ -384,7 +384,7 @@ private extension ViewController {
 		print("<------ testFileGroupInfo ------>")
 		let semaphore = DispatchSemaphore(value: 0)
 		
-		uploadcare.filesGroupInfo(groupId: "060d3492-0471-4d97-a68a-05aeacbc3ada~1") { (group, error) in
+		uploadcare.uploadAPI.filesGroupInfo(groupId: "060d3492-0471-4d97-a68a-05aeacbc3ada~1") { (group, error) in
 			defer {
 				semaphore.signal()
 			}
