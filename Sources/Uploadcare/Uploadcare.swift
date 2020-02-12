@@ -257,6 +257,44 @@ extension Uploadcare {
 			}
 		}
 	}
+	
+	// TODO: Signature
+	public func createFilesGroup(
+		files: [UploadedFile],
+		signature: String? = nil,
+		expire: Int? = nil,
+		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
+	) {
+		var urlString = uploadAPIBaseUrl + "/group/?pub_key=\(self.publicKey)"
+		for (index, file) in files.enumerated() {
+			urlString += "&files[\(index)]=\(file.fileId)"
+		}
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(UploadedFilesGroup.self, from: data)
+
+					guard let responseData = decodedData else {
+						completionHandler(nil, UploadError.defaultError())
+						return
+					}
+
+					completionHandler(responseData, nil)
+					break
+				case .failure(_):
+					let error = self.makeUploadError(fromResponse: response)
+					completionHandler(nil, error)
+				}
+		}
+	}
 }
 
 

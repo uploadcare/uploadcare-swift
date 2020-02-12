@@ -63,6 +63,9 @@ class ViewController: UIViewController {
 		queue.async { [unowned self] in
 			self.testCopyFileToLocalStorage()
 		}
+		queue.async { [unowned self] in
+			self.testCreateFileGroups()
+		}
 	}
 }
 
@@ -345,6 +348,31 @@ private extension ViewController {
 				return
 			}
 			print(response ?? "")
+		}
+		semaphore.wait()
+	}
+	
+	func testCreateFileGroups() {
+		print("<------ testCreateFileGroups ------>")
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.uploadedFileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { [unowned self] (file, error) in
+			guard let uploadedFile = file, error == nil else {
+				assertionFailure("wrong file id")
+				semaphore.signal()
+				return
+			}
+			
+			self.uploadcare.createFilesGroup(files: [uploadedFile]) { (response, error) in
+				defer {
+					semaphore.signal()
+				}
+				if let error = error {
+					print(error)
+					return
+				}
+				print(response ?? "")
+			}
 		}
 		semaphore.wait()
 	}
