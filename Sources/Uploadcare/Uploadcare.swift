@@ -78,8 +78,7 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		var urlRequest = URLRequest(url: url)
-		urlRequest.httpMethod = HTTPMethod.get.rawValue
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
 		
 		request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -135,9 +134,7 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		var urlRequest = URLRequest(url: url)
-		urlRequest.httpMethod = HTTPMethod.post.rawValue
-		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
 		
 		request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -173,9 +170,7 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		var urlRequest = URLRequest(url: url)
-		urlRequest.httpMethod = HTTPMethod.get.rawValue
-		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
 		
 		request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -269,6 +264,13 @@ extension Uploadcare {
 
 // MARK: - Private methods
 internal extension Uploadcare {
+	func makeUploadAPIURLRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
+		var urlRequest = URLRequest(url: url)
+		urlRequest.httpMethod = method.rawValue
+		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+		return urlRequest
+	}
+	
 	/// Build url request for REST API
 	/// - Parameter fromURL: request url
 	func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
