@@ -77,7 +77,7 @@ private extension ViewController {
 	func testUploadFileInfo() {
 		print("<------ testFileInfo ------>")
 		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadAPI.uploadedFileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { (info, error) in
+		uploadcare.uploadAPI.fileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { (info, error) in
 			defer {
 				semaphore.signal()
 			}
@@ -359,7 +359,7 @@ private extension ViewController {
 		print("<------ testCreateFileGroups ------>")
 		let semaphore = DispatchSemaphore(value: 0)
 		
-		uploadcare.uploadAPI.uploadedFileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { [unowned self] (file, error) in
+		uploadcare.uploadAPI.fileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { [unowned self] (file, error) in
 			guard let uploadedFile = file, error == nil else {
 				assertionFailure("wrong file id")
 				semaphore.signal()

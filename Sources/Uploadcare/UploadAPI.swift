@@ -33,20 +33,18 @@ public struct UploadAPI {
 
 // MARK: - Private methods
 private extension UploadAPI {
+	/// /// Build url request for Upload API
+	/// - Parameter fromURL: request url
 	func makeUploadAPIURLRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = method.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
 		return urlRequest
 	}
-}
-
-
-// MARK: - Upload API
-extension UploadAPI {
+	
 	/// Make UploadError from data response
 	/// - Parameter response: Data response
-	private func makeUploadError(fromResponse response: DataResponse<Data>) -> UploadError {
+	func makeUploadError(fromResponse response: DataResponse<Data>) -> UploadError {
 		let status: Int = response.response?.statusCode ?? 0
 		
 		var message = ""
@@ -56,12 +54,16 @@ extension UploadAPI {
 		
 		return UploadError(status: status, message: message)
 	}
-	
+}
+
+
+// MARK: - Upload API
+extension UploadAPI {
 	/// File info
 	/// - Parameters:
 	///   - fileId: File ID
 	///   - completionHandler: completion handler
-	public func uploadedFileInfo(
+	public func fileInfo(
 		withFileId fileId: String,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) {
