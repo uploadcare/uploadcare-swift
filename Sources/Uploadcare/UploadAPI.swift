@@ -11,10 +11,8 @@ import Alamofire
 
 public struct UploadAPI {
 	
-	/// Direct Uploads only support files smaller than 100MB
-	static let maxDirectUploadFileSize: Int = 100 * 1024
-	/// Minimum file size to use with Multipart Uploads is 10MB
-	static let minMultipartUploadFileSize: Int = 10 * 1024
+	/// Each uploaded part should be 5MB
+	static let uploadChunkSize = 5242880
 	
 	/// Public Key.  It is required when using Upload API.
 	internal var publicKey: String
@@ -104,7 +102,7 @@ extension UploadAPI {
 }
 
 
-// MARK: - Upload API
+// MARK: - Uploading
 extension UploadAPI {
 	/// Direct upload from url
 	/// - Parameters:
@@ -272,6 +270,79 @@ extension UploadAPI {
 			}
 		}
 	}
+	
+	public func uploadFile(
+		_ data: Data,
+		withName filename: String,
+		store: StoringBehavior? = nil,
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) {
+		let totalSize = data.count
+		let fileMimeType = mimeType(for: data)
+		
+		// Starting a multipart upload transaction
+		startMulipartUpload(
+			withName: filename,
+			size: totalSize,
+			mimeType: fileMimeType) { (response, error) in
+				if let error = error {
+					completionHandler(nil, error)
+					return
+				}
+				
+				// Uploading individual file parts
+				guard let parts = response?.parts, let uuid = response?.uuid else {
+					completionHandler(nil, UploadError.defaultError())
+					return
+				}
+				
+				var offset = 0
+				var i = 0
+				let uploadGroup = DispatchGroup()
+				
+				while offset < totalSize {
+					let bytesLeft = totalSize - offset
+					let currentChunkSize = bytesLeft > Self.uploadChunkSize ? Self.uploadChunkSize : bytesLeft
+
+					// data chunk
+					let range = NSRange(location: offset, length: currentChunkSize)
+					guard let dataRange = Range(range) else {
+						completionHandler(nil, UploadError.defaultError())
+						return
+					}
+					let chunk = data.subdata(in: dataRange)
+
+					// presigned upload url
+					let partUrl = parts[i]
+					
+					// uploading individual part
+					self.uploadIndividualFilePart(
+						chunk,
+						toPresignedUrl: partUrl,
+						withMimeType: fileMimeType,
+						group: uploadGroup
+					)
+					
+					offset += currentChunkSize
+					i += 1
+				}
+				
+				// Completing a multipart upload
+				uploadGroup.notify(queue: self.uploadQueue) {
+					self.completeMultipartUpload(forFileUIID: uuid) { (file, error) in
+						if let error = error {
+							completionHandler(nil, error)
+							return
+						}
+						guard let uploadedFile = file else {
+							completionHandler(nil, UploadError.defaultError())
+							return
+						}
+						completionHandler(uploadedFile, nil)
+					}
+				}
+		}
+	}
 		
 	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
 	/// - Parameters:
@@ -353,6 +424,41 @@ extension UploadAPI {
 			}
 		}
 	}
+	
+	public func uploadIndividualFilePart(
+		_ part: Data,
+		toPresignedUrl urlString: String,
+		withMimeType mimeType: String,
+		group: DispatchGroup? = nil
+	) {
+		group?.enter()
+		// using concurrent queue for parts uploading
+		uploadQueue.async {
+			guard let url = URL(string: urlString) else {
+				assertionFailure("Incorrect url")
+				group?.leave()
+				return
+			}
+			var urlRequest = URLRequest(url: url)
+			urlRequest.httpMethod = HTTPMethod.put.rawValue
+			urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
+			urlRequest.httpBody = part
+			
+			request(urlRequest)
+				.validate(statusCode: 200..<300)
+				.responseData { response in
+					switch response.result {
+					case .success(_):
+						break
+					case .failure(_):
+						let error = self.makeUploadError(fromResponse: response)
+						DLog(error)
+					}
+					group?.leave()
+			}
+		}
+	}
+	
 	/// Complete multipart upload transaction when all files parts are uploaded.
 	/// - Parameters:
 	///   - forFileUIID: Uploaded file UUID from multipart upload start response.

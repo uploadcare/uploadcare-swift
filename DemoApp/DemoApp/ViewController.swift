@@ -66,8 +66,11 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testCreateFileGroups()
 //		}
+//		queue.async { [unowned self] in
+//			self.testFileGroupInfo()
+//		}
 		queue.async { [unowned self] in
-			self.testFileGroupInfo()
+			self.testMultipartUpload()
 		}
 	}
 }
@@ -393,6 +396,30 @@ private extension ViewController {
 				return
 			}
 			print(group ?? "")
+		}
+		semaphore.wait()
+	}
+	
+	func testMultipartUpload() {
+		guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else {
+			assertionFailure("no file")
+			return
+		}
+		guard let data = try? Data(contentsOf: url, options: .mappedIfSafe) else {
+			assertionFailure("cant' read data")
+			return
+		}
+		
+		let semaphore = DispatchSemaphore(value: 0)
+		uploadcare.uploadAPI.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, error) in
+			defer {
+				semaphore.signal()
+			}
+			if let error = error {
+				print(error)
+				return
+			}
+			print(file ?? "")
 		}
 		semaphore.wait()
 	}
