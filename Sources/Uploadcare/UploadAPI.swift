@@ -349,4 +349,85 @@ extension UploadAPI {
 				}
 		}
 	}
+	
+	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
+	/// - Parameters:
+	///   - filename: An original filename
+	///   - size: Precise file size in bytes. Should not exceed your project file size cap.
+	///   - mimeType: A file MIME-type.
+	///   - store: Sets the file storing behavior.
+	///   - signature: signature
+	///   - expire: expire sets the time until your signature is valid
+	///   - completionHandler: callback
+	public func startMulipartUpload(
+		withName filename: String,
+		size: Int,
+		mimeType: String,
+		store: StoringBehavior? = nil,
+		signature: String? = nil,
+		expire: Int? = nil,
+		_ completionHandler: @escaping (StartMulipartUploadResponse?, UploadError?) -> Void
+	) {
+		let urlString = uploadAPIBaseUrl + "/multipart/start/"
+		manager.upload(
+			multipartFormData: { (multipartFormData) in
+				if let filenameData = filename.data(using: .utf8) {
+					multipartFormData.append(filenameData, withName: "filename")
+				}
+
+				if let sizeData = "\(size)".data(using: .utf8) {
+					multipartFormData.append(sizeData, withName: "size")
+				}
+				
+				if let contentTypeData = mimeType.data(using: .utf8) {
+					multipartFormData.append(contentTypeData, withName: "content_type")
+				}
+				
+				if let publicKeyData = self.publicKey.data(using: .utf8) {
+					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
+				}
+				
+				if let storeVal = store, let data = storeVal.rawValue.data(using: .utf8) {
+					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
+				}
+				
+				if let signatureVal = signature, let data = signatureVal.data(using: .utf8) {
+					multipartFormData.append(data, withName: "signature")
+				}
+				
+				if var expireVal = expire {
+					let data = Data(bytes: &expireVal, count: MemoryLayout.size(ofValue: expireVal))
+					multipartFormData.append(data, withName: "expire")
+				}
+		},
+			to: urlString
+		) { (result) in
+			switch result {
+			case .success(let upload, _, _):
+				upload.response { (response) in
+					if response.response?.statusCode == 200, let data = response.data {
+						let decodedData = try? JSONDecoder().decode(StartMulipartUploadResponse.self, from: data)
+						guard let resultData = decodedData else {
+							completionHandler(nil, UploadError.defaultError())
+							return
+						}
+						completionHandler(resultData, nil)
+						return
+					}
+					
+					// error happened
+					let status: Int = response.response?.statusCode ?? 0
+					var message = ""
+					if let data = response.data {
+						message = String(data: data, encoding: .utf8) ?? ""
+					}
+					let error = UploadError(status: status, message: message)
+					completionHandler(nil, error)
+				}
+				
+			case .failure(let encodingError):
+				completionHandler(nil, UploadError(status: 0, message: encodingError.localizedDescription))
+			}
+		}
+	}
 }
