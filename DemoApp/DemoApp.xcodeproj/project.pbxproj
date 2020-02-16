@@ -14,6 +14,7 @@
 		240427E123CB93DD00885BC9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 240427E023CB93DD00885BC9 /* Assets.xcassets */; };
 		240427E423CB93DD00885BC9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 240427E223CB93DD00885BC9 /* LaunchScreen.storyboard */; };
 		240427EE23CB941800885BC9 /* Uploadcare in Frameworks */ = {isa = PBXBuildFile; productRef = 240427ED23CB941800885BC9 /* Uploadcare */; };
+		24B4CFD923F9F10B00CDA89F /* Mona_Lisa_23mb.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 24B4CFD823F9F10B00CDA89F /* Mona_Lisa_23mb.jpg */; };
 		24BFA55923E22B96005722CB /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BFA55823E22B96005722CB /* Utils.swift */; };
 		24BFA55E23E23C90005722CB /* MonaLisa.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 24BFA55D23E23C90005722CB /* MonaLisa.jpg */; };
 /* End PBXBuildFile section */
@@ -28,6 +29,7 @@
 		240427E323CB93DD00885BC9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		240427E523CB93DD00885BC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		240427EB23CB940200885BC9 /* uploadcare-swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "uploadcare-swift"; path = ..; sourceTree = "<group>"; };
+		24B4CFD823F9F10B00CDA89F /* Mona_Lisa_23mb.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Mona_Lisa_23mb.jpg; sourceTree = "<group>"; };
 		24BFA55823E22B96005722CB /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		24BFA55D23E23C90005722CB /* MonaLisa.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = MonaLisa.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -88,6 +90,7 @@
 		24BFA55C23E22C8A005722CB /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				24B4CFD823F9F10B00CDA89F /* Mona_Lisa_23mb.jpg */,
 				24BFA55D23E23C90005722CB /* MonaLisa.jpg */,
 			);
 			path = Resources;
@@ -155,6 +158,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				240427E423CB93DD00885BC9 /* LaunchScreen.storyboard in Resources */,
+				24B4CFD923F9F10B00CDA89F /* Mona_Lisa_23mb.jpg in Resources */,
 				240427E123CB93DD00885BC9 /* Assets.xcassets in Resources */,
 				240427DF23CB93DC00885BC9 /* Main.storyboard in Resources */,
 				24BFA55E23E23C90005722CB /* MonaLisa.jpg in Resources */,
