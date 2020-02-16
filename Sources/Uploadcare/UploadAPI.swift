@@ -11,6 +11,11 @@ import Alamofire
 
 public struct UploadAPI {
 	
+	/// Direct Uploads only support files smaller than 100MB
+	static let maxDirectUploadFileSize: Int = 100 * 1024
+	/// Minimum file size to use with Multipart Uploads is 10MB
+	static let minMultipartUploadFileSize: Int = 10 * 1024
+	
 	/// Public Key.  It is required when using Upload API.
 	internal var publicKey: String
 	
@@ -19,6 +24,9 @@ public struct UploadAPI {
 	
 	/// Alamofire session manager
 	private var manager: SessionManager
+	
+	/// Upload queue for multipart uploading
+	private var uploadQueue = DispatchQueue(label: "com.uploadcare.upload", qos: .utility, attributes: .concurrent)
 	
 	
 	/// Initialization
@@ -188,6 +196,13 @@ extension UploadAPI {
 	}
 	
 	// TODO: Signature
+	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
+	/// - Parameters:
+	///   - files: Files dictionary where key is filename, value file in Data format
+	///   - store: Sets the file storing behavior.
+	///   - signature: signature
+	///   - expire: signature expire
+	///   - completionHandler: callback
 	public func upload(
 		files: [String:Data],
 		store: StoringBehavior? = nil,
@@ -255,6 +270,12 @@ extension UploadAPI {
 	}
 	
 	// TODO: Signature
+	/// Create files group from a set of files
+	/// - Parameters:
+	///   - files: files array
+	///   - signature: signature
+	///   - expire: expire
+	///   - completionHandler: callback
 	public func createFilesGroup(
 		files: [UploadedFile],
 		signature: String? = nil,
@@ -267,7 +288,7 @@ extension UploadAPI {
 		createFilesGroup(fileIds: fileIds, completionHandler)
 	}
 	
-	/// Create files group from a set of files by using their UUIDs.
+	/// Create files group from a set of files UUIDs.
 	/// - Parameters:
 	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
 	///   - signature: signature
