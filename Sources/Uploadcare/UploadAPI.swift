@@ -430,4 +430,52 @@ extension UploadAPI {
 			}
 		}
 	}
+	/// Complete multipart upload transaction when all files parts are uploaded.
+	/// - Parameters:
+	///   - forFileUIID: Uploaded file UUID from multipart upload start response.
+	///   - completionHandler: callback
+	public func completeMultipartUpload(
+		forFileUIID: String,
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) {
+		let urlString = uploadAPIBaseUrl + "/multipart/complete/"
+		manager.upload(
+			multipartFormData: { (multipartFormData) in
+				if let forFileUIIDData = forFileUIID.data(using: .utf8) {
+					multipartFormData.append(forFileUIIDData, withName: "uuid")
+				}
+				if let publicKeyData = self.publicKey.data(using: .utf8) {
+					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
+				}
+		},
+			to: urlString
+		) { (result) in
+			switch result {
+			case .success(let upload, _, _):
+				upload.response { (response) in
+					if response.response?.statusCode == 200, let data = response.data {
+						let decodedData = try? JSONDecoder().decode(UploadedFile.self, from: data)
+						guard let resultData = decodedData else {
+							completionHandler(nil, UploadError.defaultError())
+							return
+						}
+						completionHandler(resultData, nil)
+						return
+					}
+					
+					// error happened
+					let status: Int = response.response?.statusCode ?? 0
+					var message = ""
+					if let data = response.data {
+						message = String(data: data, encoding: .utf8) ?? ""
+					}
+					let error = UploadError(status: status, message: message)
+					completionHandler(nil, error)
+				}
+				
+			case .failure(let encodingError):
+				completionHandler(nil, UploadError(status: 0, message: encodingError.localizedDescription))
+			}
+		}
+	}
 }
