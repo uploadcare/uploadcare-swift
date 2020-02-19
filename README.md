@@ -37,7 +37,7 @@ dependencies: [
 ]
 ```
 
-Add repo url in Xcode: https://github.com/uploadcare/uploadcare-swift
+Also you can just add it using Xcode: https://github.com/uploadcare/uploadcare-swift
 
 
 ### Carthage
