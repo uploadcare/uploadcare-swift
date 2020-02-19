@@ -72,9 +72,9 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testFileGroupInfo()
 //		}
-		queue.async { [unowned self] in
-			self.testMultipartUpload()
-		}
+//		queue.async { [unowned self] in
+//			self.testMultipartUpload()
+//		}
 	}
 }
 
@@ -102,11 +102,11 @@ private extension ViewController {
 		let semaphore = DispatchSemaphore(value: 0)
 		
 		// upload from url
-		let url = URL(string: "https://spaceinbox.me/images/select-like-a-boss.png")
-		var task = UploadFromURLTask(sourceUrl: url!)
-		task.checkURLDuplicates = true
-		task.saveURLDuplicates = true
-		task.store = .store
+		let url = URL(string: "https://ucarecdn.com/assets/images/cloud.6b86b4f1d77e.jpg")
+		let task = UploadFromURLTask(sourceUrl: url!)
+			.checkURLDuplicates(true)
+			.saveURLDuplicates(true)
+			.store(.store)
 		
 		uploadcare.uploadAPI.upload(task: task) { [unowned self] (result, error) in
 			print(result ?? "")

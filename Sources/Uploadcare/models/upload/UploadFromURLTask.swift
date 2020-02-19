@@ -26,7 +26,7 @@ public enum StoringBehavior: String {
 	task.store = .store
 	```
 */
-public struct UploadFromURLTask {
+public class UploadFromURLTask {
 	
 	/// Defines your source file URL, which should be a public HTTP or HTTPS link.
 	public let sourceUrl: URL
@@ -67,5 +67,25 @@ public struct UploadFromURLTask {
 		self.saveURLDuplicates = saveURLDuplicates
 		self.signature = signature
 		self.expire = expire
+	}
+	
+	public func store(_ val: StoringBehavior?) -> Self {
+		store = val ?? .auto
+		return self
+	}
+	
+	public func filename(_ val: String?) -> Self {
+		filename = val
+		return self
+	}
+	
+	public func checkURLDuplicates(_ val: Bool?) -> Self {
+		checkURLDuplicates = val
+		return self
+	}
+	
+	public func saveURLDuplicates(_ val: Bool?) -> Self {
+		saveURLDuplicates = val
+		return self
 	}
 }
