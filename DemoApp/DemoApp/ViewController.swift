@@ -34,7 +34,7 @@ class ViewController: UIViewController {
 //			self.testDirectUpload()
 //		}
 //		queue.async { [unowned self] in
-//			self.testListOfFiles()
+//			self.testRESTListOfFiles()
 //		}
 //		queue.async { [unowned self] in
 //			self.testRESTFileInfo()
@@ -166,8 +166,8 @@ private extension ViewController {
 		semaphore.wait()
 	}
 	
-	func testListOfFiles() {
-		print("<------ testListOfFiles ------>")
+	func testRESTListOfFiles() {
+		print("<------ testRESTListOfFiles ------>")
 		let semaphore = DispatchSemaphore(value: 0)
 		
 		let query = PaginationQuery()
