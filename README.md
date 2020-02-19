@@ -41,8 +41,8 @@ TBD
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
 ```
 
-## Using REST API
-**Direct upload from url:**
+## Using UPLOAD API
+### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload)) ###
 ```swift
 let url = URL(string: "https://ucarecdn.com/assets/images/cloud.6b86b4f1d77e.jpg")
 
@@ -55,20 +55,21 @@ uploadcare.uploadAPI.upload(task: task1) { [unowned self] (result, error) in
     }
     print(result)
 }
-
-// UploadFromURLTask is used to store upload params
-// Params might be changes by accessing properties:
+```
+UploadFromURLTask is used to store upload parameters.
+```swift
+// Set parameters by accessing properties:
 let task2 = UploadFromURLTask(sourceUrl: url!)
 task2.store = .doNotstore
 
-// Params might be changes using chaining
+// Set parameters using chaining
 let task3 = UploadFromURLTask(sourceUrl: url!)
     .checkURLDuplicates(true)
     .saveURLDuplicates(true)
     .store(.store)
 ```
 
-**Check the status of a file uploaded from URL:**
+### Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus)) ### 
 ```swift
 uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
     if let error = error {
@@ -79,7 +80,7 @@ uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
 }
 ```
 
-**Direct uploads** ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload))
+### Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload)) ### 
 ```swift
 guard let image = UIImage(named: "MonaLisa.jpg"), let data = image.jpegData(compressionQuality: 1) else { return }
 
@@ -96,7 +97,7 @@ uploadcare.uploadAPI.upload(files: ["mona_lisa.jpg": data], store: .store) { (re
 }
 ```
 
-**Multipart uploads** ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart))
+### Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart)) ### 
 
 Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.  Multipart Upload contains 3 steps:
 1. Start transaction
