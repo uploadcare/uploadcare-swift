@@ -240,9 +240,9 @@ extension UploadAPI {
 			switch result {
 			case .success(let upload, _, _):
 				
-//				upload.uploadProgress(closure: { (progress) in
-//					DLog("Upload progress: \(progress.fractionCompleted)")
-//				})
+				upload.uploadProgress(closure: { (progress) in
+					DLog("Upload progress: \(progress.fractionCompleted)")
+				})
 				
 				upload.response { (response) in
 					if response.response?.statusCode == 200, let data = response.data {
@@ -320,7 +320,8 @@ extension UploadAPI {
 						chunk,
 						toPresignedUrl: partUrl,
 						withMimeType: fileMimeType,
-						group: uploadGroup
+						group: uploadGroup,
+						completeMessage: "Uploaded \(i) of \(parts.count)"
 					)
 					
 					offset += currentChunkSize
@@ -353,7 +354,7 @@ extension UploadAPI {
 	///   - signature: signature
 	///   - expire: expire sets the time until your signature is valid
 	///   - completionHandler: callback
-	public func startMulipartUpload(
+	private func startMulipartUpload(
 		withName filename: String,
 		size: Int,
 		mimeType: String,
@@ -425,15 +426,18 @@ extension UploadAPI {
 		}
 	}
 	
-	public func uploadIndividualFilePart(
+	private func uploadIndividualFilePart(
 		_ part: Data,
 		toPresignedUrl urlString: String,
 		withMimeType mimeType: String,
-		group: DispatchGroup? = nil
+		group: DispatchGroup? = nil,
+		completeMessage: String? = nil
 	) {
 		group?.enter()
 		// using concurrent queue for parts uploading
-		uploadQueue.async {
+		uploadQueue.async { [weak self] in
+			guard let self = self else { return }
+			
 			guard let url = URL(string: urlString) else {
 				assertionFailure("Incorrect url")
 				group?.leave()
@@ -449,12 +453,15 @@ extension UploadAPI {
 				.responseData { response in
 					switch response.result {
 					case .success(_):
-						break
+						if let message = completeMessage {
+							DLog(message)
+						}
+						group?.leave()
 					case .failure(_):
 						let error = self.makeUploadError(fromResponse: response)
 						DLog(error)
+						self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, group: group)
 					}
-					group?.leave()
 			}
 		}
 	}
@@ -463,7 +470,7 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - forFileUIID: Uploaded file UUID from multipart upload start response.
 	///   - completionHandler: callback
-	public func completeMultipartUpload(
+	private func completeMultipartUpload(
 		forFileUIID: String,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) {

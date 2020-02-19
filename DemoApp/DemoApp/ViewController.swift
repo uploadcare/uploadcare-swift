@@ -66,41 +66,14 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testCopyFileToRemoteStorate()
 //		}
-		queue.async { [unowned self] in
-			self.testCreateFileGroups()
-		}
+//		queue.async { [unowned self] in
+//			self.testCreateFileGroups()
+//		}
 //		queue.async { [unowned self] in
 //			self.testFileGroupInfo()
 //		}
 //		queue.async { [unowned self] in
 //			self.testMultipartUpload()
-//		}
-		
-		guard let url = Bundle.main.url(forResource: "MVI_6879", withExtension: "MOV") else {
-			assertionFailure("no file")
-			return
-		}
-		guard let data = try? Data(contentsOf: url, options: .mappedIfSafe) else {
-			assertionFailure("cant' read data")
-			return
-		}
-		
-//		uploadcare.uploadAPI.uploadFile(data, withName: "big_file") { (file, error) in
-//			print(error)
-//			print(file)
-//		}
-//		uploadcare.uploadAPI.upload(files: ["video.MOV": data], store: .store) { (resultDictionary, error) in
-//			if let error = error {
-//				print(error)
-//				return
-//			}
-//
-//			guard let files = resultDictionary else { return }
-//
-//			for file in files {
-//				print("uploaded file name: \(file.key) | file id: \(file.value)")
-//			}
-//			print(resultDictionary ?? "nil")
 //		}
 	}
 }
