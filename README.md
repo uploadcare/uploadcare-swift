@@ -66,7 +66,7 @@ task2.store = .doNotstore
 let task3 = UploadFromURLTask(sourceUrl: url!)
     .checkURLDuplicates(true)
     .saveURLDuplicates(true)
-    .store(.store)
+    .store(.doNotstore)
 ```
 
 ### Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus)) ### 
@@ -132,5 +132,16 @@ uploadcare.uploadAPI.uploadIndividualFilePart(chunk, toPresignedUrl: presignedUr
 // finish transaction when all chunks was uploaded
 uploadcare.uploadAPI.completeMultipartUpload(forFileUIID: "FILE_UUID") { (file, error) in
     // handle result or error
+}
+```
+
+### File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo)) ### 
+```swift
+uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { (file, error) in
+    if let error = error {
+        print(error)
+        return
+    }	
+    print(info)
 }
 ```
