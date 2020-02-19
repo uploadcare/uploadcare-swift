@@ -8,6 +8,17 @@
 import Foundation
 
 
+/// The parameter is used to specify file names Uploadcare passes to a custom storage. In case the parameter is omitted, we use pattern of your custom storage. Use any combination of allowed values.
+public enum NamesPattern: String {
+	case defaultPattern = "${default}"
+	case autoFilename = "${auto_filename}"
+	case effects = "${effects}"
+	case filename = "${filename}"
+	case uuid = "${uuid}"
+	case ext = "${ext}"
+}
+
+
 public struct CopyFileToRemoteStorageResponse: Codable {
 	
 	/// Default: "file"

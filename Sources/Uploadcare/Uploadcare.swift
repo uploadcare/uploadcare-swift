@@ -88,7 +88,7 @@ extension Uploadcare {
 	/// Get list of files
 	/// - Parameters:
 	///   - query: query object
-	///   - completionHandler: callback
+	///   - completionHandler: completion handler
 	public func listOfFiles(
 		withQuery query: PaginationQuery?,
 		_ completionHandler: @escaping (FilesListResponse?, RESTAPIError?) -> Void
@@ -130,7 +130,7 @@ extension Uploadcare {
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
 	/// - Parameters:
 	///   - uuid: FILE UUID
-	///   - completionHandler: callback
+	///   - completionHandler: completion handler
 	public func fileInfo(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
@@ -169,7 +169,7 @@ extension Uploadcare {
 	/// Delete file. Beside deleting in a multi-file mode, you can remove individual files.
 	/// - Parameters:
 	///   - uuid: file UUID
-	///   - completionHandler: callback
+	///   - completionHandler: completion handler
 	public func deleteFile(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
@@ -208,7 +208,7 @@ extension Uploadcare {
 	/// Batch file delete. Used to delete multiple files in one go. Up to 100 files are supported per request.
 	/// - Parameters:
 	///   - uuids: List of files UUIDs to store.
-	///   - completionHandler: callback
+	///   - completionHandler: completion handler
 	public func deleteFiles(
 		withUUIDs uuids: [String],
 		_ completionHandler: @escaping (BatchFilesOperationResponse?, RESTAPIError?) -> Void
@@ -250,7 +250,7 @@ extension Uploadcare {
 	/// Store a single file by UUID.
 	/// - Parameters:
 	///   - uuid: file UUID
-	///   - completionHandler: callback
+	///   - completionHandler: completion handler
 	public func storeFile(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
@@ -289,7 +289,7 @@ extension Uploadcare {
 	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
 	/// - Parameters:
 	///   - uuids: List of files UUIDs to store.
-	///   - completionHandler: callback
+	///   - completionHandler: completion handler
 	public func storeFiles(
 		withUUIDs uuids: [String],
 		_ completionHandler: @escaping (BatchFilesOperationResponse?, RESTAPIError?) -> Void
@@ -331,7 +331,7 @@ extension Uploadcare {
 	/// Get list of groups
 	/// - Parameters:
 	///   - query: query object
-	///   - completionHandler: callback
+	///   - completionHandler: completion handler
 	public func listOfGroups(
 		withQuery query: GroupsListQuery?,
 		_ completionHandler: @escaping (GroupsListResponse?, RESTAPIError?) -> Void
@@ -373,7 +373,7 @@ extension Uploadcare {
 	/// Get a file group by UUID.
 	/// - Parameters:
 	///   - uuid: Group UUID.
-	///   - completionHandler: callback
+	///   - completionHandler: completion handler
 	public func groupInfo(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (Group?, RESTAPIError?) -> Void
@@ -412,7 +412,7 @@ extension Uploadcare {
 	/// Mark all files in a group as stored.
 	/// - Parameters:
 	///   - uuid: Group UUID.
-	///   - completionHandler: callback
+	///   - completionHandler: completion handler
 	public func storeGroup(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (RESTAPIError?) -> Void
@@ -474,6 +474,67 @@ extension Uploadcare {
 				switch response.result {
 				case .success(let data):
 					let decodedData = try? JSONDecoder().decode(CopyFileToLocalStorageResponse.self, from: data)
+					
+					guard let responseData = decodedData else {
+						DLog(String(data: data, encoding: .utf8) ?? "")
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					
+					completionHandler(responseData, nil)
+				case .failure(_):
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
+				}
+		}
+	}
+	
+	/// POST requests are used to copy original files or their modified versions to a custom storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
+	/// - Parameters:
+	///   - source: A CDN URL or just UUID of a file subjected to copy.
+	///   - target: Identifies a custom storage name related to your project. Implies you are copying a file to a specified custom storage. Keep in mind you can have multiple storages associated with a single S3 bucket.
+	///   - makePublic: MUST be either true or false. true to make copied files available via public links, false to reverse the behavior.
+	///   - pattern: The parameter is used to specify file names Uploadcare passes to a custom storage. In case the parameter is omitted, we use pattern of your custom storage. Use any combination of allowed values.
+	///   - completionHandler: completion handler
+	public func copyFileToRemoteStorage(
+		source: String,
+		target: String,
+		makePublic: Bool? = nil,
+		pattern: NamesPattern?,
+		_ completionHandler: @escaping (CopyFileToRemoteStorageResponse?, RESTAPIError?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/files/remote_copy/"
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
+		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+		
+		var bodyDictionary = [
+			"source": source,
+			"target": target
+		]
+		
+		if let makePublicVal = makePublic {
+			bodyDictionary["make_public"] = "\(makePublicVal)"
+		}
+		if let patternVal = pattern {
+			bodyDictionary["pattern"] = patternVal.rawValue
+		}
+		
+		if let body = try? JSONEncoder().encode(bodyDictionary) {
+			urlRequest.httpBody = body
+		}
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(CopyFileToRemoteStorageResponse.self, from: data)
 					
 					guard let responseData = decodedData else {
 						DLog(String(data: data, encoding: .utf8) ?? "")
