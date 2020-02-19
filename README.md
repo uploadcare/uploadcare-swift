@@ -68,3 +68,20 @@ uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
     print(status)
 }
 ```
+
+Direct uploads
+```swift
+guard let image = UIImage(named: "MonaLisa.jpg"), let data = image.jpegData(compressionQuality: 1) else { return }
+
+uploadcare.uploadAPI.upload(files: ["mona_lisa.jpg": data], store: .store) { (result, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+
+    guard let files = result else { return }			
+    for file in files {
+        print("uploaded file name: \(file.key) | file id: \(file.value)")
+    }
+}
+```
