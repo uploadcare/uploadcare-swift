@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 
 
-public struct UploadAPI {
+public class UploadAPI {
 	
 	/// Each uploaded part should be 5MB
 	static let uploadChunkSize = 5242880

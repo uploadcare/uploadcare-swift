@@ -9,7 +9,7 @@ let uploadAPIBaseUrl: String = "https://upload.uploadcare.com"
 let RESTAPIBaseUrl: String = "https://api.uploadcare.com"
 
 
-public struct Uploadcare {
+public class Uploadcare {
 	
 	// TODO: log turn on or off
 	// TODO: add logs
