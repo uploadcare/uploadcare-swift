@@ -145,3 +145,29 @@ uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { (file, error) in
     print(info)
 }
 ```
+
+### Create files group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup)) ### 
+
+Uploadcare lib provides 2 methods to create group. 
+1. Provide files as array of UploadedFile:
+```swift
+let files: [UploadedFile] = [file1,file2]
+self.uploadcare.uploadAPI.createFilesGroup(files: files) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(response)
+}
+```
+2. Provide array of files UUIDs:
+```swift
+let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
+self.uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(response)
+}
+```
