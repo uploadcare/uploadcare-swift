@@ -88,7 +88,7 @@ uploadcare.uploadAPI.upload(files: ["mona_lisa.jpg": data], store: .store) { (re
 
 **Multipart uploads** ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart))
 
-Multipart uploads might be used for files with size > 100mb. It contains 3 steps:
+Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.  Multipart Upload contains 3 steps:
 1. Start transaction
 2. Upload file chunks
 3. Complete transaction
