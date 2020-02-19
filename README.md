@@ -46,29 +46,26 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_S
 ```swift
 let url = URL(string: "https://ucarecdn.com/assets/images/cloud.6b86b4f1d77e.jpg")
 
-// UploadFromURLTask is used to store upload params. There're couple ways to use it:
-
-// Just init from url
 let task1 = UploadFromURLTask(sourceUrl: url!)
-
-// Init and change params as properties:
-let task2 = UploadFromURLTask(sourceUrl: url!)
-task2.store = .doNotstore
-
-// Init and set params using chaining
-let task3 = UploadFromURLTask(sourceUrl: url!)
-    .checkURLDuplicates(true)
-    .saveURLDuplicates(true)
-    .store(.store)
-
 // upload
-uploadcare.uploadAPI.upload(task: task3) { [unowned self] (result, error) in
+uploadcare.uploadAPI.upload(task: task1) { [unowned self] (result, error) in
     if let error = error {
         print(error)
         return
     }
     print(result)
 }
+
+// UploadFromURLTask is used to store upload params
+// Params might be changes by accessing properties:
+let task2 = UploadFromURLTask(sourceUrl: url!)
+task2.store = .doNotstore
+
+// Params might be changes using chaining
+let task3 = UploadFromURLTask(sourceUrl: url!)
+    .checkURLDuplicates(true)
+    .saveURLDuplicates(true)
+    .store(.store)
 ```
 
 **Check the status of a file uploaded from URL:**
