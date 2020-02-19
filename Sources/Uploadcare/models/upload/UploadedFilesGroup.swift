@@ -9,7 +9,7 @@ import Foundation
 
 
 /// Uploaded Files group info
-public struct UploadedFilesGroup: Codable {
+public class UploadedFilesGroup: Codable {
 	
 	/// Date and time when a group was created.
 	public var datetimeCreated: Date
@@ -32,6 +32,9 @@ public struct UploadedFilesGroup: Codable {
 	/// Group identifier.
 	public var id: String
 	
+	/// UploadAPI
+	private weak var uploadAPI: UploadAPI?
+	
 	
 	enum CodingKeys: String, CodingKey {
 		case datetimeCreated = "datetime_created"
@@ -42,8 +45,7 @@ public struct UploadedFilesGroup: Codable {
 		case url
 		case id
 	}
-	
-	
+		
 	init(
 		datetimeCreated: Date,
 		datetimeStored: Date?,
@@ -62,7 +64,7 @@ public struct UploadedFilesGroup: Codable {
 		self.id = id
 	}
 	
-	public init(from decoder: Decoder) throws {
+	required public convenience init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		
 		var datetimeCreated = Date(timeIntervalSince1970: 0)
@@ -99,6 +101,40 @@ public struct UploadedFilesGroup: Codable {
 		)
 	}
 	
+	// MARK: - Public methods
+	public init(withFiles files: [UploadedFile], uploadAPI: UploadAPI) {
+		self.datetimeCreated = Date()
+		self.filesCount = files.count
+		self.cdnUrl = ""
+		self.files = files
+		self.url = ""
+		self.id = ""
+		
+		self.uploadAPI = uploadAPI
+	}
+	
+	public func create(_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?)->Void) {
+		uploadAPI?.createFilesGroup(files: self.files ?? [], { [weak self] (group, error) in
+			if let error = error {
+				completionHandler(nil, error)
+				return
+			}
+			
+			guard let createdGroup = group, let self = self else {
+				completionHandler(nil, UploadError.defaultError())
+				return
+			}
+			
+			self.datetimeCreated = createdGroup.datetimeCreated
+			self.filesCount = createdGroup.filesCount
+			self.cdnUrl = createdGroup.cdnUrl
+			self.files = createdGroup.files
+			self.url = createdGroup.url
+			self.id = createdGroup.id
+			
+			completionHandler(self, nil)
+		})
+	}
 }
 
 

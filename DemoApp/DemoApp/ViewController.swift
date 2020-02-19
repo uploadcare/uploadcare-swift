@@ -63,17 +63,44 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testCopyFileToLocalStorage()
 //		}
-		queue.async { [unowned self] in
-			self.testCopyFileToRemoteStorate()
-		}
 //		queue.async { [unowned self] in
-//			self.testCreateFileGroups()
+//			self.testCopyFileToRemoteStorate()
 //		}
+		queue.async { [unowned self] in
+			self.testCreateFileGroups()
+		}
 //		queue.async { [unowned self] in
 //			self.testFileGroupInfo()
 //		}
 //		queue.async { [unowned self] in
 //			self.testMultipartUpload()
+//		}
+		
+		guard let url = Bundle.main.url(forResource: "MVI_6879", withExtension: "MOV") else {
+			assertionFailure("no file")
+			return
+		}
+		guard let data = try? Data(contentsOf: url, options: .mappedIfSafe) else {
+			assertionFailure("cant' read data")
+			return
+		}
+		
+//		uploadcare.uploadAPI.uploadFile(data, withName: "big_file") { (file, error) in
+//			print(error)
+//			print(file)
+//		}
+//		uploadcare.uploadAPI.upload(files: ["video.MOV": data], store: .store) { (resultDictionary, error) in
+//			if let error = error {
+//				print(error)
+//				return
+//			}
+//
+//			guard let files = resultDictionary else { return }
+//
+//			for file in files {
+//				print("uploaded file name: \(file.key) | file id: \(file.value)")
+//			}
+//			print(resultDictionary ?? "nil")
 //		}
 	}
 }
@@ -382,27 +409,56 @@ private extension ViewController {
 	func testCreateFileGroups() {
 		print("<------ testCreateFileGroups ------>")
 		let semaphore = DispatchSemaphore(value: 0)
+
+//		uploadcare.uploadAPI.createFilesGroup(fileIds: ["237dcfc4-98c9-41e5-af95-75f6efd6366e", "99c48392-46ab-4877-a6e1-e2557b011176"]) { (group, error) in
+//			defer {
+//				semaphore.signal()
+//			}
+//			print(error)
+//			print(group)
+//		}
 		
-		uploadcare.uploadAPI.fileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { [unowned self] (file, error) in
-			guard let uploadedFile = file, error == nil else {
-				assertionFailure("wrong file id")
-				semaphore.signal()
+		uploadcare.uploadAPI.filesGroupInfo(groupId: "69b8e46f-91c9-494f-ba3b-e5fdf9c36db2~2") { (group, error) in
+			guard group != nil else {
+				print(error ?? "")
 				return
 			}
 			
-			self.uploadcare.uploadAPI.createFilesGroup(files: [uploadedFile]) { (response, error) in
-				defer {
-					semaphore.signal()
-				}
-				if let error = error {
-					print(error)
-					return
-				}
-				print(response ?? "")
+			
+			
+			
+			
+			
+			
+			
+			
+			let newGroup = self.uploadcare.uploadAPI.group(ofFiles: [])
+			newGroup.files = group?.files ?? []
+			newGroup.create { (_, error) in
+				print(error)
+				print(newGroup)
 			}
+			
+			
 		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		semaphore.wait()
 	}
+	
+	
+	
+	
+	
+	
+	
 	
 	func testFileGroupInfo() {
 		print("<------ testFileGroupInfo ------>")

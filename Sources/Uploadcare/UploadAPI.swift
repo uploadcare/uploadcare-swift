@@ -614,3 +614,11 @@ extension UploadAPI {
 		}
 	}
 }
+
+
+// MARK: - Factory
+extension UploadAPI {
+	public func group(ofFiles files: [UploadedFile]) -> UploadedFilesGroup {
+		return UploadedFilesGroup(withFiles: files, uploadAPI: self)
+	}
+}
