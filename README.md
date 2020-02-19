@@ -171,3 +171,14 @@ self.uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { (response, error
     print(response)
 }
 ```
+
+### Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo)) ### 
+```swift
+uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(group)
+}
+```
