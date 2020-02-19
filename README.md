@@ -40,3 +40,31 @@ TBD
 ```swift
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
 ```
+
+## Using REST API
+Direct upload from url:
+```swift
+let url = URL(string: "https://ucarecdn.com/assets/images/cloud.6b86b4f1d77e.jpg")
+let task = UploadFromURLTask(sourceUrl: url!)
+    .checkURLDuplicates(true)
+    .saveURLDuplicates(true)
+    .store(.store)
+uploadcare.uploadAPI.upload(task: task) { [unowned self] (result, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(result)
+}
+```
+
+Check the status of a file uploaded from URL:
+```swift
+uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(status)
+}
+```
