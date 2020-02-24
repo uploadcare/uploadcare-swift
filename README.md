@@ -16,7 +16,7 @@ Check DemoApp dir for demo app.
 
 ### Swift Package Manager
 
-To use stable version add a dependency to you Package.swift file:
+To use a stable version add a dependency to your Package.swift file:
 
 ```swift
 dependencies: [
@@ -24,14 +24,15 @@ dependencies: [
 ]
 ```
 
-If you want to try current dev version add a dependency to you Package.swift file:
+If you want to try the current dev version, add a dependency to your Package.swift file:
+
 ```swift
 dependencies: [
     .package(url: "https://github.com/uploadcare/uploadcare-swift.git", branch("develop"))
 ]
 ```
 
-Also you can just add it using Xcode: https://github.com/uploadcare/uploadcare-swift
+Or you can just add it using Xcode: https://github.com/uploadcare/uploadcare-swift
 
 ### Carthage
 
@@ -74,7 +75,7 @@ Multipart Uploads are useful when you are dealing with files larger than 100MB o
 2. Upload file chunks
 3. Complete transaction
 
-You can just use upload method that will make all steps for you:
+You can use the upload method that will run all 3 steps for you:
 
 ```swift
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
@@ -88,7 +89,7 @@ uploadcare.uploadAPI.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, er
 }
 ```
 
-If you want to run these steps manually you can use 3 API methods:
+If you want to run these steps manually, you can use 3 API methods:
 
 ```swift
 // start transaction
@@ -164,7 +165,7 @@ uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { (file, error) in
 
 Uploadcare lib provides 2 methods to create group.
 
-1. Provide files as array of UploadedFile:
+1. Provide files as an array of UploadedFile:
 
 ```swift
 let files: [UploadedFile] = [file1,file2]
@@ -177,7 +178,7 @@ self.uploadcare.uploadAPI.createFilesGroup(files: files) { (response, error) in
 }
 ```
 
-2. Provide array of files UUIDs:
+2. Provide an array of files UUIDs:
 
 ```swift
 let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
