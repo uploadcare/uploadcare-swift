@@ -1,6 +1,6 @@
 # [WIP] Swift integration for Uploadcare
 
-<p align="center">
+<p align="left">
     <a href="LICENSE">
         <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT License">
     </a>
