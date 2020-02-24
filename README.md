@@ -9,7 +9,7 @@
     </a>
 </p>
 
-Swift library for Uploadcare handles uploads (and further operations with files) by wrapping Upload (and REST, which is currently work in progress) APIs.
+Uploadcare Swift integration handles uploads _(and further operations with files)_ by wrapping Upload _(and REST, which is currently work in progress)_ APIs.
 
 GIF TBD
 
