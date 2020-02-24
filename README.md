@@ -201,3 +201,13 @@ uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) 
     print(group)
 }
 ```
+
+## Other
+
+[Uploadcare documentation](https://uploadcare.com/docs/)
+[Upload API reference](https://uploadcare.com/api-refs/upload-api/)
+[REST API reference](https://uploadcare.com/api-refs/rest-api/)
+[Changelog](https://github.com/uploadcare/uploadcare-swift/blob/master/CHANGELOG.md)
+[Security policy](https://github.com/uploadcare/uploadcare-swift/security/policy)
+[Contributing guide](https://github.com/uploadcare/.github/blob/master/CONTRIBUTING.md)
+[Support](https://github.com/uploadcare/.github/blob/master/SUPPORT.md)
