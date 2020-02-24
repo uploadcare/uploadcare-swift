@@ -9,7 +9,10 @@
     </a>
 </p>
 
-Check DemoApp dir for demo app.
+* [Installation](#installation)
+* [Initialization](#initialization)
+* [Using Upload API](#using-upload-api)
+* [Useful links](#useful-links)
 
 ## Installation
 
