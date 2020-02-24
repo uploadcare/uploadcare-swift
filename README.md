@@ -52,6 +52,8 @@ TBD
 
 ## Initialization
 
+Create your project in [Uploadcare dashboard](https://uploadcare.com/dashboard/) and copy its API keys from there.
+
 ```swift
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
 ```
