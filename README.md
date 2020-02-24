@@ -202,7 +202,7 @@ uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) 
 }
 ```
 
-## Other
+## Useful links
 
 [Uploadcare documentation](https://uploadcare.com/docs/)  
 [Upload API reference](https://uploadcare.com/api-refs/upload-api/)  
