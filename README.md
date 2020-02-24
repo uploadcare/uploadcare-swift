@@ -9,7 +9,6 @@
     </a>
 </p>
 
-Uploadcare is.. Swift library brings API wrappers for.. so you don't have to work directly with Upload and REST API.
 Check DemoApp dir for demo app.
 
 ## Installation
