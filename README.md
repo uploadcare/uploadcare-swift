@@ -1,4 +1,4 @@
-# uploadcare-swift
+# [WIP] Swift integration for Uploadcare
 
 <p align="center">
     <a href="LICENSE">
@@ -9,21 +9,14 @@
     </a>
 </p>
 
-
-Work in progress.
-
-
-Dependency managers support:
-- [x] Swift Package Manager
-- [x] Carthage
-- [x] CocoaPods
-
 Check DemoApp dir for demo app.
 
 ## Installation
 
 ### Swift Package Manager
+
 To use stable version add a dependency to you Package.swift file:
+
 ```swift
 dependencies: [
     .package(url: "https://github.com/uploadcare/uploadcare-swift.git", from: "1.0.0")
@@ -39,58 +32,24 @@ dependencies: [
 
 Also you can just add it using Xcode: https://github.com/uploadcare/uploadcare-swift
 
-
 ### Carthage
+
 TBD
 
 ### Cocoapods
+
 TBD
 
 ## Initialization
+
 ```swift
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
 ```
 
 ## Using Upload API
-### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload)) ###
-```swift
-let url = URL(string: "https://ucarecdn.com/assets/images/cloud.6b86b4f1d77e.jpg")
 
-let task1 = UploadFromURLTask(sourceUrl: url!)
-// upload
-uploadcare.uploadAPI.upload(task: task1) { [unowned self] (result, error) in
-    if let error = error {
-        print(error)
-        return
-    }
-    print(result)
-}
-```
-UploadFromURLTask is used to store upload parameters.
-```swift
-// Set parameters by accessing properties:
-let task2 = UploadFromURLTask(sourceUrl: url!)
-task2.store = .doNotstore
+### Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload)) ###
 
-// Set parameters using chaining
-let task3 = UploadFromURLTask(sourceUrl: url!)
-    .checkURLDuplicates(true)
-    .saveURLDuplicates(true)
-    .store(.doNotstore)
-```
-
-### Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus)) ### 
-```swift
-uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
-    if let error = error {
-        print(error)
-        return
-    }
-    print(status)
-}
-```
-
-### Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload)) ### 
 ```swift
 guard let image = UIImage(named: "MonaLisa.jpg"), let data = image.jpegData(compressionQuality: 1) else { return }
 
@@ -107,7 +66,7 @@ uploadcare.uploadAPI.upload(files: ["mona_lisa.jpg": data], store: .store) { (re
 }
 ```
 
-### Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart)) ### 
+### Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart)) ###
 
 Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.  Multipart Upload contains 3 steps:
 1. Start transaction
@@ -129,37 +88,83 @@ uploadcare.uploadAPI.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, er
 ```
 
 If you want to run these steps manually you can use 3 API methods:
+
 ```swift
 // start transaction
 uploadcare.uploadAPI.startMulipartUpload(withName: "file_name", size: data.count, mimeType: "image/jpeg") { (response, error) in
     // handle response or error
     // response contains presigned urls for chunks (response.parts) and file UUID (response.uuid)
 }
-		
+
 // prepare 5MB Data chunks (5242880 bytes) by yourself. Upload every chunk with:
 uploadcare.uploadAPI.uploadIndividualFilePart(chunk, toPresignedUrl: presignedUrl, withMimeType: "image/jpeg")
-		
+
 // finish transaction when all chunks was uploaded
 uploadcare.uploadAPI.completeMultipartUpload(forFileUIID: "FILE_UUID") { (file, error) in
     // handle result or error
 }
 ```
 
-### File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo)) ### 
+### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload)) ###
+
+```swift
+let url = URL(string: "https://ucarecdn.com/assets/images/cloud.6b86b4f1d77e.jpg")
+
+let task1 = UploadFromURLTask(sourceUrl: url!)
+// upload
+uploadcare.uploadAPI.upload(task: task1) { [unowned self] (result, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(result)
+}
+```
+
+UploadFromURLTask is used to store upload parameters.
+
+```swift
+// Set parameters by accessing properties:
+let task2 = UploadFromURLTask(sourceUrl: url!)
+task2.store = .doNotstore
+
+// Set parameters using chaining
+let task3 = UploadFromURLTask(sourceUrl: url!)
+    .checkURLDuplicates(true)
+    .saveURLDuplicates(true)
+    .store(.doNotstore)
+```
+
+### Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus)) ###
+
+```swift
+uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(status)
+}
+```
+
+### File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo)) ###
+
 ```swift
 uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { (file, error) in
     if let error = error {
         print(error)
         return
-    }	
+    }
     print(info)
 }
 ```
 
-### Create files group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup)) ### 
+### Create files group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup)) ###
 
-Uploadcare lib provides 2 methods to create group. 
+Uploadcare lib provides 2 methods to create group.
+
 1. Provide files as array of UploadedFile:
+
 ```swift
 let files: [UploadedFile] = [file1,file2]
 self.uploadcare.uploadAPI.createFilesGroup(files: files) { (response, error) in
@@ -170,7 +175,9 @@ self.uploadcare.uploadAPI.createFilesGroup(files: files) { (response, error) in
     print(response)
 }
 ```
+
 2. Provide array of files UUIDs:
+
 ```swift
 let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
 self.uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { (response, error) in
@@ -182,7 +189,8 @@ self.uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { (response, error
 }
 ```
 
-### Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo)) ### 
+### Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo)) ###
+
 ```swift
 uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) in
     if let error = error {
