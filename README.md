@@ -9,6 +9,12 @@
     </a>
 </p>
 
+Swift library for Uploadcare handles uploads (and further operations with files) by wrapping Upload (and REST, which is currently work in progress) APIs.
+
+GIF TBD
+
+Check out [demo app](https://github.com/uploadcare/uploadcare-swift/tree/readme-alfa/DemoApp).
+
 * [Installation](#installation)
 * [Initialization](#initialization)
 * [Using Upload API](#using-upload-api)
