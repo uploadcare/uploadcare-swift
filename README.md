@@ -13,7 +13,7 @@ Uploadcare Swift integration handles uploads _(and further operations with files
 
 GIF TBD
 
-Check out [demo app](/readme-alfa/DemoApp).
+Check out [demo app](/DemoApp).
 
 * [Installation](#installation)
 * [Initialization](#initialization)
