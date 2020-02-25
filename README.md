@@ -28,7 +28,7 @@ To use a stable version add a dependency to your Package.swift file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", branch("master"))
+    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", from: "1.0.0")
 ]
 ```
 
