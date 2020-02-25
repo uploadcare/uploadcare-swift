@@ -99,24 +99,6 @@ uploadcare.uploadAPI.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, er
 }
 ```
 
-If you want to run these steps manually, you can use 3 API methods:
-
-```swift
-// start transaction
-uploadcare.uploadAPI.startMulipartUpload(withName: "file_name", size: data.count, mimeType: "image/jpeg") { (response, error) in
-    // handle response or error
-    // response contains presigned urls for chunks (response.parts) and file UUID (response.uuid)
-}
-
-// prepare 5MB Data chunks (5242880 bytes) by yourself. Upload every chunk with:
-uploadcare.uploadAPI.uploadIndividualFilePart(chunk, toPresignedUrl: presignedUrl, withMimeType: "image/jpeg")
-
-// finish transaction when all chunks was uploaded
-uploadcare.uploadAPI.completeMultipartUpload(forFileUIID: "FILE_UUID") { (file, error) in
-    // handle result or error
-}
-```
-
 ### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload)) ###
 
 ```swift
