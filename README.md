@@ -52,7 +52,7 @@ TBD
 
 ## Initialization
 
-Create your project in [Uploadcare dashboard](https://uploadcare.com/dashboard/) and copy its API keys from there.
+Create your project in [Uploadcare dashboard](https://uploadcare.com/dashboard/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift) and copy its API keys from there.
 
 ```swift
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
@@ -60,7 +60,7 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_S
 
 ## Using Upload API
 
-### Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload)) ###
+### Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
 guard let image = UIImage(named: "MonaLisa.jpg"), let data = image.jpegData(compressionQuality: 1) else { return }
@@ -78,7 +78,7 @@ uploadcare.uploadAPI.upload(files: ["mona_lisa.jpg": data], store: .store) { (re
 }
 ```
 
-### Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart)) ###
+### Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.  Multipart Upload contains 3 steps:
 1. Start transaction
@@ -99,7 +99,7 @@ uploadcare.uploadAPI.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, er
 }
 ```
 
-### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload)) ###
+### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
 let url = URL(string: "https://ucarecdn.com/assets/images/cloud.6b86b4f1d77e.jpg")
@@ -129,7 +129,7 @@ let task3 = UploadFromURLTask(sourceUrl: url!)
     .store(.doNotstore)
 ```
 
-### Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus)) ###
+### Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
 uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
@@ -141,7 +141,7 @@ uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
 }
 ```
 
-### File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo)) ###
+### File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
 uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { (file, error) in
@@ -153,7 +153,7 @@ uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { (file, error) in
 }
 ```
 
-### Create files group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup)) ###
+### Create files group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 Uploadcare lib provides 2 methods to create group.
 
@@ -183,7 +183,7 @@ self.uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { (response, error
 }
 ```
 
-### Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo)) ###
+### Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
 uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) in
@@ -197,9 +197,9 @@ uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) 
 
 ## Useful links
 
-[Uploadcare documentation](https://uploadcare.com/docs/)  
-[Upload API reference](https://uploadcare.com/api-refs/upload-api/)  
-[REST API reference](https://uploadcare.com/api-refs/rest-api/)  
+[Uploadcare documentation](https://uploadcare.com/docs/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)  
+[Upload API reference](https://uploadcare.com/api-refs/upload-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)  
+[REST API reference](https://uploadcare.com/api-refs/rest-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)  
 [Changelog](https://github.com/uploadcare/uploadcare-swift/blob/master/CHANGELOG.md)  
 [Contributing guide](https://github.com/uploadcare/.github/blob/master/CONTRIBUTING.md)  
 [Security policy](https://github.com/uploadcare/uploadcare-swift/security/policy)  
