@@ -10,7 +10,7 @@ import Foundation
 
 /// Storing behavior enum
 public enum StoringBehavior: String {
-	case doNotstore = "0"
+	case doNotStore = "0"
 	case store = "1"
 	case auto = "auto"
 }
