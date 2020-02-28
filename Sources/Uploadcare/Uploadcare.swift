@@ -29,7 +29,7 @@ public class Uploadcare {
 	/// Public Key.  It is required when using Upload API.
 	internal var publicKey: String
 	
-	/// Secret Key. Is used for authorization
+	/// Secret Key. Optional. Is used for authorization
 	internal var secretKey: String?
 	
 	/// Auth scheme
