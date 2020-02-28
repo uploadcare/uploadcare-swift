@@ -28,7 +28,7 @@ To use a stable version add a dependency to your Package.swift file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", from: "1.0.0")
+    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", from: "0.1.0")
 ]
 ```
 
@@ -120,13 +120,13 @@ UploadFromURLTask is used to store upload parameters.
 ```swift
 // Set parameters by accessing properties:
 let task2 = UploadFromURLTask(sourceUrl: url!)
-task2.store = .doNotstore
+task2.store = .store
 
 // Set parameters using chaining
 let task3 = UploadFromURLTask(sourceUrl: url!)
     .checkURLDuplicates(true)
     .saveURLDuplicates(true)
-    .store(.doNotstore)
+    .store(.store)
 ```
 
 ### Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
