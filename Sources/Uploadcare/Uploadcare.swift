@@ -30,7 +30,7 @@ public class Uploadcare {
 	internal var publicKey: String
 	
 	/// Secret Key. Is used for authorization
-	internal var secretKey: String
+	internal var secretKey: String?
 	
 	/// Auth scheme
 	internal var authScheme: AuthScheme = .simple
@@ -41,7 +41,7 @@ public class Uploadcare {
 	
 	/// Initialization
 	/// - Parameter publicKey: Public Key.  It is required when using Upload API.
-	public init(withPublicKey publicKey: String, secretKey: String) {
+	public init(withPublicKey publicKey: String, secretKey: String? = nil) {
 		self.publicKey = publicKey
 		self.secretKey = secretKey
 		

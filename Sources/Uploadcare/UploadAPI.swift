@@ -18,7 +18,7 @@ public class UploadAPI {
 	internal var publicKey: String
 	
 	/// Secret Key. Is used for authorization
-	internal var secretKey: String
+	internal var secretKey: String?
 	
 	/// Alamofire session manager
 	private var manager: SessionManager
@@ -29,7 +29,7 @@ public class UploadAPI {
 	
 	/// Initialization
 	/// - Parameter publicKey: Public Key.  It is required when using Upload API.
-	public init(withPublicKey publicKey: String, secretKey: String, manager: SessionManager) {
+	public init(withPublicKey publicKey: String, secretKey: String? = nil, manager: SessionManager) {
 		self.publicKey = publicKey
 		self.secretKey = secretKey
 		self.manager = manager
