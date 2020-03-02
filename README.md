@@ -1,10 +1,7 @@
 # [WIP] Swift integration for Uploadcare
 
-![license]
-![swift]
-
-[license]: https://img.shields.io/badge/license-MIT-brightgreen.svg
-[swift]: https://img.shields.io/badge/swift-5.1-brightgreen.svg
+![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)
+![swift](https://img.shields.io/badge/swift-5.1-brightgreen.svg)
 
 Uploadcare Swift integration handles uploads _(and further operations with files)_ by wrapping Upload _(and REST, which is currently work in progress)_ APIs.
 
