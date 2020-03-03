@@ -381,56 +381,21 @@ private extension ViewController {
 	func testCreateFileGroups() {
 		print("<------ testCreateFileGroups ------>")
 		let semaphore = DispatchSemaphore(value: 0)
-
-//		uploadcare.uploadAPI.createFilesGroup(fileIds: ["237dcfc4-98c9-41e5-af95-75f6efd6366e", "99c48392-46ab-4877-a6e1-e2557b011176"]) { (group, error) in
-//			defer {
-//				semaphore.signal()
-//			}
-//			print(error)
-//			print(group)
-//		}
-		
 		uploadcare.uploadAPI.filesGroupInfo(groupId: "69b8e46f-91c9-494f-ba3b-e5fdf9c36db2~2") { (group, error) in
 			guard group != nil else {
 				print(error ?? "")
 				return
 			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
+
 			let newGroup = self.uploadcare.uploadAPI.group(ofFiles: [])
 			newGroup.files = group?.files ?? []
 			newGroup.create { (_, error) in
-				print(error)
+				print(error ?? "")
 				print(newGroup)
 			}
-			
-			
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		semaphore.wait()
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	func testFileGroupInfo() {
 		print("<------ testFileGroupInfo ------>")
@@ -454,13 +419,18 @@ private extension ViewController {
 			assertionFailure("no file")
 			return
 		}
-		guard let data = try? Data(contentsOf: url, options: .mappedIfSafe) else {
+		
+		guard let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url, withName: "Mona_Lisa_big.jpg") else {
 			assertionFailure("cant' read data")
 			return
 		}
 		
+		fileForUploading.upload(withName: "Mona_Lisa_big.jpg")
+		
+		// or
+		
 		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadAPI.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, error) in
+		fileForUploading.upload(withName: "Mona_Lisa_big.jpg") { (file, error) in
 			defer {
 				semaphore.signal()
 			}

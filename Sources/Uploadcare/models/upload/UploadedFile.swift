@@ -142,7 +142,7 @@ public class UploadedFile: Codable {
 		)
 	}
 	
-	public init(withData data: Data, fileName: String, uploadAPI: UploadAPI) {
+	public init(withData data: Data, uploadAPI: UploadAPI) {
 		self.data = data
 		self.uploadAPI = uploadAPI
 		
@@ -150,8 +150,8 @@ public class UploadedFile: Codable {
 		self.total = data.count
 		self.uuid = ""
 		self.fileId = ""
-		self.originalFilename = fileName
-		self.filename = fileName
+		self.originalFilename = ""
+		self.filename = ""
 		self.mimeType = detectMimeType(for: data)
 		self.isImage = ["image/jpeg", "image/png", "image/gif", "image/tiff"].contains(self.mimeType)
 		self.isStored = true
@@ -163,14 +163,48 @@ public class UploadedFile: Codable {
 	
 	
 	// MARK: - Public methods
-	func upload(_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void) {
+	public func upload(
+		withName name: String,
+		store: StoringBehavior? = nil,
+		_ completionHandler: ((UploadedFile?, UploadError?) -> Void)? = nil
+	) {
 		guard let fileData = self.data else {
 			let error = UploadError(status: 0, message: "Unable to upload file: Data is empty")
-			completionHandler(nil, error)
+			completionHandler?(nil, error)
 			return
 		}
 		
-		let store: StoringBehavior = self.isStored ? .store : .doNotStore
-		uploadAPI?.uploadFile(fileData, withName: self.filename, store: store,  completionHandler)
+		self.originalFilename = name
+		self.filename = name
+		
+		uploadAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { [weak self] (file, error) in
+			guard let self = self else { return }
+			
+			if let error = error {
+				completionHandler?(nil, error)
+				return
+			}
+			
+			guard let uploadedFile = file else {
+				completionHandler?(nil, UploadError.defaultError())
+				return
+			}
+			
+			self.size = uploadedFile.size
+			self.total = uploadedFile.total
+			self.uuid = uploadedFile.uuid
+			self.fileId = uploadedFile.fileId
+			self.originalFilename = uploadedFile.originalFilename
+			self.filename = uploadedFile.filename
+			self.mimeType = uploadedFile.mimeType
+			self.isImage = uploadedFile.isImage
+			self.isStored = uploadedFile.isStored
+			self.isReady = uploadedFile.isReady
+			self.imageInfo = uploadedFile.imageInfo
+			self.videoInfo = uploadedFile.videoInfo
+			self.s3Bucket = uploadedFile.s3Bucket
+			
+			completionHandler?(file, nil)
+		})
 	}
 }

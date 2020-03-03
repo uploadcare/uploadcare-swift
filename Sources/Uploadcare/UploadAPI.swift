@@ -641,8 +641,8 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - data: data
 	///   - fileName: file name
-	public func file(fromData data: Data, withName fileName: String) -> UploadedFile {
-		return UploadedFile(withData: data, fileName: fileName, uploadAPI: self)
+	public func file(fromData data: Data) -> UploadedFile {
+		return UploadedFile(withData: data, uploadAPI: self)
 	}
 	
 	/// Create file model for uploading from URL
@@ -654,12 +654,15 @@ extension UploadAPI {
 		
 		let semaphore = DispatchSemaphore(value: 0)
 		DispatchQueue.global(qos: .utility).async {
-			dataFromURL = try? Data(contentsOf: url)
+			dataFromURL = try? Data(contentsOf: url, options: .mappedIfSafe)
 			semaphore.signal()
 		}
 		semaphore.wait()
 		
 		guard let data = dataFromURL else { return nil }
-		return UploadedFile(withData: data, fileName: fileName, uploadAPI: self)
+		let file = UploadedFile(withData: data, uploadAPI: self)
+		file.filename = url.lastPathComponent
+		file.originalFilename = url.lastPathComponent
+		return file
 	}
 }
