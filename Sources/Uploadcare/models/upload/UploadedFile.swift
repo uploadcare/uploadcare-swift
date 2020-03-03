@@ -9,7 +9,7 @@ import Foundation
 
 
 /// File Info model that is used for Upload API
-public struct UploadedFile: Codable {
+public class UploadedFile: Codable {
 	
 	/// File size in bytes.
 	public var size: Int
@@ -49,6 +49,15 @@ public struct UploadedFile: Codable {
 	
 	/// Your custom user bucket on which file are stored. Only available of you setup foreign storage bucket for your project.
 	public var s3Bucket: String?
+	
+	/// Upload API
+	private weak var uploadAPI: UploadAPI?
+	
+	/// File URL
+	private var fileUrl: URL?
+	
+	// Data
+	private var data: Data?
 	
 	
 	enum CodingKeys: String, CodingKey {
@@ -98,7 +107,7 @@ public struct UploadedFile: Codable {
 		self.s3Bucket = s3Bucket
 	}
 	
-	public init(from decoder: Decoder) throws {
+	required public convenience init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		
 		let size = try container.decodeIfPresent(Int.self, forKey: .size) ?? 0
@@ -130,5 +139,26 @@ public struct UploadedFile: Codable {
 			videoInfo: videoInfo,
 			s3Bucket: s3Bucket
 		)
+	}
+	
+	
+	// MARK: - Public methods
+	public init(withData data: Data, fileName: String, uploadAPI: UploadAPI) {
+		self.data = data
+		self.uploadAPI = uploadAPI
+		
+		self.size = data.count
+		self.total = data.count
+		self.uuid = ""
+		self.fileId = ""
+		self.originalFilename = fileName
+		self.filename = fileName
+		self.mimeType = detectMimeType(for: data)
+		self.isImage = ["image/jpeg", "image/png", "image/gif", "image/tiff"].contains(self.mimeType)
+		self.isStored = true
+		self.isReady = false
+		self.imageInfo = nil
+		self.videoInfo = nil
+		self.s3Bucket = ""
 	}
 }

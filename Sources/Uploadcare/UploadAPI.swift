@@ -628,4 +628,8 @@ extension UploadAPI {
 	public func group(ofFiles files: [UploadedFile]) -> UploadedFilesGroup {
 		return UploadedFilesGroup(withFiles: files, uploadAPI: self)
 	}
+	
+	public func file(fromData data: Data, withName fileName: String) -> UploadedFile {
+		return UploadedFile(withData: data, fileName: fileName, uploadAPI: self)
+	}
 }
