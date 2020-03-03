@@ -220,7 +220,7 @@ extension UploadAPI {
 				}
 				
 				for file in files {
-					multipartFormData.append(file.value, withName: file.key, fileName: file.key, mimeType: mimeType(for: file.value))
+					multipartFormData.append(file.value, withName: file.key, fileName: file.key, mimeType: detectMimeType(for: file.value))
 				}
 				
 				if let storeVal = store, let data = storeVal.rawValue.data(using: .utf8) {
@@ -278,7 +278,7 @@ extension UploadAPI {
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) {
 		let totalSize = data.count
-		let fileMimeType = mimeType(for: data)
+		let fileMimeType = detectMimeType(for: data)
 		
 		// Starting a multipart upload transaction
 		startMulipartUpload(

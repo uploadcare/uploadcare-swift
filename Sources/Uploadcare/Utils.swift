@@ -35,7 +35,7 @@ internal func GMTDate() -> String {
 
 /// Get mime type from Data
 /// - Parameter data: data
-func mimeType(for data: Data) -> String {
+func detectMimeType(for data: Data) -> String {
 	var b: UInt8 = 0
 	data.copyBytes(to: &b, count: 1)
 
