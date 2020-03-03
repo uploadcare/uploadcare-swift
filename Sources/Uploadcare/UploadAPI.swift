@@ -625,11 +625,35 @@ extension UploadAPI {
 
 // MARK: - Factory
 extension UploadAPI {
+	/// Create group of uploaded files from array
+	/// - Parameter files: files array
 	public func group(ofFiles files: [UploadedFile]) -> UploadedFilesGroup {
 		return UploadedFilesGroup(withFiles: files, uploadAPI: self)
 	}
 	
+	/// Create file model for uploading from Data
+	/// - Parameters:
+	///   - data: data
+	///   - fileName: file name
 	public func file(fromData data: Data, withName fileName: String) -> UploadedFile {
+		return UploadedFile(withData: data, fileName: fileName, uploadAPI: self)
+	}
+	
+	/// Create file model for uploading from URL
+	/// - Parameters:
+	///   - url: file url
+	///   - fileName: file name
+	public func file(fromURL url: URL, withName fileName: String) -> UploadedFile? {
+		var dataFromURL: Data?
+		
+		let semaphore = DispatchSemaphore(value: 0)
+		DispatchQueue.global(qos: .utility).async {
+			dataFromURL = try? Data(contentsOf: url)
+			semaphore.signal()
+		}
+		semaphore.wait()
+		
+		guard let data = dataFromURL else { return nil }
 		return UploadedFile(withData: data, fileName: fileName, uploadAPI: self)
 	}
 }
