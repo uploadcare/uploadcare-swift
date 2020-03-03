@@ -271,6 +271,12 @@ extension UploadAPI {
 		}
 	}
 	
+	/// Multipart file uploading
+	/// - Parameters:
+	///   - data: Data
+	///   - filename: File name
+	///   - store: Sets the file storing behavior
+	///   - completionHandler: completion handler
 	public func uploadFile(
 		_ data: Data,
 		withName filename: String,
@@ -643,7 +649,7 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - url: file url
 	///   - fileName: file name
-	public func file(fromURL url: URL, withName fileName: String) -> UploadedFile? {
+	public func file(withContentsOf url: URL, withName fileName: String) -> UploadedFile? {
 		var dataFromURL: Data?
 		
 		let semaphore = DispatchSemaphore(value: 0)

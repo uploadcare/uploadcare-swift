@@ -77,6 +77,7 @@ public class UploadedFile: Codable {
 	}
 	
 	
+	// MARK: - Init
 	init(
 		size: Int,
 		total: Int,
@@ -141,8 +142,6 @@ public class UploadedFile: Codable {
 		)
 	}
 	
-	
-	// MARK: - Public methods
 	public init(withData data: Data, fileName: String, uploadAPI: UploadAPI) {
 		self.data = data
 		self.uploadAPI = uploadAPI
@@ -160,5 +159,18 @@ public class UploadedFile: Codable {
 		self.imageInfo = nil
 		self.videoInfo = nil
 		self.s3Bucket = ""
+	}
+	
+	
+	// MARK: - Public methods
+	func upload(_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void) {
+		guard let fileData = self.data else {
+			let error = UploadError(status: 0, message: "Unable to upload file: Data is empty")
+			completionHandler(nil, error)
+			return
+		}
+		
+		let store: StoringBehavior = self.isStored ? .store : .doNotStore
+		uploadAPI?.uploadFile(fileData, withName: self.filename, store: store,  completionHandler)
 	}
 }
