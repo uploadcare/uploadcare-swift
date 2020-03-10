@@ -420,17 +420,13 @@ private extension ViewController {
 			return
 		}
 		
-		guard let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url) else {
-			assertionFailure("cant' read data")
-			return
-		}
-		
-		fileForUploading.upload(withName: "Mona_Lisa_big.jpg")
+		let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url)
+		fileForUploading?.upload(withName: "Mona_Lisa_big.jpg")
 		
 		// or
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		fileForUploading.upload(withName: "Mona_Lisa_big.jpg") { (file, error) in
+		fileForUploading?.upload(withName: "Mona_Lisa_big.jpg") { (file, error) in
 			defer {
 				semaphore.signal()
 			}
