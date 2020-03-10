@@ -1,0 +1,923 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 52;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		"Uploadcare::UploadcarePackageTests::ProductTarget" /* UploadcarePackageTests */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = OBJ_89 /* Build configuration list for PBXAggregateTarget "UploadcarePackageTests" */;
+			buildPhases = (
+			);
+			dependencies = (
+				OBJ_92 /* PBXTargetDependency */,
+			);
+			name = UploadcarePackageTests;
+			productName = UploadcarePackageTests;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		2495944D23B77F51006BB9BF /* Uploadcare.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Uploadcare.swift */; };
+		2495948223B78B3F006BB9BF /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2495945623B7801A006BB9BF /* Alamofire.framework */; };
+		2495948323B78B3F006BB9BF /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2495945623B7801A006BB9BF /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		24BA2CC22417DEAB00F0ACF0 /* UploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CA32417DEAA00F0ACF0 /* UploadAPI.swift */; };
+		24BA2CC32417DEAB00F0ACF0 /* UploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CA32417DEAA00F0ACF0 /* UploadAPI.swift */; };
+		24BA2CC42417DEAB00F0ACF0 /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CA52417DEAA00F0ACF0 /* VideoInfo.swift */; };
+		24BA2CC52417DEAB00F0ACF0 /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CA52417DEAA00F0ACF0 /* VideoInfo.swift */; };
+		24BA2CC62417DEAB00F0ACF0 /* GeoLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CA62417DEAA00F0ACF0 /* GeoLocation.swift */; };
+		24BA2CC72417DEAB00F0ACF0 /* GeoLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CA62417DEAA00F0ACF0 /* GeoLocation.swift */; };
+		24BA2CC82417DEAB00F0ACF0 /* ImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CA72417DEAA00F0ACF0 /* ImageInfo.swift */; };
+		24BA2CC92417DEAB00F0ACF0 /* ImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CA72417DEAA00F0ACF0 /* ImageInfo.swift */; };
+		24BA2CCA2417DEAB00F0ACF0 /* CopyFileToLocalStorageResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAA2417DEAA00F0ACF0 /* CopyFileToLocalStorageResponse.swift */; };
+		24BA2CCB2417DEAB00F0ACF0 /* CopyFileToLocalStorageResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAA2417DEAA00F0ACF0 /* CopyFileToLocalStorageResponse.swift */; };
+		24BA2CCC2417DEAB00F0ACF0 /* RESTAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAB2417DEAA00F0ACF0 /* RESTAPIError.swift */; };
+		24BA2CCD2417DEAB00F0ACF0 /* RESTAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAB2417DEAA00F0ACF0 /* RESTAPIError.swift */; };
+		24BA2CCE2417DEAB00F0ACF0 /* BatchFilesOperationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAC2417DEAA00F0ACF0 /* BatchFilesOperationResponse.swift */; };
+		24BA2CCF2417DEAB00F0ACF0 /* BatchFilesOperationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAC2417DEAA00F0ACF0 /* BatchFilesOperationResponse.swift */; };
+		24BA2CD02417DEAB00F0ACF0 /* FilesListResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAD2417DEAA00F0ACF0 /* FilesListResponse.swift */; };
+		24BA2CD12417DEAB00F0ACF0 /* FilesListResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAD2417DEAA00F0ACF0 /* FilesListResponse.swift */; };
+		24BA2CD22417DEAB00F0ACF0 /* CopyFileToRemoteStorageResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAE2417DEAA00F0ACF0 /* CopyFileToRemoteStorageResponse.swift */; };
+		24BA2CD32417DEAB00F0ACF0 /* CopyFileToRemoteStorageResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAE2417DEAA00F0ACF0 /* CopyFileToRemoteStorageResponse.swift */; };
+		24BA2CD42417DEAB00F0ACF0 /* GroupsListResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAF2417DEAA00F0ACF0 /* GroupsListResponse.swift */; };
+		24BA2CD52417DEAB00F0ACF0 /* GroupsListResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CAF2417DEAA00F0ACF0 /* GroupsListResponse.swift */; };
+		24BA2CD62417DEAB00F0ACF0 /* Collaborator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB02417DEAA00F0ACF0 /* Collaborator.swift */; };
+		24BA2CD72417DEAB00F0ACF0 /* Collaborator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB02417DEAA00F0ACF0 /* Collaborator.swift */; };
+		24BA2CD82417DEAB00F0ACF0 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB12417DEAA00F0ACF0 /* Project.swift */; };
+		24BA2CD92417DEAB00F0ACF0 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB12417DEAA00F0ACF0 /* Project.swift */; };
+		24BA2CDA2417DEAB00F0ACF0 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB22417DEAA00F0ACF0 /* File.swift */; };
+		24BA2CDB2417DEAB00F0ACF0 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB22417DEAA00F0ACF0 /* File.swift */; };
+		24BA2CDC2417DEAB00F0ACF0 /* PaginationQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB32417DEAA00F0ACF0 /* PaginationQuery.swift */; };
+		24BA2CDD2417DEAB00F0ACF0 /* PaginationQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB32417DEAA00F0ACF0 /* PaginationQuery.swift */; };
+		24BA2CDE2417DEAB00F0ACF0 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB42417DEAA00F0ACF0 /* Group.swift */; };
+		24BA2CDF2417DEAB00F0ACF0 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB42417DEAA00F0ACF0 /* Group.swift */; };
+		24BA2CE02417DEAB00F0ACF0 /* GroupsListQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB52417DEAA00F0ACF0 /* GroupsListQuery.swift */; };
+		24BA2CE12417DEAB00F0ACF0 /* GroupsListQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB52417DEAA00F0ACF0 /* GroupsListQuery.swift */; };
+		24BA2CE22417DEAB00F0ACF0 /* UploadFromURLTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB72417DEAA00F0ACF0 /* UploadFromURLTask.swift */; };
+		24BA2CE32417DEAB00F0ACF0 /* UploadFromURLTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB72417DEAA00F0ACF0 /* UploadFromURLTask.swift */; };
+		24BA2CE42417DEAB00F0ACF0 /* UploadFromURLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB92417DEAA00F0ACF0 /* UploadFromURLResponse.swift */; };
+		24BA2CE52417DEAB00F0ACF0 /* UploadFromURLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CB92417DEAA00F0ACF0 /* UploadFromURLResponse.swift */; };
+		24BA2CE62417DEAB00F0ACF0 /* StartMulipartUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBA2417DEAA00F0ACF0 /* StartMulipartUploadResponse.swift */; };
+		24BA2CE72417DEAB00F0ACF0 /* StartMulipartUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBA2417DEAA00F0ACF0 /* StartMulipartUploadResponse.swift */; };
+		24BA2CE82417DEAB00F0ACF0 /* UploadFromURLStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBB2417DEAA00F0ACF0 /* UploadFromURLStatus.swift */; };
+		24BA2CE92417DEAB00F0ACF0 /* UploadFromURLStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBB2417DEAA00F0ACF0 /* UploadFromURLStatus.swift */; };
+		24BA2CEA2417DEAB00F0ACF0 /* UploadError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBC2417DEAA00F0ACF0 /* UploadError.swift */; };
+		24BA2CEB2417DEAB00F0ACF0 /* UploadError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBC2417DEAA00F0ACF0 /* UploadError.swift */; };
+		24BA2CEC2417DEAB00F0ACF0 /* UploadedFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBD2417DEAA00F0ACF0 /* UploadedFile.swift */; };
+		24BA2CED2417DEAB00F0ACF0 /* UploadedFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBD2417DEAA00F0ACF0 /* UploadedFile.swift */; };
+		24BA2CEE2417DEAB00F0ACF0 /* UploadedFilesGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBE2417DEAA00F0ACF0 /* UploadedFilesGroup.swift */; };
+		24BA2CEF2417DEAB00F0ACF0 /* UploadedFilesGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBE2417DEAA00F0ACF0 /* UploadedFilesGroup.swift */; };
+		24BA2CF02417DEAB00F0ACF0 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBF2417DEAB00F0ACF0 /* Utils.swift */; };
+		24BA2CF12417DEAB00F0ACF0 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CBF2417DEAB00F0ACF0 /* Utils.swift */; };
+		24BA2CF22417DEAB00F0ACF0 /* Data+ToString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CC12417DEAB00F0ACF0 /* Data+ToString.swift */; };
+		24BA2CF32417DEAB00F0ACF0 /* Data+ToString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BA2CC12417DEAB00F0ACF0 /* Data+ToString.swift */; };
+		OBJ_101 /* Uploadcare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Uploadcare::Uploadcare::Product" /* Uploadcare.framework */; };
+		OBJ_78 /* Uploadcare.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Uploadcare.swift */; };
+		OBJ_87 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
+		OBJ_98 /* UploadcareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* UploadcareTests.swift */; };
+		OBJ_99 /* XCTestManifests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* XCTestManifests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2495943A23B77D07006BB9BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = "Uploadcare::Uploadcare";
+			remoteInfo = Uploadcare;
+		};
+		2495943C23B77D08006BB9BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = "Uploadcare::UploadcareTests";
+			remoteInfo = UploadcareTests;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2495948423B78B3F006BB9BF /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2495948323B78B3F006BB9BF /* Alamofire.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		2495945323B77F51006BB9BF /* Uploadcare.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2495945623B7801A006BB9BF /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		24BA2CA32417DEAA00F0ACF0 /* UploadAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadAPI.swift; sourceTree = "<group>"; };
+		24BA2CA52417DEAA00F0ACF0 /* VideoInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoInfo.swift; sourceTree = "<group>"; };
+		24BA2CA62417DEAA00F0ACF0 /* GeoLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoLocation.swift; sourceTree = "<group>"; };
+		24BA2CA72417DEAA00F0ACF0 /* ImageInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageInfo.swift; sourceTree = "<group>"; };
+		24BA2CAA2417DEAA00F0ACF0 /* CopyFileToLocalStorageResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyFileToLocalStorageResponse.swift; sourceTree = "<group>"; };
+		24BA2CAB2417DEAA00F0ACF0 /* RESTAPIError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RESTAPIError.swift; sourceTree = "<group>"; };
+		24BA2CAC2417DEAA00F0ACF0 /* BatchFilesOperationResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchFilesOperationResponse.swift; sourceTree = "<group>"; };
+		24BA2CAD2417DEAA00F0ACF0 /* FilesListResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilesListResponse.swift; sourceTree = "<group>"; };
+		24BA2CAE2417DEAA00F0ACF0 /* CopyFileToRemoteStorageResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyFileToRemoteStorageResponse.swift; sourceTree = "<group>"; };
+		24BA2CAF2417DEAA00F0ACF0 /* GroupsListResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsListResponse.swift; sourceTree = "<group>"; };
+		24BA2CB02417DEAA00F0ACF0 /* Collaborator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Collaborator.swift; sourceTree = "<group>"; };
+		24BA2CB12417DEAA00F0ACF0 /* Project.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		24BA2CB22417DEAA00F0ACF0 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		24BA2CB32417DEAA00F0ACF0 /* PaginationQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaginationQuery.swift; sourceTree = "<group>"; };
+		24BA2CB42417DEAA00F0ACF0 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		24BA2CB52417DEAA00F0ACF0 /* GroupsListQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsListQuery.swift; sourceTree = "<group>"; };
+		24BA2CB72417DEAA00F0ACF0 /* UploadFromURLTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadFromURLTask.swift; sourceTree = "<group>"; };
+		24BA2CB92417DEAA00F0ACF0 /* UploadFromURLResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadFromURLResponse.swift; sourceTree = "<group>"; };
+		24BA2CBA2417DEAA00F0ACF0 /* StartMulipartUploadResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartMulipartUploadResponse.swift; sourceTree = "<group>"; };
+		24BA2CBB2417DEAA00F0ACF0 /* UploadFromURLStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadFromURLStatus.swift; sourceTree = "<group>"; };
+		24BA2CBC2417DEAA00F0ACF0 /* UploadError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadError.swift; sourceTree = "<group>"; };
+		24BA2CBD2417DEAA00F0ACF0 /* UploadedFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadedFile.swift; sourceTree = "<group>"; };
+		24BA2CBE2417DEAA00F0ACF0 /* UploadedFilesGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadedFilesGroup.swift; sourceTree = "<group>"; };
+		24BA2CBF2417DEAB00F0ACF0 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		24BA2CC12417DEAB00F0ACF0 /* Data+ToString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+ToString.swift"; sourceTree = "<group>"; };
+		OBJ_12 /* UploadcareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadcareTests.swift; sourceTree = "<group>"; };
+		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
+		OBJ_16 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; name = Package.swift; path = "/Users/mak/Projects/uploadcare-swift/.build/checkouts/Alamofire/Package.swift"; sourceTree = "<group>"; };
+		OBJ_17 /* AFError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFError.swift; sourceTree = "<group>"; };
+		OBJ_18 /* Alamofire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alamofire.swift; sourceTree = "<group>"; };
+		OBJ_19 /* DispatchQueue+Alamofire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+Alamofire.swift"; sourceTree = "<group>"; };
+		OBJ_20 /* MultipartFormData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartFormData.swift; sourceTree = "<group>"; };
+		OBJ_21 /* NetworkReachabilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkReachabilityManager.swift; sourceTree = "<group>"; };
+		OBJ_22 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
+		OBJ_23 /* ParameterEncoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterEncoding.swift; sourceTree = "<group>"; };
+		OBJ_24 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
+		OBJ_25 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
+		OBJ_26 /* ResponseSerialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseSerialization.swift; sourceTree = "<group>"; };
+		OBJ_27 /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		OBJ_28 /* ServerTrustPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTrustPolicy.swift; sourceTree = "<group>"; };
+		OBJ_29 /* SessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDelegate.swift; sourceTree = "<group>"; };
+		OBJ_30 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
+		OBJ_31 /* TaskDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDelegate.swift; sourceTree = "<group>"; };
+		OBJ_32 /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
+		OBJ_33 /* Validation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validation.swift; sourceTree = "<group>"; };
+		OBJ_38 /* Carthage */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Carthage; sourceTree = SOURCE_ROOT; };
+		OBJ_39 /* Cartfile.resolved */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile.resolved; sourceTree = "<group>"; };
+		OBJ_40 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		OBJ_41 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
+		OBJ_42 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		OBJ_43 /* Uploadcare.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Uploadcare.podspec; sourceTree = "<group>"; };
+		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		OBJ_9 /* Uploadcare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Uploadcare.swift; sourceTree = "<group>"; };
+		"Uploadcare::Uploadcare::Product" /* Uploadcare.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Uploadcare.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"Uploadcare::UploadcareTests::Product" /* UploadcareTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = UploadcareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2495944E23B77F51006BB9BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 0;
+			files = (
+				2495948223B78B3F006BB9BF /* Alamofire.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_100 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_101 /* Uploadcare.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_79 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2495945523B7801A006BB9BF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2495945623B7801A006BB9BF /* Alamofire.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		24BA2CA42417DEAA00F0ACF0 /* models */ = {
+			isa = PBXGroup;
+			children = (
+				24BA2CA52417DEAA00F0ACF0 /* VideoInfo.swift */,
+				24BA2CA62417DEAA00F0ACF0 /* GeoLocation.swift */,
+				24BA2CA72417DEAA00F0ACF0 /* ImageInfo.swift */,
+				24BA2CA82417DEAA00F0ACF0 /* REST */,
+				24BA2CB62417DEAA00F0ACF0 /* upload */,
+			);
+			path = models;
+			sourceTree = "<group>";
+		};
+		24BA2CA82417DEAA00F0ACF0 /* REST */ = {
+			isa = PBXGroup;
+			children = (
+				24BA2CA92417DEAA00F0ACF0 /* responses */,
+				24BA2CB02417DEAA00F0ACF0 /* Collaborator.swift */,
+				24BA2CB12417DEAA00F0ACF0 /* Project.swift */,
+				24BA2CB22417DEAA00F0ACF0 /* File.swift */,
+				24BA2CB32417DEAA00F0ACF0 /* PaginationQuery.swift */,
+				24BA2CB42417DEAA00F0ACF0 /* Group.swift */,
+				24BA2CB52417DEAA00F0ACF0 /* GroupsListQuery.swift */,
+			);
+			path = REST;
+			sourceTree = "<group>";
+		};
+		24BA2CA92417DEAA00F0ACF0 /* responses */ = {
+			isa = PBXGroup;
+			children = (
+				24BA2CAA2417DEAA00F0ACF0 /* CopyFileToLocalStorageResponse.swift */,
+				24BA2CAB2417DEAA00F0ACF0 /* RESTAPIError.swift */,
+				24BA2CAC2417DEAA00F0ACF0 /* BatchFilesOperationResponse.swift */,
+				24BA2CAD2417DEAA00F0ACF0 /* FilesListResponse.swift */,
+				24BA2CAE2417DEAA00F0ACF0 /* CopyFileToRemoteStorageResponse.swift */,
+				24BA2CAF2417DEAA00F0ACF0 /* GroupsListResponse.swift */,
+			);
+			path = responses;
+			sourceTree = "<group>";
+		};
+		24BA2CB62417DEAA00F0ACF0 /* upload */ = {
+			isa = PBXGroup;
+			children = (
+				24BA2CB72417DEAA00F0ACF0 /* UploadFromURLTask.swift */,
+				24BA2CB82417DEAA00F0ACF0 /* responses */,
+				24BA2CBC2417DEAA00F0ACF0 /* UploadError.swift */,
+				24BA2CBD2417DEAA00F0ACF0 /* UploadedFile.swift */,
+				24BA2CBE2417DEAA00F0ACF0 /* UploadedFilesGroup.swift */,
+			);
+			path = upload;
+			sourceTree = "<group>";
+		};
+		24BA2CB82417DEAA00F0ACF0 /* responses */ = {
+			isa = PBXGroup;
+			children = (
+				24BA2CB92417DEAA00F0ACF0 /* UploadFromURLResponse.swift */,
+				24BA2CBA2417DEAA00F0ACF0 /* StartMulipartUploadResponse.swift */,
+				24BA2CBB2417DEAA00F0ACF0 /* UploadFromURLStatus.swift */,
+			);
+			path = responses;
+			sourceTree = "<group>";
+		};
+		24BA2CC02417DEAB00F0ACF0 /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+				24BA2CC12417DEAB00F0ACF0 /* Data+ToString.swift */,
+			);
+			path = extensions;
+			sourceTree = "<group>";
+		};
+		OBJ_10 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_11 /* UploadcareTests */,
+			);
+			name = Tests;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_11 /* UploadcareTests */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_12 /* UploadcareTests.swift */,
+				OBJ_13 /* XCTestManifests.swift */,
+			);
+			name = UploadcareTests;
+			path = Tests/UploadcareTests;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_14 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_15 /* Alamofire 4.9.1 */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		OBJ_15 /* Alamofire 4.9.1 */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_16 /* Package.swift */,
+				OBJ_17 /* AFError.swift */,
+				OBJ_18 /* Alamofire.swift */,
+				OBJ_19 /* DispatchQueue+Alamofire.swift */,
+				OBJ_20 /* MultipartFormData.swift */,
+				OBJ_21 /* NetworkReachabilityManager.swift */,
+				OBJ_22 /* Notifications.swift */,
+				OBJ_23 /* ParameterEncoding.swift */,
+				OBJ_24 /* Request.swift */,
+				OBJ_25 /* Response.swift */,
+				OBJ_26 /* ResponseSerialization.swift */,
+				OBJ_27 /* Result.swift */,
+				OBJ_28 /* ServerTrustPolicy.swift */,
+				OBJ_29 /* SessionDelegate.swift */,
+				OBJ_30 /* SessionManager.swift */,
+				OBJ_31 /* TaskDelegate.swift */,
+				OBJ_32 /* Timeline.swift */,
+				OBJ_33 /* Validation.swift */,
+			);
+			name = "Alamofire 4.9.1";
+			path = .build/checkouts/Alamofire/Source;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_34 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				"Uploadcare::UploadcareTests::Product" /* UploadcareTests.xctest */,
+				"Uploadcare::Uploadcare::Product" /* Uploadcare.framework */,
+				2495945323B77F51006BB9BF /* Uploadcare.framework */,
+			);
+			name = Products;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		OBJ_5 = {
+			isa = PBXGroup;
+			children = (
+				OBJ_6 /* Package.swift */,
+				OBJ_7 /* Sources */,
+				OBJ_10 /* Tests */,
+				OBJ_14 /* Dependencies */,
+				OBJ_34 /* Products */,
+				OBJ_38 /* Carthage */,
+				OBJ_39 /* Cartfile.resolved */,
+				OBJ_40 /* LICENSE */,
+				OBJ_41 /* Cartfile */,
+				OBJ_42 /* README.md */,
+				OBJ_43 /* Uploadcare.podspec */,
+				2495945523B7801A006BB9BF /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		OBJ_7 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_8 /* Uploadcare */,
+			);
+			name = Sources;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_8 /* Uploadcare */ = {
+			isa = PBXGroup;
+			children = (
+				24BA2CC02417DEAB00F0ACF0 /* extensions */,
+				24BA2CA42417DEAA00F0ACF0 /* models */,
+				24BA2CA32417DEAA00F0ACF0 /* UploadAPI.swift */,
+				24BA2CBF2417DEAB00F0ACF0 /* Utils.swift */,
+				OBJ_9 /* Uploadcare.swift */,
+			);
+			name = Uploadcare;
+			path = Sources/Uploadcare;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2495944923B77F51006BB9BF /* Uploadcare-Carthage */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2495945023B77F51006BB9BF /* Build configuration list for PBXNativeTarget "Uploadcare-Carthage" */;
+			buildPhases = (
+				2495944C23B77F51006BB9BF /* Sources */,
+				2495944E23B77F51006BB9BF /* Frameworks */,
+				2495948423B78B3F006BB9BF /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Uploadcare-Carthage";
+			packageProductDependencies = (
+			);
+			productName = Uploadcare;
+			productReference = 2495945323B77F51006BB9BF /* Uploadcare.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		"Uploadcare::SwiftPMPackageDescription" /* UploadcarePackageDescription */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OBJ_83 /* Build configuration list for PBXNativeTarget "UploadcarePackageDescription" */;
+			buildPhases = (
+				OBJ_86 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UploadcarePackageDescription;
+			productName = UploadcarePackageDescription;
+			productType = "com.apple.product-type.framework";
+		};
+		"Uploadcare::Uploadcare" /* Uploadcare */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OBJ_74 /* Build configuration list for PBXNativeTarget "Uploadcare" */;
+			buildPhases = (
+				OBJ_77 /* Sources */,
+				OBJ_79 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Uploadcare;
+			productName = Uploadcare;
+			productReference = "Uploadcare::Uploadcare::Product" /* Uploadcare.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		"Uploadcare::UploadcareTests" /* UploadcareTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OBJ_94 /* Build configuration list for PBXNativeTarget "UploadcareTests" */;
+			buildPhases = (
+				OBJ_97 /* Sources */,
+				OBJ_100 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				OBJ_103 /* PBXTargetDependency */,
+			);
+			name = UploadcareTests;
+			productName = UploadcareTests;
+			productReference = "Uploadcare::UploadcareTests::Product" /* UploadcareTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		OBJ_1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftMigration = 9999;
+				LastUpgradeCheck = 9999;
+			};
+			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "Uploadcare" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = OBJ_5;
+			packageReferences = (
+				2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
+			productRefGroup = OBJ_34 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				"Uploadcare::Uploadcare" /* Uploadcare */,
+				2495944923B77F51006BB9BF /* Uploadcare-Carthage */,
+				"Uploadcare::SwiftPMPackageDescription" /* UploadcarePackageDescription */,
+				"Uploadcare::UploadcarePackageTests::ProductTarget" /* UploadcarePackageTests */,
+				"Uploadcare::UploadcareTests" /* UploadcareTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2495944C23B77F51006BB9BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				24BA2CE72417DEAB00F0ACF0 /* StartMulipartUploadResponse.swift in Sources */,
+				24BA2CE12417DEAB00F0ACF0 /* GroupsListQuery.swift in Sources */,
+				24BA2CDD2417DEAB00F0ACF0 /* PaginationQuery.swift in Sources */,
+				24BA2CF32417DEAB00F0ACF0 /* Data+ToString.swift in Sources */,
+				24BA2CC72417DEAB00F0ACF0 /* GeoLocation.swift in Sources */,
+				24BA2CC92417DEAB00F0ACF0 /* ImageInfo.swift in Sources */,
+				24BA2CF12417DEAB00F0ACF0 /* Utils.swift in Sources */,
+				24BA2CDF2417DEAB00F0ACF0 /* Group.swift in Sources */,
+				24BA2CD32417DEAB00F0ACF0 /* CopyFileToRemoteStorageResponse.swift in Sources */,
+				24BA2CC52417DEAB00F0ACF0 /* VideoInfo.swift in Sources */,
+				24BA2CD52417DEAB00F0ACF0 /* GroupsListResponse.swift in Sources */,
+				24BA2CEF2417DEAB00F0ACF0 /* UploadedFilesGroup.swift in Sources */,
+				24BA2CEB2417DEAB00F0ACF0 /* UploadError.swift in Sources */,
+				24BA2CE92417DEAB00F0ACF0 /* UploadFromURLStatus.swift in Sources */,
+				24BA2CD92417DEAB00F0ACF0 /* Project.swift in Sources */,
+				24BA2CCF2417DEAB00F0ACF0 /* BatchFilesOperationResponse.swift in Sources */,
+				24BA2CCD2417DEAB00F0ACF0 /* RESTAPIError.swift in Sources */,
+				24BA2CD12417DEAB00F0ACF0 /* FilesListResponse.swift in Sources */,
+				24BA2CE52417DEAB00F0ACF0 /* UploadFromURLResponse.swift in Sources */,
+				24BA2CDB2417DEAB00F0ACF0 /* File.swift in Sources */,
+				24BA2CED2417DEAB00F0ACF0 /* UploadedFile.swift in Sources */,
+				2495944D23B77F51006BB9BF /* Uploadcare.swift in Sources */,
+				24BA2CD72417DEAB00F0ACF0 /* Collaborator.swift in Sources */,
+				24BA2CCB2417DEAB00F0ACF0 /* CopyFileToLocalStorageResponse.swift in Sources */,
+				24BA2CC32417DEAB00F0ACF0 /* UploadAPI.swift in Sources */,
+				24BA2CE32417DEAB00F0ACF0 /* UploadFromURLTask.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_77 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				24BA2CE62417DEAB00F0ACF0 /* StartMulipartUploadResponse.swift in Sources */,
+				24BA2CE02417DEAB00F0ACF0 /* GroupsListQuery.swift in Sources */,
+				24BA2CDC2417DEAB00F0ACF0 /* PaginationQuery.swift in Sources */,
+				24BA2CF22417DEAB00F0ACF0 /* Data+ToString.swift in Sources */,
+				24BA2CC62417DEAB00F0ACF0 /* GeoLocation.swift in Sources */,
+				24BA2CC82417DEAB00F0ACF0 /* ImageInfo.swift in Sources */,
+				24BA2CF02417DEAB00F0ACF0 /* Utils.swift in Sources */,
+				24BA2CDE2417DEAB00F0ACF0 /* Group.swift in Sources */,
+				24BA2CD22417DEAB00F0ACF0 /* CopyFileToRemoteStorageResponse.swift in Sources */,
+				24BA2CC42417DEAB00F0ACF0 /* VideoInfo.swift in Sources */,
+				24BA2CD42417DEAB00F0ACF0 /* GroupsListResponse.swift in Sources */,
+				24BA2CEE2417DEAB00F0ACF0 /* UploadedFilesGroup.swift in Sources */,
+				24BA2CEA2417DEAB00F0ACF0 /* UploadError.swift in Sources */,
+				24BA2CE82417DEAB00F0ACF0 /* UploadFromURLStatus.swift in Sources */,
+				24BA2CD82417DEAB00F0ACF0 /* Project.swift in Sources */,
+				24BA2CCE2417DEAB00F0ACF0 /* BatchFilesOperationResponse.swift in Sources */,
+				24BA2CCC2417DEAB00F0ACF0 /* RESTAPIError.swift in Sources */,
+				24BA2CD02417DEAB00F0ACF0 /* FilesListResponse.swift in Sources */,
+				24BA2CE42417DEAB00F0ACF0 /* UploadFromURLResponse.swift in Sources */,
+				24BA2CDA2417DEAB00F0ACF0 /* File.swift in Sources */,
+				24BA2CEC2417DEAB00F0ACF0 /* UploadedFile.swift in Sources */,
+				OBJ_78 /* Uploadcare.swift in Sources */,
+				24BA2CD62417DEAB00F0ACF0 /* Collaborator.swift in Sources */,
+				24BA2CCA2417DEAB00F0ACF0 /* CopyFileToLocalStorageResponse.swift in Sources */,
+				24BA2CC22417DEAB00F0ACF0 /* UploadAPI.swift in Sources */,
+				24BA2CE22417DEAB00F0ACF0 /* UploadFromURLTask.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_86 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_87 /* Package.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_97 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_98 /* UploadcareTests.swift in Sources */,
+				OBJ_99 /* XCTestManifests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		OBJ_103 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "Uploadcare::Uploadcare" /* Uploadcare */;
+			targetProxy = 2495943A23B77D07006BB9BF /* PBXContainerItemProxy */;
+		};
+		OBJ_92 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "Uploadcare::UploadcareTests" /* UploadcareTests */;
+			targetProxy = 2495943C23B77D08006BB9BF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2495945123B77F51006BB9BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Uploadcare.xcodeproj/Uploadcare_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = Uploadcare;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGET_NAME = Uploadcare;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		2495945223B77F51006BB9BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Uploadcare.xcodeproj/Uploadcare_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = Uploadcare;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGET_NAME = Uploadcare;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
+		OBJ_3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"SWIFT_PACKAGE=1",
+					"DEBUG=1",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_SWIFT_FLAGS = "$(inherited) -DXcode";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				USE_HEADERMAP = NO;
+			};
+			name = Debug;
+		};
+		OBJ_4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"SWIFT_PACKAGE=1",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_SWIFT_FLAGS = "$(inherited) -DXcode";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				USE_HEADERMAP = NO;
+			};
+			name = Release;
+		};
+		OBJ_75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Uploadcare.xcodeproj/Uploadcare_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = Uploadcare;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGET_NAME = Uploadcare;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		OBJ_76 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Uploadcare.xcodeproj/Uploadcare_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = Uploadcare;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGET_NAME = Uploadcare;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
+		OBJ_84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD = /usr/bin/true;
+				OTHER_SWIFT_FLAGS = "-swift-version 5 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -package-description-version 5.1";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		OBJ_85 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD = /usr/bin/true;
+				OTHER_SWIFT_FLAGS = "-swift-version 5 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -package-description-version 5.1";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		OBJ_90 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		OBJ_91 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		OBJ_95 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Uploadcare.xcodeproj/UploadcareTests_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGET_NAME = UploadcareTests;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		OBJ_96 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Uploadcare.xcodeproj/UploadcareTests_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGET_NAME = UploadcareTests;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2495945023B77F51006BB9BF /* Build configuration list for PBXNativeTarget "Uploadcare-Carthage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2495945123B77F51006BB9BF /* Debug */,
+				2495945223B77F51006BB9BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_2 /* Build configuration list for PBXProject "Uploadcare" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_3 /* Debug */,
+				OBJ_4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_74 /* Build configuration list for PBXNativeTarget "Uploadcare" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_75 /* Debug */,
+				OBJ_76 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_83 /* Build configuration list for PBXNativeTarget "UploadcarePackageDescription" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_84 /* Debug */,
+				OBJ_85 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_89 /* Build configuration list for PBXAggregateTarget "UploadcarePackageTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_90 /* Debug */,
+				OBJ_91 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_94 /* Build configuration list for PBXNativeTarget "UploadcareTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_95 /* Debug */,
+				OBJ_96 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.9.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+	};
+	rootObject = OBJ_1 /* Project object */;
+}
