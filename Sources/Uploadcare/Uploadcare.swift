@@ -38,6 +38,12 @@ public class Uploadcare {
 	/// Alamofire session manager
 	private var manager = SessionManager()
 	
+	/// Library name
+	private var libraryName = "UploadcareSwift"
+	
+	/// Library version
+	private var libraryVersion = "0.1.0-alpha"
+	
 	
 	/// Initialization
 	/// - Parameter publicKey: Public Key.  It is required when using Upload API.
@@ -68,6 +74,10 @@ internal extension Uploadcare {
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
 		urlRequest.addValue("application/vnd.uploadcare-v0.6+json", forHTTPHeaderField: "Accept")
 		urlRequest.addValue(dateString, forHTTPHeaderField: "Date")
+		
+		
+		let userAgent = "\(libraryName)/\(libraryVersion)/\(publicKey) (Swift/\(getSwiftVersion()))"
+		urlRequest.addValue(userAgent, forHTTPHeaderField: "User-Agent")
 		
 		switch authScheme {
 		case .simple:

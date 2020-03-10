@@ -58,3 +58,22 @@ func detectMimeType(for data: Data) -> String {
 		return "application/octet-stream"
 	}
 }
+
+/// Get Swift version
+func getSwiftVersion() -> String {
+	var swiftVersion = "5.0"
+	#if swift(>=7.0)
+		swiftVersion = "7.0"
+	#elseif swift(>=6.0)
+		swiftVersion = "6.0"
+	#elseif swift(>=5.4)
+		swiftVersion = "5.4"
+	#elseif swift(>=5.3)
+		swiftVersion = "5.3"
+	#elseif swift(>=5.2)
+		swiftVersion = "5.2"
+	#elseif swift(>=5.1)
+		swiftVersion = "5.1"
+	#endif
+	return swiftVersion
+}
