@@ -26,9 +26,9 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testUploadFileInfo()
 //		}
-//		queue.async { [unowned self] in
-//			self.testUploadFile()
-//		}
+		queue.async { [unowned self] in
+			self.testUploadFileFromURL()
+		}
 //		queue.async { [unowned self] in
 //			self.testDirectUpload()
 //		}
@@ -96,12 +96,12 @@ private extension ViewController {
 		semaphore.wait()
 	}
 	
-	func testUploadFile() {
-		print("<------ testUploadFile ------>")
+	func testUploadFileFromURL() {
+		print("<------ testUploadFileFromURL ------>")
 		let semaphore = DispatchSemaphore(value: 0)
 		
 		// upload from url
-		let url = URL(string: "https://ucarecdn.com/assets/images/cloud.6b86b4f1d77e.jpg")
+		let url = URL(string: "https://source.unsplash.com/random")
 		let task = UploadFromURLTask(sourceUrl: url!)
 			.checkURLDuplicates(true)
 			.saveURLDuplicates(true)
