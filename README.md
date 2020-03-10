@@ -65,9 +65,9 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_S
 ### Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
-guard let image = UIImage(named: "MonaLisa.jpg"), let data = image.jpegData(compressionQuality: 1) else { return }
+guard let url = URL(string: "https://source.unsplash.com/random"), let data = try? Data(contentsOf: url) else { return }
 
-uploadcare.uploadAPI.upload(files: ["mona_lisa.jpg": data], store: .store) { (result, error) in
+uploadcare.uploadAPI.upload(files: ["some_random_name.jpg": data], store: .store) { (result, error) in
     if let error = error {
         print(error)
         return
@@ -104,7 +104,7 @@ uploadcare.uploadAPI.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, er
 ### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
-let url = URL(string: "https://ucarecdn.com/assets/images/cloud.6b86b4f1d77e.jpg")
+let url = URL(string: "https://source.unsplash.com/random")
 
 let task1 = UploadFromURLTask(sourceUrl: url!)
 // upload
