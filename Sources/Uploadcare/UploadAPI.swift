@@ -648,8 +648,7 @@ extension UploadAPI {
 	/// Create file model for uploading from URL
 	/// - Parameters:
 	///   - url: file url
-	///   - fileName: file name
-	public func file(withContentsOf url: URL, withName fileName: String) -> UploadedFile? {
+	public func file(withContentsOf url: URL) -> UploadedFile? {
 		var dataFromURL: Data?
 		
 		let semaphore = DispatchSemaphore(value: 0)

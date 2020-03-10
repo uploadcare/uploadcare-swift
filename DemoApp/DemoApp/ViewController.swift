@@ -420,7 +420,7 @@ private extension ViewController {
 			return
 		}
 		
-		guard let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url, withName: "Mona_Lisa_big.jpg") else {
+		guard let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url) else {
 			assertionFailure("cant' read data")
 			return
 		}
