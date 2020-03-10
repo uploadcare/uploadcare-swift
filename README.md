@@ -91,8 +91,11 @@ You can use the upload method that will run all 3 steps for you:
 
 ```swift
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
-guard let data = try? Data(contentsOf: url, options: .mappedIfSafe) else { return }
-uploadcare.uploadAPI.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, error) in
+let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url)
+fileForUploading?.upload(withName: "Mona_Lisa_big.jpg")
+
+// or uploading with callback
+fileForUploading.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, error) in
     if let error = error {
         print(error)
         return
