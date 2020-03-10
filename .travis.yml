@@ -1,0 +1,17 @@
+if: tag IS blank
+
+
+branches:
+  only:
+  - master
+
+jobs:
+  include:
+  - stage: OSX test
+    os: osx
+    osx_image: xcode11.3
+    language: swift
+    script:
+    - swift package update
+    - swift build
+    - swift test
