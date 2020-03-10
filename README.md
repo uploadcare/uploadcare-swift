@@ -23,7 +23,7 @@ To use a stable version add a dependency to your Package.swift file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", from: "0.1.0")
+    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", from: "0.1.0-alpha")
 ]
 ```
 
@@ -35,14 +35,14 @@ dependencies: [
 ]
 ```
 
-Or you can just add it using Xcode: https://github.com/uploadcare/uploadcare-swift
+Or you can just add it using Xcode: https://github.com/uploadcare/uploadcare-swift (select master branch)
 
 ### Carthage
 
 To use a stable version add a dependency to your Cartfile:
 
 ```
-github "uploadcare/uploadcare-swift" "0.1.0"
+github "uploadcare/uploadcare-swift" "0.1.0-alpha"
 ```
 
 To use current dev version:
