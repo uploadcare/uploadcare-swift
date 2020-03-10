@@ -26,12 +26,12 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testUploadFileInfo()
 //		}
-		queue.async { [unowned self] in
-			self.testUploadFileFromURL()
-		}
 //		queue.async { [unowned self] in
-//			self.testDirectUpload()
+//			self.testUploadFileFromURL()
 //		}
+		queue.async { [unowned self] in
+			self.testDirectUpload()
+		}
 //		queue.async { [unowned self] in
 //			self.testRESTListOfFiles()
 //		}
@@ -80,7 +80,7 @@ class ViewController: UIViewController {
 
 private extension ViewController {
 	func testUploadFileInfo() {
-		print("<------ testFileInfo ------>")
+		print("<------ testUploadFileInfo ------>")
 		let semaphore = DispatchSemaphore(value: 0)
 		uploadcare.uploadAPI.fileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { (info, error) in
 			defer {
@@ -128,7 +128,7 @@ private extension ViewController {
 	}
 	
 	func testUploadStatus() {
-		print("<------ testUploadFile ------>")
+		print("<------ testUploadStatus ------>")
 		let semaphore = DispatchSemaphore(value: 0)
 		uploadcare.uploadAPI.uploadStatus(forToken: "ede4e436-9ff4-4027-8ffe-3b3e4d4a7f5b") { (status, error) in
 			print(status ?? "no data")
@@ -140,7 +140,7 @@ private extension ViewController {
 	
 	func testDirectUpload() {
 		print("<------ testDirectUpload ------>")
-		guard let image = UIImage(named: "MonaLisa.jpg"), let data = image.jpegData(compressionQuality: 1) else { return }
+		guard let url = URL(string: "https://source.unsplash.com/random"), let data = try? Data(contentsOf: url) else { return }
 		
 		print("size of file: \(sizeString(ofData: data))")
 		
