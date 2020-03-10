@@ -71,7 +71,7 @@ internal extension Uploadcare {
 		
 		switch authScheme {
 		case .simple:
-			urlRequest.addValue("\(authScheme.rawValue) \(publicKey):\(secretKey)", forHTTPHeaderField: "Authorization")
+			urlRequest.addValue("\(authScheme.rawValue) \(publicKey):\(secretKey ?? "")", forHTTPHeaderField: "Authorization")
 		case .signed:
 			// TODO: - implement
 			break
@@ -542,6 +542,39 @@ extension Uploadcare {
 						return
 					}
 					
+					completionHandler(responseData, nil)
+				case .failure(_):
+					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+					completionHandler(nil, decodedData)
+				}
+		}
+	}
+	
+	/// Getting info about account project.
+	/// - Parameter completionHandler: completion handler
+	public func getProjectInfo(_ completionHandler: @escaping (Project?, RESTAPIError?) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/project/"
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			return
+		}
+		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		
+		request(urlRequest)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(let data):
+					let decodedData = try? JSONDecoder().decode(Project.self, from: data)
+
+					guard let responseData = decodedData else {
+						completionHandler(nil, RESTAPIError.defaultError())
+						return
+					}
+
 					completionHandler(responseData, nil)
 				case .failure(_):
 					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {

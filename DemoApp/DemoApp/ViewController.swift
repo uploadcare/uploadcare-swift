@@ -29,9 +29,9 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testUploadFileFromURL()
 //		}
-		queue.async { [unowned self] in
-			self.testDirectUpload()
-		}
+//		queue.async { [unowned self] in
+//			self.testDirectUpload()
+//		}
 //		queue.async { [unowned self] in
 //			self.testRESTListOfFiles()
 //		}
