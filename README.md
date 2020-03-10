@@ -38,11 +38,28 @@ Or you can just add it using Xcode: https://github.com/uploadcare/uploadcare-swi
 
 ### Carthage
 
-TBD
+To use a stable version add a dependency to your Cartfile:
+
+```
+github "uploadcare/uploadcare-swift" "0.1.0"
+```
+
+To use current dev version:
+```
+github "uploadcare/uploadcare-swift" "develop"
+```
 
 ### Cocoapods
 
-TBD
+To use a stable version add a dependency to your Podfile:
+```
+pod 'Uploadcare', git: 'https://github.com/uploadcare/uploadcare-swift'
+```
+
+To use current dev version:
+```
+pod 'Uploadcare', git: 'https://github.com/uploadcare/uploadcare-swift', :branch => 'develop'
+```
 
 ## Initialization
 
