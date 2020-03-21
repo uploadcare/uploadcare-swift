@@ -101,7 +101,7 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func listOfFiles(
 		withQuery query: PaginationQuery?,
-		_ completionHandler: @escaping (FilesListResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
 	) {
 		var urlString = RESTAPIBaseUrl + "/files/"
 		if let queryValue = query {
@@ -119,7 +119,7 @@ extension Uploadcare {
 			.responseData { response in
 				switch response.result {
 				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(FilesListResponse.self, from: data)
+					let decodedData = try? JSONDecoder().decode(FilesList.self, from: data)
 
 					guard let responseData = decodedData else {
 						completionHandler(nil, RESTAPIError.defaultError())

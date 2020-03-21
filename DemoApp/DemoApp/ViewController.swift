@@ -172,6 +172,7 @@ private extension ViewController {
 		let query = PaginationQuery()
 			.stored(true)
 			.ordering(.sizeDESC)
+			.limit(5)
 		uploadcare.listOfFiles(withQuery: query) { (list, error) in
 			defer {
 				semaphore.signal()

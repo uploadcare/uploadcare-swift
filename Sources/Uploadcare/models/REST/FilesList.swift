@@ -1,5 +1,5 @@
 //
-//  FilesListResponse.swift
+//  FilesList.swift
 //  
 //
 //  Created by Sergey Armodin on 03.02.2020.
@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct FilesListResponse: Codable {
+public struct FilesList: Codable {
 	
 	public var next: String?
 	public var previous: String?
