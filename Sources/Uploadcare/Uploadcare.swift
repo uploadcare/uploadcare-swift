@@ -103,9 +103,24 @@ extension Uploadcare {
 		withQuery query: PaginationQuery?,
 		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
 	) {
+		var queryString: String?
+		if let queryValue = query {
+			queryString = "\(queryValue.stringValue)"
+		}
+		listOfFiles(withQueryString: queryString, completionHandler)
+	}
+	
+	/// Get list of files
+	/// - Parameters:
+	///   - query: query string
+	///   - completionHandler: completion handler
+	internal func listOfFiles(
+		withQueryString query: String?,
+		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
+	) {
 		var urlString = RESTAPIBaseUrl + "/files/"
 		if let queryValue = query {
-			urlString += "?\(queryValue.stringValue)"
+			urlString += "?\(queryValue)"
 		}
 		
 		guard let url = URL(string: urlString) else {
@@ -594,5 +609,13 @@ extension Uploadcare {
 					completionHandler(nil, decodedData)
 				}
 		}
+	}
+}
+
+
+// MARK: - Factory
+extension Uploadcare {
+	public func list(ofFiles files: [File]? = nil) -> FilesList {
+		return FilesList(withFiles: files ?? [File](), api: self)
 	}
 }
