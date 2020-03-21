@@ -36,7 +36,7 @@ public class Uploadcare {
 	internal var authScheme: AuthScheme = .simple
 	
 	/// Alamofire session manager
-	private var manager = SessionManager()
+	private var manager = Session()
 	
 	/// Library name
 	private var libraryName = "UploadcareSwift"
@@ -114,7 +114,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -152,7 +152,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -191,7 +191,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .delete)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -234,7 +234,7 @@ extension Uploadcare {
 			urlRequest.httpBody = body
 		}
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -272,7 +272,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -315,7 +315,7 @@ extension Uploadcare {
 			urlRequest.httpBody = body
 		}
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -357,7 +357,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -395,7 +395,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -434,7 +434,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -478,7 +478,7 @@ extension Uploadcare {
 			urlRequest.httpBody = body
 		}
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -539,7 +539,7 @@ extension Uploadcare {
 			urlRequest.httpBody = body
 		}
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -573,7 +573,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
