@@ -1,6 +1,14 @@
 # Upload API
 
 * [Initialization](#initialization)
+* [Direct uploads](#direct-uploads-api-reference)
+* [Multipart uploads](#multipart-uploads-api-reference)
+* [Upload files from URLs](#upload-files-from-urls-api-reference)
+* [Check the status of a file uploaded from URL](#check-the-status-of-a-file-uploaded-from-url-api-reference)
+* [File info](#file-info-api-reference)
+* [Create files group](#create-files-group-api-reference)
+* [Files group info](#files-group-info-api-reference)
+
 
 ### Initialization
 
