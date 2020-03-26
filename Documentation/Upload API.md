@@ -1,5 +1,7 @@
 # Upload API
 
+* [Initialization](#initialization)
+
 ### Initialization
 
 Upload API requires just public key:
