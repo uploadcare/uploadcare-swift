@@ -13,6 +13,18 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY")
 guard let url = URL(string: "https://source.unsplash.com/random") else { return }
 let data = try? Data(contentsOf: url) else { return }
 
+// You can create UploadedFile object to operate with it
+let fileForUploading1 = uploadcare.uploadAPI.file(fromData: data)
+let fileForUploading2 = uploadcare.uploadAPI.file(withContentsOf: url)
+
+fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (result, error) in
+    // handle error or result
+}
+
+// completion block is optional:
+fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
+
+// Or you can just upload data and provide filename
 uploadcare.uploadAPI.upload(files: ["some_random_name.jpg": data], store: .store) { (result, error) in
     if let error = error {
         print(error)
@@ -30,7 +42,7 @@ uploadcare.uploadAPI.upload(files: ["some_random_name.jpg": data], store: .store
 
 Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.  Multipart Upload contains 3 steps:
 1. Start transaction
-2. Upload file chunks
+2. Upload file chunks concurrently
 3. Complete transaction
 
 You can use the upload method that will run all 3 steps for you:
@@ -50,12 +62,13 @@ fileForUploading.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, error)
 }
 ```
 
+
 ### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
-let url = URL(string: "https://source.unsplash.com/random")
+guard let url = URL(string: "https://source.unsplash.com/random") else { return }
+let task1 = UploadFromURLTask(sourceUrl: url)
 
-let task1 = UploadFromURLTask(sourceUrl: url!)
 // upload
 uploadcare.uploadAPI.upload(task: task1) { [unowned self] (result, error) in
     if let error = error {
@@ -81,6 +94,8 @@ let task3 = UploadFromURLTask(sourceUrl: url!)
 ```
 
 ### Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+
+Use token that was recieved with Upload files from URLs method:
 
 ```swift
 uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
