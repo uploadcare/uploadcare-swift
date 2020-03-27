@@ -22,6 +22,11 @@ public struct Collaborator: Codable {
 		case email
 		case name
 	}
+	
+	public init(email: String, name: String) {
+		self.email = email
+		self.name = name
+	}
 }
 
 

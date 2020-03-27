@@ -80,7 +80,7 @@ public struct File: Codable {
 	}
 	
 	
-	init(
+	public init(
 		size: Int,
 		uuid: String,
 		originalFilename: String,
