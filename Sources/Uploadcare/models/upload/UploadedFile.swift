@@ -163,6 +163,7 @@ public class UploadedFile: Codable {
 	
 	
 	// MARK: - Public methods
+	@discardableResult
 	public func upload(
 		withName name: String,
 		store: StoringBehavior? = nil,

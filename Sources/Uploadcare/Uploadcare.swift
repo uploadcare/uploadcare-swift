@@ -359,7 +359,7 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func listOfGroups(
 		withQuery query: GroupsListQuery?,
-		_ completionHandler: @escaping (GroupsListResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
 	) {
 		var urlString = RESTAPIBaseUrl + "/groups/"
 		if let queryValue = query {
@@ -377,7 +377,7 @@ extension Uploadcare {
 			.responseData { response in
 				switch response.result {
 				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(GroupsListResponse.self, from: data)
+					let decodedData = try? JSONDecoder().decode(GroupsList.self, from: data)
 					
 					guard let responseData = decodedData else {
 						completionHandler(nil, RESTAPIError.defaultError())

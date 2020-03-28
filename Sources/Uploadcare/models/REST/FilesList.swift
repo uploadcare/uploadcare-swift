@@ -24,7 +24,7 @@ public class FilesList: Codable {
 	/// Number of files per page
 	public var perPage: Int
 	
-	/// Page files list
+	/// List of files from current page
 	public var results: [File]
 	
 	

@@ -1,5 +1,5 @@
 //
-//  GroupsListResponse.swift
+//  GroupsList.swift
 //  
 //
 //  Created by Sergey Armodin on 05.02.2020.
@@ -9,12 +9,21 @@ import Foundation
 
 
 /// List of groups API method response
-public struct GroupsListResponse: Codable {
+public class GroupsList: Codable {
 	
+	/// URL for next page request
 	public var next: String?
+	
+	/// URL for previous page request
 	public var previous: String?
+	
+	/// Total number of groups
 	public var total: Int
+	
+	/// Number of groups per page
 	public var perPage: Int
+	
+	/// List of groups from current page
 	public var results: [Group]
 
 	
@@ -41,7 +50,7 @@ public struct GroupsListResponse: Codable {
 		self.results = results
 	}
 
-	public init(from decoder: Decoder) throws {
+	required public convenience init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 
 		let next = try container.decodeIfPresent(String.self, forKey: .next)
