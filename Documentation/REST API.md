@@ -1,9 +1,11 @@
-# Upload API
+# REST API
 
 * [Initialization](#initialization)
 * [Getting info about account project](#getting-info-about-account-project-api-reference)
 * [Get list of files](#get-list-of-files-api-reference)
 * [File Info](#file-info-api-reference)
+* [Delete files](#delete-files-api-reference)
+
 
 ### Initialization
 
@@ -85,7 +87,28 @@ uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, e
 }
 ```
 
+### Delete files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/deleteFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
-
+Delete individual file:
+```swift
+uploadcare.deleteFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
+    if let error = error {
+        print(error)
+        return
+    }			
+    print(file ?? "")
+}
+```
+Batch file delete:
+```swift
+let uuids = ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "1bac376c-aa7e-4356-861b-dd2657b5bfd2"]
+uploadcare.deleteFiles(withUUIDs: uuids) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(response ?? "")
+}
+```
 
 
