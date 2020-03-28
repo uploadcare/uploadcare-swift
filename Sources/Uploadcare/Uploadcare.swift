@@ -361,9 +361,24 @@ extension Uploadcare {
 		withQuery query: GroupsListQuery?,
 		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
 	) {
+		var queryString: String?
+		if let queryValue = query {
+			queryString = "\(queryValue.stringValue)"
+		}
+		listOfGroups(withQueryString: queryString, completionHandler)
+	}
+	
+	/// Get list of groups
+	/// - Parameters:
+	///   - query: query string
+	///   - completionHandler: completion handler
+	internal func listOfGroups(
+		withQueryString query: String?,
+		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+	) {
 		var urlString = RESTAPIBaseUrl + "/groups/"
 		if let queryValue = query {
-			urlString += "?\(queryValue.stringValue)"
+			urlString += "?\(queryValue)"
 		}
 		
 		guard let url = URL(string: urlString) else {
@@ -615,7 +630,11 @@ extension Uploadcare {
 
 // MARK: - Factory
 extension Uploadcare {
-	public func list(ofFiles files: [File]? = nil) -> FilesList {
-		return FilesList(withFiles: files ?? [File](), api: self)
+	public func listOfFiles(_ files: [File]? = nil) -> FilesList {
+		return FilesList(withFiles: files ?? [], api: self)
+	}
+	
+	public func listOfGroups(_ groups: [Group]? = nil) -> GroupsList {
+		return GroupsList(withGroups: groups ?? [], api: self)
 	}
 }

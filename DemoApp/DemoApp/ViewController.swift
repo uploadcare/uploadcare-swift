@@ -15,7 +15,7 @@ class ViewController: UIViewController {
 		// Define your Public Key here
 		#warning("Set your public key")
 		let publicKey = ""
-		return Uploadcare(withPublicKey: "34067d5ea21379bebb1f", secretKey: "636d3dd9930fc104c1d0")
+		return Uploadcare(withPublicKey: "", secretKey: "")
 	}()
 
 	override func viewDidLoad() {
@@ -50,9 +50,9 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testRESTBatchStoreFiles()
 //		}
-//		queue.async { [unowned self] in
-//			self.testListOfGroups()
-//		}
+		queue.async { [unowned self] in
+			self.testListOfGroups()
+		}
 //		queue.async { [unowned self] in
 //			self.testGroupInfo()
 //		}
@@ -71,9 +71,9 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testFileGroupInfo()
 //		}
-		queue.async { [unowned self] in
-			self.testMultipartUpload()
-		}
+//		queue.async { [unowned self] in
+//			self.testMultipartUpload()
+//		}
 	}
 }
 
@@ -180,7 +180,7 @@ private extension ViewController {
 			.ordering(.sizeDESC)
 			.limit(5)
 		
-		let filesList = uploadcare.list()
+		let filesList = uploadcare.listOfFiles()
 		filesList.get(withQuery: query) { (list, error) in
 			defer {
 				semaphore.signal()
@@ -341,6 +341,54 @@ private extension ViewController {
 				return
 			}
 
+			print(list ?? "")
+		}
+		semaphore.wait()
+		
+		// using GroupsList object:
+		let groupsList = uploadcare.listOfGroups()
+		groupsList.get(withQuery: query) { (list, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(list ?? "")
+		}
+		semaphore.wait()
+		
+		// get next page
+		print("-------------- next page")
+		groupsList.nextPage { (list, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(list ?? "")
+		}
+		semaphore.wait()
+		
+		// get previous page
+		print("-------------- previous page")
+		groupsList.previousPage { (list, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
 			print(list ?? "")
 		}
 		semaphore.wait()
