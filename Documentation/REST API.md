@@ -8,6 +8,7 @@
 * [Store files](#store-files-api-reference)
 * [Get list of groups](#get-list-of-groups-api-reference)
 * [Group info](#group-info-api-reference)
+* [Store group](#store-group-api-reference)
 
 
 
@@ -165,6 +166,18 @@ uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (grou
         return
     }
     print(group ?? "")
+}
+```
+
+### Store group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+
+```swift
+uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print("store group success")
 }
 ```
 
