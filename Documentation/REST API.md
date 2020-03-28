@@ -5,6 +5,7 @@
 * [Get list of files](#get-list-of-files-api-reference)
 * [File Info](#file-info-api-reference)
 * [Delete files](#delete-files-api-reference)
+* [Store files](#store-files-api-reference)
 
 
 ### Initialization
@@ -110,5 +111,34 @@ uploadcare.deleteFiles(withUUIDs: uuids) { (response, error) in
     print(response ?? "")
 }
 ```
+
+### Store files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/storeFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+
+Store individual file:
+```swift
+uploadcare.storeFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(file ?? "")
+}
+```
+
+Batch file storing:
+```swift
+let uuids = ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "1bac376c-aa7e-4356-861b-dd2657b5bfd2"]
+uploadcare.storeFiles(withUUIDs: uuids) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(response ?? "")
+}
+```
+
+
+
+
 
 
