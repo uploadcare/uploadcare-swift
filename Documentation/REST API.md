@@ -10,6 +10,7 @@
 * [Group info](#group-info-api-reference)
 * [Store group](#store-group-api-reference)
 * [Copy file to local storage](#copy-file-to-local-storage-api-reference)
+* [Copy file to remote storage](#copy-file-to-remote-storage-api-reference)
 
 
 ### Initialization
@@ -192,6 +193,21 @@ uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9"
     print(response ?? "")
 }
 ```
+
+### Copy file to remote storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+
+```swift
+let source = "99c48392-46ab-4877-a6e1-e2557b011176"
+uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", pattern: .uuid) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(response ?? "")
+}
+```
+
+
 
 
 
