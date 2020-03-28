@@ -168,17 +168,17 @@ public class UploadedFile: Codable {
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: ((UploadedFile?, UploadError?) -> Void)? = nil
-	) {
+	) -> UploadTaskable? {
 		guard let fileData = self.data else {
 			let error = UploadError(status: 0, message: "Unable to upload file: Data is empty")
 			completionHandler?(nil, error)
-			return
+			return nil
 		}
 		
 		self.originalFilename = name
 		self.filename = name
 		
-		uploadAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { (progress) in
+		let uploadTask = uploadAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { (progress) in
 			onProgress?(progress)
 		}, { [weak self] (file, error) in
 			guard let self = self else { return }
@@ -209,6 +209,7 @@ public class UploadedFile: Codable {
 			
 			completionHandler?(file, nil)
 		})
+		return uploadTask
 	}
 }
 
@@ -227,9 +228,9 @@ extension UploadedFile: CustomDebugStringConvertible {
 			isImage: \(isImage)
 			isStored: \(isStored)
 			isReady: \(isReady)
-			imageInfo: \(imageInfo)
-			videoInfo: \(videoInfo)
-			s3Bucket: \(s3Bucket)
+			imageInfo: \(String(describing: imageInfo))
+			videoInfo: \(String(describing: videoInfo))
+			s3Bucket: \(String(describing: s3Bucket))
 		"""
 	}
 }

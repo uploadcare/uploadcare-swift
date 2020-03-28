@@ -277,9 +277,11 @@ extension UploadAPI {
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
-	) {
+	) -> UploadTaskable {
 		let totalSize = data.count
 		let fileMimeType = detectMimeType(for: data)
+	
+		let task = MultipartUploadTask()
 		
 		// Starting a multipart upload transaction
 		startMulipartUpload(
@@ -322,6 +324,7 @@ extension UploadAPI {
 						chunk,
 						toPresignedUrl: partUrl,
 						withMimeType: fileMimeType,
+						task: task,
 						group: uploadGroup,
 						completeMessage: nil, //"Uploaded \(i) of \(parts.count)",
 						onComplete: {
@@ -329,8 +332,8 @@ extension UploadAPI {
 							
 							let total = Double(parts.count)
 							let ready = Double(numberOfUploadedChunks)
-							let percent = ready * 100 / total
-							onProgress?(percent)
+							let percent = round(ready * 100 / total)
+							onProgress?(percent / 100)
 					})
 					
 					offset += currentChunkSize
@@ -339,6 +342,11 @@ extension UploadAPI {
 				
 				// Completing a multipart upload
 				uploadGroup.notify(queue: self.uploadQueue) {
+					guard task.isCancelled == false else {
+						completionHandler(nil, UploadError(status: 0, message: "Upload cancelled"))
+						return
+					}
+					task.complete()
 					self.completeMultipartUpload(forFileUIID: uuid) { (file, error) in
 						if let error = error {
 							completionHandler(nil, error)
@@ -352,6 +360,8 @@ extension UploadAPI {
 					}
 				}
 		}
+		
+		return task
 	}
 		
 	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
@@ -437,14 +447,15 @@ extension UploadAPI {
 		_ part: Data,
 		toPresignedUrl urlString: String,
 		withMimeType mimeType: String,
+		task: MultipartUploadTask,
 		group: DispatchGroup? = nil,
 		completeMessage: String? = nil,
 		onComplete: (()->Void)? = nil
 	) {
 		group?.enter()
 		// using concurrent queue for parts uploading
-		uploadQueue.async { [weak self] in
-			guard let self = self else { return }
+		uploadQueue.async { [weak self, weak task] in
+			guard let self = self, let task = task else { return }
 			
 			guard let url = URL(string: urlString) else {
 				assertionFailure("Incorrect url")
@@ -456,7 +467,7 @@ extension UploadAPI {
 			urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
 			urlRequest.httpBody = part
 			
-			self.manager.request(urlRequest)
+			let request = self.manager.request(urlRequest)
 				.responseData { response in
 					if response.response?.statusCode == 200 {
 						if let message = completeMessage {
@@ -465,11 +476,16 @@ extension UploadAPI {
 						onComplete?()
 						group?.leave()
 					} else {
+						if task.isCancelled {
+							group?.leave()
+							return
+						}
 						let error = self.makeUploadError(fromResponse: response)
 						DLog(error)
-						self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, group: group)
+						self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, task: task, group: group)
 					}
 			}
+			task.appendRequest(request)
 		}
 	}
 	

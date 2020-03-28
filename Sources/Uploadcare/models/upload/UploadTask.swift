@@ -29,3 +29,35 @@ class UploadTask: UploadTaskable {
 		self.request = request
 	}
 }
+
+
+class MultipartUploadTask: UploadTaskable {
+	
+	/// Requests array
+	private var requests: [Alamofire.DataRequest] = []
+	/// Is cancelled flag
+	private var _isCancelled: Bool = false
+	
+	
+	/// Is uploading cancelled
+	var isCancelled: Bool { _isCancelled }
+	
+	
+	internal func appendRequest(_ request: Alamofire.DataRequest) {
+		requests.append(request)
+	}
+	
+	internal func complete() {
+		requests.removeAll()
+	}
+	
+	func cancel() {
+		_isCancelled = true
+		
+		requests.forEach({ $0.cancel() })
+		requests.removeAll()
+		DLog("task cancelled")
+	}
+	
+	
+}
