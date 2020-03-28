@@ -148,8 +148,35 @@ uploadcare.storeFiles(withUUIDs: uuids) { (response, error) in
 let query = GroupsListQuery()
     .limit(100)
     .ordering(.datetimeCreatedDESC)
-		
+
 uploadcare.listOfGroups(withQuery: query) { (list, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(list ?? "")
+}
+
+// using GroupsList object:
+let groupsList = uploadcare.listOfGroups()
+
+groupsList.get(withQuery: query) { (list, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(list ?? "")
+}
+
+// get next page
+groupsList.nextPage { (list, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+}		
+// get previous page
+groupsList.previousPage { (list, error) in			
     if let error = error {
         print(error)
         return
