@@ -166,6 +166,7 @@ public class UploadedFile: Codable {
 	public func upload(
 		withName name: String,
 		store: StoringBehavior? = nil,
+		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: ((UploadedFile?, UploadError?) -> Void)? = nil
 	) {
 		guard let fileData = self.data else {
@@ -177,7 +178,9 @@ public class UploadedFile: Codable {
 		self.originalFilename = name
 		self.filename = name
 		
-		uploadAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { [weak self] (file, error) in
+		uploadAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { (progress) in
+			onProgress?(progress)
+		}, { [weak self] (file, error) in
 			guard let self = self else { return }
 			
 			if let error = error {

@@ -467,7 +467,9 @@ private extension ViewController {
 		// or
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		fileForUploading?.upload(withName: "Mona_Lisa_big.jpg") { (file, error) in
+		fileForUploading?.upload(withName: "Mona_Lisa_big.jpg", { (progress) in
+			print("progress: \(progress)")
+		}, { (file, error) in
 			defer {
 				semaphore.signal()
 			}
@@ -476,7 +478,7 @@ private extension ViewController {
 				return
 			}
 			print(file ?? "")
-		}
+		})
 		semaphore.wait()
 	}
 	

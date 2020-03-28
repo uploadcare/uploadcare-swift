@@ -275,6 +275,7 @@ extension UploadAPI {
 		_ data: Data,
 		withName filename: String,
 		store: StoringBehavior? = nil,
+		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) {
 		let totalSize = data.count
@@ -298,6 +299,7 @@ extension UploadAPI {
 				
 				var offset = 0
 				var i = 0
+				var numberOfUploadedChunks = 0
 				let uploadGroup = DispatchGroup()
 				
 				while offset < totalSize {
@@ -321,8 +323,15 @@ extension UploadAPI {
 						toPresignedUrl: partUrl,
 						withMimeType: fileMimeType,
 						group: uploadGroup,
-						completeMessage: "Uploaded \(i) of \(parts.count)"
-					)
+						completeMessage: nil, //"Uploaded \(i) of \(parts.count)",
+						onComplete: {
+							numberOfUploadedChunks += 1
+							
+							let total = Double(parts.count)
+							let ready = Double(numberOfUploadedChunks)
+							let percent = ready * 100 / total
+							onProgress?(percent)
+					})
 					
 					offset += currentChunkSize
 					i += 1
@@ -429,7 +438,8 @@ extension UploadAPI {
 		toPresignedUrl urlString: String,
 		withMimeType mimeType: String,
 		group: DispatchGroup? = nil,
-		completeMessage: String? = nil
+		completeMessage: String? = nil,
+		onComplete: (()->Void)? = nil
 	) {
 		group?.enter()
 		// using concurrent queue for parts uploading
@@ -452,6 +462,7 @@ extension UploadAPI {
 						if let message = completeMessage {
 							DLog(message)
 						}
+						onComplete?()
 						group?.leave()
 					} else {
 						let error = self.makeUploadError(fromResponse: response)
