@@ -11,6 +11,7 @@ Check out [demo](/DemoApp).
 * [Installation](#installation)
 * [Initialization](#initialization)
 * [Using Upload API](#using-upload-api)
+* [Using REST API](#using-rest-api)
 * [Useful links](#useful-links)
 
 ## Installation
@@ -71,6 +72,10 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_S
 ```
 
 ## Using Upload API
+
+Check full [Upload API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/Upload%20API.md) for all available methods.
+
+Some examples:
 
 ### Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
@@ -144,18 +149,6 @@ let task3 = UploadFromURLTask(sourceUrl: url!)
     .store(.store)
 ```
 
-### Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
-
-```swift
-uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
-    if let error = error {
-        print(error)
-        return
-    }
-    print(status)
-}
-```
-
 ### File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
@@ -168,47 +161,81 @@ uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { (file, error) in
 }
 ```
 
-### Create files group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
-Uploadcare lib provides 2 methods to create group.
+## Using REST API
 
-1. Provide files as an array of UploadedFile:
+Check full [REST API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/REST%20API.md) for all available methods.
+
+Some examples:
+
+### Initialization
+
+REST API requires both public and secret key:
+```swift
+let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
+```
+
+### Get list of files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/filesList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
-let files: [UploadedFile] = [file1,file2]
-self.uploadcare.uploadAPI.createFilesGroup(files: files) { (response, error) in
+// Make query object
+let query = PaginationQuery()
+    .stored(true)
+    .ordering(.sizeDESC)
+    .limit(5)
+// Make files list object
+let filesList = uploadcare.list()
+
+// Get files list
+filesList.get(withQuery: query) { (list, error) in
     if let error = error {
         print(error)
         return
     }
-    print(response)
+			
+    print(list ?? "")
 }
 ```
-
-2. Provide an array of files UUIDs:
-
+Get next page:
 ```swift
-let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
-self.uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { (response, error) in
+// check if next page is available
+guard filesList.next != nil else { return }
+// get next page
+filesList.nextPage { (list, error) in
     if let error = error {
         print(error)
         return
-    }
-    print(response)
+    }	
+    print(list ?? "")
 }
 ```
 
-### Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
-
+Get previous page:
 ```swift
-uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) in
+// check if previous page is available
+guard filesList.previous != nil else { return }
+// get next page
+filesList.previousPage { (list, error) in
     if let error = error {
         print(error)
         return
-    }
-    print(group)
+    }	
+    print(list ?? "")
 }
 ```
+
+### File Info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+
+```swift
+uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
+    if let error = error {
+        print(error)
+        return
+    }		
+    print(file ?? "")
+}
+```
+
 
 ## Useful links
 
