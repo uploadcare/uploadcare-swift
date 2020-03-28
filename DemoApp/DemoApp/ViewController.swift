@@ -15,7 +15,7 @@ class ViewController: UIViewController {
 		// Define your Public Key here
 		#warning("Set your public key")
 		let publicKey = ""
-		return Uploadcare(withPublicKey: publicKey)
+		return Uploadcare(withPublicKey: "34067d5ea21379bebb1f", secretKey: "636d3dd9930fc104c1d0")
 	}()
 
 	override func viewDidLoad() {
@@ -71,9 +71,9 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testFileGroupInfo()
 //		}
-//		queue.async { [unowned self] in
-//			self.testMultipartUpload()
-//		}
+		queue.async { [unowned self] in
+			self.testMultipartUpload()
+		}
 	}
 }
 
@@ -469,7 +469,7 @@ private extension ViewController {
 		}
 		
 		// upload without any callbacks
-//		_ = fileForUploading.upload(withName: "Mona_Lisa_big111.jpg")
+		fileForUploading.upload(withName: "Mona_Lisa_big111.jpg")
 		
 		// or
 		

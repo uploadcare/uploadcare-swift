@@ -205,6 +205,7 @@ extension UploadAPI {
 	///   - signature: signature
 	///   - expire: signature expire
 	///   - completionHandler: callback
+	@discardableResult
 	public func upload(
 		files: [String:Data],
 		store: StoringBehavior? = nil,
@@ -271,6 +272,7 @@ extension UploadAPI {
 	///   - filename: File name
 	///   - store: Sets the file storing behavior
 	///   - completionHandler: completion handler
+	@discardableResult
 	public func uploadFile(
 		_ data: Data,
 		withName filename: String,
