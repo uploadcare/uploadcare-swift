@@ -198,7 +198,7 @@ uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9"
 
 ```swift
 let source = "99c48392-46ab-4877-a6e1-e2557b011176"
-uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", pattern: .uuid) { (response, error) in
+uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", makePublic: true, pattern: .uuid) { (response, error) in
     if let error = error {
         print(error)
         return
