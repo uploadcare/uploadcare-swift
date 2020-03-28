@@ -6,6 +6,8 @@
 * [File Info](#file-info-api-reference)
 * [Delete files](#delete-files-api-reference)
 * [Store files](#store-files-api-reference)
+* [Get list of groups](#get-list-of-groups-api-reference)
+
 
 
 ### Initialization
@@ -136,6 +138,23 @@ uploadcare.storeFiles(withUUIDs: uuids) { (response, error) in
     print(response ?? "")
 }
 ```
+
+### Get list of groups ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupsList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+
+```swift
+let query = GroupsListQuery()
+    .limit(100)
+    .ordering(.datetimeCreatedDESC)
+		
+uploadcare.listOfGroups(withQuery: query) { (list, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(list ?? "")
+}
+```
+
 
 
 
