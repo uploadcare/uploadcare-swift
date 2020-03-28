@@ -27,6 +27,11 @@ public struct Project: Codable {
 		case collaborators
 	}
 	
+	public init(name: String, pubKey: String, collaborators: [Collaborator]?) {
+		self.name = name
+		self.pubKey = pubKey
+		self.collaborators = collaborators
+	}
 }
 
 

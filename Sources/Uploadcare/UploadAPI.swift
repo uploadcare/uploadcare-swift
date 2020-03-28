@@ -21,7 +21,7 @@ public class UploadAPI {
 	internal var secretKey: String?
 	
 	/// Alamofire session manager
-	private var manager: SessionManager
+	private var manager: Session
 	
 	/// Upload queue for multipart uploading
 	private var uploadQueue = DispatchQueue(label: "com.uploadcare.upload", qos: .utility, attributes: .concurrent)
@@ -29,7 +29,7 @@ public class UploadAPI {
 	
 	/// Initialization
 	/// - Parameter publicKey: Public Key.  It is required when using Upload API.
-	public init(withPublicKey publicKey: String, secretKey: String? = nil, manager: SessionManager) {
+	public init(withPublicKey publicKey: String, secretKey: String? = nil, manager: Session) {
 		self.publicKey = publicKey
 		self.secretKey = secretKey
 		self.manager = manager
@@ -50,7 +50,7 @@ private extension UploadAPI {
 	
 	/// Make UploadError from data response
 	/// - Parameter response: Data response
-	func makeUploadError(fromResponse response: DataResponse<Data>) -> UploadError {
+	func makeUploadError(fromResponse response: DataResponse<Data, AFError>) -> UploadError {
 		let status: Int = response.response?.statusCode ?? 0
 		
 		var message = ""
@@ -80,7 +80,7 @@ extension UploadAPI {
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -140,7 +140,7 @@ extension UploadAPI {
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -176,7 +176,7 @@ extension UploadAPI {
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -235,39 +235,29 @@ extension UploadAPI {
 					multipartFormData.append(data, withName: "expire")
 				}
 		},
-			to: urlString
-		) { (result) in
-			switch result {
-			case .success(let upload, _, _):
-				
-				upload.uploadProgress(closure: { (progress) in
-					DLog("Upload progress: \(progress.fractionCompleted)")
-				})
-				
-				upload.response { (response) in
-					if response.response?.statusCode == 200, let data = response.data {
-						let decodedData = try? JSONDecoder().decode([String:String].self, from: data)
-						guard let resultData = decodedData else {
-							completionHandler(nil, UploadError.defaultError())
-							return
-						}
-						completionHandler(resultData, nil)
+			to: urlString)
+			.uploadProgress(closure: { (progress) in
+				DLog("Upload progress: \(progress.fractionCompleted)")
+			})
+			.responseData { (response) in
+				if response.response?.statusCode == 200, let data = response.data {
+					let decodedData = try? JSONDecoder().decode([String:String].self, from: data)
+					guard let resultData = decodedData else {
+						completionHandler(nil, UploadError.defaultError())
 						return
 					}
-					
-					// error happened
-					let status: Int = response.response?.statusCode ?? 0
-					var message = ""
-					if let data = response.data {
-						message = String(data: data, encoding: .utf8) ?? ""
-					}
-					let error = UploadError(status: status, message: message)
-					completionHandler(nil, error)
+					completionHandler(resultData, nil)
+					return
 				}
-
-			case .failure(let encodingError):
-				completionHandler(nil, UploadError(status: 0, message: encodingError.localizedDescription))
-			}
+				
+				// error happened
+				let status: Int = response.response?.statusCode ?? 0
+				var message = ""
+				if let data = response.data {
+					message = String(data: data, encoding: .utf8) ?? ""
+				}
+				let error = UploadError(status: status, message: message)
+				completionHandler(nil, error)
 		}
 	}
 	
@@ -401,11 +391,11 @@ extension UploadAPI {
 					multipartFormData.append(data, withName: "expire")
 				}
 		},
-			to: urlString
-		) { (result) in
-			switch result {
-			case .success(let upload, _, _):
-				upload.response { (response) in
+			to: urlString)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(_):
 					if response.response?.statusCode == 200, let data = response.data {
 						let decodedData = try? JSONDecoder().decode(StartMulipartUploadResponse.self, from: data)
 						guard let resultData = decodedData else {
@@ -424,11 +414,9 @@ extension UploadAPI {
 					}
 					let error = UploadError(status: status, message: message)
 					completionHandler(nil, error)
+				case .failure(let encodingError):
+					completionHandler(nil, UploadError(status: 0, message: encodingError.localizedDescription))
 				}
-				
-			case .failure(let encodingError):
-				completionHandler(nil, UploadError(status: 0, message: encodingError.localizedDescription))
-			}
 		}
 	}
 	
@@ -454,16 +442,14 @@ extension UploadAPI {
 			urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
 			urlRequest.httpBody = part
 			
-			request(urlRequest)
-				.validate(statusCode: 200..<300)
+			self.manager.request(urlRequest)
 				.responseData { response in
-					switch response.result {
-					case .success(_):
+					if response.response?.statusCode == 200 {
 						if let message = completeMessage {
 							DLog(message)
 						}
 						group?.leave()
-					case .failure(_):
+					} else {
 						let error = self.makeUploadError(fromResponse: response)
 						DLog(error)
 						self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, group: group)
@@ -490,11 +476,11 @@ extension UploadAPI {
 					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
 				}
 		},
-			to: urlString
-		) { (result) in
-			switch result {
-			case .success(let upload, _, _):
-				upload.response { (response) in
+			to: urlString)
+			.validate(statusCode: 200..<300)
+			.responseData { response in
+				switch response.result {
+				case .success(_):
 					if response.response?.statusCode == 200, let data = response.data {
 						let decodedData = try? JSONDecoder().decode(UploadedFile.self, from: data)
 						guard let resultData = decodedData else {
@@ -513,11 +499,13 @@ extension UploadAPI {
 					}
 					let error = UploadError(status: status, message: message)
 					completionHandler(nil, error)
+					
+				case .failure(let encodingError):
+					completionHandler(
+						nil,
+						UploadError(status: 0, message: encodingError.localizedDescription)
+					)
 				}
-				
-			case .failure(let encodingError):
-				completionHandler(nil, UploadError(status: 0, message: encodingError.localizedDescription))
-			}
 		}
 	}
 }
@@ -566,7 +554,7 @@ extension UploadAPI {
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -606,7 +594,7 @@ extension UploadAPI {
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {

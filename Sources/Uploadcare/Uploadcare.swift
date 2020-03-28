@@ -36,7 +36,7 @@ public class Uploadcare {
 	internal var authScheme: AuthScheme = .simple
 	
 	/// Alamofire session manager
-	private var manager = SessionManager()
+	private var manager = Session()
 	
 	/// Library name
 	private var libraryName = "UploadcareSwift"
@@ -101,11 +101,26 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func listOfFiles(
 		withQuery query: PaginationQuery?,
-		_ completionHandler: @escaping (FilesListResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
+	) {
+		var queryString: String?
+		if let queryValue = query {
+			queryString = "\(queryValue.stringValue)"
+		}
+		listOfFiles(withQueryString: queryString, completionHandler)
+	}
+	
+	/// Get list of files
+	/// - Parameters:
+	///   - query: query string
+	///   - completionHandler: completion handler
+	internal func listOfFiles(
+		withQueryString query: String?,
+		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
 	) {
 		var urlString = RESTAPIBaseUrl + "/files/"
 		if let queryValue = query {
-			urlString += "?\(queryValue.stringValue)"
+			urlString += "?\(queryValue)"
 		}
 		
 		guard let url = URL(string: urlString) else {
@@ -114,12 +129,12 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
 				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(FilesListResponse.self, from: data)
+					let decodedData = try? JSONDecoder().decode(FilesList.self, from: data)
 
 					guard let responseData = decodedData else {
 						completionHandler(nil, RESTAPIError.defaultError())
@@ -152,7 +167,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -191,7 +206,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .delete)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -234,7 +249,7 @@ extension Uploadcare {
 			urlRequest.httpBody = body
 		}
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -272,7 +287,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -315,7 +330,7 @@ extension Uploadcare {
 			urlRequest.httpBody = body
 		}
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -357,7 +372,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -395,7 +410,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -434,7 +449,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -478,7 +493,7 @@ extension Uploadcare {
 			urlRequest.httpBody = body
 		}
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -539,7 +554,7 @@ extension Uploadcare {
 			urlRequest.httpBody = body
 		}
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -573,7 +588,7 @@ extension Uploadcare {
 		}
 		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		
-		request(urlRequest)
+		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -594,5 +609,13 @@ extension Uploadcare {
 					completionHandler(nil, decodedData)
 				}
 		}
+	}
+}
+
+
+// MARK: - Factory
+extension Uploadcare {
+	public func list(ofFiles files: [File]? = nil) -> FilesList {
+		return FilesList(withFiles: files ?? [File](), api: self)
 	}
 }

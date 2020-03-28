@@ -172,7 +172,42 @@ private extension ViewController {
 		let query = PaginationQuery()
 			.stored(true)
 			.ordering(.sizeDESC)
-		uploadcare.listOfFiles(withQuery: query) { (list, error) in
+			.limit(5)
+		
+		let filesList = uploadcare.list()
+		filesList.get(withQuery: query) { (list, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(list ?? "")
+		}
+		semaphore.wait()
+		
+		// get next page
+		print("-------------- next page")
+		filesList.nextPage { (list, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(list ?? "")
+		}
+		semaphore.wait()
+		
+		// get previous page
+		print("-------------- previous page")
+		filesList.previousPage { (list, error) in
 			defer {
 				semaphore.signal()
 			}
