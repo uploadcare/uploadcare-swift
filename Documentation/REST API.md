@@ -9,7 +9,7 @@
 * [Get list of groups](#get-list-of-groups-api-reference)
 * [Group info](#group-info-api-reference)
 * [Store group](#store-group-api-reference)
-
+* [Copy file to local storage](#copy-file-to-local-storage-api-reference)
 
 
 ### Initialization
@@ -178,6 +178,18 @@ uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (err
         return
     }
     print("store group success")
+}
+```
+
+### Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFileLocal?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+
+```swift
+uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(response ?? "")
 }
 ```
 
