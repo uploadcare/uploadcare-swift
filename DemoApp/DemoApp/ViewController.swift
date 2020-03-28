@@ -145,7 +145,9 @@ private extension ViewController {
 		print("size of file: \(sizeString(ofData: data))")
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store) { (resultDictionary, error) in
+		uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
+			print("upload progress: \(progress * 100)%")
+		}) { (resultDictionary, error) in
 			defer {
 				semaphore.signal()
 			}

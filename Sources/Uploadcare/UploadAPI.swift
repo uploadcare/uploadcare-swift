@@ -210,6 +210,7 @@ extension UploadAPI {
 		store: StoringBehavior? = nil,
 		signature: String? = nil,
 		expire: Int? = nil,
+		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping ([String: String]?, UploadError?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/base/"
@@ -237,7 +238,7 @@ extension UploadAPI {
 		},
 			to: urlString)
 			.uploadProgress(closure: { (progress) in
-				DLog("Upload progress: \(progress.fractionCompleted)")
+				onProgress?(progress.fractionCompleted)
 			})
 			.responseData { (response) in
 				if response.response?.statusCode == 200, let data = response.data {
