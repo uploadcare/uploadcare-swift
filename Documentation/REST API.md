@@ -1,6 +1,7 @@
 # Upload API
 
 * [Initialization](#initialization)
+* [Getting info about account project](#getting-info-about-account-project-api-reference)
 * [Get list of files](#get-list-of-files-api-reference)
 * [File Info](#file-info-api-reference)
 
@@ -10,6 +11,19 @@ REST API requires both public and secret key:
 ```swift
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
 ```
+
+### Getting info about account project ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/projectInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+
+```swift
+uploadcare.getProjectInfo { (project, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(project ?? "")
+}
+```
+
 ### Get list of files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/filesList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
