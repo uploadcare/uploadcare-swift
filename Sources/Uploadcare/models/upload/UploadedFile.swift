@@ -208,3 +208,25 @@ public class UploadedFile: Codable {
 		})
 	}
 }
+
+
+extension UploadedFile: CustomDebugStringConvertible {
+	public var debugDescription: String {
+		return """
+		\(type(of: self)):
+			size: \(size)
+			total: \(total)
+			uuid: \(uuid)
+			fileId: \(fileId)
+			originalFilename: \(originalFilename)
+			filename: \(filename)
+			mimeType: \(mimeType)
+			isImage: \(isImage)
+			isStored: \(isStored)
+			isReady: \(isReady)
+			imageInfo: \(imageInfo)
+			videoInfo: \(videoInfo)
+			s3Bucket: \(s3Bucket)
+		"""
+	}
+}
