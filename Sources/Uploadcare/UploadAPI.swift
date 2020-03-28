@@ -212,9 +212,9 @@ extension UploadAPI {
 		expire: Int? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping ([String: String]?, UploadError?) -> Void
-	) {
+	) -> UploadTaskable {
 		let urlString = uploadAPIBaseUrl + "/base/"
-		manager.upload(
+		let request = manager.upload(
 			multipartFormData: { (multipartFormData) in
 				if let publicKeyData = self.publicKey.data(using: .utf8) {
 					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
@@ -253,13 +253,16 @@ extension UploadAPI {
 				
 				// error happened
 				let status: Int = response.response?.statusCode ?? 0
-				var message = ""
+				let defaultErrorMessage = "Error happened or upload was cancelled"
+				var message = defaultErrorMessage
 				if let data = response.data {
-					message = String(data: data, encoding: .utf8) ?? ""
+					message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
 				}
 				let error = UploadError(status: status, message: message)
 				completionHandler(nil, error)
 		}
+		
+		return UploadTask(request: request)
 	}
 	
 	/// Multipart file uploading
