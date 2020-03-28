@@ -456,18 +456,25 @@ private extension ViewController {
 	}
 	
 	func testMultipartUpload() {
+		print("<------ testMultipartUpload ------>")
+		
 		guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else {
 			assertionFailure("no file")
 			return
 		}
 		
-		let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url)
-		fileForUploading?.upload(withName: "Mona_Lisa_big.jpg")
+		guard let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url) else {
+			assertionFailure("file not found")
+			return
+		}
+		
+		// upload without any callbacks
+//		_ = fileForUploading.upload(withName: "Mona_Lisa_big111.jpg")
 		
 		// or
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		fileForUploading?.upload(withName: "Mona_Lisa_big.jpg", { (progress) in
+		let task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", { (progress) in
 			print("progress: \(progress)")
 		}, { (file, error) in
 			defer {
@@ -479,6 +486,10 @@ private extension ViewController {
 			}
 			print(file ?? "")
 		})
+		
+		// cancel if need
+//		task?.cancel()
+		
 		semaphore.wait()
 	}
 	
