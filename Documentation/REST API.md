@@ -2,7 +2,7 @@
 
 * [Initialization](#initialization)
 * [Get list of files](#get-list-of-files-api-reference)
-
+* [File Info](#file-info-api-reference)
 
 ### Initialization
 
@@ -59,7 +59,17 @@ filesList.previousPage { (list, error) in
 }
 ```
 
+### File Info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
+```swift
+uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
+    if let error = error {
+        print(error)
+        return
+    }		
+    print(file ?? "")
+}
+```
 
 
 
