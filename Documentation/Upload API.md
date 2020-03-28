@@ -35,7 +35,7 @@ fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (res
 fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
 
 // Or you can just upload data and provide filename
-uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
+let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
     print("upload progress: \(progress * 100)%")
 }) { (resultDictionary, error) in
     if let error = error {
@@ -48,6 +48,9 @@ uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store
         print("uploaded file name: \(file.key) | file id: \(file.value)")
     }
 }
+
+// you can cancel uploading if need:
+task.cancel()
 ```
 
 ### Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
@@ -62,16 +65,23 @@ You can use the upload method that will run all 3 steps for you:
 ```swift
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
 let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url)
+
+// upload without any callbacks
 fileForUploading?.upload(withName: "Mona_Lisa_big.jpg")
 
-// or uploading with callback
-fileForUploading.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, error) in
+// uploading with getting data about progress
+let task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", { (progress) in
+    print("progress: \(progress)")
+}, { (file, error) in
     if let error = error {
         print(error)
         return
     }
     print(file ?? "")
-}
+})
+
+// you can cancel uploading if need:
+task?.cancel()
 ```
 
 
