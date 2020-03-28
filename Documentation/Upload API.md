@@ -35,7 +35,9 @@ fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (res
 fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
 
 // Or you can just upload data and provide filename
-uploadcare.uploadAPI.upload(files: ["some_random_name.jpg": data], store: .store) { (result, error) in
+uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
+    print("upload progress: \(progress * 100)%")
+}) { (resultDictionary, error) in
     if let error = error {
         print(error)
         return
