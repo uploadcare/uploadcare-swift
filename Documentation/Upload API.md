@@ -12,7 +12,8 @@
 
 ### Initialization
 
-Upload API requires just public key:
+Upload API requires only a public key:
+
 ```swift
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY")
 ```
@@ -55,7 +56,7 @@ Multipart Uploads are useful when you are dealing with files larger than 100MB o
 2. Upload file chunks concurrently
 3. Complete transaction
 
-You can use the upload method that will run all 3 steps for you:
+You can use this upload method that will run all 3 steps for you:
 
 ```swift
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
@@ -71,7 +72,6 @@ fileForUploading.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, error)
     print(file ?? "")
 }
 ```
-
 
 ### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
@@ -89,7 +89,7 @@ uploadcare.uploadAPI.upload(task: task1) { [unowned self] (result, error) in
 }
 ```
 
-UploadFromURLTask is used to store upload parameters.
+UploadFromURLTask is used to store upload parameters:
 
 ```swift
 // Set parameters by accessing properties:
@@ -131,7 +131,7 @@ uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { (file, error) in
 
 ### Create files group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
-Uploadcare lib provides 2 methods to create group.
+Uploadcare library provides 2 methods to create a group.
 
 1. Provide files as an array of UploadedFile:
 
