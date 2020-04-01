@@ -26,9 +26,9 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testUploadFileInfo()
 //		}
-//		queue.async { [unowned self] in
-//			self.testUploadFileFromURL()
-//		}
+		queue.async { [unowned self] in
+			self.testUploadFileFromURL()
+		}
 //		queue.async { [unowned self] in
 //			self.testDirectUpload()
 //		}
@@ -50,9 +50,9 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testRESTBatchStoreFiles()
 //		}
-		queue.async { [unowned self] in
-			self.testListOfGroups()
-		}
+//		queue.async { [unowned self] in
+//			self.testListOfGroups()
+//		}
 //		queue.async { [unowned self] in
 //			self.testGroupInfo()
 //		}
@@ -105,6 +105,7 @@ private extension ViewController {
 		let task = UploadFromURLTask(sourceUrl: url!)
 			.checkURLDuplicates(true)
 			.saveURLDuplicates(true)
+			.filename("file_from_url")
 			.store(.store)
 		
 		uploadcare.uploadAPI.upload(task: task) { [unowned self] (result, error) in

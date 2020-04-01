@@ -117,7 +117,8 @@ extension UploadAPI {
 		urlString += "&store=\(task.store.rawValue)"
 		
 		if let filenameVal = task.filename {
-			urlString += "&filename=\(filenameVal)"
+			let name = filenameVal.isEmpty ? "noname.ext" : filenameVal
+			urlString += "&filename=\(name)"
 		}
 		if let checkURLDuplicatesVal = task.checkURLDuplicates {
 			let val = checkURLDuplicatesVal == true ? "1" : "0"
@@ -222,7 +223,8 @@ extension UploadAPI {
 				}
 				
 				for file in files {
-					multipartFormData.append(file.value, withName: file.key, fileName: file.key, mimeType: detectMimeType(for: file.value))
+					let fileName = file.key.isEmpty ? "noname.ext" : file.key
+					multipartFormData.append(file.value, withName: fileName, fileName: fileName, mimeType: detectMimeType(for: file.value))
 				}
 				
 				if let storeVal = store, let data = storeVal.rawValue.data(using: .utf8) {
@@ -275,7 +277,7 @@ extension UploadAPI {
 	@discardableResult
 	public func uploadFile(
 		_ data: Data,
-		withName filename: String,
+		withName name: String,
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
@@ -284,6 +286,7 @@ extension UploadAPI {
 		let fileMimeType = detectMimeType(for: data)
 	
 		let task = MultipartUploadTask()
+		let filename = name.isEmpty ? "noname.ext" : name
 		
 		// Starting a multipart upload transaction
 		startMulipartUpload(
