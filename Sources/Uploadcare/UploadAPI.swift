@@ -117,7 +117,8 @@ extension UploadAPI {
 		urlString += "&store=\(task.store.rawValue)"
 		
 		if let filenameVal = task.filename {
-			urlString += "&filename=\(filenameVal)"
+			let name = filenameVal.isEmpty ? "noname.ext" : filenameVal
+			urlString += "&filename=\(name)"
 		}
 		if let checkURLDuplicatesVal = task.checkURLDuplicates {
 			let val = checkURLDuplicatesVal == true ? "1" : "0"
@@ -205,22 +206,25 @@ extension UploadAPI {
 	///   - signature: signature
 	///   - expire: signature expire
 	///   - completionHandler: callback
+	@discardableResult
 	public func upload(
 		files: [String:Data],
 		store: StoringBehavior? = nil,
 		signature: String? = nil,
 		expire: Int? = nil,
+		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping ([String: String]?, UploadError?) -> Void
-	) {
+	) -> UploadTaskable {
 		let urlString = uploadAPIBaseUrl + "/base/"
-		manager.upload(
+		let request = manager.upload(
 			multipartFormData: { (multipartFormData) in
 				if let publicKeyData = self.publicKey.data(using: .utf8) {
 					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
 				}
 				
 				for file in files {
-					multipartFormData.append(file.value, withName: file.key, fileName: file.key, mimeType: detectMimeType(for: file.value))
+					let fileName = file.key.isEmpty ? "noname.ext" : file.key
+					multipartFormData.append(file.value, withName: fileName, fileName: fileName, mimeType: detectMimeType(for: file.value))
 				}
 				
 				if let storeVal = store, let data = storeVal.rawValue.data(using: .utf8) {
@@ -237,7 +241,7 @@ extension UploadAPI {
 		},
 			to: urlString)
 			.uploadProgress(closure: { (progress) in
-				DLog("Upload progress: \(progress.fractionCompleted)")
+				onProgress?(progress.fractionCompleted)
 			})
 			.responseData { (response) in
 				if response.response?.statusCode == 200, let data = response.data {
@@ -252,13 +256,16 @@ extension UploadAPI {
 				
 				// error happened
 				let status: Int = response.response?.statusCode ?? 0
-				var message = ""
+				let defaultErrorMessage = "Error happened or upload was cancelled"
+				var message = defaultErrorMessage
 				if let data = response.data {
-					message = String(data: data, encoding: .utf8) ?? ""
+					message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
 				}
 				let error = UploadError(status: status, message: message)
 				completionHandler(nil, error)
 		}
+		
+		return UploadTask(request: request)
 	}
 	
 	/// Multipart file uploading
@@ -267,14 +274,19 @@ extension UploadAPI {
 	///   - filename: File name
 	///   - store: Sets the file storing behavior
 	///   - completionHandler: completion handler
+	@discardableResult
 	public func uploadFile(
 		_ data: Data,
-		withName filename: String,
+		withName name: String,
 		store: StoringBehavior? = nil,
+		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
-	) {
+	) -> UploadTaskable {
 		let totalSize = data.count
 		let fileMimeType = detectMimeType(for: data)
+	
+		let task = MultipartUploadTask()
+		let filename = name.isEmpty ? "noname.ext" : name
 		
 		// Starting a multipart upload transaction
 		startMulipartUpload(
@@ -294,6 +306,7 @@ extension UploadAPI {
 				
 				var offset = 0
 				var i = 0
+				var numberOfUploadedChunks = 0
 				let uploadGroup = DispatchGroup()
 				
 				while offset < totalSize {
@@ -316,9 +329,17 @@ extension UploadAPI {
 						chunk,
 						toPresignedUrl: partUrl,
 						withMimeType: fileMimeType,
+						task: task,
 						group: uploadGroup,
-						completeMessage: "Uploaded \(i) of \(parts.count)"
-					)
+						completeMessage: nil, //"Uploaded \(i) of \(parts.count)",
+						onComplete: {
+							numberOfUploadedChunks += 1
+							
+							let total = Double(parts.count)
+							let ready = Double(numberOfUploadedChunks)
+							let percent = round(ready * 100 / total)
+							onProgress?(percent / 100)
+					})
 					
 					offset += currentChunkSize
 					i += 1
@@ -326,6 +347,11 @@ extension UploadAPI {
 				
 				// Completing a multipart upload
 				uploadGroup.notify(queue: self.uploadQueue) {
+					guard task.isCancelled == false else {
+						completionHandler(nil, UploadError(status: 0, message: "Upload cancelled"))
+						return
+					}
+					task.complete()
 					self.completeMultipartUpload(forFileUIID: uuid) { (file, error) in
 						if let error = error {
 							completionHandler(nil, error)
@@ -339,6 +365,8 @@ extension UploadAPI {
 					}
 				}
 		}
+		
+		return task
 	}
 		
 	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
@@ -424,13 +452,15 @@ extension UploadAPI {
 		_ part: Data,
 		toPresignedUrl urlString: String,
 		withMimeType mimeType: String,
+		task: MultipartUploadTask,
 		group: DispatchGroup? = nil,
-		completeMessage: String? = nil
+		completeMessage: String? = nil,
+		onComplete: (()->Void)? = nil
 	) {
 		group?.enter()
 		// using concurrent queue for parts uploading
-		uploadQueue.async { [weak self] in
-			guard let self = self else { return }
+		uploadQueue.async { [weak self, weak task] in
+			guard let self = self, let task = task else { return }
 			
 			guard let url = URL(string: urlString) else {
 				assertionFailure("Incorrect url")
@@ -442,19 +472,25 @@ extension UploadAPI {
 			urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
 			urlRequest.httpBody = part
 			
-			self.manager.request(urlRequest)
+			let request = self.manager.request(urlRequest)
 				.responseData { response in
 					if response.response?.statusCode == 200 {
 						if let message = completeMessage {
 							DLog(message)
 						}
+						onComplete?()
 						group?.leave()
 					} else {
+						if task.isCancelled {
+							group?.leave()
+							return
+						}
 						let error = self.makeUploadError(fromResponse: response)
 						DLog(error)
-						self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, group: group)
+						self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, task: task, group: group)
 					}
 			}
+			task.appendRequest(request)
 		}
 	}
 	

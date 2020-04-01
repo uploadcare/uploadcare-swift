@@ -80,9 +80,24 @@ Some examples:
 ### Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
-guard let url = URL(string: "https://source.unsplash.com/random"), let data = try? Data(contentsOf: url) else { return }
+guard let url = URL(string: "https://source.unsplash.com/random") else { return }
+let data = try? Data(contentsOf: url) else { return }
 
-uploadcare.uploadAPI.upload(files: ["some_random_name.jpg": data], store: .store) { (result, error) in
+// You can create UploadedFile object to operate with it
+let fileForUploading1 = uploadcare.uploadAPI.file(fromData: data)
+let fileForUploading2 = uploadcare.uploadAPI.file(withContentsOf: url)
+
+fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (result, error) in
+    // handle error or result
+}
+
+// completion block is optional:
+fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
+
+// Or you can just upload data and provide filename
+let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
+    print("upload progress: \(progress * 100)%")
+}) { (resultDictionary, error) in
     if let error = error {
         print(error)
         return
@@ -93,6 +108,9 @@ uploadcare.uploadAPI.upload(files: ["some_random_name.jpg": data], store: .store
         print("uploaded file name: \(file.key) | file id: \(file.value)")
     }
 }
+
+// you can cancel uploading if need:
+task.cancel()
 ```
 
 ### Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
@@ -107,16 +125,23 @@ You can use the upload method that will run all 3 steps for you:
 ```swift
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
 let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url)
+
+// upload without any callbacks
 fileForUploading?.upload(withName: "Mona_Lisa_big.jpg")
 
-// or uploading with callback
-fileForUploading.uploadFile(data, withName: "Mona_Lisa_big.jpg") { (file, error) in
+// uploading with getting data about progress
+let task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", { (progress) in
+    print("progress: \(progress)")
+}, { (file, error) in
     if let error = error {
         print(error)
         return
     }
     print(file ?? "")
-}
+})
+
+// you can cancel uploading if need:
+task?.cancel()
 ```
 
 ### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###

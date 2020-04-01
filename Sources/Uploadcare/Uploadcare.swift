@@ -42,7 +42,7 @@ public class Uploadcare {
 	private var libraryName = "UploadcareSwift"
 	
 	/// Library version
-	private var libraryVersion = "0.1.0-alpha"
+	private var libraryVersion = "0.1.0-beta"
 	
 	
 	/// Initialization
@@ -359,11 +359,26 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func listOfGroups(
 		withQuery query: GroupsListQuery?,
-		_ completionHandler: @escaping (GroupsListResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+	) {
+		var queryString: String?
+		if let queryValue = query {
+			queryString = "\(queryValue.stringValue)"
+		}
+		listOfGroups(withQueryString: queryString, completionHandler)
+	}
+	
+	/// Get list of groups
+	/// - Parameters:
+	///   - query: query string
+	///   - completionHandler: completion handler
+	internal func listOfGroups(
+		withQueryString query: String?,
+		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
 	) {
 		var urlString = RESTAPIBaseUrl + "/groups/"
 		if let queryValue = query {
-			urlString += "?\(queryValue.stringValue)"
+			urlString += "?\(queryValue)"
 		}
 		
 		guard let url = URL(string: urlString) else {
@@ -377,7 +392,7 @@ extension Uploadcare {
 			.responseData { response in
 				switch response.result {
 				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(GroupsListResponse.self, from: data)
+					let decodedData = try? JSONDecoder().decode(GroupsList.self, from: data)
 					
 					guard let responseData = decodedData else {
 						completionHandler(nil, RESTAPIError.defaultError())
@@ -615,7 +630,11 @@ extension Uploadcare {
 
 // MARK: - Factory
 extension Uploadcare {
-	public func list(ofFiles files: [File]? = nil) -> FilesList {
-		return FilesList(withFiles: files ?? [File](), api: self)
+	public func listOfFiles(_ files: [File]? = nil) -> FilesList {
+		return FilesList(withFiles: files ?? [], api: self)
+	}
+	
+	public func listOfGroups(_ groups: [Group]? = nil) -> GroupsList {
+		return GroupsList(withGroups: groups ?? [], api: self)
 	}
 }

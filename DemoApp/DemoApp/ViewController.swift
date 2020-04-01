@@ -15,7 +15,7 @@ class ViewController: UIViewController {
 		// Define your Public Key here
 		#warning("Set your public key")
 		let publicKey = ""
-		return Uploadcare(withPublicKey: publicKey)
+		return Uploadcare(withPublicKey: "", secretKey: "")
 	}()
 
 	override func viewDidLoad() {
@@ -26,9 +26,9 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testUploadFileInfo()
 //		}
-//		queue.async { [unowned self] in
-//			self.testUploadFileFromURL()
-//		}
+		queue.async { [unowned self] in
+			self.testUploadFileFromURL()
+		}
 //		queue.async { [unowned self] in
 //			self.testDirectUpload()
 //		}
@@ -105,6 +105,7 @@ private extension ViewController {
 		let task = UploadFromURLTask(sourceUrl: url!)
 			.checkURLDuplicates(true)
 			.saveURLDuplicates(true)
+			.filename("file_from_url")
 			.store(.store)
 		
 		uploadcare.uploadAPI.upload(task: task) { [unowned self] (result, error) in
@@ -145,7 +146,9 @@ private extension ViewController {
 		print("size of file: \(sizeString(ofData: data))")
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store) { (resultDictionary, error) in
+		let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
+			print("upload progress: \(progress * 100)%")
+		}) { (resultDictionary, error) in
 			defer {
 				semaphore.signal()
 			}
@@ -162,6 +165,10 @@ private extension ViewController {
 			}
 			print(resultDictionary ?? "nil")
 		}
+		
+		// cancel if need
+//		task.cancel()
+		
 		semaphore.wait()
 	}
 	
@@ -174,7 +181,7 @@ private extension ViewController {
 			.ordering(.sizeDESC)
 			.limit(5)
 		
-		let filesList = uploadcare.list()
+		let filesList = uploadcare.listOfFiles()
 		filesList.get(withQuery: query) { (list, error) in
 			defer {
 				semaphore.signal()
@@ -338,6 +345,54 @@ private extension ViewController {
 			print(list ?? "")
 		}
 		semaphore.wait()
+		
+		// using GroupsList object:
+		let groupsList = uploadcare.listOfGroups()
+		groupsList.get(withQuery: query) { (list, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(list ?? "")
+		}
+		semaphore.wait()
+		
+		// get next page
+		print("-------------- next page")
+		groupsList.nextPage { (list, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(list ?? "")
+		}
+		semaphore.wait()
+		
+		// get previous page
+		print("-------------- previous page")
+		groupsList.previousPage { (list, error) in
+			defer {
+				semaphore.signal()
+			}
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(list ?? "")
+		}
+		semaphore.wait()
 	}
 	
 	func testGroupInfo() {
@@ -450,18 +505,27 @@ private extension ViewController {
 	}
 	
 	func testMultipartUpload() {
+		print("<------ testMultipartUpload ------>")
+		
 		guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else {
 			assertionFailure("no file")
 			return
 		}
 		
-		let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url)
-		fileForUploading?.upload(withName: "Mona_Lisa_big.jpg")
+		guard let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url) else {
+			assertionFailure("file not found")
+			return
+		}
+		
+		// upload without any callbacks
+		fileForUploading.upload(withName: "Mona_Lisa_big111.jpg")
 		
 		// or
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		fileForUploading?.upload(withName: "Mona_Lisa_big.jpg") { (file, error) in
+		let task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", { (progress) in
+			print("progress: \(progress)")
+		}, { (file, error) in
 			defer {
 				semaphore.signal()
 			}
@@ -470,7 +534,11 @@ private extension ViewController {
 				return
 			}
 			print(file ?? "")
-		}
+		})
+		
+		// cancel if need
+//		task?.cancel()
+		
 		semaphore.wait()
 	}
 	
