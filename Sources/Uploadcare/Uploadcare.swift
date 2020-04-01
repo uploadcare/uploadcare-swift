@@ -42,7 +42,7 @@ public class Uploadcare {
 	private var libraryName = "UploadcareSwift"
 	
 	/// Library version
-	private var libraryVersion = "0.1.0-alpha"
+	private var libraryVersion = "0.1.0-beta"
 	
 	
 	/// Initialization
