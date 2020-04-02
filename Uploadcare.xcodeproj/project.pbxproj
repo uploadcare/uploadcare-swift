@@ -130,6 +130,7 @@
 		248BD5DA243627D000B4A3CA /* UploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD570243627CF00B4A3CA /* UploadAPI.swift */; };
 		248BD5DB243627D000B4A3CA /* UploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD570243627CF00B4A3CA /* UploadAPI.swift */; };
 		248BD5DC243627D000B4A3CA /* UploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD570243627CF00B4A3CA /* UploadAPI.swift */; };
+		248BD5DE2436287500B4A3CA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 248BD5DD2436287500B4A3CA /* Alamofire */; };
 		2495948223B78B3F006BB9BF /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2495945623B7801A006BB9BF /* Alamofire.framework */; };
 		2495948323B78B3F006BB9BF /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2495945623B7801A006BB9BF /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		OBJ_101 /* Uploadcare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Uploadcare::Uploadcare::Product" /* Uploadcare.framework */; };
@@ -238,6 +239,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				248BD5DE2436287500B4A3CA /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,6 +486,9 @@
 			dependencies = (
 			);
 			name = "Uploadcare-Carthage-macOS";
+			packageProductDependencies = (
+				248BD5DD2436287500B4A3CA /* Alamofire */,
+			);
 			productName = "Uploadcare-Carthage-macOS";
 			productReference = 248BD546243627B600B4A3CA /* Uploadcare_Carthage_macOS.framework */;
 			productType = "com.apple.product-type.framework";
@@ -827,7 +832,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uploadcare.Uploadcare-Carthage-macOS";
@@ -898,7 +903,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uploadcare.Uploadcare-Carthage-macOS";
@@ -936,6 +941,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -970,6 +976,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1261,6 +1268,14 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		248BD5DD2436287500B4A3CA /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = OBJ_1 /* Project object */;
 }
