@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "248BD545243627B600B4A3CA"
-               BuildableName = "Uploadcare_Carthage_macOS.framework"
-               BlueprintName = "Uploadcare-Carthage-macOS"
+               BlueprintIdentifier = "24875AFE243B2EAD003F3E06"
+               BuildableName = "Uploadcare_watchOS.framework"
+               BlueprintName = "Uploadcare-watchOS"
                ReferencedContainer = "container:Uploadcare.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -50,9 +50,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "248BD545243627B600B4A3CA"
-            BuildableName = "Uploadcare_Carthage_macOS.framework"
-            BlueprintName = "Uploadcare-Carthage-macOS"
+            BlueprintIdentifier = "24875AFE243B2EAD003F3E06"
+            BuildableName = "Uploadcare_watchOS.framework"
+            BlueprintName = "Uploadcare-watchOS"
             ReferencedContainer = "container:Uploadcare.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
