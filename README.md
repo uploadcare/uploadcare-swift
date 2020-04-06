@@ -22,7 +22,7 @@ To use a stable version add a dependency to your Package.swift file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", from: "0.1.0-alpha")
+    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", from: "0.1.0-beta")
 ]
 ```
 
@@ -41,7 +41,7 @@ Or you can just add it using Xcode: https://github.com/uploadcare/uploadcare-swi
 To use a stable version add a dependency to your Cartfile:
 
 ```
-github "uploadcare/uploadcare-swift" "0.1.0-alpha"
+github "uploadcare/uploadcare-swift" "0.1.0-beta"
 ```
 
 To use current dev version:
