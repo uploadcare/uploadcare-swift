@@ -7,81 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		24875AF7243B2CCD003F3E06 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24875AF6243B2CCD003F3E06 /* Alamofire.framework */; };
-		24875AF8243B2CCD003F3E06 /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 24875AF6243B2CCD003F3E06 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		24875B1D243B33EC003F3E06 /* Uploadcare_tvOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B1B243B33EB003F3E06 /* Uploadcare_tvOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		24875B2A243B3442003F3E06 /* Uploadcare_watchOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B28243B3442003F3E06 /* Uploadcare_watchOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		248BD54A243627B600B4A3CA /* Uploadcare_Carthage_macOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 248BD548243627B600B4A3CA /* Uploadcare_Carthage_macOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		24875B37243B3518003F3E06 /* Uploadcare_macOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B35243B3518003F3E06 /* Uploadcare_macOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		248BD572243627D000B4A3CA /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD551243627CF00B4A3CA /* VideoInfo.swift */; };
-		248BD574243627D000B4A3CA /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD551243627CF00B4A3CA /* VideoInfo.swift */; };
 		248BD576243627D000B4A3CA /* GeoLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD552243627CF00B4A3CA /* GeoLocation.swift */; };
-		248BD578243627D000B4A3CA /* GeoLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD552243627CF00B4A3CA /* GeoLocation.swift */; };
 		248BD57A243627D000B4A3CA /* ImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD553243627CF00B4A3CA /* ImageInfo.swift */; };
-		248BD57C243627D000B4A3CA /* ImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD553243627CF00B4A3CA /* ImageInfo.swift */; };
 		248BD57E243627D000B4A3CA /* GroupsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD555243627CF00B4A3CA /* GroupsList.swift */; };
-		248BD580243627D000B4A3CA /* GroupsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD555243627CF00B4A3CA /* GroupsList.swift */; };
 		248BD582243627D000B4A3CA /* FilesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD556243627CF00B4A3CA /* FilesList.swift */; };
-		248BD584243627D000B4A3CA /* FilesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD556243627CF00B4A3CA /* FilesList.swift */; };
 		248BD586243627D000B4A3CA /* CopyFileToLocalStorageResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD558243627CF00B4A3CA /* CopyFileToLocalStorageResponse.swift */; };
-		248BD588243627D000B4A3CA /* CopyFileToLocalStorageResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD558243627CF00B4A3CA /* CopyFileToLocalStorageResponse.swift */; };
 		248BD58A243627D000B4A3CA /* RESTAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD559243627CF00B4A3CA /* RESTAPIError.swift */; };
-		248BD58C243627D000B4A3CA /* RESTAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD559243627CF00B4A3CA /* RESTAPIError.swift */; };
 		248BD58E243627D000B4A3CA /* BatchFilesOperationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55A243627CF00B4A3CA /* BatchFilesOperationResponse.swift */; };
-		248BD590243627D000B4A3CA /* BatchFilesOperationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55A243627CF00B4A3CA /* BatchFilesOperationResponse.swift */; };
 		248BD592243627D000B4A3CA /* CopyFileToRemoteStorageResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55B243627CF00B4A3CA /* CopyFileToRemoteStorageResponse.swift */; };
-		248BD594243627D000B4A3CA /* CopyFileToRemoteStorageResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55B243627CF00B4A3CA /* CopyFileToRemoteStorageResponse.swift */; };
 		248BD596243627D000B4A3CA /* Collaborator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55C243627CF00B4A3CA /* Collaborator.swift */; };
-		248BD598243627D000B4A3CA /* Collaborator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55C243627CF00B4A3CA /* Collaborator.swift */; };
 		248BD59A243627D000B4A3CA /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55D243627CF00B4A3CA /* Project.swift */; };
-		248BD59C243627D000B4A3CA /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55D243627CF00B4A3CA /* Project.swift */; };
 		248BD59E243627D000B4A3CA /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55E243627CF00B4A3CA /* File.swift */; };
-		248BD5A0243627D000B4A3CA /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55E243627CF00B4A3CA /* File.swift */; };
 		248BD5A2243627D000B4A3CA /* PaginationQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55F243627CF00B4A3CA /* PaginationQuery.swift */; };
-		248BD5A4243627D000B4A3CA /* PaginationQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD55F243627CF00B4A3CA /* PaginationQuery.swift */; };
 		248BD5A6243627D000B4A3CA /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD560243627CF00B4A3CA /* Group.swift */; };
-		248BD5A8243627D000B4A3CA /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD560243627CF00B4A3CA /* Group.swift */; };
 		248BD5AA243627D000B4A3CA /* GroupsListQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD561243627CF00B4A3CA /* GroupsListQuery.swift */; };
-		248BD5AC243627D000B4A3CA /* GroupsListQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD561243627CF00B4A3CA /* GroupsListQuery.swift */; };
 		248BD5AE243627D000B4A3CA /* UploadFromURLTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD563243627CF00B4A3CA /* UploadFromURLTask.swift */; };
-		248BD5B0243627D000B4A3CA /* UploadFromURLTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD563243627CF00B4A3CA /* UploadFromURLTask.swift */; };
 		248BD5B2243627D000B4A3CA /* UploadFromURLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD565243627CF00B4A3CA /* UploadFromURLResponse.swift */; };
-		248BD5B4243627D000B4A3CA /* UploadFromURLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD565243627CF00B4A3CA /* UploadFromURLResponse.swift */; };
 		248BD5B6243627D000B4A3CA /* StartMulipartUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD566243627CF00B4A3CA /* StartMulipartUploadResponse.swift */; };
-		248BD5B8243627D000B4A3CA /* StartMulipartUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD566243627CF00B4A3CA /* StartMulipartUploadResponse.swift */; };
 		248BD5BA243627D000B4A3CA /* UploadFromURLStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD567243627CF00B4A3CA /* UploadFromURLStatus.swift */; };
-		248BD5BC243627D000B4A3CA /* UploadFromURLStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD567243627CF00B4A3CA /* UploadFromURLStatus.swift */; };
 		248BD5BE243627D000B4A3CA /* UploadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD568243627CF00B4A3CA /* UploadTask.swift */; };
-		248BD5C0243627D000B4A3CA /* UploadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD568243627CF00B4A3CA /* UploadTask.swift */; };
 		248BD5C2243627D000B4A3CA /* UploadError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD569243627CF00B4A3CA /* UploadError.swift */; };
-		248BD5C4243627D000B4A3CA /* UploadError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD569243627CF00B4A3CA /* UploadError.swift */; };
 		248BD5C6243627D000B4A3CA /* UploadedFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD56A243627CF00B4A3CA /* UploadedFile.swift */; };
-		248BD5C8243627D000B4A3CA /* UploadedFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD56A243627CF00B4A3CA /* UploadedFile.swift */; };
 		248BD5CA243627D000B4A3CA /* UploadedFilesGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD56B243627CF00B4A3CA /* UploadedFilesGroup.swift */; };
-		248BD5CC243627D000B4A3CA /* UploadedFilesGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD56B243627CF00B4A3CA /* UploadedFilesGroup.swift */; };
 		248BD5CE243627D000B4A3CA /* Data+ToString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD56D243627CF00B4A3CA /* Data+ToString.swift */; };
-		248BD5D0243627D000B4A3CA /* Data+ToString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD56D243627CF00B4A3CA /* Data+ToString.swift */; };
 		248BD5D2243627D000B4A3CA /* Uploadcare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD56E243627CF00B4A3CA /* Uploadcare.swift */; };
-		248BD5D4243627D000B4A3CA /* Uploadcare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD56E243627CF00B4A3CA /* Uploadcare.swift */; };
 		248BD5D6243627D000B4A3CA /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD56F243627CF00B4A3CA /* Utils.swift */; };
-		248BD5D8243627D000B4A3CA /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD56F243627CF00B4A3CA /* Utils.swift */; };
 		248BD5DA243627D000B4A3CA /* UploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD570243627CF00B4A3CA /* UploadAPI.swift */; };
-		248BD5DC243627D000B4A3CA /* UploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD570243627CF00B4A3CA /* UploadAPI.swift */; };
 		2495948223B78B3F006BB9BF /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2495945623B7801A006BB9BF /* Alamofire.framework */; };
 		2495948323B78B3F006BB9BF /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2495945623B7801A006BB9BF /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		24875AF9243B2CCD003F3E06 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				24875AF8243B2CCD003F3E06 /* Alamofire.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		2495948423B78B3F006BB9BF /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -107,7 +67,9 @@
 		24875B26243B3442003F3E06 /* Uploadcare_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24875B28243B3442003F3E06 /* Uploadcare_watchOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Uploadcare_watchOS.h; sourceTree = "<group>"; };
 		24875B29243B3442003F3E06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		248BD546243627B600B4A3CA /* Uploadcare_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		24875B33243B3518003F3E06 /* Uploadcare_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		24875B35243B3518003F3E06 /* Uploadcare_macOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Uploadcare_macOS.h; sourceTree = "<group>"; };
+		24875B36243B3518003F3E06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		248BD548243627B600B4A3CA /* Uploadcare_Carthage_macOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Uploadcare_Carthage_macOS.h; sourceTree = "<group>"; };
 		248BD549243627B600B4A3CA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		248BD551243627CF00B4A3CA /* VideoInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoInfo.swift; sourceTree = "<group>"; };
@@ -183,11 +145,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		248BD543243627B600B4A3CA /* Frameworks */ = {
+		24875B30243B3518003F3E06 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24875AF7243B2CCD003F3E06 /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +197,15 @@
 				24875B29243B3442003F3E06 /* Info.plist */,
 			);
 			path = "Uploadcare-watchOS";
+			sourceTree = "<group>";
+		};
+		24875B34243B3518003F3E06 /* Uploadcare-macOS */ = {
+			isa = PBXGroup;
+			children = (
+				24875B35243B3518003F3E06 /* Uploadcare_macOS.h */,
+				24875B36243B3518003F3E06 /* Info.plist */,
+			);
+			path = "Uploadcare-macOS";
 			sourceTree = "<group>";
 		};
 		248BD547243627B600B4A3CA /* Uploadcare-Carthage-macOS */ = {
@@ -402,9 +372,9 @@
 			isa = PBXGroup;
 			children = (
 				2495945323B77F51006BB9BF /* Uploadcare.framework */,
-				248BD546243627B600B4A3CA /* Uploadcare_macOS.framework */,
 				24875B19243B33EB003F3E06 /* Uploadcare_tvOS.framework */,
 				24875B26243B3442003F3E06 /* Uploadcare_watchOS.framework */,
+				24875B33243B3518003F3E06 /* Uploadcare_macOS.framework */,
 			);
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -421,6 +391,7 @@
 				24875B0D243B2ED2003F3E06 /* Uploadcare-tvOS */,
 				24875B1A243B33EB003F3E06 /* Uploadcare-tvOS */,
 				24875B27243B3442003F3E06 /* Uploadcare-watchOS */,
+				24875B34243B3518003F3E06 /* Uploadcare-macOS */,
 				OBJ_34 /* Products */,
 				OBJ_38 /* Carthage */,
 				OBJ_39 /* Cartfile.resolved */,
@@ -451,11 +422,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		248BD541243627B600B4A3CA /* Headers */ = {
+		24875B2E243B3518003F3E06 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				248BD54A243627B600B4A3CA /* Uploadcare_Carthage_macOS.h in Headers */,
+				24875B37243B3518003F3E06 /* Uploadcare_macOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,25 +469,22 @@
 			productReference = 24875B26243B3442003F3E06 /* Uploadcare_watchOS.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		248BD545243627B600B4A3CA /* Uploadcare-macOS */ = {
+		24875B32243B3518003F3E06 /* Uploadcare-macOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 248BD54B243627B600B4A3CA /* Build configuration list for PBXNativeTarget "Uploadcare-macOS" */;
+			buildConfigurationList = 24875B38243B3518003F3E06 /* Build configuration list for PBXNativeTarget "Uploadcare-macOS" */;
 			buildPhases = (
-				248BD541243627B600B4A3CA /* Headers */,
-				248BD542243627B600B4A3CA /* Sources */,
-				248BD543243627B600B4A3CA /* Frameworks */,
-				248BD544243627B600B4A3CA /* Resources */,
-				24875AF9243B2CCD003F3E06 /* Embed Frameworks */,
+				24875B2E243B3518003F3E06 /* Headers */,
+				24875B2F243B3518003F3E06 /* Sources */,
+				24875B30243B3518003F3E06 /* Frameworks */,
+				24875B31243B3518003F3E06 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "Uploadcare-macOS";
-			packageProductDependencies = (
-			);
-			productName = "Uploadcare-Carthage-macOS";
-			productReference = 248BD546243627B600B4A3CA /* Uploadcare_macOS.framework */;
+			productName = "Uploadcare-macOS";
+			productReference = 24875B33243B3518003F3E06 /* Uploadcare_macOS.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		2495944923B77F51006BB9BF /* Uploadcare */ = {
@@ -553,7 +521,7 @@
 					24875B25243B3442003F3E06 = {
 						CreatedOnToolsVersion = 11.4;
 					};
-					248BD545243627B600B4A3CA = {
+					24875B32243B3518003F3E06 = {
 						CreatedOnToolsVersion = 11.4;
 					};
 				};
@@ -574,9 +542,9 @@
 			projectRoot = "";
 			targets = (
 				2495944923B77F51006BB9BF /* Uploadcare */,
-				248BD545243627B600B4A3CA /* Uploadcare-macOS */,
 				24875B18243B33EB003F3E06 /* Uploadcare-tvOS */,
 				24875B25243B3442003F3E06 /* Uploadcare-watchOS */,
+				24875B32243B3518003F3E06 /* Uploadcare-macOS */,
 			);
 		};
 /* End PBXProject section */
@@ -596,7 +564,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		248BD544243627B600B4A3CA /* Resources */ = {
+		24875B31243B3518003F3E06 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -620,37 +588,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		248BD542243627B600B4A3CA /* Sources */ = {
+		24875B2F243B3518003F3E06 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				248BD5AC243627D000B4A3CA /* GroupsListQuery.swift in Sources */,
-				248BD5B0243627D000B4A3CA /* UploadFromURLTask.swift in Sources */,
-				248BD594243627D000B4A3CA /* CopyFileToRemoteStorageResponse.swift in Sources */,
-				248BD5BC243627D000B4A3CA /* UploadFromURLStatus.swift in Sources */,
-				248BD5A0243627D000B4A3CA /* File.swift in Sources */,
-				248BD5D8243627D000B4A3CA /* Utils.swift in Sources */,
-				248BD5B8243627D000B4A3CA /* StartMulipartUploadResponse.swift in Sources */,
-				248BD57C243627D000B4A3CA /* ImageInfo.swift in Sources */,
-				248BD5DC243627D000B4A3CA /* UploadAPI.swift in Sources */,
-				248BD5C4243627D000B4A3CA /* UploadError.swift in Sources */,
-				248BD578243627D000B4A3CA /* GeoLocation.swift in Sources */,
-				248BD584243627D000B4A3CA /* FilesList.swift in Sources */,
-				248BD5B4243627D000B4A3CA /* UploadFromURLResponse.swift in Sources */,
-				248BD5D4243627D000B4A3CA /* Uploadcare.swift in Sources */,
-				248BD5C8243627D000B4A3CA /* UploadedFile.swift in Sources */,
-				248BD590243627D000B4A3CA /* BatchFilesOperationResponse.swift in Sources */,
-				248BD5D0243627D000B4A3CA /* Data+ToString.swift in Sources */,
-				248BD58C243627D000B4A3CA /* RESTAPIError.swift in Sources */,
-				248BD5A8243627D000B4A3CA /* Group.swift in Sources */,
-				248BD5CC243627D000B4A3CA /* UploadedFilesGroup.swift in Sources */,
-				248BD574243627D000B4A3CA /* VideoInfo.swift in Sources */,
-				248BD59C243627D000B4A3CA /* Project.swift in Sources */,
-				248BD5C0243627D000B4A3CA /* UploadTask.swift in Sources */,
-				248BD588243627D000B4A3CA /* CopyFileToLocalStorageResponse.swift in Sources */,
-				248BD5A4243627D000B4A3CA /* PaginationQuery.swift in Sources */,
-				248BD580243627D000B4A3CA /* GroupsList.swift in Sources */,
-				248BD598243627D000B4A3CA /* Collaborator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -985,7 +926,7 @@
 			};
 			name = Release;
 		};
-		248BD54C243627B600B4A3CA /* Debug */ = {
+		24875B39243B3518003F3E06 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1026,10 +967,6 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1043,21 +980,20 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Uploadcare-Carthage-macOS/Info.plist";
+				INFOPLIST_FILE = "Uploadcare-macOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uploadcare.Uploadcare-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1065,7 +1001,7 @@
 			};
 			name = Debug;
 		};
-		248BD54D243627B600B4A3CA /* Release */ = {
+		24875B3A243B3518003F3E06 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1107,10 +1043,6 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1119,21 +1051,20 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Uploadcare-Carthage-macOS/Info.plist";
+				INFOPLIST_FILE = "Uploadcare-macOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uploadcare.Uploadcare-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = macosx;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1287,11 +1218,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		248BD54B243627B600B4A3CA /* Build configuration list for PBXNativeTarget "Uploadcare-macOS" */ = {
+		24875B38243B3518003F3E06 /* Build configuration list for PBXNativeTarget "Uploadcare-macOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				248BD54C243627B600B4A3CA /* Debug */,
-				248BD54D243627B600B4A3CA /* Release */,
+				24875B39243B3518003F3E06 /* Debug */,
+				24875B3A243B3518003F3E06 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
