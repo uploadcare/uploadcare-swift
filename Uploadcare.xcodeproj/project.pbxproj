@@ -10,7 +10,7 @@
 		24875AF7243B2CCD003F3E06 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24875AF6243B2CCD003F3E06 /* Alamofire.framework */; };
 		24875AF8243B2CCD003F3E06 /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 24875AF6243B2CCD003F3E06 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		24875B03243B2EAD003F3E06 /* Uploadcare_watchOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B01243B2EAD003F3E06 /* Uploadcare_watchOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		24875B10243B2ED2003F3E06 /* Uploadcare_tvOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B0E243B2ED2003F3E06 /* Uploadcare_tvOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		24875B1D243B33EC003F3E06 /* Uploadcare_tvOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B1B243B33EB003F3E06 /* Uploadcare_tvOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		248BD54A243627B600B4A3CA /* Uploadcare_Carthage_macOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 248BD548243627B600B4A3CA /* Uploadcare_Carthage_macOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		248BD572243627D000B4A3CA /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD551243627CF00B4A3CA /* VideoInfo.swift */; };
 		248BD574243627D000B4A3CA /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248BD551243627CF00B4A3CA /* VideoInfo.swift */; };
@@ -100,9 +100,11 @@
 		24875AFF243B2EAD003F3E06 /* Uploadcare_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24875B01243B2EAD003F3E06 /* Uploadcare_watchOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Uploadcare_watchOS.h; sourceTree = "<group>"; };
 		24875B02243B2EAD003F3E06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		24875B0C243B2ED2003F3E06 /* Uploadcare_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24875B0E243B2ED2003F3E06 /* Uploadcare_tvOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Uploadcare_tvOS.h; sourceTree = "<group>"; };
 		24875B0F243B2ED2003F3E06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		24875B19243B33EB003F3E06 /* Uploadcare_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		24875B1B243B33EB003F3E06 /* Uploadcare_tvOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Uploadcare_tvOS.h; sourceTree = "<group>"; };
+		24875B1C243B33EC003F3E06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		248BD546243627B600B4A3CA /* Uploadcare_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		248BD548243627B600B4A3CA /* Uploadcare_Carthage_macOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Uploadcare_Carthage_macOS.h; sourceTree = "<group>"; };
 		248BD549243627B600B4A3CA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -172,7 +174,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		24875B09243B2ED2003F3E06 /* Frameworks */ = {
+		24875B16243B33EB003F3E06 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -212,6 +214,15 @@
 			children = (
 				24875B0E243B2ED2003F3E06 /* Uploadcare_tvOS.h */,
 				24875B0F243B2ED2003F3E06 /* Info.plist */,
+			);
+			path = "Uploadcare-tvOS";
+			sourceTree = "<group>";
+		};
+		24875B1A243B33EB003F3E06 /* Uploadcare-tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				24875B1B243B33EB003F3E06 /* Uploadcare_tvOS.h */,
+				24875B1C243B33EC003F3E06 /* Info.plist */,
 			);
 			path = "Uploadcare-tvOS";
 			sourceTree = "<group>";
@@ -382,7 +393,7 @@
 				2495945323B77F51006BB9BF /* Uploadcare.framework */,
 				248BD546243627B600B4A3CA /* Uploadcare_macOS.framework */,
 				24875AFF243B2EAD003F3E06 /* Uploadcare_watchOS.framework */,
-				24875B0C243B2ED2003F3E06 /* Uploadcare_tvOS.framework */,
+				24875B19243B33EB003F3E06 /* Uploadcare_tvOS.framework */,
 			);
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -397,6 +408,7 @@
 				248BD547243627B600B4A3CA /* Uploadcare-Carthage-macOS */,
 				24875B00243B2EAD003F3E06 /* Uploadcare-watchOS */,
 				24875B0D243B2ED2003F3E06 /* Uploadcare-tvOS */,
+				24875B1A243B33EB003F3E06 /* Uploadcare-tvOS */,
 				OBJ_34 /* Products */,
 				OBJ_38 /* Carthage */,
 				OBJ_39 /* Cartfile.resolved */,
@@ -419,11 +431,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		24875B07243B2ED2003F3E06 /* Headers */ = {
+		24875B14243B33EB003F3E06 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24875B10243B2ED2003F3E06 /* Uploadcare_tvOS.h in Headers */,
+				24875B1D243B33EC003F3E06 /* Uploadcare_tvOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,14 +468,14 @@
 			productReference = 24875AFF243B2EAD003F3E06 /* Uploadcare_watchOS.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		24875B0B243B2ED2003F3E06 /* Uploadcare-tvOS */ = {
+		24875B18243B33EB003F3E06 /* Uploadcare-tvOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 24875B11243B2ED2003F3E06 /* Build configuration list for PBXNativeTarget "Uploadcare-tvOS" */;
+			buildConfigurationList = 24875B1E243B33EC003F3E06 /* Build configuration list for PBXNativeTarget "Uploadcare-tvOS" */;
 			buildPhases = (
-				24875B07243B2ED2003F3E06 /* Headers */,
-				24875B08243B2ED2003F3E06 /* Sources */,
-				24875B09243B2ED2003F3E06 /* Frameworks */,
-				24875B0A243B2ED2003F3E06 /* Resources */,
+				24875B14243B33EB003F3E06 /* Headers */,
+				24875B15243B33EB003F3E06 /* Sources */,
+				24875B16243B33EB003F3E06 /* Frameworks */,
+				24875B17243B33EB003F3E06 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -471,7 +483,7 @@
 			);
 			name = "Uploadcare-tvOS";
 			productName = "Uploadcare-tvOS";
-			productReference = 24875B0C243B2ED2003F3E06 /* Uploadcare_tvOS.framework */;
+			productReference = 24875B19243B33EB003F3E06 /* Uploadcare_tvOS.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		248BD545243627B600B4A3CA /* Uploadcare-macOS */ = {
@@ -526,7 +538,7 @@
 					24875AFE243B2EAD003F3E06 = {
 						CreatedOnToolsVersion = 11.4;
 					};
-					24875B0B243B2ED2003F3E06 = {
+					24875B18243B33EB003F3E06 = {
 						CreatedOnToolsVersion = 11.4;
 					};
 					248BD545243627B600B4A3CA = {
@@ -552,7 +564,7 @@
 				2495944923B77F51006BB9BF /* Uploadcare */,
 				248BD545243627B600B4A3CA /* Uploadcare-macOS */,
 				24875AFE243B2EAD003F3E06 /* Uploadcare-watchOS */,
-				24875B0B243B2ED2003F3E06 /* Uploadcare-tvOS */,
+				24875B18243B33EB003F3E06 /* Uploadcare-tvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -565,7 +577,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		24875B0A243B2ED2003F3E06 /* Resources */ = {
+		24875B17243B33EB003F3E06 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -589,7 +601,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		24875B08243B2ED2003F3E06 /* Sources */ = {
+		24875B15243B33EB003F3E06 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -817,7 +829,7 @@
 			};
 			name = Release;
 		};
-		24875B12243B2ED2003F3E06 /* Debug */ = {
+		24875B1F243B33EC003F3E06 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -883,7 +895,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -893,7 +904,7 @@
 			};
 			name = Debug;
 		};
-		24875B13243B2ED2003F3E06 /* Release */ = {
+		24875B20243B33EC003F3E06 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -955,7 +966,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 13.4;
@@ -1258,11 +1268,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		24875B11243B2ED2003F3E06 /* Build configuration list for PBXNativeTarget "Uploadcare-tvOS" */ = {
+		24875B1E243B33EC003F3E06 /* Build configuration list for PBXNativeTarget "Uploadcare-tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				24875B12243B2ED2003F3E06 /* Debug */,
-				24875B13243B2ED2003F3E06 /* Release */,
+				24875B1F243B33EC003F3E06 /* Debug */,
+				24875B20243B33EC003F3E06 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
