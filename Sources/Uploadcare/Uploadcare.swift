@@ -33,7 +33,9 @@ public class Uploadcare {
 	internal var secretKey: String?
 	
 	/// Auth scheme
-	internal var authScheme: AuthScheme = .simple
+	internal var authScheme: AuthScheme {
+		return secretKey?.isEmpty == true ? .simple : .signed
+	}
 	
 	/// Alamofire session manager
 	private var manager = Session()
@@ -67,14 +69,10 @@ internal extension Uploadcare {
 	/// Build url request for REST API
 	/// - Parameter fromURL: request url
 	func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
-		let dateString = GMTDate()
-		
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = method.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
 		urlRequest.addValue("application/vnd.uploadcare-v0.6+json", forHTTPHeaderField: "Accept")
-		urlRequest.addValue(dateString, forHTTPHeaderField: "Date")
-		
 		
 		let userAgent = "\(libraryName)/\(libraryVersion)/\(publicKey) (Swift/\(getSwiftVersion()))"
 		urlRequest.addValue(userAgent, forHTTPHeaderField: "User-Agent")
@@ -88,6 +86,41 @@ internal extension Uploadcare {
 		}
 		
 		return urlRequest
+	}
+	
+	/// Adds signature to network request for secure authorization
+	/// - Parameter urlRequest: url request
+	func signRequest(_ urlRequest: inout URLRequest) {
+		let dateString = GMTDate()
+		urlRequest.addValue(dateString, forHTTPHeaderField: "Date")
+		
+		let secretKey = self.secretKey ?? ""
+		
+		switch authScheme {
+		case .simple:
+			urlRequest.addValue("\(authScheme.rawValue) \(publicKey):\(secretKey )", forHTTPHeaderField: "Authorization")
+		case .signed:
+			let content = urlRequest.httpBody?.toString() ?? ""
+			
+			var query = ""
+			if let q = urlRequest.url?.query {
+				query = "/?" + q
+			}
+			let uri = (urlRequest.url?.path ?? "") + query
+			
+			let signString = [
+				urlRequest.method?.rawValue ?? "GET",
+				content.md5(),
+				urlRequest.allHTTPHeaderFields?["Content-Type"] ?? "application/json",
+				dateString,
+				uri
+			].joined(separator: "\n")
+			
+			let signature = signString.hmac(key: secretKey)
+			
+			let authHeader = "\(authScheme.rawValue) \(publicKey):\(signature)"
+			urlRequest.addValue(authHeader, forHTTPHeaderField: "Authorization")
+		}
 	}
 }
 
@@ -127,7 +160,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
