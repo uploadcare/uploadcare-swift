@@ -20,7 +20,7 @@ public class Uploadcare {
 		case signed = "Uploadcare"
 	}
 	
-	
+
 	// MARK: - Public properties
 	public var uploadAPI: UploadAPI
 	
@@ -33,9 +33,7 @@ public class Uploadcare {
 	internal var secretKey: String?
 	
 	/// Auth scheme
-	internal var authScheme: AuthScheme {
-		return secretKey?.isEmpty == true ? .simple : .signed
-	}
+	internal var authScheme: AuthScheme { secretKey?.isEmpty == true ? .simple : .signed }
 	
 	/// Alamofire session manager
 	private var manager = Session()
@@ -76,14 +74,6 @@ internal extension Uploadcare {
 		
 		let userAgent = "\(libraryName)/\(libraryVersion)/\(publicKey) (Swift/\(getSwiftVersion()))"
 		urlRequest.addValue(userAgent, forHTTPHeaderField: "User-Agent")
-		
-		switch authScheme {
-		case .simple:
-			urlRequest.addValue("\(authScheme.rawValue) \(publicKey):\(secretKey ?? "")", forHTTPHeaderField: "Authorization")
-		case .signed:
-			// TODO: - implement
-			break
-		}
 		
 		return urlRequest
 	}
@@ -199,7 +189,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -238,7 +229,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .delete)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -282,6 +274,7 @@ extension Uploadcare {
 		if let body = try? JSONEncoder().encode(uuids) {
 			urlRequest.httpBody = body
 		}
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -319,7 +312,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -363,6 +357,7 @@ extension Uploadcare {
 		if let body = try? JSONEncoder().encode(uuids) {
 			urlRequest.httpBody = body
 		}
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -419,7 +414,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -457,7 +453,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -496,7 +493,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -541,6 +539,7 @@ extension Uploadcare {
 		if let body = try? JSONEncoder().encode(bodyDictionary) {
 			urlRequest.httpBody = body
 		}
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -602,6 +601,7 @@ extension Uploadcare {
 		if let body = try? JSONEncoder().encode(bodyDictionary) {
 			urlRequest.httpBody = body
 		}
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -635,7 +635,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)

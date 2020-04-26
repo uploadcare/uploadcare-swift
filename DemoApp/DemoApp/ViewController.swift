@@ -26,9 +26,9 @@ class ViewController: UIViewController {
 //		queue.async { [unowned self] in
 //			self.testUploadFileInfo()
 //		}
-		queue.async { [unowned self] in
-			self.testUploadFileFromURL()
-		}
+//		queue.async { [unowned self] in
+//			self.testUploadFileFromURL()
+//		}
 //		queue.async { [unowned self] in
 //			self.testDirectUpload()
 //		}
@@ -82,7 +82,7 @@ private extension ViewController {
 	func testUploadFileInfo() {
 		print("<------ testUploadFileInfo ------>")
 		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadAPI.fileInfo(withFileId: "e5d1649d-823c-4eeb-942f-4f88a1a81f8e") { (info, error) in
+		uploadcare.uploadAPI.fileInfo(withFileId: "530384dd-f43a-46de-b3c2-9448a24170cf") { (info, error) in
 			defer {
 				semaphore.signal()
 			}
