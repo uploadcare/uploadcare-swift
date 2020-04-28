@@ -14,11 +14,15 @@ public class Uploadcare {
 	// TODO: log turn on or off
 	// TODO: add logs
 	
-	/// Authorization scheme for REST API requests
+	/// Authentication scheme for REST API requests
+	/// More information about authentication: https://uploadcare.com/docs/api_reference/rest/requests_auth/#rest-api-requests-and-authentication
 	public enum AuthScheme: String {
 		case simple = "Uploadcare.Simple"
 		case signed = "Uploadcare"
 	}
+	
+	/// Uploadcare authentication method
+	public var authScheme: AuthScheme = .signed
 	
 
 	// MARK: - Public properties
@@ -31,9 +35,6 @@ public class Uploadcare {
 	
 	/// Secret Key. Optional. Is used for authorization
 	internal var secretKey: String?
-	
-	/// Auth scheme
-	internal var authScheme: AuthScheme { secretKey?.isEmpty == true ? .simple : .signed }
 	
 	/// Alamofire session manager
 	private var manager = Session()
