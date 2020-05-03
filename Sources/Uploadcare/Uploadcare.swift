@@ -225,7 +225,7 @@ extension Uploadcare {
 		withUUID uuid: String,
 		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
 	) {
-		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
+		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/storage/"
 		guard let url = URL(string: urlString) else {
 			assertionFailure("Incorrect url")
 			return
@@ -233,7 +233,14 @@ extension Uploadcare {
 		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
 		signRequest(&urlRequest)
 		
+		let redirector = Redirector(behavior: .modify({ [weak self] (task, request, response) -> URLRequest? in
+			guard let url = request.url else { return request }
+			guard var newRequest = self?.makeUrlRequest(fromURL: url, method: .delete) else { return request }
+			self?.signRequest(&newRequest)
+			return newRequest
+		}))
 		manager.request(urlRequest)
+			.redirect(using: redirector)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
