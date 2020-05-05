@@ -20,6 +20,9 @@ public class UploadAPI {
 	/// Secret Key. Is used for authorization
 	internal var secretKey: String?
 	
+	/// Signature
+	internal var signature: UploadSignature?
+	
 	/// Alamofire session manager
 	private var manager: Session
 	
@@ -59,6 +62,31 @@ private extension UploadAPI {
 		}
 		
 		return UploadError(status: status, message: message)
+	}
+	
+	func generateSignature() {
+		guard let secretKey = self.secretKey else { return }
+		
+		let expire = Int(Date().timeIntervalSince1970 + Double(60*30))
+		let expireString = String(expire)
+		
+		self.signature = UploadSignature(signature: expireString.sha256(key: secretKey), expire: expire)
+	}
+	
+	func getSignature() -> UploadSignature? {
+		guard self.secretKey != nil else { return nil }
+		
+		// check if signature expired
+		if let signature = self.signature, signature.expire < Int(Date().timeIntervalSince1970) {
+			generateSignature()
+		}
+		
+		// generate signature if need
+		if self.signature == nil {
+			generateSignature()
+		}
+		
+		return self.signature
 	}
 }
 
@@ -128,11 +156,10 @@ extension UploadAPI {
 			let val = saveURLDuplicatesVal == true ? "1" : "0"
 			urlString += "&save_URL_duplicates=\(val)"
 		}
-		if let signatureVal = task.signature {
-			urlString += "&signature=\(signatureVal)"
-		}
-		if let expireVal = task.expire {
-			urlString += "&expire=\(Int(expireVal))"
+		
+		if let uploadSignature = getSignature() {
+			urlString += "&signature=\(uploadSignature.signature)"
+			urlString += "&expire=\(uploadSignature.expire)"
 		}
 		
 		guard let url = URL(string: urlString) else {
@@ -198,27 +225,22 @@ extension UploadAPI {
 		}
 	}
 	
-	// TODO: Signature
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
 	/// - Parameters:
 	///   - files: Files dictionary where key is filename, value file in Data format
-	///   - store: Sets the file storing behavior.
-	///   - signature: signature
-	///   - expire: signature expire
+	///   - store: Sets the file storing behavior
 	///   - completionHandler: callback
 	@discardableResult
 	public func upload(
 		files: [String:Data],
 		store: StoringBehavior? = nil,
-		signature: String? = nil,
-		expire: Int? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping ([String: String]?, UploadError?) -> Void
 	) -> UploadTaskable {
 		let urlString = uploadAPIBaseUrl + "/base/"
 		let request = manager.upload(
-			multipartFormData: { (multipartFormData) in
-				if let publicKeyData = self.publicKey.data(using: .utf8) {
+			multipartFormData: { [weak self] (multipartFormData) in
+				if let publicKeyData = self?.publicKey.data(using: .utf8) {
 					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
 				}
 				
@@ -231,12 +253,14 @@ extension UploadAPI {
 					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
 				}
 				
-				if let signatureVal = signature, let data = signatureVal.data(using: .utf8) {
-					multipartFormData.append(data, withName: "signature")
-				}
-				if var expireVal = expire {
-					let data = Data(bytes: &expireVal, count: MemoryLayout.size(ofValue: expireVal))
-					multipartFormData.append(data, withName: "expire")
+				if let uploadSignature = self?.getSignature() {
+					if let signatureData = uploadSignature.signature.data(using: .utf8) {
+						multipartFormData.append(signatureData, withName: "signature")
+					}
+					
+					if let expireData = String(uploadSignature.expire).data(using: .utf8) {
+						multipartFormData.append(expireData, withName: "expire")
+					}
 				}
 		},
 			to: urlString)
@@ -375,21 +399,17 @@ extension UploadAPI {
 	///   - size: Precise file size in bytes. Should not exceed your project file size cap.
 	///   - mimeType: A file MIME-type.
 	///   - store: Sets the file storing behavior.
-	///   - signature: signature
-	///   - expire: expire sets the time until your signature is valid
 	///   - completionHandler: callback
 	private func startMulipartUpload(
 		withName filename: String,
 		size: Int,
 		mimeType: String,
 		store: StoringBehavior? = nil,
-		signature: String? = nil,
-		expire: Int? = nil,
 		_ completionHandler: @escaping (StartMulipartUploadResponse?, UploadError?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/multipart/start/"
 		manager.upload(
-			multipartFormData: { (multipartFormData) in
+			multipartFormData: { [weak self] (multipartFormData) in
 				if let filenameData = filename.data(using: .utf8) {
 					multipartFormData.append(filenameData, withName: "filename")
 				}
@@ -402,7 +422,7 @@ extension UploadAPI {
 					multipartFormData.append(contentTypeData, withName: "content_type")
 				}
 				
-				if let publicKeyData = self.publicKey.data(using: .utf8) {
+				if let publicKeyData = self?.publicKey.data(using: .utf8) {
 					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
 				}
 				
@@ -410,13 +430,14 @@ extension UploadAPI {
 					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
 				}
 				
-				if let signatureVal = signature, let data = signatureVal.data(using: .utf8) {
-					multipartFormData.append(data, withName: "signature")
-				}
-				
-				if var expireVal = expire {
-					let data = Data(bytes: &expireVal, count: MemoryLayout.size(ofValue: expireVal))
-					multipartFormData.append(data, withName: "expire")
+				if let uploadSignature = self?.getSignature() {
+					if let signatureData = uploadSignature.signature.data(using: .utf8) {
+						multipartFormData.append(signatureData, withName: "signature")
+					}
+					
+					if let expireData = String(uploadSignature.expire).data(using: .utf8) {
+						multipartFormData.append(expireData, withName: "expire")
+					}
 				}
 		},
 			to: urlString)
@@ -549,17 +570,12 @@ extension UploadAPI {
 
 // MARK: - Groups
 extension UploadAPI {
-	// TODO: Signature
 	/// Create files group from a set of files
 	/// - Parameters:
 	///   - files: files array
-	///   - signature: signature
-	///   - expire: expire
 	///   - completionHandler: callback
 	public func createFilesGroup(
 		files: [UploadedFile],
-		signature: String? = nil,
-		expire: Int? = nil,
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
 		let fileIds: [String] = files.map { (file) -> String in
@@ -571,19 +587,21 @@ extension UploadAPI {
 	/// Create files group from a set of files UUIDs.
 	/// - Parameters:
 	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
-	///   - signature: signature
-	///   - expire: expire
 	///   - completionHandler: callback
 	public func createFilesGroup(
 		fileIds: [String],
-		signature: String? = nil,
-		expire: Int? = nil,
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
 		var urlString = uploadAPIBaseUrl + "/group/?pub_key=\(self.publicKey)"
 		for (index, fileId) in fileIds.enumerated() {
 			urlString += "&files[\(index)]=\(fileId)"
 		}
+
+		if let uploadSignature = self.getSignature() {
+			urlString += "&signature=\(uploadSignature.signature)"
+			urlString += "&expire=\(uploadSignature.expire)"
+		}
+		
 		guard let url = URL(string: urlString) else {
 			assertionFailure("Incorrect url")
 			return
@@ -614,16 +632,18 @@ extension UploadAPI {
 	/// Files group info
 	/// - Parameters:
 	///   - groupId: Group ID. Group IDs look like UUID~N.
-	///   - signature: signature
-	///   - expire: expire
 	///   - completionHandler: callback
 	public func filesGroupInfo(
 		groupId: String,
-		signature: String? = nil,
-		expire: Int? = nil,
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
-		let urlString = uploadAPIBaseUrl + "/group/info/?pub_key=\(self.publicKey)&group_id=\(groupId)"
+		var urlString = uploadAPIBaseUrl + "/group/info/?pub_key=\(self.publicKey)&group_id=\(groupId)"
+		
+		if let uploadSignature = self.getSignature() {
+			urlString += "&signature=\(uploadSignature.signature)"
+			urlString += "&expire=\(uploadSignature.expire)"
+		}
+		
 		guard let url = URL(string: urlString) else {
 			assertionFailure("Incorrect url")
 			return

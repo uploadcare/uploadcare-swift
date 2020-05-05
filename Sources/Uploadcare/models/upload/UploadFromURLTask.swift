@@ -43,30 +43,19 @@ public class UploadFromURLTask {
 	/// Provides the save/update URL behavior. The parameter can be used if you believe a source_url will be used more than once. If you don’t explicitly define save_URL_duplicates, it is by default set to the value of check_URL_duplicates.
 	public var saveURLDuplicates: Bool?
 	
-	/// signature is a string sent along with your upload request. It requires your Uploadcare project secret key and hence should be crafted on your back end. See Signed uploads for details.
-	public var signature: String?
-	
-	/// expire sets the time until your signature is valid. It is timestamp. See Signed uploads for details.
-	public var expire: TimeInterval?
-	
-	
 	// MARK: - Init
 	public init(
 		sourceUrl: URL,
 		store: StoringBehavior? = .auto,
 		filename: String? = nil,
 		checkURLDuplicates: Bool? = nil,
-		saveURLDuplicates: Bool? = nil,
-		signature: String? = nil,
-		expire: TimeInterval? = nil
+		saveURLDuplicates: Bool? = nil
 	) {
 		self.sourceUrl = sourceUrl
 		self.store = store ?? .auto
 		self.filename = filename
 		self.checkURLDuplicates = checkURLDuplicates
 		self.saveURLDuplicates = saveURLDuplicates
-		self.signature = signature
-		self.expire = expire
 	}
 	
 	public func store(_ val: StoringBehavior?) -> Self {

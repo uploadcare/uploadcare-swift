@@ -26,13 +26,23 @@ extension String {
 		return String(format: hash as String)
 	}
 	
-	
 	/// String -> SHA1 signed
 	/// - Parameter key: sign key
 	/// - Returns: hash
 	func hmac(key: String) -> String {
         var digest = [UInt8](repeating: 0, count: Int(CC_SHA1_DIGEST_LENGTH))
         CCHmac(CCHmacAlgorithm(kCCHmacAlgSHA1), key, key.count, self, self.count, &digest)
+        let data = Data(digest)
+        return data.map { String(format: "%02hhx", $0) }.joined()
+    }
+	
+	/// String -> SHA256 signed
+	/// - Parameter key: sign key
+	/// - Returns: hash
+	func sha256(key: String) -> String {
+		var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+		CCHmac(CCHmacAlgorithm(kCCHmacAlgSHA256), key, key.count, self, self.count, &digest)
+		
         let data = Data(digest)
         return data.map { String(format: "%02hhx", $0) }.joined()
     }

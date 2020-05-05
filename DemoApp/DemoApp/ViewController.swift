@@ -109,6 +109,10 @@ private extension ViewController {
 			.store(.store)
 		
 		uploadcare.uploadAPI.upload(task: task) { [unowned self] (result, error) in
+			if let error = error {
+				print(error)
+				return
+			}
 			print(result ?? "")
 			
 			guard let token = result?.token else {
@@ -146,7 +150,7 @@ private extension ViewController {
 		print("size of file: \(sizeString(ofData: data))")
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
+		let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, { (progress) in
 			print("upload progress: \(progress * 100)%")
 		}) { (resultDictionary, error) in
 			defer {
@@ -491,7 +495,7 @@ private extension ViewController {
 		print("<------ testFileGroupInfo ------>")
 		let semaphore = DispatchSemaphore(value: 0)
 		
-		uploadcare.uploadAPI.filesGroupInfo(groupId: "060d3492-0471-4d97-a68a-05aeacbc3ada~1") { (group, error) in
+		uploadcare.uploadAPI.filesGroupInfo(groupId: "69b8e46f-91c9-494f-ba3b-e5fdf9c36db2~2") { (group, error) in
 			defer {
 				semaphore.signal()
 			}
