@@ -581,9 +581,7 @@ extension UploadAPI {
 		files: [UploadedFile],
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
-		let fileIds: [String] = files.map { (file) -> String in
-			return file.fileId
-		}
+		let fileIds: [String] = files.map { $0.fileId }
 		createFilesGroup(fileIds: fileIds, completionHandler)
 	}
 	
