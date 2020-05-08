@@ -522,14 +522,28 @@ private extension ViewController {
 		}
 		
 		// upload without any callbacks
-		fileForUploading.upload(withName: "Mona_Lisa_big111.jpg")
+//		fileForUploading.upload(withName: "Mona_Lisa_big111.jpg")
 		
 		// or
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		let task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", { (progress) in
+		
+		var task: UploadTaskResumable?
+		var didPause = false
+		let onProgress: (Double)->Void = { (progress) in
 			print("progress: \(progress)")
-		}, { (file, error) in
+			
+			if !didPause {
+				didPause.toggle()
+				task?.pause()
+				
+				delay(10.0) {
+					task?.resume()
+				}
+			}
+		}
+		
+		task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", onProgress, { (file, error) in
 			defer {
 				semaphore.signal()
 			}
@@ -540,6 +554,12 @@ private extension ViewController {
 			print(file ?? "")
 		})
 		
+		// pause
+		task?.pause()
+		delay(2.0) {
+			task?.resume()
+		}
+				
 		// cancel if need
 //		task?.cancel()
 		

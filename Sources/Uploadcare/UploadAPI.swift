@@ -308,18 +308,20 @@ extension UploadAPI {
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
-	) -> UploadTaskable {
+	) -> UploadTaskResumable {
 		let totalSize = data.count
 		let fileMimeType = detectMimeType(for: data)
 	
 		let task = MultipartUploadTask()
+		task.queue = self.uploadQueue
 		let filename = name.isEmpty ? "noname.ext" : name
 		
 		// Starting a multipart upload transaction
 		startMulipartUpload(
 			withName: filename,
 			size: totalSize,
-			mimeType: fileMimeType) { (response, error) in
+			mimeType: fileMimeType) { [weak self] (response, error) in
+				guard let self = self else { return }
 				if let error = error {
 					completionHandler(nil, error)
 					return
@@ -482,8 +484,8 @@ extension UploadAPI {
 		onComplete: (()->Void)? = nil
 	) {
 		group?.enter()
-		// using concurrent queue for parts uploading
-		uploadQueue.async { [weak self, weak task] in
+		
+		let workItem = DispatchWorkItem { [weak self, weak task] in
 			guard let self = self, let task = task else { return }
 			
 			guard let url = URL(string: urlString) else {
@@ -516,6 +518,9 @@ extension UploadAPI {
 			}
 			task.appendRequest(request)
 		}
+		
+		// using concurrent queue for parts uploading
+		uploadQueue.async(execute: workItem)
 	}
 	
 	/// Complete multipart upload transaction when all files parts are uploaded.
