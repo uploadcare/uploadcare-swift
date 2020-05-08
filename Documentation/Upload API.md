@@ -84,6 +84,11 @@ let task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", { (progress) i
 
 // you can cancel uploading if need:
 task?.cancel()
+
+// you can pause uploading:
+task?.pause()
+// to resume uploading:
+task?.resume()
 ```
 
 ### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
