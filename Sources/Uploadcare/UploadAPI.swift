@@ -64,6 +64,7 @@ private extension UploadAPI {
 		return UploadError(status: status, message: message)
 	}
 	
+	/// Generate signature for signed requests
 	func generateSignature() {
 		guard let secretKey = self.secretKey else { return }
 		
@@ -73,6 +74,8 @@ private extension UploadAPI {
 		self.signature = UploadSignature(signature: expireString.sha256(key: secretKey), expire: expire)
 	}
 	
+	/// Get current signature for signed requests. Generates new one if signature is expired
+	/// - Returns: signature
 	func getSignature() -> UploadSignature? {
 		guard self.secretKey != nil else { return nil }
 		
