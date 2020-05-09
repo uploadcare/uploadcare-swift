@@ -191,6 +191,6 @@ uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) 
 
 ### Signed Uploads ([API Reference](https://uploadcare.com/docs/api_reference/upload/signed_uploads/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
-Requests signing is on by default if Secret Key was provided during SDK initialization. SDK generates signature internally. Signature is valid for 30 minutes. New signature will be generated automatically if the old signature is expired.
+Requests signing are on by default if Secret Key is provided during SDK initialization. SDK generates a signature internally. The signature is valid for 30 minutes. The new signature is generated automatically when the old signature expires.
 
-Please notice that Signed uploads should be enabled in your project’s settings via our dashboard.
+Please notice that signed uploads should be enabled in your project’s settings (in the dashboard).
