@@ -21,6 +21,8 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY")
 
 ### Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
+Direct uploads works with backround URLSession so uploading will continue if the app goes to background state.
+
 ```swift
 guard let url = URL(string: "https://source.unsplash.com/random") else { return }
 let data = try? Data(contentsOf: url) else { return }
