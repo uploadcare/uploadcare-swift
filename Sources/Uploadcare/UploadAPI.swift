@@ -8,9 +8,10 @@
 import Foundation
 import Alamofire
 
+public typealias TaskCompletionHandler = ([String: String]?, UploadError?) -> Void
+public typealias TaskProgressBlock = (Double) -> Void
 
-public class UploadAPI {
-	
+public class UploadAPI: NSObject {
 	/// Each uploaded part should be 5MB
 	static let uploadChunkSize = 5242880
 	
@@ -28,6 +29,22 @@ public class UploadAPI {
 	
 	/// Upload queue for multipart uploading
 	private var uploadQueue = DispatchQueue(label: "com.uploadcare.upload", qos: .utility, attributes: .concurrent)
+	
+	/// URLSession for background uploads
+	private lazy var backgroundUrlSession: URLSession = {
+		let bundle = Bundle.main.bundleIdentifier ?? ""
+		let config = URLSessionConfiguration.background(withIdentifier: "\(bundle).com.uploadcare.backgroundUrlSession")
+		config.isDiscretionary = false
+		
+		// TODO: add a public settings for that
+		config.sessionSendsLaunchEvents = true
+		
+		config.waitsForConnectivity = true
+		return URLSession(configuration: config, delegate: self, delegateQueue: nil)
+	}()
+	
+	/// Running background tasks where key is URLSessionTask.taskIdentifier
+	private var backgroundTasks = [Int: BackgroundUploadTask]()
 	
 	
 	/// Initialization
@@ -229,12 +246,68 @@ extension UploadAPI {
 	}
 	
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
+	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed
 	/// - Parameters:
 	///   - files: Files dictionary where key is filename, value file in Data format
 	///   - store: Sets the file storing behavior
 	///   - completionHandler: callback
 	@discardableResult
 	public func upload(
+		files: [String:Data],
+		store: StoringBehavior? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
+		_ completionHandler: @escaping TaskCompletionHandler
+	) -> UploadTaskable {
+		let urlString = uploadAPIBaseUrl + "/base/"
+		let url = URL(string: urlString)
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url!, method: .post)
+		
+		// Making request body
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+		
+		if let storeVal = store {
+			builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
+		}
+		
+		if let uploadSignature = getSignature() {
+			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
+			builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
+		}
+		
+		for file in files {
+			let fileName = file.key.isEmpty ? "noname.ext" : file.key
+			builder.addMultiformData(file.value, forName: fileName)
+		}
+		
+		urlRequest = builder.finalize()
+		
+		// writing data to temp file
+		let tempDir = FileManager.default.temporaryDirectory
+		let localURL = tempDir.appendingPathComponent(UUID().uuidString)
+		
+		if let data = urlRequest.httpBody {
+			try? data.write(to: localURL)
+		}
+		let backgroundTask = backgroundUrlSession.uploadTask(with: urlRequest, fromFile: localURL)
+		backgroundTask.earliestBeginDate = Date()
+		backgroundTask.countOfBytesClientExpectsToSend = Int64(urlRequest.httpBody?.count ?? 0)
+		
+		let backgroundUploadTask = BackgroundUploadTask(task: backgroundTask, completionHandler: completionHandler, progressCallback: onProgress)
+		backgroundUploadTask.localDataUrl = localURL
+		backgroundTasks[backgroundTask.taskIdentifier] = backgroundUploadTask
+		
+		backgroundTask.resume()
+		return backgroundUploadTask
+	}
+	
+	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
+	/// - Parameters:
+	///   - files: Files dictionary where key is filename, value file in Data format
+	///   - store: Sets the file storing behavior
+	///   - completionHandler: callback
+	@discardableResult
+	func uploadInForeground(
 		files: [String:Data],
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
@@ -713,5 +786,64 @@ extension UploadAPI {
 		file.filename = url.lastPathComponent
 		file.originalFilename = url.lastPathComponent
 		return file
+	}
+}
+
+
+
+// MARK: - URLSessionTaskDelegate
+extension UploadAPI: URLSessionDataDelegate {
+	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+		// without adding this method background task will not trigger urlSession(_:dataTask:didReceive:completionHandler:)
+	}
+}
+
+extension UploadAPI: URLSessionTaskDelegate {
+	public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+		guard let backgroundTask = backgroundTasks[task.taskIdentifier] else { return }
+		
+		// remove task
+		defer {
+			backgroundTask.clear()
+			backgroundTasks.removeValue(forKey: task.taskIdentifier)
+		}
+		
+		let statusCode: Int = (task.response as? HTTPURLResponse)?.statusCode ?? 0
+		
+		if statusCode == 200 {
+			let decodedData = try? JSONDecoder().decode([String:String].self, from: backgroundTask.dataBuffer)
+			guard let resultData = decodedData else {
+				backgroundTask.completionHandler(nil, UploadError.defaultError())
+				return
+			}
+			backgroundTask.completionHandler(resultData, nil)
+			return
+		}
+		
+		// error happened
+		let defaultErrorMessage = "Error happened or upload was cancelled"
+		var message = defaultErrorMessage
+		if !backgroundTask.dataBuffer.isEmpty {
+			message = String(data: backgroundTask.dataBuffer, encoding: .utf8) ?? defaultErrorMessage
+		} else {
+			message = error?.localizedDescription ?? defaultErrorMessage
+		}
+		let error = UploadError(status: statusCode, message: message)
+		backgroundTask.completionHandler(nil, error)
+	}
+	
+	public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+		// run progress callback
+		if let backgroundTask = backgroundTasks[task.taskIdentifier] {
+			var progress: Double = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
+			progress = Double(round(100*progress)/100)
+			backgroundTask.progressCallback?(progress)
+		}
+	}
+	
+	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+		if let backgroundTask = backgroundTasks[dataTask.taskIdentifier] {
+			backgroundTask.dataBuffer.append(data)
+		}
 	}
 }

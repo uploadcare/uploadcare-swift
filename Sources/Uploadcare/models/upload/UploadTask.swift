@@ -21,6 +21,42 @@ public protocol UploadTaskResumable: UploadTaskable {
 	func resume()
 }
 
+/// Simple class that stores upload request and allows to cancel uploading
+class BackgroundUploadTask: UploadTaskable {
+	// MARK: - Internal properties
+	
+	/// URLSessionUploadTask task. Stored to be able to cancel uploading
+	internal let task: URLSessionUploadTask
+	
+	/// Completion handler
+	internal let completionHandler: TaskCompletionHandler
+	
+	/// Progress callback
+	internal let progressCallback: TaskProgressBlock?
+	
+	/// Data buffer to store response body
+	internal var dataBuffer = Data()
+	
+	/// URL to file where uploading data stored. Using it because background upload task supports uploading data from files only
+	internal var localDataUrl: URL?
+	
+	// MARK: - Init
+	internal init(task: URLSessionUploadTask, completionHandler: @escaping TaskCompletionHandler, progressCallback: TaskProgressBlock? = nil) {
+		self.task = task
+		self.completionHandler = completionHandler
+		self.progressCallback = progressCallback
+	}
+	
+	internal func clear() {
+		if let url = localDataUrl {
+			try? FileManager.default.removeItem(at: url)
+		}
+	}
+	
+	func cancel() {
+		task.cancel()
+	}
+}
 
 /// Simple class that stores upload request and allows to cancel uploading
 class UploadTask: UploadTaskable {
