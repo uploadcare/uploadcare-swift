@@ -84,13 +84,17 @@ class MultipartUploadTask: UploadTaskResumable {
 	/// Upload API
 	internal weak var queue: DispatchQueue?
 	
+	/// Queue for adding requests to list
+	private var listQueue = DispatchQueue(label: "com.uploadcare.multipartTasksList")
 	
 	/// Is uploading cancelled
-	var isCancelled: Bool { _isCancelled }
+	internal var isCancelled: Bool { _isCancelled }
 	
 	
 	internal func appendRequest(_ request: Alamofire.DataRequest) {
-		requests.append(request)
+		listQueue.sync { [weak self] in
+			self?.requests.append(request)
+		}
 	}
 	
 	internal func complete() {
