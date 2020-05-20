@@ -171,7 +171,7 @@ public class UploadedFile: Codable {
 		_ completionHandler: ((UploadedFile?, UploadError?) -> Void)? = nil
 	) -> UploadTaskResumable? {
 		guard let fileData = self.data else {
-			let error = UploadError(status: 0, message: "Unable to upload file: Data is empty")
+			let error = UploadError(status: 0, detail: "Unable to upload file: Data is empty")
 			completionHandler?(nil, error)
 			return nil
 		}

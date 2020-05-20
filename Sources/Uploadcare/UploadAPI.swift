@@ -78,7 +78,7 @@ private extension UploadAPI {
 			message = String(data: data, encoding: .utf8) ?? ""
 		}
 		
-		return UploadError(status: status, message: message)
+		return UploadError(status: status, detail: message)
 	}
 	
 	/// Generate signature for signed requests
@@ -361,7 +361,7 @@ extension UploadAPI {
 				if let data = response.data {
 					message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
 				}
-				let error = UploadError(status: status, message: message)
+				let error = UploadError(status: status, detail: message)
 				completionHandler(nil, error)
 		}
 		
@@ -450,7 +450,7 @@ extension UploadAPI {
 				// Completing a multipart upload
 				uploadGroup.notify(queue: self.uploadQueue) {
 					guard task.isCancelled == false else {
-						completionHandler(nil, UploadError(status: 0, message: "Upload cancelled"))
+						completionHandler(nil, UploadError(status: 0, detail: "Upload cancelled"))
 						return
 					}
 					task.complete()
@@ -539,10 +539,10 @@ extension UploadAPI {
 					if let data = response.data {
 						message = String(data: data, encoding: .utf8) ?? ""
 					}
-					let error = UploadError(status: status, message: message)
+					let error = UploadError(status: status, detail: message)
 					completionHandler(nil, error)
 				case .failure(let encodingError):
-					completionHandler(nil, UploadError(status: 0, message: encodingError.localizedDescription))
+					completionHandler(nil, UploadError(status: 0, detail: encodingError.localizedDescription))
 				}
 		}
 	}
@@ -635,13 +635,13 @@ extension UploadAPI {
 					if let data = response.data {
 						message = String(data: data, encoding: .utf8) ?? ""
 					}
-					let error = UploadError(status: status, message: message)
+					let error = UploadError(status: status, detail: message)
 					completionHandler(nil, error)
 					
 				case .failure(let encodingError):
 					completionHandler(
 						nil,
-						UploadError(status: 0, message: encodingError.localizedDescription)
+						UploadError(status: 0, detail: encodingError.localizedDescription)
 					)
 				}
 		}
@@ -828,7 +828,7 @@ extension UploadAPI: URLSessionTaskDelegate {
 		} else {
 			message = error?.localizedDescription ?? defaultErrorMessage
 		}
-		let error = UploadError(status: statusCode, message: message)
+		let error = UploadError(status: statusCode, detail: message)
 		backgroundTask.completionHandler(nil, error)
 	}
 	
