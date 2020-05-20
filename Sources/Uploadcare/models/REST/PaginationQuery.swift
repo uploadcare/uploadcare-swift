@@ -45,7 +45,7 @@ public class PaginationQuery {
 				
 				return "ordering=datetime_uploaded&from=\(dateString)"
 			case .dateTimeUploadedDESC:
-				return "-datetime_uploaded"
+				return "ordering=-datetime_uploaded"
 			case .sizeASC(let size):
 				return "ordering=size&from=\(size)"
 			case .sizeDESC:
