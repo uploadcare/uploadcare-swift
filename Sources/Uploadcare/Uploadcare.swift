@@ -93,7 +93,7 @@ internal extension Uploadcare {
 		case .signed:
 			let content = urlRequest.httpBody?.toString() ?? ""
 			
-			var query = ""
+			var query = "/"
 			if let q = urlRequest.url?.query {
 				query = "/?" + q
 			}
