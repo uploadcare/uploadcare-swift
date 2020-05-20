@@ -12,6 +12,10 @@ public typealias TaskCompletionHandler = ([String: String]?, UploadError?) -> Vo
 public typealias TaskProgressBlock = (Double) -> Void
 
 public class UploadAPI: NSObject {
+    // MARK: - Public properties
+    /// Minimum file size for multipart uploads
+    public static let multipartMinFileSize = 10485760
+    
 	/// Each uploaded part should be 5MB
 	static let uploadChunkSize = 5242880
 	
