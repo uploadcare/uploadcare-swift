@@ -486,7 +486,7 @@ extension UploadAPI {
 		withName filename: String,
 		size: Int,
 		mimeType: String,
-		store: StoringBehavior? = nil,
+        store: StoringBehavior = .store,
 		_ completionHandler: @escaping (StartMulipartUploadResponse?, UploadError?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/multipart/start/"
@@ -508,15 +508,15 @@ extension UploadAPI {
 					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
 				}
 				
-				if let storeVal = store, let data = storeVal.rawValue.data(using: .utf8) {
+				if let data = store.rawValue.data(using: .utf8) {
 					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
 				}
 				
-				if let uploadSignature = self?.getSignature() {
+                if let uploadSignature = self?.getSignature() {
 					if let signatureData = uploadSignature.signature.data(using: .utf8) {
 						multipartFormData.append(signatureData, withName: "signature")
 					}
-					
+
 					if let expireData = String(uploadSignature.expire).data(using: .utf8) {
 						multipartFormData.append(expireData, withName: "expire")
 					}
