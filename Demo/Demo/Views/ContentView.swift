@@ -25,15 +25,17 @@ struct MainView: View {
 	
     var body: some View {
 		NavigationView {
-			List {
-				NavigationLink(destination: ProjectInfoView()) {
-					Text("Project Info")
-				}
-				NavigationLink(destination: FilesListView()) {
-					Text("List of files")
-				}
-			}.listStyle(GroupedListStyle())
-			.navigationBarTitle(Text("Uploadcare demo"), displayMode: .automatic)
+            ZStack {
+                List {
+                    NavigationLink(destination: ProjectInfoView()) {
+                        Text("Project Info")
+                    }
+                    NavigationLink(destination: FilesListView()) {
+                        Text("List of files")
+                    }
+                }.listStyle(GroupedListStyle())
+                .navigationBarTitle(Text("Uploadcare demo"), displayMode: .automatic)
+            }
 		}
 		
     }

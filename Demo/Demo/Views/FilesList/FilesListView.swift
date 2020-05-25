@@ -21,9 +21,16 @@ class FilesListStore: ObservableObject {
 
 
 struct FilesListView: View {
-	@State private var isLoading: Bool = true
-	
+    enum UploadState {
+        case uploading
+        case paused
+        case notRunning
+    }
+    
 	@ObservedObject private var filesListStore: FilesListStore = FilesListStore(files: [])
+    
+    @State private var isLoading: Bool = true
+    @State private var isUploading: Bool = false
 	
 	@State private var isShowingAlert = false
     @State private var isShowingAddFilesAlert = false
@@ -31,18 +38,44 @@ struct FilesListView: View {
 	@State private var alertMessage = ""
     
     @State private var inputImage: UIImage?
+    @State private var progressValue: Float = 0.0
+    @State private var task: UploadTaskResumable?
+    
+    @State private var uploadState: UploadState = .notRunning
 	
 	@EnvironmentObject var api: APIStore
 	
     var body: some View {
         ZStack {
-            List {
-                Section {
-                    ForEach(self.filesListStore.files) { file in
-                        FileRowView(fileData: file)
-                    }.onDelete(perform: delete)
+            VStack {
+                HStack {
+                    ProgressBar(value: $progressValue)
+                        .frame(height: 20)
+                        .frame(maxWidth: 200)
+                    
+                    if self.uploadState == .uploading {
+                        Button(
+                            action: { self.toggleUpload() },
+                            label: { Text("pause") }
+                        )
+                    }
+                    if self.uploadState == .paused {
+                        Button(
+                            action: { self.toggleUpload() },
+                            label: { Text("continue") }
+                        )
+                    }
+                }.opacity(self.isUploading ? 1 : 0)
+                
+                List {
+                    Section {
+                        ForEach(self.filesListStore.files) { file in
+                            FileRowView(fileData: file)
+                        }.onDelete(perform: delete)
+                    }
                 }
             }
+            
             VStack {
                 ActivityIndicator(isAnimating: .constant(true), style: .large)
                 Text("Loading...")
@@ -87,6 +120,8 @@ struct FilesListView: View {
 	}
 	
     func uploadImage(_ imageUrl: URL) {
+        self.progressValue = 0
+        
         let data: Data
         do {
             data = try Data(contentsOf: imageUrl)
@@ -98,12 +133,16 @@ struct FilesListView: View {
         let filename = imageUrl.lastPathComponent
         
         let onProgress: (Double)->Void = { (progress) in
-            print("progress: \(progress)")
+            self.progressValue = Float(progress)
         }
+        
+        self.isUploading = true
         
         if data.count < UploadAPI.multipartMinFileSize {
             // using direct upload
             self.api.uploadcare?.uploadAPI.upload(files: [filename: data], store: .store, onProgress, { (uploadData, error) in
+                defer { self.isUploading = false }
+                
                 if let error = error {
                     self.alertMessage = error.detail
                     self.isShowingAlert.toggle()
@@ -132,36 +171,33 @@ struct FilesListView: View {
             return
         }
         
-        
-        var task: UploadTaskResumable?
-        task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", onProgress, { (file, error) in
+        self.uploadState = .uploading
+        self.task = fileForUploading.upload(withName: filename, onProgress, { (file, error) in
+            defer {
+                self.isUploading = false
+                self.uploadState = .notRunning
+                self.task = nil
+            }
+            
             if let error = error {
                 print(error)
                 return
             }
             print(file ?? "")
         })
-        
-//        let data: Data
-//        do {
-//            data = try Data(contentsOf: imageUrl)
-//        } catch let error {
-//            print(error)
-//            return
-//        }
-//        let fileName = imageUrl.lastPathComponent
-//
-//        let fileForUploading = self.api.uploadcare?.uploadAPI.file(fromData: data)
-//
-//        let onProgress: (Double)->Void = { (progress) in
-//            print("progress: \(progress)")
-//        }
-//
-//        fileForUploading?.upload(withName: fileName, onProgress, { (file, error) in
-//            if let error = error { return print(error) }
-//
-//            print(file ?? "")
-//        })
+    }
+    
+    func toggleUpload() {
+        guard let task = self.task else { return }
+        switch self.uploadState {
+        case .uploading:
+            task.pause()
+            self.uploadState = .paused
+        case .paused:
+            task.resume()
+            self.uploadState = .uploading
+        default: break
+        }
     }
     
 	func delete(at offsets: IndexSet) {
@@ -196,71 +232,17 @@ struct FilesListView: View {
 	}
     
     func loadImage() {
-        guard let inputImage = inputImage else { return }
+//        guard let inputImage = inputImage else { return }
 //        image = Image(uiImage: inputImage)
     }
 }
 
-struct ImagePicker: UIViewControllerRepresentable {
 
-    @Environment(\.presentationMode)
-    private var presentationMode
-
-    let sourceType: UIImagePickerController.SourceType
-    let onImagePicked: (URL) -> Void
-
-    final class Coordinator: NSObject,
-    UINavigationControllerDelegate,
-    UIImagePickerControllerDelegate {
-
-        @Binding
-        private var presentationMode: PresentationMode
-        private let sourceType: UIImagePickerController.SourceType
-        private let onImagePicked: (URL) -> Void
-
-        init(presentationMode: Binding<PresentationMode>,
-             sourceType: UIImagePickerController.SourceType,
-             onImagePicked: @escaping (URL) -> Void) {
-            _presentationMode = presentationMode
-            self.sourceType = sourceType
-            self.onImagePicked = onImagePicked
-        }
-
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            let imageUrl = info[UIImagePickerController.InfoKey.imageURL] as! URL
-            
-            onImagePicked(imageUrl)
-            presentationMode.dismiss()
-        }
-
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            presentationMode.dismiss()
-        }
-
-    }
-
-    func makeCoordinator() -> Coordinator {
-        return Coordinator(presentationMode: presentationMode,
-                           sourceType: sourceType,
-                           onImagePicked: onImagePicked)
-    }
-
-    func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.sourceType = sourceType
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: UIImagePickerController,
-                                context: UIViewControllerRepresentableContext<ImagePicker>) {
-
-    }
-
-}
 struct FilesListView_Previews: PreviewProvider {
     static var previews: some View {
         let flist = FilesListView()
+            .environmentObject(APIStore())
+        
         return flist
     }
 }
