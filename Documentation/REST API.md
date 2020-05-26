@@ -11,6 +11,7 @@
 * [Store group](#store-group-api-reference)
 * [Copy file to local storage](#copy-file-to-local-storage-api-reference)
 * [Copy file to remote storage](#copy-file-to-remote-storage-api-reference)
+* [Authenticated urls](#authenticated-urls-api-reference)
 
 
 ### Initialization
@@ -234,10 +235,29 @@ uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", m
 }
 ```
 
+### Authenticated urls ([API Reference](https://uploadcare.com/docs/delivery/file_api/#authenticated-urls?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
+This method allows you to get authonticated url from your backend using redirect.
+By request to that url your backend should generate authenticated url to your file and perform REDIRECT to generated url.
 
+Redirect url will be caught and returned in completion handler of that method.
 
+Example: https://yourdomain.com/{UUID}/
 
+Backend redirects to: https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
+    
+```swift
+let url = URL(string: "https://yourdomain.com/FILE_UUID/")!
+uploadcare.getAuthenticatedUrlFromUrl(url, { (value, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+	
+    // value is https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
+    print(value)
+})
+```
 
 
 
