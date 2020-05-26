@@ -9,7 +9,7 @@ let uploadAPIBaseUrl: String = "https://upload.uploadcare.com"
 let RESTAPIBaseUrl: String = "https://api.uploadcare.com"
 
 
-public class Uploadcare {
+public class Uploadcare: NSObject {
 	
 	// TODO: log turn on or off
 	// TODO: add logs
@@ -44,6 +44,8 @@ public class Uploadcare {
 	
 	/// Library version
 	private var libraryVersion = "0.1.0-beta"
+    
+    private var redirectValues = [String: String]()
 	
 	
 	/// Initialization
@@ -668,8 +670,59 @@ extension Uploadcare {
 				}
 		}
 	}
+    
+    /// This method allows you to get authonticated url from your backend using redirect.
+    /// By request to that url your backend should generate authenticated url to your file and perform REDIRECT to generated url.
+    /// Redirect url will be cought and returned in completion handler of that method
+    ///
+    /// Example of URL: https://yourdomain.com/{UUID}/
+    /// Redirect to: https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
+    ///
+    /// URL for redirect will be returned in completion handler
+    ///
+    /// More details in documentation: https://uploadcare.com/docs/delivery/file_api/#authenticated-urls
+    ///
+    /// - Parameters:
+    ///   - url: url for request to your backend
+    ///   - completionHandler: completion handler
+    public func getAuthenticatedUrlFromUrl(_ url: URL, _ completionHandler: @escaping (String?, RESTAPIError?) -> Void) {
+        let urlString = url.absoluteString
+        
+        redirectValues[urlString] = ""
+        
+        let config = URLSessionConfiguration.default
+        let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        
+        let task = urlSession.dataTask(with: url) { [weak self] (data, response, error) in
+            guard let self = self else { return }
+            
+            defer { self.redirectValues.removeValue(forKey: urlString) }
+            
+            if let error = error {
+                completionHandler(nil, RESTAPIError(detail: error.localizedDescription))
+                return
+            }
+            
+            guard let redirectUrl = self.redirectValues[urlString], redirectUrl.isEmpty == false else {
+                completionHandler(nil, RESTAPIError(detail: "No redirect happened"))
+                return
+            }
+            
+            completionHandler(redirectUrl, nil)
+        }
+        task.resume()
+    }
 }
 
+// MARK: - URLSessionTaskDelegate
+extension Uploadcare: URLSessionTaskDelegate {
+    public func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
+        if let key = task.originalRequest?.url?.absoluteString, let value = request.url?.absoluteString {
+            redirectValues[key] = value
+        }
+        completionHandler(request)
+    }
+}
 
 // MARK: - Factory
 extension Uploadcare {
