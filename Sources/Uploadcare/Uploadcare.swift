@@ -673,7 +673,7 @@ extension Uploadcare {
     
     /// This method allows you to get authonticated url from your backend using redirect.
     /// By request to that url your backend should generate authenticated url to your file and perform REDIRECT to generated url.
-    /// Redirect url will be cought and returned in completion handler of that method
+    /// Redirect url will be caught and returned in completion handler of that method
     ///
     /// Example of URL: https://yourdomain.com/{UUID}/
     /// Redirect to: https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
