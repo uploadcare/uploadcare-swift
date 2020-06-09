@@ -1,10 +1,4 @@
-//
-//  UploadFromURLTaskTests.swift
-//  
-//
-//  Created by Sergey Armodin on 25.01.2020.
-//
-
+#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 
@@ -19,5 +13,4 @@ final class UploadFromURLTaskTests: XCTestCase {
         ("testInit_shouldHaveDefaultValues", testInit_shouldHaveDefaultValues),
     ]
 }
-
-
+#endif

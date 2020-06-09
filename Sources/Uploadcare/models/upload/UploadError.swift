@@ -13,12 +13,12 @@ public struct UploadError {
 	public var status: Int
 	
 	/// Error message
-	public var message: String
+	public var detail: String
 	
 	
 	/// Default error
 	public static func defaultError() -> UploadError {
-		return UploadError(status: 0, message: "Unknown error")
+		return UploadError(status: 0, detail: "Unknown error")
 	}
 }
 
@@ -28,7 +28,7 @@ extension UploadError: CustomDebugStringConvertible {
 		return """
 		\(type(of: self)):
 			status: \(status),
-			message: \(message)
+			message: \(detail)
 		"""
 	}
 }

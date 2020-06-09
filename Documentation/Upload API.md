@@ -8,6 +8,7 @@
 * [File info](#file-info-api-reference)
 * [Create files group](#create-files-group-api-reference)
 * [Files group info](#files-group-info-api-reference)
+* [Signed uploads](#signed-uploads-api-reference)
 
 
 ### Initialization
@@ -19,6 +20,8 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY")
 ```
 
 ### Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+
+Direct uploads works with backround URLSession so uploading will continue if the app goes to background state.
 
 ```swift
 guard let url = URL(string: "https://source.unsplash.com/random") else { return }
@@ -83,6 +86,11 @@ let task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", { (progress) i
 
 // you can cancel uploading if need:
 task?.cancel()
+
+// you can pause uploading:
+task?.pause()
+// to resume uploading:
+task?.resume()
 ```
 
 ### Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
@@ -182,3 +190,9 @@ uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) 
     print(group)
 }
 ```
+
+### Signed Uploads ([API Reference](https://uploadcare.com/docs/api_reference/upload/signed_uploads/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+
+Requests signing are on by default if Secret Key is provided during SDK initialization. SDK generates a signature internally. The signature is valid for 30 minutes. The new signature is generated automatically when the old signature expires.
+
+Please notice that signed uploads should be enabled in your project’s settings (in the dashboard).

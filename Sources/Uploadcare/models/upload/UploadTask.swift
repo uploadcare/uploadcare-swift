@@ -14,37 +14,87 @@ public protocol UploadTaskable {
 	func cancel()
 }
 
+public protocol UploadTaskResumable: UploadTaskable {
+	/// Pause uploading
+	func pause()
+	/// Resume uploading
+	func resume()
+}
+
+/// Simple class that stores upload request and allows to cancel uploading
+class BackgroundUploadTask: UploadTaskable {
+	// MARK: - Internal properties
+	
+	/// URLSessionUploadTask task. Stored to be able to cancel uploading
+	internal let task: URLSessionUploadTask
+	
+	/// Completion handler
+	internal let completionHandler: TaskCompletionHandler
+	
+	/// Progress callback
+	internal let progressCallback: TaskProgressBlock?
+	
+	/// Data buffer to store response body
+	internal var dataBuffer = Data()
+	
+	/// URL to file where uploading data stored. Using it because background upload task supports uploading data from files only
+	internal var localDataUrl: URL?
+	
+	// MARK: - Init
+	internal init(task: URLSessionUploadTask, completionHandler: @escaping TaskCompletionHandler, progressCallback: TaskProgressBlock? = nil) {
+		self.task = task
+		self.completionHandler = completionHandler
+		self.progressCallback = progressCallback
+	}
+	
+	internal func clear() {
+		if let url = localDataUrl {
+			try? FileManager.default.removeItem(at: url)
+		}
+	}
+	
+	func cancel() {
+		task.cancel()
+	}
+}
 
 /// Simple class that stores upload request and allows to cancel uploading
 class UploadTask: UploadTaskable {
 	/// Upload request
 	let request: Alamofire.UploadRequest
 	
+	internal init(request: UploadRequest) {
+		self.request = request
+	}
+	
 	func cancel() {
 		DLog("task cancelled")
 		request.cancel()
 	}
-	
-	internal init(request: UploadRequest) {
-		self.request = request
-	}
 }
 
 
-class MultipartUploadTask: UploadTaskable {
+class MultipartUploadTask: UploadTaskResumable {
 	
 	/// Requests array
 	private var requests: [Alamofire.DataRequest] = []
 	/// Is cancelled flag
 	private var _isCancelled: Bool = false
 	
+	/// Upload API
+	internal weak var queue: DispatchQueue?
+	
+	/// Queue for adding requests to list
+	private var listQueue = DispatchQueue(label: "com.uploadcare.multipartTasksList")
 	
 	/// Is uploading cancelled
-	var isCancelled: Bool { _isCancelled }
+	internal var isCancelled: Bool { _isCancelled }
 	
 	
 	internal func appendRequest(_ request: Alamofire.DataRequest) {
-		requests.append(request)
+		listQueue.sync { [weak self] in
+			self?.requests.append(request)
+		}
 	}
 	
 	internal func complete() {
@@ -59,5 +109,15 @@ class MultipartUploadTask: UploadTaskable {
 		DLog("task cancelled")
 	}
 	
+	func pause() {
+		requests.forEach{ $0.task?.suspend() }
+		queue?.suspend()
+		DLog("task paused")
+	}
 	
+	func resume() {
+		requests.forEach{ $0.task?.resume() }
+		queue?.resume()
+		DLog("task resumed")
+	}
 }

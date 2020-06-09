@@ -3,7 +3,7 @@
 * [Initialization](#initialization)
 * [Getting info about account project](#getting-info-about-account-project-api-reference)
 * [Get list of files](#get-list-of-files-api-reference)
-* [File Info](#file-info-api-reference)
+* [File info](#file-info-api-reference)
 * [Delete files](#delete-files-api-reference)
 * [Store files](#store-files-api-reference)
 * [Get list of groups](#get-list-of-groups-api-reference)
@@ -11,6 +11,7 @@
 * [Store group](#store-group-api-reference)
 * [Copy file to local storage](#copy-file-to-local-storage-api-reference)
 * [Copy file to remote storage](#copy-file-to-remote-storage-api-reference)
+* [Authenticated URLs](#authenticated-urls-api-reference)
 
 
 ### Initialization
@@ -81,7 +82,7 @@ filesList.previousPage { (list, error) in
 }
 ```
 
-### File Info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+### File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
 ```swift
 uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
@@ -105,6 +106,7 @@ uploadcare.deleteFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file,
     print(file ?? "")
 }
 ```
+
 Batch file delete:
 ```swift
 let uuids = ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "1bac376c-aa7e-4356-861b-dd2657b5bfd2"]
@@ -234,10 +236,26 @@ uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", m
 }
 ```
 
+### Authenticated URLs ([API Reference](https://uploadcare.com/docs/delivery/file_api/#authenticated-urls?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
 
+This method allows you to get an authenticated URL from your backend using a redirect.
+To answer a request to that URL your backend should generate an authenticated URL to your file and perform REDIRECT to a generated URL.
 
+A redirected URL will be caught and returned in the completion handler of that method.
 
+Example: https://yourdomain.com/{UUID}/
 
-
-
-
+Backend redirects to: https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
+    
+```swift
+let url = URL(string: "https://yourdomain.com/FILE_UUID/")!
+uploadcare.getAuthenticatedUrlFromUrl(url, { (value, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+	
+    // value is https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
+    print(value)
+})
+```

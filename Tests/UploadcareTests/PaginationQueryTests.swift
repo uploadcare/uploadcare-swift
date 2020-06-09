@@ -5,6 +5,7 @@
 //  Created by Sergey Armodin on 03.02.2020.
 //
 
+#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 
@@ -36,5 +37,5 @@ final class PaginationQueryTests: XCTestCase {
         ("testOrderingInit", testOrderingInit),
     ]
 }
-
+#endif
 

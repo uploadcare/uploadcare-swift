@@ -8,9 +8,14 @@
 import Foundation
 import Alamofire
 
+public typealias TaskCompletionHandler = ([String: String]?, UploadError?) -> Void
+public typealias TaskProgressBlock = (Double) -> Void
 
-public class UploadAPI {
-	
+public class UploadAPI: NSObject {
+    // MARK: - Public properties
+    /// Minimum file size for multipart uploads
+    public static let multipartMinFileSize = 10485760
+    
 	/// Each uploaded part should be 5MB
 	static let uploadChunkSize = 5242880
 	
@@ -20,11 +25,32 @@ public class UploadAPI {
 	/// Secret Key. Is used for authorization
 	internal var secretKey: String?
 	
+	/// Signature
+	internal var signature: UploadSignature?
+	
 	/// Alamofire session manager
 	private var manager: Session
 	
 	/// Upload queue for multipart uploading
 	private var uploadQueue = DispatchQueue(label: "com.uploadcare.upload", qos: .utility, attributes: .concurrent)
+	
+	/// URLSession for background uploads
+	private lazy var backgroundUrlSession: URLSession = {
+		let bundle = Bundle.main.bundleIdentifier ?? ""
+		let config = URLSessionConfiguration.background(withIdentifier: "\(bundle).com.uploadcare.backgroundUrlSession")
+		config.isDiscretionary = false
+		
+		// TODO: add a public settings for that
+		#if !os(macOS)
+		config.sessionSendsLaunchEvents = true
+		#endif
+		
+		config.waitsForConnectivity = true
+		return URLSession(configuration: config, delegate: self, delegateQueue: nil)
+	}()
+	
+	/// Running background tasks where key is URLSessionTask.taskIdentifier
+	private var backgroundTasks = [Int: BackgroundUploadTask]()
 	
 	
 	/// Initialization
@@ -58,7 +84,35 @@ private extension UploadAPI {
 			message = String(data: data, encoding: .utf8) ?? ""
 		}
 		
-		return UploadError(status: status, message: message)
+		return UploadError(status: status, detail: message)
+	}
+	
+	/// Generate signature for signed requests
+	func generateSignature() {
+		guard let secretKey = self.secretKey else { return }
+		
+		let expire = Int(Date().timeIntervalSince1970 + Double(60*30))
+		let expireString = String(expire)
+		
+		self.signature = UploadSignature(signature: expireString.sha256(key: secretKey), expire: expire)
+	}
+	
+	/// Get current signature for signed requests. Generates new one if signature is expired
+	/// - Returns: signature
+	func getSignature() -> UploadSignature? {
+		guard self.secretKey != nil else { return nil }
+		
+		// check if signature expired
+		if let signature = self.signature, signature.expire < Int(Date().timeIntervalSince1970) {
+			generateSignature()
+		}
+		
+		// generate signature if need
+		if self.signature == nil {
+			generateSignature()
+		}
+		
+		return self.signature
 	}
 }
 
@@ -128,11 +182,10 @@ extension UploadAPI {
 			let val = saveURLDuplicatesVal == true ? "1" : "0"
 			urlString += "&save_URL_duplicates=\(val)"
 		}
-		if let signatureVal = task.signature {
-			urlString += "&signature=\(signatureVal)"
-		}
-		if let expireVal = task.expire {
-			urlString += "&expire=\(Int(expireVal))"
+		
+		if let uploadSignature = getSignature() {
+			urlString += "&signature=\(uploadSignature.signature)"
+			urlString += "&expire=\(uploadSignature.expire)"
 		}
 		
 		guard let url = URL(string: urlString) else {
@@ -198,27 +251,78 @@ extension UploadAPI {
 		}
 	}
 	
-	// TODO: Signature
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
+	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed
 	/// - Parameters:
 	///   - files: Files dictionary where key is filename, value file in Data format
-	///   - store: Sets the file storing behavior.
-	///   - signature: signature
-	///   - expire: signature expire
+	///   - store: Sets the file storing behavior
 	///   - completionHandler: callback
 	@discardableResult
 	public func upload(
 		files: [String:Data],
 		store: StoringBehavior? = nil,
-		signature: String? = nil,
-		expire: Int? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
+		_ completionHandler: @escaping TaskCompletionHandler
+	) -> UploadTaskable {
+		let urlString = uploadAPIBaseUrl + "/base/"
+		let url = URL(string: urlString)
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url!, method: .post)
+		
+		// Making request body
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+		
+		if let storeVal = store {
+			builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
+		}
+		
+		if let uploadSignature = getSignature() {
+			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
+			builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
+		}
+		
+		for file in files {
+			let fileName = file.key.isEmpty ? "noname.ext" : file.key
+			builder.addMultiformData(file.value, forName: fileName)
+		}
+		
+		urlRequest = builder.finalize()
+		
+		// writing data to temp file
+		let tempDir = FileManager.default.temporaryDirectory
+		let localURL = tempDir.appendingPathComponent(UUID().uuidString)
+		
+		if let data = urlRequest.httpBody {
+			try? data.write(to: localURL)
+		}
+		let backgroundTask = backgroundUrlSession.uploadTask(with: urlRequest, fromFile: localURL)
+		backgroundTask.earliestBeginDate = Date()
+		backgroundTask.countOfBytesClientExpectsToSend = Int64(urlRequest.httpBody?.count ?? 0)
+		
+		let backgroundUploadTask = BackgroundUploadTask(task: backgroundTask, completionHandler: completionHandler, progressCallback: onProgress)
+		backgroundUploadTask.localDataUrl = localURL
+		backgroundTasks[backgroundTask.taskIdentifier] = backgroundUploadTask
+		
+		backgroundTask.resume()
+		return backgroundUploadTask
+	}
+	
+	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
+	/// - Parameters:
+	///   - files: Files dictionary where key is filename, value file in Data format
+	///   - store: Sets the file storing behavior
+	///   - completionHandler: callback
+	@discardableResult
+	func uploadInForeground(
+		files: [String:Data],
+		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping ([String: String]?, UploadError?) -> Void
 	) -> UploadTaskable {
 		let urlString = uploadAPIBaseUrl + "/base/"
 		let request = manager.upload(
-			multipartFormData: { (multipartFormData) in
-				if let publicKeyData = self.publicKey.data(using: .utf8) {
+			multipartFormData: { [weak self] (multipartFormData) in
+				if let publicKeyData = self?.publicKey.data(using: .utf8) {
 					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
 				}
 				
@@ -231,12 +335,14 @@ extension UploadAPI {
 					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
 				}
 				
-				if let signatureVal = signature, let data = signatureVal.data(using: .utf8) {
-					multipartFormData.append(data, withName: "signature")
-				}
-				if var expireVal = expire {
-					let data = Data(bytes: &expireVal, count: MemoryLayout.size(ofValue: expireVal))
-					multipartFormData.append(data, withName: "expire")
+				if let uploadSignature = self?.getSignature() {
+					if let signatureData = uploadSignature.signature.data(using: .utf8) {
+						multipartFormData.append(signatureData, withName: "signature")
+					}
+					
+					if let expireData = String(uploadSignature.expire).data(using: .utf8) {
+						multipartFormData.append(expireData, withName: "expire")
+					}
 				}
 		},
 			to: urlString)
@@ -261,7 +367,7 @@ extension UploadAPI {
 				if let data = response.data {
 					message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
 				}
-				let error = UploadError(status: status, message: message)
+				let error = UploadError(status: status, detail: message)
 				completionHandler(nil, error)
 		}
 		
@@ -281,18 +387,20 @@ extension UploadAPI {
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
-	) -> UploadTaskable {
+	) -> UploadTaskResumable {
 		let totalSize = data.count
 		let fileMimeType = detectMimeType(for: data)
 	
 		let task = MultipartUploadTask()
+		task.queue = self.uploadQueue
 		let filename = name.isEmpty ? "noname.ext" : name
 		
 		// Starting a multipart upload transaction
 		startMulipartUpload(
 			withName: filename,
 			size: totalSize,
-			mimeType: fileMimeType) { (response, error) in
+			mimeType: fileMimeType) { [weak self] (response, error) in
+				guard let self = self else { return }
 				if let error = error {
 					completionHandler(nil, error)
 					return
@@ -348,7 +456,7 @@ extension UploadAPI {
 				// Completing a multipart upload
 				uploadGroup.notify(queue: self.uploadQueue) {
 					guard task.isCancelled == false else {
-						completionHandler(nil, UploadError(status: 0, message: "Upload cancelled"))
+						completionHandler(nil, UploadError(status: 0, detail: "Upload cancelled"))
 						return
 					}
 					task.complete()
@@ -375,21 +483,17 @@ extension UploadAPI {
 	///   - size: Precise file size in bytes. Should not exceed your project file size cap.
 	///   - mimeType: A file MIME-type.
 	///   - store: Sets the file storing behavior.
-	///   - signature: signature
-	///   - expire: expire sets the time until your signature is valid
 	///   - completionHandler: callback
 	private func startMulipartUpload(
 		withName filename: String,
 		size: Int,
 		mimeType: String,
-		store: StoringBehavior? = nil,
-		signature: String? = nil,
-		expire: Int? = nil,
+        store: StoringBehavior = .store,
 		_ completionHandler: @escaping (StartMulipartUploadResponse?, UploadError?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/multipart/start/"
 		manager.upload(
-			multipartFormData: { (multipartFormData) in
+			multipartFormData: { [weak self] (multipartFormData) in
 				if let filenameData = filename.data(using: .utf8) {
 					multipartFormData.append(filenameData, withName: "filename")
 				}
@@ -402,21 +506,22 @@ extension UploadAPI {
 					multipartFormData.append(contentTypeData, withName: "content_type")
 				}
 				
-				if let publicKeyData = self.publicKey.data(using: .utf8) {
+				if let publicKeyData = self?.publicKey.data(using: .utf8) {
 					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
 				}
 				
-				if let storeVal = store, let data = storeVal.rawValue.data(using: .utf8) {
+				if let data = store.rawValue.data(using: .utf8) {
 					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
 				}
 				
-				if let signatureVal = signature, let data = signatureVal.data(using: .utf8) {
-					multipartFormData.append(data, withName: "signature")
-				}
-				
-				if var expireVal = expire {
-					let data = Data(bytes: &expireVal, count: MemoryLayout.size(ofValue: expireVal))
-					multipartFormData.append(data, withName: "expire")
+                if let uploadSignature = self?.getSignature() {
+					if let signatureData = uploadSignature.signature.data(using: .utf8) {
+						multipartFormData.append(signatureData, withName: "signature")
+					}
+
+					if let expireData = String(uploadSignature.expire).data(using: .utf8) {
+						multipartFormData.append(expireData, withName: "expire")
+					}
 				}
 		},
 			to: urlString)
@@ -440,10 +545,10 @@ extension UploadAPI {
 					if let data = response.data {
 						message = String(data: data, encoding: .utf8) ?? ""
 					}
-					let error = UploadError(status: status, message: message)
+					let error = UploadError(status: status, detail: message)
 					completionHandler(nil, error)
 				case .failure(let encodingError):
-					completionHandler(nil, UploadError(status: 0, message: encodingError.localizedDescription))
+					completionHandler(nil, UploadError(status: 0, detail: encodingError.localizedDescription))
 				}
 		}
 	}
@@ -458,8 +563,8 @@ extension UploadAPI {
 		onComplete: (()->Void)? = nil
 	) {
 		group?.enter()
-		// using concurrent queue for parts uploading
-		uploadQueue.async { [weak self, weak task] in
+		
+		let workItem = DispatchWorkItem { [weak self, weak task] in
 			guard let self = self, let task = task else { return }
 			
 			guard let url = URL(string: urlString) else {
@@ -492,6 +597,9 @@ extension UploadAPI {
 			}
 			task.appendRequest(request)
 		}
+		
+		// using concurrent queue for parts uploading
+		uploadQueue.async(execute: workItem)
 	}
 	
 	/// Complete multipart upload transaction when all files parts are uploaded.
@@ -533,13 +641,13 @@ extension UploadAPI {
 					if let data = response.data {
 						message = String(data: data, encoding: .utf8) ?? ""
 					}
-					let error = UploadError(status: status, message: message)
+					let error = UploadError(status: status, detail: message)
 					completionHandler(nil, error)
 					
 				case .failure(let encodingError):
 					completionHandler(
 						nil,
-						UploadError(status: 0, message: encodingError.localizedDescription)
+						UploadError(status: 0, detail: encodingError.localizedDescription)
 					)
 				}
 		}
@@ -549,41 +657,36 @@ extension UploadAPI {
 
 // MARK: - Groups
 extension UploadAPI {
-	// TODO: Signature
 	/// Create files group from a set of files
 	/// - Parameters:
 	///   - files: files array
-	///   - signature: signature
-	///   - expire: expire
 	///   - completionHandler: callback
 	public func createFilesGroup(
 		files: [UploadedFile],
-		signature: String? = nil,
-		expire: Int? = nil,
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
-		let fileIds: [String] = files.map { (file) -> String in
-			return file.fileId
-		}
+		let fileIds: [String] = files.map { $0.fileId }
 		createFilesGroup(fileIds: fileIds, completionHandler)
 	}
 	
 	/// Create files group from a set of files UUIDs.
 	/// - Parameters:
 	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
-	///   - signature: signature
-	///   - expire: expire
 	///   - completionHandler: callback
 	public func createFilesGroup(
 		fileIds: [String],
-		signature: String? = nil,
-		expire: Int? = nil,
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
 		var urlString = uploadAPIBaseUrl + "/group/?pub_key=\(self.publicKey)"
 		for (index, fileId) in fileIds.enumerated() {
 			urlString += "&files[\(index)]=\(fileId)"
 		}
+
+		if let uploadSignature = self.getSignature() {
+			urlString += "&signature=\(uploadSignature.signature)"
+			urlString += "&expire=\(uploadSignature.expire)"
+		}
+		
 		guard let url = URL(string: urlString) else {
 			assertionFailure("Incorrect url")
 			return
@@ -614,16 +717,18 @@ extension UploadAPI {
 	/// Files group info
 	/// - Parameters:
 	///   - groupId: Group ID. Group IDs look like UUID~N.
-	///   - signature: signature
-	///   - expire: expire
 	///   - completionHandler: callback
 	public func filesGroupInfo(
 		groupId: String,
-		signature: String? = nil,
-		expire: Int? = nil,
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
-		let urlString = uploadAPIBaseUrl + "/group/info/?pub_key=\(self.publicKey)&group_id=\(groupId)"
+		var urlString = uploadAPIBaseUrl + "/group/info/?pub_key=\(self.publicKey)&group_id=\(groupId)"
+		
+		if let uploadSignature = self.getSignature() {
+			urlString += "&signature=\(uploadSignature.signature)"
+			urlString += "&expire=\(uploadSignature.expire)"
+		}
+		
 		guard let url = URL(string: urlString) else {
 			assertionFailure("Incorrect url")
 			return
@@ -687,5 +792,64 @@ extension UploadAPI {
 		file.filename = url.lastPathComponent
 		file.originalFilename = url.lastPathComponent
 		return file
+	}
+}
+
+
+
+// MARK: - URLSessionTaskDelegate
+extension UploadAPI: URLSessionDataDelegate {
+	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+		// without adding this method background task will not trigger urlSession(_:dataTask:didReceive:completionHandler:)
+	}
+}
+
+extension UploadAPI: URLSessionTaskDelegate {
+	public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+		guard let backgroundTask = backgroundTasks[task.taskIdentifier] else { return }
+		
+		// remove task
+		defer {
+			backgroundTask.clear()
+			backgroundTasks.removeValue(forKey: task.taskIdentifier)
+		}
+		
+		let statusCode: Int = (task.response as? HTTPURLResponse)?.statusCode ?? 0
+		
+		if statusCode == 200 {
+			let decodedData = try? JSONDecoder().decode([String:String].self, from: backgroundTask.dataBuffer)
+			guard let resultData = decodedData else {
+				backgroundTask.completionHandler(nil, UploadError.defaultError())
+				return
+			}
+			backgroundTask.completionHandler(resultData, nil)
+			return
+		}
+		
+		// error happened
+		let defaultErrorMessage = "Error happened or upload was cancelled"
+		var message = defaultErrorMessage
+		if !backgroundTask.dataBuffer.isEmpty {
+			message = String(data: backgroundTask.dataBuffer, encoding: .utf8) ?? defaultErrorMessage
+		} else {
+			message = error?.localizedDescription ?? defaultErrorMessage
+		}
+		let error = UploadError(status: statusCode, detail: message)
+		backgroundTask.completionHandler(nil, error)
+	}
+	
+	public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+		// run progress callback
+		if let backgroundTask = backgroundTasks[task.taskIdentifier] {
+			var progress: Double = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
+			progress = Double(round(100*progress)/100)
+			backgroundTask.progressCallback?(progress)
+		}
+	}
+	
+	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+		if let backgroundTask = backgroundTasks[dataTask.taskIdentifier] {
+			backgroundTask.dataBuffer.append(data)
+		}
 	}
 }

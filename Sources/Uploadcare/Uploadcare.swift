@@ -9,18 +9,22 @@ let uploadAPIBaseUrl: String = "https://upload.uploadcare.com"
 let RESTAPIBaseUrl: String = "https://api.uploadcare.com"
 
 
-public class Uploadcare {
+public class Uploadcare: NSObject {
 	
 	// TODO: log turn on or off
 	// TODO: add logs
 	
-	/// Authorization scheme for REST API requests
+	/// Authentication scheme for REST API requests
+	/// More information about authentication: https://uploadcare.com/docs/api_reference/rest/requests_auth/#rest-api-requests-and-authentication
 	public enum AuthScheme: String {
 		case simple = "Uploadcare.Simple"
 		case signed = "Uploadcare"
 	}
 	
+	/// Uploadcare authentication method
+	public var authScheme: AuthScheme = .signed
 	
+
 	// MARK: - Public properties
 	public var uploadAPI: UploadAPI
 	
@@ -32,9 +36,6 @@ public class Uploadcare {
 	/// Secret Key. Optional. Is used for authorization
 	internal var secretKey: String?
 	
-	/// Auth scheme
-	internal var authScheme: AuthScheme = .simple
-	
 	/// Alamofire session manager
 	private var manager = Session()
 	
@@ -43,6 +44,8 @@ public class Uploadcare {
 	
 	/// Library version
 	private var libraryVersion = "0.1.0-beta"
+    
+    private var redirectValues = [String: String]()
 	
 	
 	/// Initialization
@@ -67,27 +70,50 @@ internal extension Uploadcare {
 	/// Build url request for REST API
 	/// - Parameter fromURL: request url
 	func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
-		let dateString = GMTDate()
-		
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = method.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
 		urlRequest.addValue("application/vnd.uploadcare-v0.6+json", forHTTPHeaderField: "Accept")
-		urlRequest.addValue(dateString, forHTTPHeaderField: "Date")
-		
 		
 		let userAgent = "\(libraryName)/\(libraryVersion)/\(publicKey) (Swift/\(getSwiftVersion()))"
 		urlRequest.addValue(userAgent, forHTTPHeaderField: "User-Agent")
 		
+		return urlRequest
+	}
+	
+	/// Adds signature to network request for secure authorization
+	/// - Parameter urlRequest: url request
+	func signRequest(_ urlRequest: inout URLRequest) {
+		let dateString = GMTDate()
+		urlRequest.addValue(dateString, forHTTPHeaderField: "Date")
+		
+		let secretKey = self.secretKey ?? ""
+		
 		switch authScheme {
 		case .simple:
-			urlRequest.addValue("\(authScheme.rawValue) \(publicKey):\(secretKey ?? "")", forHTTPHeaderField: "Authorization")
+			urlRequest.addValue("\(authScheme.rawValue) \(publicKey):\(secretKey )", forHTTPHeaderField: "Authorization")
 		case .signed:
-			// TODO: - implement
-			break
+			let content = urlRequest.httpBody?.toString() ?? ""
+			
+			var query = "/"
+			if let q = urlRequest.url?.query {
+				query = "/?" + q
+			}
+			let uri = (urlRequest.url?.path ?? "") + query
+			
+			let signString = [
+				urlRequest.method?.rawValue ?? "GET",
+				content.md5(),
+				urlRequest.allHTTPHeaderFields?["Content-Type"] ?? "application/json",
+				dateString,
+				uri
+			].joined(separator: "\n")
+			
+			let signature = signString.hmac(key: secretKey)
+			
+			let authHeader = "\(authScheme.rawValue) \(publicKey):\(signature)"
+			urlRequest.addValue(authHeader, forHTTPHeaderField: "Authorization")
 		}
-		
-		return urlRequest
 	}
 }
 
@@ -127,7 +153,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -165,7 +192,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -199,14 +227,22 @@ extension Uploadcare {
 		withUUID uuid: String,
 		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
 	) {
-		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
+		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/storage/"
 		guard let url = URL(string: urlString) else {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .delete)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
+		signRequest(&urlRequest)
 		
+		let redirector = Redirector(behavior: .modify({ [weak self] (task, request, response) -> URLRequest? in
+			guard let url = request.url else { return request }
+			guard var newRequest = self?.makeUrlRequest(fromURL: url, method: .delete) else { return request }
+			self?.signRequest(&newRequest)
+			return newRequest
+		}))
 		manager.request(urlRequest)
+			.redirect(using: redirector)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
 				switch response.result {
@@ -248,6 +284,7 @@ extension Uploadcare {
 		if let body = try? JSONEncoder().encode(uuids) {
 			urlRequest.httpBody = body
 		}
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -285,7 +322,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -329,6 +367,7 @@ extension Uploadcare {
 		if let body = try? JSONEncoder().encode(uuids) {
 			urlRequest.httpBody = body
 		}
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -385,7 +424,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -423,7 +463,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -462,7 +503,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -507,6 +549,7 @@ extension Uploadcare {
 		if let body = try? JSONEncoder().encode(bodyDictionary) {
 			urlRequest.httpBody = body
 		}
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -568,6 +611,7 @@ extension Uploadcare {
 		if let body = try? JSONEncoder().encode(bodyDictionary) {
 			urlRequest.httpBody = body
 		}
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -601,7 +645,8 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		let urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		signRequest(&urlRequest)
 		
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
@@ -625,8 +670,59 @@ extension Uploadcare {
 				}
 		}
 	}
+    
+    /// This method allows you to get authonticated url from your backend using redirect.
+    /// By request to that url your backend should generate authenticated url to your file and perform REDIRECT to generated url.
+    /// Redirect url will be caught and returned in completion handler of that method
+    ///
+    /// Example of URL: https://yourdomain.com/{UUID}/
+    /// Redirect to: https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
+    ///
+    /// URL for redirect will be returned in completion handler
+    ///
+    /// More details in documentation: https://uploadcare.com/docs/delivery/file_api/#authenticated-urls
+    ///
+    /// - Parameters:
+    ///   - url: url for request to your backend
+    ///   - completionHandler: completion handler
+    public func getAuthenticatedUrlFromUrl(_ url: URL, _ completionHandler: @escaping (String?, RESTAPIError?) -> Void) {
+        let urlString = url.absoluteString
+        
+        redirectValues[urlString] = ""
+        
+        let config = URLSessionConfiguration.default
+        let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        
+        let task = urlSession.dataTask(with: url) { [weak self] (data, response, error) in
+            guard let self = self else { return }
+            
+            defer { self.redirectValues.removeValue(forKey: urlString) }
+            
+            if let error = error {
+                completionHandler(nil, RESTAPIError(detail: error.localizedDescription))
+                return
+            }
+            
+            guard let redirectUrl = self.redirectValues[urlString], redirectUrl.isEmpty == false else {
+                completionHandler(nil, RESTAPIError(detail: "No redirect happened"))
+                return
+            }
+            
+            completionHandler(redirectUrl, nil)
+        }
+        task.resume()
+    }
 }
 
+// MARK: - URLSessionTaskDelegate
+extension Uploadcare: URLSessionTaskDelegate {
+    public func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
+        if let key = task.originalRequest?.url?.absoluteString, let value = request.url?.absoluteString {
+            redirectValues[key] = value
+        }
+        completionHandler(request)
+    }
+}
 
 // MARK: - Factory
 extension Uploadcare {

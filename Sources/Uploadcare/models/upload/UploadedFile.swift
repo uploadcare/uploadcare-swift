@@ -169,9 +169,9 @@ public class UploadedFile: Codable {
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: ((UploadedFile?, UploadError?) -> Void)? = nil
-	) -> UploadTaskable? {
+	) -> UploadTaskResumable? {
 		guard let fileData = self.data else {
-			let error = UploadError(status: 0, message: "Unable to upload file: Data is empty")
+			let error = UploadError(status: 0, detail: "Unable to upload file: Data is empty")
 			completionHandler?(nil, error)
 			return nil
 		}
@@ -182,17 +182,19 @@ public class UploadedFile: Codable {
 		let uploadTask = uploadAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { (progress) in
 			onProgress?(progress)
 		}, { [weak self] (file, error) in
+            if let error = error {
+                completionHandler?(nil, error)
+                return
+            }
+            
+            guard let uploadedFile = file else {
+                completionHandler?(nil, UploadError.defaultError())
+                return
+            }
+            
+            defer { completionHandler?(file, nil) }
+            
 			guard let self = self else { return }
-			
-			if let error = error {
-				completionHandler?(nil, error)
-				return
-			}
-			
-			guard let uploadedFile = file else {
-				completionHandler?(nil, UploadError.defaultError())
-				return
-			}
 			
 			self.size = uploadedFile.size
 			self.total = uploadedFile.total
@@ -207,8 +209,6 @@ public class UploadedFile: Codable {
 			self.imageInfo = uploadedFile.imageInfo
 			self.videoInfo = uploadedFile.videoInfo
 			self.s3Bucket = uploadedFile.s3Bucket
-			
-			completionHandler?(file, nil)
 		})
 		return uploadTask
 	}

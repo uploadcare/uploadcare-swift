@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "Uploadcare",
 	platforms: [
-		.macOS(.v10_12),
+		.macOS(.v10_13),
 		.iOS(.v11),
 		.tvOS(.v11),
 		.watchOS(.v5)
@@ -25,9 +25,11 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "Uploadcare",
-            dependencies: ["Alamofire"]),
+            dependencies: ["Alamofire"]
+		),
         .testTarget(
             name: "UploadcareTests",
-            dependencies: ["Uploadcare"]),
+            dependencies: ["Uploadcare"]
+		)
     ]
 )

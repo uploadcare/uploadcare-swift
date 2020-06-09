@@ -1,3 +1,4 @@
+#if !os(watchOS)
 import XCTest
 import Alamofire
 @testable import Uploadcare
@@ -29,3 +30,4 @@ final class uploadcare_swiftTests: XCTestCase {
 		("testRequestMethod", testRequestMethod)
     ]
 }
+#endif
