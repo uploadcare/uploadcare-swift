@@ -6,7 +6,7 @@
 
 Uploadcare Swift integration handles uploads by wrapping Upload and REST APIs.
 
-Check out [demo](/DemoApp).
+Check out [demo](/Demo).
 
 * [Installation](#installation)
 * [Initialization](#initialization)
