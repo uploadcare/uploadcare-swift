@@ -2,7 +2,7 @@
 //  Uploadcare_watchOS.h
 //  Uploadcare-watchOS
 //
-//  Created by Sergey Armodin on 06.04.2020.
+//  Created by Sergey Armodin on 09.06.2020.
 //
 
 #import <Foundation/Foundation.h>

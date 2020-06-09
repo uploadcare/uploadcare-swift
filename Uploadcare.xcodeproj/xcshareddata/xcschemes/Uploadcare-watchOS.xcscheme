@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "24875B25243B3442003F3E06"
+               BlueprintIdentifier = "245DBB4824901B9B002FB70B"
                BuildableName = "Uploadcare_watchOS.framework"
                BlueprintName = "Uploadcare-watchOS"
                ReferencedContainer = "container:Uploadcare.xcodeproj">
@@ -50,7 +50,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "24875B25243B3442003F3E06"
+            BlueprintIdentifier = "245DBB4824901B9B002FB70B"
             BuildableName = "Uploadcare_watchOS.framework"
             BlueprintName = "Uploadcare-watchOS"
             ReferencedContainer = "container:Uploadcare.xcodeproj">
