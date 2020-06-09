@@ -128,6 +128,9 @@
 		245DBAC624900F30002FB70B /* UploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245DBA4F24900F2F002FB70B /* UploadAPI.swift */; };
 		245DBAC724900F30002FB70B /* UploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245DBA4F24900F2F002FB70B /* UploadAPI.swift */; };
 		245DBAC924900FE2002FB70B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 245DBAC824900FE2002FB70B /* Alamofire */; };
+		245DBB3F2490194B002FB70B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 245DBB3E2490194B002FB70B /* Alamofire */; };
+		245DBB4124901957002FB70B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 245DBB4024901957002FB70B /* Alamofire */; };
+		245DBB432490195A002FB70B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 245DBB422490195A002FB70B /* Alamofire */; };
 		24875B1D243B33EC003F3E06 /* Uploadcare_tvOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B1B243B33EB003F3E06 /* Uploadcare_tvOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		24875B2A243B3442003F3E06 /* Uploadcare_watchOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B28243B3442003F3E06 /* Uploadcare_watchOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		24875B37243B3518003F3E06 /* Uploadcare_macOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B35243B3518003F3E06 /* Uploadcare_macOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -216,6 +219,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				245DBB3F2490194B002FB70B /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,6 +227,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				245DBB4124901957002FB70B /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,6 +235,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				245DBB432490195A002FB70B /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -531,6 +537,9 @@
 			dependencies = (
 			);
 			name = "Uploadcare-tvOS";
+			packageProductDependencies = (
+				245DBB3E2490194B002FB70B /* Alamofire */,
+			);
 			productName = "Uploadcare-tvOS";
 			productReference = 24875B19243B33EB003F3E06 /* Uploadcare_tvOS.framework */;
 			productType = "com.apple.product-type.framework";
@@ -549,6 +558,9 @@
 			dependencies = (
 			);
 			name = "Uploadcare-watchOS";
+			packageProductDependencies = (
+				245DBB4024901957002FB70B /* Alamofire */,
+			);
 			productName = "Uploadcare-watchOS";
 			productReference = 24875B26243B3442003F3E06 /* Uploadcare_watchOS.framework */;
 			productType = "com.apple.product-type.framework";
@@ -567,6 +579,9 @@
 			dependencies = (
 			);
 			name = "Uploadcare-macOS";
+			packageProductDependencies = (
+				245DBB422490195A002FB70B /* Alamofire */,
+			);
 			productName = "Uploadcare-macOS";
 			productReference = 24875B33243B3518003F3E06 /* Uploadcare_macOS.framework */;
 			productType = "com.apple.product-type.framework";
@@ -1164,7 +1179,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uploadcare.Uploadcare-macOS";
@@ -1235,7 +1250,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uploadcare.Uploadcare-macOS";
@@ -1437,6 +1452,21 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		245DBAC824900FE2002FB70B /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		245DBB3E2490194B002FB70B /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		245DBB4024901957002FB70B /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		245DBB422490195A002FB70B /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
