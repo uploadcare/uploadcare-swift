@@ -41,7 +41,9 @@ public class UploadAPI: NSObject {
 		config.isDiscretionary = false
 		
 		// TODO: add a public settings for that
+		#if !os(macOS)
 		config.sessionSendsLaunchEvents = true
+		#endif
 		
 		config.waitsForConnectivity = true
 		return URLSession(configuration: config, delegate: self, delegateQueue: nil)

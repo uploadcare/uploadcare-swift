@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "Uploadcare",
 	platforms: [
-		.macOS(.v10_12),
+		.macOS(.v10_13),
 		.iOS(.v11),
 		.tvOS(.v11),
 		.watchOS(.v5)
@@ -28,6 +28,6 @@ let package = Package(
             dependencies: ["Alamofire"]),
         .testTarget(
             name: "UploadcareTests",
-            dependencies: ["Uploadcare"]),
+            dependencies: ["Uploadcare"])
     ]
 )
