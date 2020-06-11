@@ -1,14 +1,6 @@
-#
-# Be sure to run `pod lib lint TestLibPod.podspec' to ensure this is a
-# valid spec before submitting.
-#
-# Any lines starting with a # are optional, but their use is encouraged
-# To learn more about a Podspec see https://guides.cocoapods.org/syntax/podspec.html
-#
-
 Pod::Spec.new do |s|
   s.name             = 'Uploadcare'
-  s.version          = '1.0.0'
+  s.version          = '0.1.0-RC'
   s.summary          = 'Uploadcare lib written on Swift.'
 
 # This description is used to generate tags and improve search results.
@@ -25,10 +17,15 @@ TODO: Add long description of the pod here.
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Sergey Armodin' => 'mak@arm1.ru' }
-  s.source           = { :git => 'https://github.com/uploadcare/uploadcare-swift', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/uploadcare/uploadcare-swift.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '11.0'
+  s.osx.deployment_target = '10.13'
+  s.tvos.deployment_target = '11.0'
+  s.watchos.deployment_target = '5.0'
+
+  s.swift_versions = ['5.1', '5.2']
 
   s.source_files = 'Sources/Uploadcare/**/*'
   
