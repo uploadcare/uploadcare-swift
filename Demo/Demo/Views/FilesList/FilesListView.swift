@@ -52,6 +52,7 @@ struct FilesListView: View {
 	@State private var isShowingAlert = false
     @State private var isShowingAddFilesAlert = false
     @State private var isShowingImagePicker = false
+	@State private var isShowingDocumentPicker = false
 	
     @State private var alertMessage = ""
     @State private var inputImage: UIImage?
@@ -62,12 +63,13 @@ struct FilesListView: View {
 	
 	@EnvironmentObject var api: APIStore
     
-    private var uploadingFile: UploadedFile?
+    private var uploadingFile: UploadedFile?	
 	
     var body: some View {
         ZStack {
             VStack {
                 HStack {
+					// Progress bar
                     ProgressBar(value: $progressValue)
                         .frame(height: 20)
                         .frame(maxWidth: 200)
@@ -115,7 +117,7 @@ struct FilesListView: View {
                 message: Text(""),
                 buttons: [
                     .default(Text("Photos"), action: { self.isShowingImagePicker.toggle() }),
-                    .default(Text("Files"), action: { print("files") }),
+					.default(Text("Files"), action: { self.isShowingDocumentPicker.toggle() }),
                     .cancel()
                 ]
             )
@@ -127,11 +129,16 @@ struct FilesListView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
-        .sheet(isPresented: $isShowingImagePicker, onDismiss: loadImage) {
-            ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
-                self.uploadImage(imageUrl)
-            }
-        }
+		.sheet(isPresented: $isShowingImagePicker, onDismiss: loadImage) {
+			ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
+				self.uploadFile(imageUrl)
+			}
+		}
+		.sheet(isPresented: $isShowingDocumentPicker, onDismiss: loadImage) {
+			DocumentPicker { (url) in
+				self.uploadFile(url)
+			}
+		}
         .navigationBarItems(trailing:
             HStack {
                 Button(
@@ -145,10 +152,10 @@ struct FilesListView: View {
         .navigationBarTitle(Text("List of files"))
 	}
 	
-    func uploadImage(_ imageUrl: URL) {
+	func uploadFile(_ url: URL) {
         let data: Data
         do {
-            data = try Data(contentsOf: imageUrl)
+            data = try Data(contentsOf: url)
         } catch let error {
             print(error)
             return
@@ -156,12 +163,12 @@ struct FilesListView: View {
         
         self.progressValue = 0
         self.isUploading = true
-        let filename = imageUrl.lastPathComponent
+        let filename = url.lastPathComponent
             
         if data.count < UploadAPI.multipartMinFileSize {
             self.performDirectUpload(filename: filename, data: data)
         } else {
-            self.performMultipartUpload(filename: filename, fileUrl: imageUrl)
+            self.performMultipartUpload(filename: filename, fileUrl: url)
         }
     }
     

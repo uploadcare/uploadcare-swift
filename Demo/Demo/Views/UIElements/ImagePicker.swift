@@ -16,35 +16,32 @@ struct ImagePicker: UIViewControllerRepresentable {
     let sourceType: UIImagePickerController.SourceType
     let onImagePicked: (URL) -> Void
 
-    final class Coordinator: NSObject,
-    UINavigationControllerDelegate,
-    UIImagePickerControllerDelegate {
+	final class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
 
-        @Binding
-        private var presentationMode: PresentationMode
-        private let sourceType: UIImagePickerController.SourceType
-        private let onImagePicked: (URL) -> Void
+		@Binding
+		private var presentationMode: PresentationMode
+		private let sourceType: UIImagePickerController.SourceType
+		private let onImagePicked: (URL) -> Void
+		
+		init(presentationMode: Binding<PresentationMode>,
+			 sourceType: UIImagePickerController.SourceType,
+			 onImagePicked: @escaping (URL) -> Void) {
+			_presentationMode = presentationMode
+			self.sourceType = sourceType
+			self.onImagePicked = onImagePicked
+		}
 
-        init(presentationMode: Binding<PresentationMode>,
-             sourceType: UIImagePickerController.SourceType,
-             onImagePicked: @escaping (URL) -> Void) {
-            _presentationMode = presentationMode
-            self.sourceType = sourceType
-            self.onImagePicked = onImagePicked
-        }
-
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            let imageUrl = info[UIImagePickerController.InfoKey.imageURL] as! URL
-            
-            onImagePicked(imageUrl)
-            presentationMode.dismiss()
-        }
-
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            presentationMode.dismiss()
-        }
-
-    }
+		func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+			let imageUrl = info[UIImagePickerController.InfoKey.imageURL] as! URL
+			
+			onImagePicked(imageUrl)
+			presentationMode.dismiss()
+		}
+		
+		func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+			presentationMode.dismiss()
+		}
+	}
 
     func makeCoordinator() -> Coordinator {
         return Coordinator(presentationMode: presentationMode,
