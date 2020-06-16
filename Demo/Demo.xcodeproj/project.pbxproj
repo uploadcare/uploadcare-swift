@@ -61,6 +61,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		242C69852498DDF40091A477 /* UIElements */ = {
+			isa = PBXGroup;
+			children = (
+				2449A743242E30C50015A618 /* ActivityIndicator.swift */,
+				24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */,
+				24AA61DE247C5BAD000BABA9 /* ProgressBar.swift */,
+			);
+			path = UIElements;
+			sourceTree = "<group>";
+		};
+		242C69862498DE080091A477 /* ProjectInfo */ = {
+			isa = PBXGroup;
+			children = (
+				243A7147242D309000CA229B /* CollaboratorView.swift */,
+				243A7143242CF1B400CA229B /* ProjectInfoView.swift */,
+			);
+			path = ProjectInfo;
+			sourceTree = "<group>";
+		};
 		243A711D242CEAA200CA229B = {
 			isa = PBXGroup;
 			children = (
@@ -114,13 +133,10 @@
 		243A7146242D307A00CA229B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				242C69862498DE080091A477 /* ProjectInfo */,
+				242C69852498DDF40091A477 /* UIElements */,
 				24BF0F992430E2C4004D87DF /* FilesList */,
-				2449A743242E30C50015A618 /* ActivityIndicator.swift */,
-				243A7147242D309000CA229B /* CollaboratorView.swift */,
 				243A712D242CEAA200CA229B /* ContentView.swift */,
-				24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */,
-				24AA61DE247C5BAD000BABA9 /* ProgressBar.swift */,
-				243A7143242CF1B400CA229B /* ProjectInfoView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
