@@ -137,7 +137,8 @@ extension FilesList {
 	/// - Parameter completionHandler: completion handler
 	public func nextPage(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
 		guard let next = next, let query = URL(string: next)?.query else {
-			completionHandler(nil, RESTAPIError.defaultError())
+			self.results = []
+			completionHandler(self, nil)
 			return
 		}
 		
@@ -148,7 +149,8 @@ extension FilesList {
 	/// - Parameter completionHandler: completion handler
 	public func previousPage(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
 		guard let previous = previous, let query = URL(string: previous)?.query else {
-			completionHandler(nil, RESTAPIError.defaultError())
+			self.results = []
+			completionHandler(self, nil)
 			return
 		}
 		
