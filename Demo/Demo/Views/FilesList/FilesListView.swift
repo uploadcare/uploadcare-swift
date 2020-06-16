@@ -13,10 +13,28 @@ import Uploadcare
 
 class FilesListStore: ObservableObject {
 	@Published var files: [FileViewData] = []
+	private var list: FilesList?
+	var uploadcare: Uploadcare? {
+		didSet {
+			self.list = uploadcare?.listOfFiles()
+		}
+	}
 	
-    init(files: [FileViewData]) {
+	init(files: [FileViewData]) {
         self.files = files
     }
+	
+	func load(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
+		let query = PaginationQuery()
+			.limit(5)
+            .ordering(.dateTimeUploadedDESC)
+		
+		self.list?.get(withQuery: query, completionHandler)
+	}
+	
+	func loadNext(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
+		self.list?.nextPage(completionHandler)
+	}
 }
 
 
@@ -74,6 +92,11 @@ struct FilesListView: View {
                     Section {
                         ForEach(self.filesListStore.files) { file in
                             FileRowView(fileData: file)
+							.onAppear {
+								if file.file.uuid == self.filesListStore.files.last?.file.uuid {
+									self.loadMoreIfNeed()
+								}
+							}
                         }.onDelete(perform: delete)
                     }
                 }
@@ -154,6 +177,19 @@ struct FilesListView: View {
         default: break
         }
     }
+	
+	func loadMoreIfNeed() {
+		self.isLoading = true
+		filesListStore.loadNext { (list, error) in
+			defer { self.isLoading = false }
+			if let error = error {
+				self.alertMessage = error.detail
+				self.isShowingAlert.toggle()
+				return print(error)
+			}
+			list?.results.forEach({ self.filesListStore.files.append(FileViewData( file: $0)) })
+		}
+	}
     
 	func delete(at offsets: IndexSet) {
         offsets.forEach { (index) in
@@ -171,10 +207,8 @@ struct FilesListView: View {
 	}
 	
 	func loadData() {
-		let query = PaginationQuery()
-			.limit(100)
-            .ordering(.dateTimeUploadedDESC)
-		self.api.uploadcare?.listOfFiles(withQuery: query, { (list, error) in
+		filesListStore.uploadcare = self.api.uploadcare
+		filesListStore.load { (list, error) in
 			defer { self.isLoading = false }
 			if let error = error {
 				self.alertMessage = error.detail
@@ -183,7 +217,7 @@ struct FilesListView: View {
 			}
 			self.filesListStore.files.removeAll()
 			list?.results.forEach({ self.filesListStore.files.append(FileViewData( file: $0)) })
-		})
+		}
 	}
     
     func loadImage() {
