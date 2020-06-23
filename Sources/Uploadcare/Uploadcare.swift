@@ -43,7 +43,7 @@ public class Uploadcare: NSObject {
 	private var libraryName = "UploadcareSwift"
 	
 	/// Library version
-	private var libraryVersion = "0.1.0-beta"
+	private var libraryVersion = "0.1.0-RC"
     
     private var redirectValues = [String: String]()
 	

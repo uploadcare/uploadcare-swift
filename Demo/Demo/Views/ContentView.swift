@@ -33,6 +33,9 @@ struct MainView: View {
                     NavigationLink(destination: FilesListView()) {
                         Text("List of files")
                     }
+					NavigationLink(destination: GroupsListView()) {
+                        Text("List of groups")
+                    }
                 }.listStyle(GroupedListStyle())
                 .navigationBarTitle(Text("Uploadcare demo"), displayMode: .automatic)
             }
