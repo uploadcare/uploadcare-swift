@@ -15,7 +15,13 @@ struct FileRowView: View {
     var body: some View {
 		NavigationLink(destination: FileView(fileData: fileData)) {
 			HStack {
-				Image(systemName: fileData.file.isImage ? "photo.fill" : "doc.fill")
+				if fileData.file.isImage {
+					Image(systemName: "photo.fill")
+				} else if fileData.file.videoInfo != nil {
+					Image(systemName: "video.fill")
+				} else {
+					Image(systemName: "doc.fill")
+				}
 				VStack(alignment: .leading) {
 					Text(fileData.file.originalFilename).font(.headline)
 					Text("size: \(fileData.file.size / 1024) kb").font(.subheadline)
