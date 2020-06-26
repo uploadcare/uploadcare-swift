@@ -16,6 +16,7 @@
 		243A7142242CECC700CA229B /* Uploadcare in Frameworks */ = {isa = PBXBuildFile; productRef = 243A7141242CECC700CA229B /* Uploadcare */; };
 		243A7144242CF1B400CA229B /* ProjectInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A7143242CF1B400CA229B /* ProjectInfoView.swift */; };
 		243A7148242D309000CA229B /* CollaboratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A7147242D309000CA229B /* CollaboratorView.swift */; };
+		2442CF1F24A6256800B32252 /* GroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2442CF1E24A6256800B32252 /* GroupView.swift */; };
 		2449A744242E30C50015A618 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2449A743242E30C50015A618 /* ActivityIndicator.swift */; };
 		2449A746242E35FE0015A618 /* FilesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2449A745242E35FE0015A618 /* FilesListView.swift */; };
 		2449A748242E37CC0015A618 /* FileRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2449A747242E37CC0015A618 /* FileRowView.swift */; };
@@ -42,6 +43,7 @@
 		243A7143242CF1B400CA229B /* ProjectInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectInfoView.swift; sourceTree = "<group>"; };
 		243A7145242CFC6F00CA229B /* Demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Demo.entitlements; sourceTree = "<group>"; };
 		243A7147242D309000CA229B /* CollaboratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaboratorView.swift; sourceTree = "<group>"; };
+		2442CF1E24A6256800B32252 /* GroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupView.swift; sourceTree = "<group>"; };
 		2449A743242E30C50015A618 /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		2449A745242E35FE0015A618 /* FilesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesListView.swift; sourceTree = "<group>"; };
 		2449A747242E37CC0015A618 /* FileRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileRowView.swift; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				24FDBBA624A2A55200F92980 /* GroupsListView.swift */,
+				2442CF1E24A6256800B32252 /* GroupView.swift */,
 				24FDBBAA24A2AABD00F92980 /* GroupRowView.swift */,
 			);
 			path = GroupsList;
@@ -255,6 +258,7 @@
 			files = (
 				24FDBBA924A2A78C00F92980 /* GroupViewData.swift in Sources */,
 				243A7148242D309000CA229B /* CollaboratorView.swift in Sources */,
+				2442CF1F24A6256800B32252 /* GroupView.swift in Sources */,
 				243A712A242CEAA200CA229B /* AppDelegate.swift in Sources */,
 				24FDBBA724A2A55200F92980 /* GroupsListView.swift in Sources */,
 				2449A746242E35FE0015A618 /* FilesListView.swift in Sources */,

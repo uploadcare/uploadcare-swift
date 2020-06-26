@@ -13,18 +13,20 @@ struct GroupRowView: View {
     var groupData: GroupViewData
 	
     var body: some View {
-		VStack(alignment: .leading) {
-			HStack(alignment: .firstTextBaseline) {
-				Text("ID:")
-					.font(.caption)
-				Text(groupData.group.id)
-					.font(.caption)
-			}
-			HStack(alignment: .firstTextBaseline) {
-				Text("files:")
-					.font(.caption)
-				Text("\(groupData.group.filesCount)")
-					.font(.caption)
+		NavigationLink(destination: GroupView(viewData: groupData)) {
+			VStack(alignment: .leading) {
+				HStack(alignment: .firstTextBaseline) {
+					Text("ID:")
+						.font(.caption)
+					Text(groupData.group.id)
+						.font(.caption)
+				}
+				HStack(alignment: .firstTextBaseline) {
+					Text("files:")
+						.font(.caption)
+					Text("\(groupData.group.filesCount)")
+						.font(.caption)
+				}
 			}
 		}
     }

@@ -66,7 +66,7 @@ struct GroupsListView: View {
 				return print(error)
 			}
 			self.groupsListStore.groups.removeAll()
-			list?.results.forEach({ self.groupsListStore.groups.append(GroupViewData(group: $0)) })
+			list?.results.forEach { self.groupsListStore.groups.append(GroupViewData(group: $0)) }
 		}
 	}
 	
