@@ -13,44 +13,46 @@ struct GroupView: View {
 	
     var body: some View {
 		List {
-			HStack(alignment: .center) {
-				Text("ID:")
+			VStack(alignment: .leading) {
+				Text("ID:").bold()
 				Text("\(viewData.group.id)")
-			}.font(.caption)
-			
-			HStack(alignment: .center) {
-				Text("Files:")
-				Text("\(viewData.group.filesCount)")
-			}.font(.caption)
-			
-			HStack(alignment: .center) {
-				Text("Created:")
-				Text("\(viewData.group.datetimeCreated)")
-			}.font(.caption)
-			
-			if viewData.group.datetimeStored != nil {
-				HStack(alignment: .center) {
-					Text("Stored:")
-					Text("\(viewData.group.datetimeStored!)")
-				}.font(.caption)
 			}
 			
-			HStack(alignment: .center) {
-				Text("CDN URL:")
-				Text("\(viewData.group.cdnUrl)")
-			}.font(.caption)
+			VStack(alignment: .leading) {
+				Text("Files:").bold()
+				Text("\(viewData.group.filesCount)")
+			}
 			
-			HStack(alignment: .center) {
-				Text("URL:")
+			VStack(alignment: .leading) {
+				Text("Created:").bold()
+				Text("\(viewData.group.datetimeCreated)")
+			}
+			
+			if viewData.group.datetimeStored != nil {
+				VStack(alignment: .leading) {
+					Text("Stored:").bold()
+					Text("\(viewData.group.datetimeStored!)")
+				}
+			}
+			
+			VStack(alignment: .leading) {
+				Text("CDN URL:").bold()
+				Text("\(viewData.group.cdnUrl)")
+			}
+			
+			VStack(alignment: .leading) {
+				Text("URL:").bold()
 				Text("\(viewData.group.url)")
-			}.font(.caption)
+			}
 		}
-        
+		.navigationBarTitle("Group info")
     }
 }
 
 struct GroupView_Previews: PreviewProvider {
     static var previews: some View {
-        GroupView(viewData: testGroupViewData)
+		NavigationView {
+			GroupView(viewData: testGroupViewData)
+		}
     }
 }
