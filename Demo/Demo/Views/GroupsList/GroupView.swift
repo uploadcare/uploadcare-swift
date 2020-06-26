@@ -13,14 +13,16 @@ struct GroupView: View {
 	
     var body: some View {
 		List {
-			VStack(alignment: .leading) {
-				Text("ID:").bold()
-				Text("\(viewData.group.id)")
+			NavigationLink(destination: GroupFileList(viewData: viewData)) {
+				VStack(alignment: .leading) {
+					Text("Files:").bold()
+					Text("\(viewData.group.filesCount)")
+				}
 			}
 			
 			VStack(alignment: .leading) {
-				Text("Files:").bold()
-				Text("\(viewData.group.filesCount)")
+				Text("ID:").bold()
+				Text("\(viewData.group.id)")
 			}
 			
 			VStack(alignment: .leading) {
