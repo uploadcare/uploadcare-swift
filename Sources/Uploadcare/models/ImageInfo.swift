@@ -68,7 +68,7 @@ public struct ImageInfo: Codable {
 	}
 	
 	
-	init(
+	public init(
 		height: Int,
 		width: Int,
 		geoLocation: GeoLocation?,

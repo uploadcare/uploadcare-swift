@@ -64,8 +64,12 @@ struct ImagePicker: UIViewControllerRepresentable {
 }
 
 struct ImagePicker_Previews: PreviewProvider {
+	@State private var isShowingImagePicker = false
+	
     static var previews: some View {
-        ImagePicker(sourceType: .photoLibrary) { (_) in
-        }
+		ZStack {
+			ImagePicker(sourceType: .photoLibrary) { (_) in
+			}
+		}
     }
 }

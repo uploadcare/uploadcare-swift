@@ -17,13 +17,13 @@
 		243A7144242CF1B400CA229B /* ProjectInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A7143242CF1B400CA229B /* ProjectInfoView.swift */; };
 		243A7148242D309000CA229B /* CollaboratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A7147242D309000CA229B /* CollaboratorView.swift */; };
 		2442CF1F24A6256800B32252 /* GroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2442CF1E24A6256800B32252 /* GroupView.swift */; };
+		2442CF2024A62D6800B32252 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */; };
 		2449A744242E30C50015A618 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2449A743242E30C50015A618 /* ActivityIndicator.swift */; };
 		2449A746242E35FE0015A618 /* FilesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2449A745242E35FE0015A618 /* FilesListView.swift */; };
 		2449A748242E37CC0015A618 /* FileRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2449A747242E37CC0015A618 /* FileRowView.swift */; };
 		2449A74A242E42AE0015A618 /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2449A749242E42AE0015A618 /* FileView.swift */; };
 		24931A5C24755311003EE044 /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24931A5B24755311003EE044 /* Tester.swift */; };
 		2496853B2498FAF3006A2AF8 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2496853A2498FAF3006A2AF8 /* DocumentPicker.swift */; };
-		24AA61DD247C5B1C000BABA9 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */; };
 		24AA61DF247C5BAD000BABA9 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AA61DE247C5BAD000BABA9 /* ProgressBar.swift */; };
 		24BF0F9C2430E323004D87DF /* FileViewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BF0F9B2430E323004D87DF /* FileViewData.swift */; };
 		24FDBBA724A2A55200F92980 /* GroupsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FDBBA624A2A55200F92980 /* GroupsListView.swift */; };
@@ -259,6 +259,7 @@
 				24FDBBA924A2A78C00F92980 /* GroupViewData.swift in Sources */,
 				243A7148242D309000CA229B /* CollaboratorView.swift in Sources */,
 				2442CF1F24A6256800B32252 /* GroupView.swift in Sources */,
+				2442CF2024A62D6800B32252 /* ImagePicker.swift in Sources */,
 				243A712A242CEAA200CA229B /* AppDelegate.swift in Sources */,
 				24FDBBA724A2A55200F92980 /* GroupsListView.swift in Sources */,
 				2449A746242E35FE0015A618 /* FilesListView.swift in Sources */,
@@ -269,7 +270,6 @@
 				2449A744242E30C50015A618 /* ActivityIndicator.swift in Sources */,
 				2449A74A242E42AE0015A618 /* FileView.swift in Sources */,
 				243A7144242CF1B400CA229B /* ProjectInfoView.swift in Sources */,
-				24AA61DD247C5B1C000BABA9 /* ImagePicker.swift in Sources */,
 				24AA61DF247C5BAD000BABA9 /* ProgressBar.swift in Sources */,
 				24931A5C24755311003EE044 /* Tester.swift in Sources */,
 				2496853B2498FAF3006A2AF8 /* DocumentPicker.swift in Sources */,
@@ -413,8 +413,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Demo/Preview Content\"";
 				DEVELOPMENT_TEAM = 345VKAJA5N;
+				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Demo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -435,8 +437,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Demo/Preview Content\"";
 				DEVELOPMENT_TEAM = 345VKAJA5N;
+				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Demo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

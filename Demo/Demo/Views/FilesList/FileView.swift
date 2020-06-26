@@ -37,9 +37,21 @@ struct FileView: View {
 							.clipped()
 					}
 					VStack(alignment: .leading, spacing: 8) {
-						Text("\(self.fileData.file.originalFilename)").bold()
-						Text("\(self.fileData.file.size / 1024) kb")
-						Text("UUID: \(self.fileData.file.uuid)")
+						Text("\(self.fileData.file.originalFilename)")
+							.bold()
+						
+						HStack {
+							Text("Size:")
+								.bold()
+							Text("\(self.fileData.file.size / 1024) kb")
+						}
+						
+						HStack {
+							Text("UUID:")
+								.bold()
+							Text("\(self.fileData.file.uuid)")
+						}
+						
 						if self.fileData.file.imageInfo?.width != nil && self.fileData.file.imageInfo?.height != nil {
 							HStack {
 								Text("Image size:").bold()
@@ -52,6 +64,19 @@ struct FileView: View {
 								Text("\(self.fileData.file.videoInfo!.video.width)x\(self.fileData.file.videoInfo!.video.height)")
 							}
 						}
+						
+						HStack {
+							Text("Stored:")
+								.bold()
+							if self.fileData.file.datetimeStored != nil {
+								Text("true")
+							} else {
+								Text("false")
+							}
+						}
+						
+						Text("Demo files are not stored and will be deleted after 24 hours")
+							.font(.footnote)
 					}.padding([.leading, .trailing], 8)
 				}
 				ActivityIndicator(isAnimating: .constant(true), style: .large)

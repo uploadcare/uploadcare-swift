@@ -44,15 +44,21 @@ struct FilesListView: View {
         case paused
         case notRunning
     }
+	
+	enum PickerType {
+		case photos
+		case files
+	}
     
 	@ObservedObject private var filesListStore: FilesListStore = FilesListStore(files: [])
     
     @State private var isLoading: Bool = true
     @State private var isUploading: Bool = false
 	@State private var isShowingAlert = false
-    @State private var isShowingAddFilesAlert = false
-    @State private var isShowingImagePicker = false
-	@State private var isShowingDocumentPicker = false
+    
+	@State private var isShowingAddFilesAlert = false
+	@State private var isShowingSheetWithPicker = false
+	@State private var pickerType: PickerType = .photos
 	
     @State private var alertMessage = ""
     @State private var inputImage: UIImage?
@@ -116,8 +122,14 @@ struct FilesListView: View {
                 title: Text("Select source"),
                 message: Text(""),
                 buttons: [
-                    .default(Text("Photos"), action: { self.isShowingImagePicker.toggle() }),
-					.default(Text("Files"), action: { self.isShowingDocumentPicker.toggle() }),
+                    .default(Text("Photos"), action: {
+						self.pickerType = .photos
+						self.isShowingSheetWithPicker.toggle()
+					}),
+					.default(Text("Files"), action: {
+						self.pickerType = .files
+						self.isShowingSheetWithPicker.toggle()
+					}),
                     .cancel()
                 ]
             )
@@ -129,14 +141,15 @@ struct FilesListView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
-		.sheet(isPresented: $isShowingImagePicker, onDismiss: loadImage) {
-			ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
-				self.uploadFile(imageUrl)
-			}
-		}
-		.sheet(isPresented: $isShowingDocumentPicker, onDismiss: loadImage) {
-			DocumentPicker { (url) in
-				self.uploadFile(url)
+		.sheet(isPresented: $isShowingSheetWithPicker) {
+			if self.pickerType == .photos {
+				ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
+					self.uploadFile(imageUrl)
+				}
+			} else {
+				DocumentPicker { (url) in
+					self.uploadFile(url)
+				}
 			}
 		}
         .navigationBarItems(trailing:
@@ -223,14 +236,11 @@ struct FilesListView: View {
 				return print(error)
 			}
 			self.filesListStore.files.removeAll()
-			list?.results.forEach({ self.filesListStore.files.append(FileViewData( file: $0)) })
+			list?.results.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
+			
+//			list?.results.forEach { print($0) }
 		}
 	}
-    
-    func loadImage() {
-//        guard let inputImage = inputImage else { return }
-//        image = Image(uiImage: inputImage)
-    }
 }
 
 // MARK: - Uploading
@@ -239,7 +249,7 @@ private extension FilesListView {
         let onProgress: (Double)->Void = { (progress) in
             self.progressValue = Float(progress)
         }
-        self.api.uploadcare?.uploadAPI.upload(files: [filename: data], store: .store, onProgress, { (uploadData, error) in
+        self.api.uploadcare?.uploadAPI.upload(files: [filename: data], store: .doNotStore, onProgress, { (uploadData, error) in
             defer { self.isUploading = false }
             
             if let error = error {
@@ -280,7 +290,7 @@ private extension FilesListView {
         }
         
         self.uploadState = .uploading
-        self.task = fileForUploading.upload(withName: filename, onProgress, { (file, error) in
+		self.task = fileForUploading.upload(withName: filename, store: .doNotStore, onProgress, { (file, error) in
             defer {
                 self.isUploading = false
                 self.uploadState = .notRunning
@@ -302,9 +312,10 @@ private extension FilesListView {
 // MARK: - Preview
 struct FilesListView_Previews: PreviewProvider {
     static var previews: some View {
-        let flist = FilesListView()
-            .environmentObject(APIStore())
-        
-        return flist
+		NavigationView {
+			FilesListView()
+				.environmentObject(APIStore())
+				.navigationBarTitle(Text("List of files"))
+		}
     }
 }
