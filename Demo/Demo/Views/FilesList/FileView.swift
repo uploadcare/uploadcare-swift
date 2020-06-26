@@ -84,9 +84,9 @@ struct RandomTransformator {
 	}
 	
 	static func getRandomTransformation(imageURL: URL) -> URL {
-		let effects = [crop, imageFilter, sharp, blur]
+		let effects = [crop, imageFilter, blur, sharp]
 		
-		let randomNumber = (0..<effects.count).randomElement()!
+		let randomNumber = (2..<effects.count).randomElement()!
 		var newURL = imageURL
 		
 		for i in (0...randomNumber) {
@@ -117,46 +117,48 @@ struct FileView: View {
 						Image(uiImage: self.imageStore.image!)
 							.resizable()
 							.aspectRatio(contentMode: .fit)
-							.frame(maxWidth: .infinity, maxHeight: geometry.size.height / 2, alignment: .center)
+							.frame(
+								maxWidth: .infinity,
+								minHeight: geometry.size.height / 2.2,
+								maxHeight: geometry.size.height / 2.2,
+								alignment: .center
+							)
 							.clipped()
 					}
-					VStack(alignment: .leading, spacing: 8) {
-						Text("\(self.fileData.file.originalFilename)")
+					VStack(alignment: .leading, spacing: 12) {
+						Text("\(self.fileData.file.originalFilename) \(self.fileData.file.datetimeStored != nil ? "[stored]" : "[not stored]")")
 							.bold()
 						
-						HStack {
-							Text("Size:")
-								.bold()
-							Text("\(self.fileData.file.size / 1024) kb")
+						
+						
+						if self.fileData.file.imageInfo?.width != nil && self.fileData.file.imageInfo?.height != nil {
+							VStack(alignment: .leading) {
+								Text("Size:").bold()
+								Text("\(self.fileData.file.imageInfo!.width)x\(self.fileData.file.imageInfo!.height) | \(self.fileData.file.size / 1024) kb")
+							}
+						} else if self.fileData.file.videoInfo?.video.width != nil && self.fileData.file.videoInfo?.video.height != nil {
+							VStack(alignment: .leading) {
+								Text("Size:").bold()
+								Text("\(self.fileData.file.videoInfo!.video.width)x\(self.fileData.file.videoInfo!.video.height) | \(self.fileData.file.size / 1024) kb")
+							}
+						} else {
+							VStack(alignment: .leading) {
+								Text("Size:")
+									.bold()
+								Text("\(self.fileData.file.size / 1024) kb")
+							}
 						}
 						
-						HStack {
+						VStack(alignment: .leading) {
+							Text("URL:")
+								.bold()
+							Text("\(self.imageUrl?.absoluteString ?? "")")
+						}
+						
+						VStack(alignment: .leading) {
 							Text("UUID:")
 								.bold()
 							Text("\(self.fileData.file.uuid)")
-						}
-						
-						if self.fileData.file.imageInfo?.width != nil && self.fileData.file.imageInfo?.height != nil {
-							HStack {
-								Text("Image size:").bold()
-								Text("\(self.fileData.file.imageInfo!.width)x\(self.fileData.file.imageInfo!.height)")
-							}
-						}
-						if self.fileData.file.videoInfo?.video.width != nil && self.fileData.file.videoInfo?.video.height != nil {
-							HStack {
-								Text("Video size:").bold()
-								Text("\(self.fileData.file.videoInfo!.video.width)x\(self.fileData.file.videoInfo!.video.height)")
-							}
-						}
-						
-						HStack {
-							Text("Stored:")
-								.bold()
-							if self.fileData.file.datetimeStored != nil {
-								Text("true")
-							} else {
-								Text("false")
-							}
 						}
 						
 						Text("Demo files are not stored and will be deleted after 24 hours")
@@ -195,6 +197,7 @@ struct FileView: View {
 				}
 			}
 		)
+		.navigationBarTitle("Image")
 	}
 	
 	func makeRandomTransformation() {
