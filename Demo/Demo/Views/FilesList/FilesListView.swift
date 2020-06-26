@@ -69,7 +69,8 @@ struct FilesListView: View {
 	
 	@EnvironmentObject var api: APIStore
     
-    private var uploadingFile: UploadedFile?	
+    private var uploadingFile: UploadedFile?
+	@State private var didLoadData: Bool = false
 	
     var body: some View {
         ZStack {
@@ -116,6 +117,8 @@ struct FilesListView: View {
             }.opacity(self.isLoading ? 1 : 0)
         }
         .onAppear {
+			guard self.didLoadData == false else { return }
+			self.didLoadData = true
             self.loadData()
         }
         .actionSheet(isPresented: $isShowingAddFilesAlert, content: { ActionSheet(

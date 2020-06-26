@@ -30,8 +30,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             #warning("Set your public key here")
 			let apiStore = APIStore(
 				uploadcare: Uploadcare(
-					withPublicKey: "",
-					secretKey: "")
+					withPublicKey: "demopublickey",
+					secretKey: "demosecretkey")
 			)
 			
 		    window.rootViewController = UIHostingController(

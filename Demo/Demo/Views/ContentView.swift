@@ -27,14 +27,14 @@ struct MainView: View {
 		NavigationView {
             ZStack {
                 List {
-                    NavigationLink(destination: ProjectInfoView()) {
-                        Text("Project Info")
-                    }
                     NavigationLink(destination: FilesListView()) {
                         Text("List of files")
                     }
 					NavigationLink(destination: GroupsListView()) {
-                        Text("List of groups")
+                        Text("List of file groups")
+                    }
+					NavigationLink(destination: ProjectInfoView()) {
+                        Text("Project info")
                     }
                 }.listStyle(GroupedListStyle())
                 .navigationBarTitle(Text("Uploadcare demo"), displayMode: .automatic)

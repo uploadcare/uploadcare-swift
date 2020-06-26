@@ -126,10 +126,8 @@ struct FileView: View {
 							.clipped()
 					}
 					VStack(alignment: .leading, spacing: 12) {
-						Text("\(self.fileData.file.originalFilename) \(self.fileData.file.datetimeStored != nil ? "[stored]" : "[not stored]")")
+						Text("\(self.fileData.file.originalFilename)")
 							.bold()
-						
-						
 						
 						if self.fileData.file.imageInfo?.width != nil && self.fileData.file.imageInfo?.height != nil {
 							VStack(alignment: .leading) {
@@ -149,11 +147,20 @@ struct FileView: View {
 							}
 						}
 						
-						VStack(alignment: .leading) {
-							Text("URL:")
-								.bold()
-							Text("\(self.imageUrl?.absoluteString ?? "")")
+						if self.imageUrl?.absoluteString != nil {
+							VStack(alignment: .leading) {
+								Text("URL:")
+									.bold()
+								Text("\(self.imageUrl?.absoluteString ?? "")")
+							}
+						} else {
+							VStack(alignment: .leading) {
+								Text("URL:")
+									.bold()
+								Text("\(self.fileData.file.originalFileUrl ?? "")")
+							}
 						}
+						
 						
 						VStack(alignment: .leading) {
 							Text("UUID:")
@@ -161,7 +168,13 @@ struct FileView: View {
 							Text("\(self.fileData.file.uuid)")
 						}
 						
-						Text("Demo files are not stored and will be deleted after 24 hours")
+						VStack(alignment: .leading) {
+							Text("Stored:")
+								.bold()
+							Text("\(self.fileData.file.datetimeStored != nil ? "true" : "false")")
+						}
+						
+						Text("Demo files will be deleted after 24 hours")
 							.font(.footnote)
 					}.padding([.leading, .trailing], 8)
 				}
@@ -190,7 +203,7 @@ struct FileView: View {
 			HStack {
 				if self.fileData.file.isImage == true {
 					Button(action: {
-						makeRandomTransformation()
+						self.makeRandomTransformation()
 					}) {
 						Text("Random transformation")
 					}
@@ -206,7 +219,7 @@ struct FileView: View {
 		let originalUrl = url.deletingLastPathComponent()
 		
 		self.imageUrl = RandomTransformator.getRandomTransformation(imageURL: originalUrl)
-		print(self.imageUrl)
+		print(self.imageUrl ?? "")
 		isLoading.toggle()
 		loadImage()
 	}
