@@ -139,7 +139,8 @@ extension GroupsList {
 	/// - Parameter completionHandler: completion handler
 	public func nextPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
 		guard let next = next, let query = URL(string: next)?.query else {
-			completionHandler(nil, RESTAPIError.defaultError())
+			self.results = []
+			completionHandler(self, nil)
 			return
 		}
 		
