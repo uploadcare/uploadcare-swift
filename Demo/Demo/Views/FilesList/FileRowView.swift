@@ -38,7 +38,7 @@ struct FileRowView: View {
 				}
 			}
 		}.onAppear {
-			if fileData.file.isImage {
+			if self.fileData.file.isImage {
 				self.loadImage()
 			}
 		}
@@ -47,7 +47,7 @@ struct FileRowView: View {
 	private func loadImage() {
 		guard let imageUrl = self.fileData.file.originalFileUrl, var url = URL(string: imageUrl) else { return }
 		var str = url.deletingLastPathComponent().absoluteString
-		str = str + "-/scale_crop/30x30/smart/"
+		str = str + "-/preview/30x30/-/crop"
 		
 		print(str)
 		
