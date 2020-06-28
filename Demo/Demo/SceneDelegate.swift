@@ -27,7 +27,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		if let windowScene = scene as? UIWindowScene {
 		    let window = UIWindow(windowScene: windowScene)
 			
-            #warning("Set your public key here")
+            #warning("Set your public key here if need")
 			let apiStore = APIStore(
 				uploadcare: Uploadcare(
 					withPublicKey: "demopublickey",
