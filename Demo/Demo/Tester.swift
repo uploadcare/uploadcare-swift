@@ -98,6 +98,9 @@ class Tester {
 //            self.testRedirectForAuthenticatedUrls()
 //        }
         queue.async {
+            self.testCreateWebhook()
+        }
+        queue.async {
             self.testListOfWebhooks()
         }
     }
@@ -632,4 +635,22 @@ class Tester {
         semaphore.wait()
     }
     
+    func testCreateWebhook() {
+        print("<------ testCreateWebhook ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        let url = URL(string: "https://arm1.ru")!
+        uploadcare.createWebhook(targetUrl: url, isActive: true) { (value, error) in
+            defer { semaphore.signal() }
+            
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            print(value ?? "")
+        }
+        
+        semaphore.wait()
+    }
 }
