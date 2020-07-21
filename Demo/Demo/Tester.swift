@@ -91,11 +91,14 @@ class Tester {
 //        queue.async { [unowned self] in
 //            self.testFileGroupInfo()
 //        }
-        queue.async { [unowned self] in
-            self.testMultipartUpload()
-        }
-        queue.async { [unowned self] in
-            self.testRedirectForAuthenticatedUrls()
+//        queue.async { [unowned self] in
+//            self.testMultipartUpload()
+//        }
+//        queue.async { [unowned self] in
+//            self.testRedirectForAuthenticatedUrls()
+//        }
+        queue.async {
+            self.testListOfWebhooks()
         }
     }
 
@@ -611,5 +614,22 @@ class Tester {
         semaphore.wait()
     }
     
+    func testListOfWebhooks() {
+        print("<------ testListOfWebhooks ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        uploadcare.getListOfWebhooks { (value, error) in
+            defer { semaphore.signal() }
+            
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            print(value ?? "")
+        }
+        
+        semaphore.wait()
+    }
     
 }
