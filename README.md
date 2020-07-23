@@ -4,7 +4,7 @@
 ![swift](https://img.shields.io/badge/swift-5.1-brightgreen.svg)
 [![Build Status](https://travis-ci.com/uploadcare/uploadcare-swift.svg?branch=master)](https://travis-ci.com/uploadcare/uploadcare-swift)
 
-Uploadcare Swift API client handles uploads by wrapping Upload and REST APIs.
+Uploadcare Swift API client for iOS, iPadOS, tvOS, macOS, and Linux handles uploads and further operations with files by wrapping Uploadcare Upload and REST APIs.
 
 Check out out [Demo App](/Demo).
 
