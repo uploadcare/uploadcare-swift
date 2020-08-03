@@ -97,18 +97,18 @@ class Tester {
 //        queue.async { [unowned self] in
 //            self.testRedirectForAuthenticatedUrls()
 //        }
-//        queue.async {
-//            self.testCreateWebhook()
-//        }
-//        queue.async {
-//            self.testListOfWebhooks()
-//        }
+        queue.async {
+            self.testCreateWebhook()
+        }
+        queue.async {
+            self.testListOfWebhooks()
+        }
 //		queue.async {
 //            self.testUpdateWebhook()
 //        }
-		queue.async {
-            self.testDeleteWebhook()
-        }
+//		queue.async {
+//            self.testDeleteWebhook()
+//        }
     }
 
     func testUploadFileInfo() {
@@ -645,7 +645,8 @@ class Tester {
         print("<------ testCreateWebhook ------>")
         let semaphore = DispatchSemaphore(value: 0)
         
-        let url = URL(string: "https://google.com")!
+		let random = (0...1000).randomElement()!
+        let url = URL(string: "https://google.com/\(random)")!
         uploadcare.createWebhook(targetUrl: url, isActive: true) { (value, error) in
             defer { semaphore.signal() }
             
@@ -674,7 +675,7 @@ class Tester {
                 return
             }
 			
-			guard var webhook = value?.first else {
+			guard let webhook = value?.first else {
 				semaphore.signal()
 				return
 			}
