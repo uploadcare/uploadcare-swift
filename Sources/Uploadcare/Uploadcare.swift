@@ -753,7 +753,7 @@ extension Uploadcare {
     ///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
     ///   - completionHandler: completion handler
     public func createWebhook(targetUrl: URL, isActive: Bool, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
-        let urlString = RESTAPIBaseUrl + "/webhooks/create/"
+        let urlString = RESTAPIBaseUrl + "/webhooks/"
         guard let url = URL(string: urlString) else {
             assertionFailure("Incorrect url")
             return
