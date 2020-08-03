@@ -793,6 +793,54 @@ extension Uploadcare {
                 }
         }
     }
+	
+	/// Update webhook attributes
+	/// - Parameters:
+	///   - id: Webhook ID
+	///   - targetUrl: Where webhook data will be posted.
+	///   - isActive: Marks a subscription as either active or not
+	///   - completionHandler: completion handler
+	public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/webhooks/\(id)/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+        let bodyDictionary = [
+            "target_url": targetUrl.absoluteString,
+            "event": "file.uploaded", // Presently, we only support the file.uploaded event.
+            "is_active": "\(isActive)"
+        ]
+        if let body = try? JSONEncoder().encode(bodyDictionary) {
+            urlRequest.httpBody = body
+        }
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    let decodedData = try? JSONDecoder().decode(Webhook.self, from: data)
+                    
+                    guard let responseData = decodedData else {
+                        DLog(String(data: data, encoding: .utf8) ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+                        DLog(response.data?.toString() ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+	}
 }
 
 // MARK: - URLSessionTaskDelegate

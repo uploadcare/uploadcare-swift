@@ -97,11 +97,14 @@ class Tester {
 //        queue.async { [unowned self] in
 //            self.testRedirectForAuthenticatedUrls()
 //        }
-//        queue.async {
-//            self.testCreateWebhook()
-//        }
+        queue.async {
+            self.testCreateWebhook()
+        }
         queue.async {
             self.testListOfWebhooks()
+        }
+		queue.async {
+            self.testUpdateWebhook()
         }
     }
 
@@ -639,7 +642,7 @@ class Tester {
         print("<------ testCreateWebhook ------>")
         let semaphore = DispatchSemaphore(value: 0)
         
-        let url = URL(string: "https://arm1.ru")!
+        let url = URL(string: "https://google.com")!
         uploadcare.createWebhook(targetUrl: url, isActive: true) { (value, error) in
             defer { semaphore.signal() }
             
@@ -651,6 +654,41 @@ class Tester {
             print(value ?? "")
         }
         
+        semaphore.wait()
+    }
+	
+	func testUpdateWebhook() {
+        print("<------ testUpdateWebhook ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+        
+		let random = (0...1000).randomElement()!
+        let url = URL(string: "https://apple.com/\(random)")!
+		
+		uploadcare.getListOfWebhooks { (value, error) in
+            if let error = error {
+                print(error)
+				semaphore.signal()
+                return
+            }
+			
+			guard var webhook = value?.first else {
+				semaphore.signal()
+				return
+			}
+			
+			print(webhook)
+			self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url, isActive: true) { (value, error) in
+				defer { semaphore.signal() }
+				
+				if let error = error {
+					print(error)
+					return
+				}
+				
+				print(value ?? "")
+			}
+        }
+		
         semaphore.wait()
     }
 }
