@@ -841,6 +841,42 @@ extension Uploadcare {
                 }
         }
 	}
+	
+	/// Delete webhook
+	/// - Parameters:
+	///   - targetUrl: url of webhook target
+	///   - completionHandler: completion handler
+	public func deleteWebhook(forTargetUrl targetUrl: URL, _ completionHandler: @escaping (RESTAPIError?) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/webhooks/unsubscribe/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
+        let bodyDictionary = [
+            "target_url": targetUrl.absoluteString
+        ]
+        if let body = try? JSONEncoder().encode(bodyDictionary) {
+            urlRequest.httpBody = body
+        }
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(_):
+                    completionHandler(nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+                        DLog(response.data?.toString() ?? "")
+                        completionHandler(RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(decodedData)
+                }
+        }
+	}
 }
 
 // MARK: - URLSessionTaskDelegate
