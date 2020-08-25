@@ -1,42 +1,31 @@
 # REST API
 
 * [Initialization](#initialization)
-* [Getting info about account project](#getting-info-about-account-project-api-reference)
-* [Get list of files](#get-list-of-files-api-reference)
+* [List of files](#list-of-files-api-reference)
 * [File info](#file-info-api-reference)
-* [Delete files](#delete-files-api-reference)
 * [Store files](#store-files-api-reference)
-* [Get list of groups](#get-list-of-groups-api-reference)
-* [Group info](#group-info-api-reference)
-* [Store group](#store-group-api-reference)
+* [Delete files](#delete-files-api-reference)
 * [Copy file to local storage](#copy-file-to-local-storage-api-reference)
 * [Copy file to remote storage](#copy-file-to-remote-storage-api-reference)
-* [Authenticated URLs](#authenticated-urls-api-reference)
+* [List of groups](#list-of-groups-api-reference)
+* [Group info](#group-info-api-reference)
+* [Store group](#store-group-api-reference)
+* [Project info](#project-info-api-reference)
+* [Secure delivery](secure-delivery-api-reference)
 
 
-### Initialization
+## Initialization
 
-REST API requires both public and secret key:
+REST API requires both public and secret keys:
+
 ```swift
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
 ```
 
-### Getting info about account project ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/projectInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+## List of files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/filesList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.getProjectInfo { (project, error) in
-    if let error = error {
-        print(error)
-        return
-    }
-    print(project ?? "")
-}
-```
-
-### Get list of files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/filesList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
-
-```swift
-// Make query object
+// Make a query object
 let query = PaginationQuery()
     .stored(true)
     .ordering(.sizeDESC)
@@ -54,11 +43,13 @@ filesList.get(withQuery: query) { (list, error) in
     print(list ?? "")
 }
 ```
+
 Get next page:
+
 ```swift
-// check if next page is available
+// Check if the next page is available
 guard filesList.next != nil else { return }
-// get next page
+// Get the next page
 filesList.nextPage { (list, error) in
     if let error = error {
         print(error)
@@ -69,10 +60,11 @@ filesList.nextPage { (list, error) in
 ```
 
 Get previous page:
+
 ```swift
-// check if previous page is available
+// Check if the previous page is available
 guard filesList.previous != nil else { return }
-// get next page
+// Get the previous page
 filesList.previousPage { (list, error) in
     if let error = error {
         print(error)
@@ -82,7 +74,7 @@ filesList.previousPage { (list, error) in
 }
 ```
 
-### File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+## File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
 uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
@@ -94,34 +86,10 @@ uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, e
 }
 ```
 
-### Delete files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/deleteFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+## Store files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/storeFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
-Delete individual file:
-```swift
-uploadcare.deleteFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
-    if let error = error {
-        print(error)
-        return
-    }			
-    print(file ?? "")
-}
-```
+Store an individual file:
 
-Batch file delete:
-```swift
-let uuids = ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "1bac376c-aa7e-4356-861b-dd2657b5bfd2"]
-uploadcare.deleteFiles(withUUIDs: uuids) { (response, error) in
-    if let error = error {
-        print(error)
-        return
-    }
-    print(response ?? "")
-}
-```
-
-### Store files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/storeFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
-
-Store individual file:
 ```swift
 uploadcare.storeFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
     if let error = error {
@@ -133,6 +101,7 @@ uploadcare.storeFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, 
 ```
 
 Batch file storing:
+
 ```swift
 let uuids = ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "1bac376c-aa7e-4356-861b-dd2657b5bfd2"]
 uploadcare.storeFiles(withUUIDs: uuids) { (response, error) in
@@ -144,7 +113,59 @@ uploadcare.storeFiles(withUUIDs: uuids) { (response, error) in
 }
 ```
 
-### Get list of groups ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupsList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+## Delete files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/deleteFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+Delete an individual file:
+
+```swift
+uploadcare.deleteFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
+    if let error = error {
+        print(error)
+        return
+    }			
+    print(file ?? "")
+}
+```
+
+Batch file delete:
+
+```swift
+let uuids = ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "1bac376c-aa7e-4356-861b-dd2657b5bfd2"]
+uploadcare.deleteFiles(withUUIDs: uuids) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(response ?? "")
+}
+```
+
+## Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFileLocal?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+```swift
+uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(response ?? "")
+}
+```
+
+## Copy file to remote storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+```swift
+let source = "99c48392-46ab-4877-a6e1-e2557b011176"
+uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", makePublic: true, pattern: .uuid) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    print(response ?? "")
+}
+```
+
+## List of groups ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupsList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
 let query = GroupsListQuery()
@@ -159,7 +180,7 @@ uploadcare.listOfGroups(withQuery: query) { (list, error) in
     print(list ?? "")
 }
 
-// using GroupsList object:
+// Using GroupsList object
 let groupsList = uploadcare.listOfGroups()
 
 groupsList.get(withQuery: query) { (list, error) in
@@ -170,14 +191,14 @@ groupsList.get(withQuery: query) { (list, error) in
     print(list ?? "")
 }
 
-// get next page
+// Get the next page
 groupsList.nextPage { (list, error) in
     if let error = error {
         print(error)
         return
     }
 }		
-// get previous page
+// Get the previous page
 groupsList.previousPage { (list, error) in			
     if let error = error {
         print(error)
@@ -187,7 +208,7 @@ groupsList.previousPage { (list, error) in
 }
 ```
 
-### Group info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+## Group info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
 uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (group, error) in
@@ -199,7 +220,7 @@ uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (grou
 }
 ```
 
-### Store group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+## Store group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
 uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (error) in
@@ -211,42 +232,25 @@ uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (err
 }
 ```
 
-### Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFileLocal?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+## Project info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/projectInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { (response, error) in
+uploadcare.getProjectInfo { (project, error) in
     if let error = error {
         print(error)
         return
     }
-    print(response ?? "")
+    print(project ?? "")
 }
 ```
 
-### Copy file to remote storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+## Secure delivery ([API Reference](https://uploadcare.com/docs/delivery/file_api/#authenticated-urls?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
-```swift
-let source = "99c48392-46ab-4877-a6e1-e2557b011176"
-uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", makePublic: true, pattern: .uuid) { (response, error) in
-    if let error = error {
-        print(error)
-        return
-    }
-    print(response ?? "")
-}
-```
+This method allows you to get an authenticated URL from your backend by using a redirect.
+To answer a request to that URL, your backend should generate an authenticated URL to your file and perform REDIRECT to a generated URL. A redirected URL will be caught and returned in the completion handler of that method.
 
-### Authenticated URLs ([API Reference](https://uploadcare.com/docs/delivery/file_api/#authenticated-urls?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ###
+Example: https://yourdomain.com/{UUID}/ — backend redirects to https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}.
 
-This method allows you to get an authenticated URL from your backend using a redirect.
-To answer a request to that URL your backend should generate an authenticated URL to your file and perform REDIRECT to a generated URL.
-
-A redirected URL will be caught and returned in the completion handler of that method.
-
-Example: https://yourdomain.com/{UUID}/
-
-Backend redirects to: https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
-    
 ```swift
 let url = URL(string: "https://yourdomain.com/FILE_UUID/")!
 uploadcare.getAuthenticatedUrlFromUrl(url, { (value, error) in
@@ -254,8 +258,8 @@ uploadcare.getAuthenticatedUrlFromUrl(url, { (value, error) in
         print(error)
         return
     }
-	
-    // value is https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
+
+    // Value is https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
     print(value)
 })
 ```
