@@ -13,6 +13,7 @@
 * [Project info](#project-info-api-reference)
 * [Secure delivery](#secure-delivery-api-reference)
 * [Convert document](#convert-document-api-reference)
+* [Document conversion job status](#document-conversion-job-status-api-reference)
 
 
 ## Initialization
@@ -286,6 +287,7 @@ uploadcare.convertDocumentsWithSettings([task1, task2]) { (response, error) in
 ```
 
 Alternatively you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
+
 ```swift
 uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { (response, error) in
     if let error = error {
@@ -296,3 +298,23 @@ uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { (resp
     print(response)   
 }
 ```
+
+## Document conversion job status ([API Reference](https://uploadcare.com/docs/transformations/document_conversion/#status?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+```swift
+uploadcare.documentConversionJobStatus(token: 123456) { (job, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+					
+    print(job)
+    
+    switch job.status {
+    case .failed(let conversionError):
+        print(conversionError)
+    default: break
+    }
+}
+```
+
