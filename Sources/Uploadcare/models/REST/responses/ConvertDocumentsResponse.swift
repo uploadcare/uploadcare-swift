@@ -12,7 +12,7 @@ public struct ConvertDocumentsResponse: Codable {
 	public let problems: [String: String]
 	
 	/// Result for each requested path, in case of no errors for that path.
-	public let result: [DocumentConvertionJob]
+	public let result: [DocumentConversionJob]
 	
 	
 	enum CodingKeys: String, CodingKey {
@@ -25,6 +25,6 @@ public struct ConvertDocumentsResponse: Codable {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		
 		problems = try container.decodeIfPresent([String: String].self, forKey: .problems) ?? [:]
-		result = try container.decodeIfPresent([DocumentConvertionJob].self, forKey: .result) ?? []
+		result = try container.decodeIfPresent([DocumentConversionJob].self, forKey: .result) ?? []
 	}
 }

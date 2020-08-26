@@ -7,6 +7,16 @@
 
 import Foundation
 
+/// Conversion job status
+public enum ConversionStatus {
+	case pending
+	case processing
+	case finished
+	case failed(error: String)
+	case cancelled
+	case unknown
+}
+
 public enum DocumentTargetFormat: String {
 	case doc
 	case docx

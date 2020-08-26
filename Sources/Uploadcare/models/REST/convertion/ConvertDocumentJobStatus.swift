@@ -1,5 +1,5 @@
 //
-//  DocumentConvertionJobStatus.swift
+//  ConvertDocumentJobStatus.swift
 //  
 //
 //  Created by Sergei Armodin on 26.08.2020.
@@ -7,17 +7,7 @@
 
 import Foundation
 
-/// Conversion job status
-public enum ConvertionStatus {
-	case pending
-	case processing
-	case finished
-	case failed(error: String)
-	case cancelled
-	case unknown
-}
-
-public struct DocumentConvertionJobStatus: Codable {
+public struct ConvertDocumentJobStatus: Codable {
 	/// Conversion job status
 	let statusString: String
 	
@@ -33,7 +23,7 @@ public struct DocumentConvertionJobStatus: Codable {
         case result
     }
 	
-	public var status: ConvertionStatus {
+	public var status: ConversionStatus {
 		switch statusString {
 		case "pending": return .pending
 		case "processing": return .processing

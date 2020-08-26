@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Struct for creating document convertion job request
+/// Struct for creating document conversion job request
 internal struct ConvertRequestData: Codable {
 	internal init(paths: [String], store: String) {
 		self.paths = paths

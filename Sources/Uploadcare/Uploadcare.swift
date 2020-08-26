@@ -880,7 +880,8 @@ extension Uploadcare {
 	
 	/// Uploadcare allows converting documents to the following target formats: DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG.
 	/// - Parameters:
-	///   - paths: An array of UUIDs of your source documents to convert together with the specified target format (see documentation: https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting)
+	///   - paths: An array of UUIDs of your source documents to convert together with the specified target format.
+	///   See documentation: https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting
 	///   - store: A flag indicating if we should store your outputs.
 	///   - completionHandler: completion handler
 	public func convertDocuments(
@@ -951,7 +952,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - token: Job token
 	///   - completionHandler: completion handler
-	public func documentConvertionJobStatus(token: Int, _ completionHandler: @escaping (DocumentConvertionJobStatus?, RESTAPIError?) -> Void) {
+	public func documentConversionJobStatus(token: Int, _ completionHandler: @escaping (ConvertDocumentJobStatus?, RESTAPIError?) -> Void) {
 		let urlString = RESTAPIBaseUrl + "/convert/document/status/\(token)/"
         guard let url = URL(string: urlString) else {
             assertionFailure("Incorrect url")
@@ -965,7 +966,99 @@ extension Uploadcare {
             .responseData { response in
                 switch response.result {
                 case .success(let data):
-					let decodedData = try? JSONDecoder().decode(DocumentConvertionJobStatus.self, from: data)
+					let decodedData = try? JSONDecoder().decode(ConvertDocumentJobStatus.self, from: data)
+                    
+                    guard let responseData = decodedData else {
+						DLog(data.toString() ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						DLog(response.data?.toString() ?? "no data")
+						DLog(response.response?.statusCode ?? "no code")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+	}
+	
+	/// Convert video
+	/// - Parameters:
+	///   - paths: An array of UUIDs of your video files to process together with a set of needed operations.
+	///   See documentation: https://uploadcare.com/docs/transformations/video_encoding/#process-operations
+	///   - store: A flag indicating if we should store your outputs.
+	///   - completionHandler: completion handler
+	public func convertVideos(
+		_ paths: [String],
+		store: StoringBehavior? = nil,
+		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/convert/video/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+		
+		let storeValue = store == StoringBehavior.auto ? .store : store
+		let requestData = ConvertRequestData(
+			paths: paths,
+			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue
+		)
+        
+		urlRequest.httpBody = try? JSONEncoder().encode(requestData)
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+					let decodedData = try? JSONDecoder().decode(ConvertDocumentsResponse.self, from: data)
+                    
+                    guard let responseData = decodedData else {
+						DLog(data.toString() ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						DLog(response.data?.toString() ?? "no data")
+						DLog(response.response?.statusCode ?? "no code")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+	}
+	
+	/// Video conversion job status
+	/// - Parameters:
+	///   - token: Job token
+	///   - completionHandler: completion handler
+	public func videoConversionJobStatus(token: Int, _ completionHandler: @escaping (ConvertVideoJobStatus?, RESTAPIError?) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/convert/video/status/\(token)/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+					let decodedData = try? JSONDecoder().decode(ConvertVideoJobStatus.self, from: data)
                     
                     guard let responseData = decodedData else {
 						DLog(data.toString() ?? "")

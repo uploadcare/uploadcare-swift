@@ -110,10 +110,13 @@ class Tester {
 //            self.testDeleteWebhook()
 //        }
 //		queue.async {
-//            self.testDocumentConvertion()
+//            self.testDocumentConversion()
+//        }
+//		queue.async {
+//            self.testDocumentConversionStatus()
 //        }
 		queue.async {
-            self.testDocumentConvertionStatus()
+            self.testVideoConversionStatus()
         }
     }
 
@@ -733,8 +736,8 @@ class Tester {
         semaphore.wait()
     }
 	
-	func testDocumentConvertion() {
-		print("<------ testDocumentConvertion ------>")
+	func testDocumentConversion() {
+		print("<------ testDocumentConversion ------>")
         let semaphore = DispatchSemaphore(value: 0)
 		
 		uploadcare.fileInfo(withUUID: "b40e1f1a-46e1-471e-8a57-cb863719e8b0") { (file, error) in
@@ -758,8 +761,8 @@ class Tester {
         semaphore.wait()
 	}
 	
-	func testDocumentConvertionStatus() {
-		print("<------ testDocumentConvertionStatus ------>")
+	func testDocumentConversionStatus() {
+		print("<------ testDocumentConversionStatus ------>")
         let semaphore = DispatchSemaphore(value: 0)
 		
 		uploadcare.fileInfo(withUUID: "b40e1f1a-46e1-471e-8a57-cb863719e8b0") { (file, error) in
@@ -783,7 +786,7 @@ class Tester {
 				}
 				
 				let timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { (timer) in
-					self.uploadcare.documentConvertionJobStatus(token: job.token) { (status, error) in
+					self.uploadcare.documentConversionJobStatus(token: job.token) { (status, error) in
 						guard let status = status else {
 							print(error ?? "error")
 							return
@@ -800,6 +803,44 @@ class Tester {
 				}
 				timer.fire()
 			}
+		}
+        semaphore.wait()
+	}
+	
+	func testVideoConversionStatus() {
+		print("<------ testVideoConversionStatus ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.convertVideos(["/8968032a-6d52-4d68-8af7-154552412f93/video/-/format/webm/"]) { (response, error) in
+			guard let response = response else {
+				print(error ?? "error")
+				semaphore.signal()
+				return
+			}
+			
+			guard response.problems.isEmpty, let job = response.result.first else {
+				print(response)
+				semaphore.signal()
+				return
+			}
+			
+			let timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { (timer) in
+				self.uploadcare.videoConversionJobStatus(token: job.token) { (status, error) in
+					guard let status = status else {
+						print(error ?? "error")
+						return
+					}
+					
+					print(status)
+					switch status.status {
+					case .finished, .failed(_):
+						timer.invalidate()
+						semaphore.signal()
+					default: break
+					}
+				}
+			}
+			timer.fire()
 		}
         semaphore.wait()
 	}
