@@ -11,8 +11,8 @@
 * [Group info](#group-info-api-reference)
 * [Store group](#store-group-api-reference)
 * [Project info](#project-info-api-reference)
-* [Secure delivery](secure-delivery-api-reference)
-* [Convert document](convert-document-api-reference)
+* [Secure delivery](#secure-delivery-api-reference)
+* [Convert document](#convert-document-api-reference)
 
 
 ## Initialization
