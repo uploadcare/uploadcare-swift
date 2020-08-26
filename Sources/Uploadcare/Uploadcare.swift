@@ -896,7 +896,7 @@ extension Uploadcare {
         var urlRequest = makeUrlRequest(fromURL: url, method: .post)
 		
 		let storeValue = store == StoringBehavior.auto ? .store : store
-		let requestData = ConvertDocumentsRequestData(
+		let requestData = ConvertRequestData(
 			paths: paths,
 			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue
 		)
