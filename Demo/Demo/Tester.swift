@@ -747,7 +747,7 @@ class Tester {
 				return
 			}
 			
-			let convertSettings = DocumentConversionJobSettings(file: file)
+			let convertSettings = DocumentConversionJobSettings(forFile: file)
 				.format(.odt)
 			
 			self.uploadcare.convertDocumentsWithSettings([convertSettings]) { (response, error) in
@@ -775,7 +775,7 @@ class Tester {
 				return
 			}
 			
-			let convertSettings = DocumentConversionJobSettings(file: file)
+			let convertSettings = DocumentConversionJobSettings(forFile: file)
 				.format(.odt)
 			
 			self.uploadcare.convertDocumentsWithSettings([convertSettings]) { (response, error) in

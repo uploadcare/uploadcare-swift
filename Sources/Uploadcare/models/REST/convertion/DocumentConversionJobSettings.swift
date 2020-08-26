@@ -19,7 +19,7 @@ public class DocumentConversionJobSettings {
 		return "/\(file.uuid)/document/-/format/\(format.rawValue)/"
 	}
 	
-	public init(file: File, format: DocumentTargetFormat = .pdf) {
+	public init(forFile file: File, format: DocumentTargetFormat = .pdf) {
 		self.file = file
 		self.format = format
 	}
