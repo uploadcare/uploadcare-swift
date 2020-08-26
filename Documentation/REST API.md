@@ -15,7 +15,7 @@
 * [Convert document](#convert-document-api-reference)
 * [Document conversion job status](#document-conversion-job-status-api-reference)
 * [Convert video](#convert-video-api-reference)
-
+* [Video conversion job status](#video-conversion-job-status-api-reference)
 
 
 ## Initialization
@@ -301,7 +301,7 @@ uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { (resp
 }
 ```
 
-## Document conversion job status ([API Reference](https://uploadcare.com/docs/transformations/document_conversion/#status?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Document conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Conversion/paths/~1convert~1document~1status~1{token}~1/get?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
 uploadcare.documentConversionJobStatus(token: 123456) { (job, error) in
@@ -357,5 +357,24 @@ uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { (response, error) in
     }
     
     print(response)   
+}
+```
+
+## Video conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/videoConvertStatus?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+```swift
+uploadcare.videoConversionJobStatus(token: 123456) { (job, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+					
+    print(job)
+    
+    switch job.status {
+    case .failed(let conversionError):
+        print(conversionError)
+    default: break
+    }
 }
 ```
