@@ -112,12 +112,12 @@ class Tester {
 //		queue.async {
 //            self.testDocumentConversion()
 //        }
-//		queue.async {
-//            self.testDocumentConversionStatus()
-//        }
 		queue.async {
-            self.testVideoConversionStatus()
+            self.testDocumentConversionStatus()
         }
+//		queue.async {
+//            self.testVideoConversionStatus()
+//        }
     }
 
     func testUploadFileInfo() {
@@ -747,7 +747,10 @@ class Tester {
 				return
 			}
 			
-			self.uploadcare.convertDocuments([file], toFormat: .odt) { (response, error) in
+			let convertSettings = DocumentConversionJobSettings(file: file)
+				.format(.odt)
+			
+			self.uploadcare.convertDocumentsWithSettings([convertSettings]) { (response, error) in
 				defer { semaphore.signal() }
 				
 				guard let response = response else {
@@ -772,7 +775,10 @@ class Tester {
 				return
 			}
 			
-			self.uploadcare.convertDocuments([file], toFormat: .odt) { (response, error) in
+			let convertSettings = DocumentConversionJobSettings(file: file)
+				.format(.odt)
+			
+			self.uploadcare.convertDocumentsWithSettings([convertSettings]) { (response, error) in
 				guard let response = response else {
 					print(error ?? "error")
 					semaphore.signal()

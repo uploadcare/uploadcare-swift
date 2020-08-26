@@ -937,14 +937,13 @@ extension Uploadcare {
 	///   - format: target format (DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG)
 	///   - store: A flag indicating if we should store your outputs.
 	///   - completionHandler: completion handler
-	public func convertDocuments(
-		_ files: [File],
-		toFormat format: DocumentTargetFormat,
+	public func convertDocumentsWithSettings(
+		_ tasks: [DocumentConversionJobSettings],
 		store: StoringBehavior? = nil,
 		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
 	) {
 		var paths = [String]()
-		files.forEach({ paths.append("/\($0.uuid)/document/-/format/\(format.rawValue)/") })
+		tasks.forEach({ paths.append($0.stringValue) })
 		convertDocuments(paths, store: store, completionHandler)
 	}
 	
