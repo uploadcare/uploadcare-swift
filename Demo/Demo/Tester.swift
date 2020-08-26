@@ -828,8 +828,11 @@ class Tester {
 			
 			let convertSettings = VideoConversionJobSettings(forFile: file)
 				.format(.webm)
-				.quality(.best)
+				.size(VideoSize(width: 640, height: 480))
+				.resizeMode(.addPadding)
+				.quality(.lightest)
 				.cut( VideoCut(startTime: "0:0:5.000", length: "15") )
+				.thumbs(15)
 			
 			self.uploadcare.convertVideosWithSettings([convertSettings]) { (response, error) in
 				guard let response = response else {
