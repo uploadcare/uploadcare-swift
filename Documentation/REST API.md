@@ -14,6 +14,8 @@
 * [Secure delivery](#secure-delivery-api-reference)
 * [Convert document](#convert-document-api-reference)
 * [Document conversion job status](#document-conversion-job-status-api-reference)
+* [Convert video](#convert-video-api-reference)
+
 
 
 ## Initialization
@@ -318,3 +320,42 @@ uploadcare.documentConversionJobStatus(token: 123456) { (job, error) in
 }
 ```
 
+## Convert video ([API Reference](https://uploadcare.com/docs/transformations/video_encoding/#video-encoding?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+You can convert multiple video files with one request:
+
+```swift
+let task1 = VideoConversionJobSettings(forFile: file1)
+    .format(.webm)
+    .size(VideoSize(width: 640, height: 480))
+    .resizeMode(.addPadding)
+    .quality(.lightest)
+    .cut( VideoCut(startTime: "0:0:5.000", length: "15") )
+    .thumbs(15)
+    
+let task2 = VideoConversionJobSettings(forFile: file2)
+    .format(.mp4)
+    .quality(.lightest)
+
+uploadcare.convertVideosWithSettings([task1, task2]) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    
+    print(response)   
+}
+```
+
+Alternatively you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/video_encoding/#process-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
+
+```swift
+uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    
+    print(response)   
+}
+```
