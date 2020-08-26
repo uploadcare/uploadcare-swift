@@ -12,6 +12,7 @@
 * [Store group](#store-group-api-reference)
 * [Project info](#project-info-api-reference)
 * [Secure delivery](secure-delivery-api-reference)
+* [Convert document](convert-document-api-reference)
 
 
 ## Initialization
@@ -262,4 +263,36 @@ uploadcare.getAuthenticatedUrlFromUrl(url, { (value, error) in
     // Value is https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
     print(value)
 })
+```
+
+## Convert document ([API Reference](https://uploadcare.com/docs/transformations/document_conversion/#convert?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+You can convert multiple files with one request:
+
+```swift
+let task1 = DocumentConversionJobSettings(forFile: file1)
+    .format(.odt)
+let task2 = DocumentConversionJobSettings(forFile: file2)
+    .format(.pdf)
+
+uploadcare.convertDocumentsWithSettings([task1, task2]) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    
+    print(response)   
+}
+```
+
+Alternatively you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
+```swift
+uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { (response, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+    
+    print(response)   
+}
 ```
