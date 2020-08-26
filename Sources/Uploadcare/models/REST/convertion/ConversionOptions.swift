@@ -32,7 +32,10 @@ public enum DocumentTargetFormat: String {
 }
 
 public struct VideoSize {
+	/// New size width
 	let width: Int?
+	
+	/// New size height
 	let height: Int?
 	
 	public var stringValue: String {
@@ -45,6 +48,11 @@ public struct VideoSize {
 			heightString = "\(h)"
 		}
 		return "\(widthString)x\(heightString)"
+	}
+	
+	public init(width: Int?, height: Int?) {
+		self.width = width
+		self.height = height
 	}
 }
 
@@ -69,7 +77,17 @@ public enum VideoFormat: String {
 	case ogg
 }
 
+/// Cuts out a video fragment.
+/// See documentation: https://uploadcare.com/docs/transformations/video_encoding/#operation-cut
 public struct VideoCut {
+	///  defines the starting point of a fragment to cut based on your input file timeline.
 	public let startTime: String
+	
+	/// defines the duration of that fragment.
 	public let length: String
+	
+	public init(startTime: String, length: String) {
+		self.startTime = startTime
+		self.length = length
+	}
 }

@@ -987,6 +987,21 @@ extension Uploadcare {
         }
 	}
 	
+	/// Convert videos with settings
+	/// - Parameters:
+	///   - tasks: array of VideoConversionJobSettings objects which settings for conversion for every file
+	///   - store: A flag indicating if we should store your outputs.
+	///   - completionHandler: completion handler
+	public func convertVideosWithSettings(
+		_ tasks: [VideoConversionJobSettings],
+		store: StoringBehavior? = nil,
+		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
+	) {
+		var paths = [String]()
+		tasks.forEach({ paths.append($0.stringValue) })
+		convertVideos(paths, completionHandler)
+	}
+	
 	/// Convert video
 	/// - Parameters:
 	///   - paths: An array of UUIDs of your video files to process together with a set of needed operations.
