@@ -97,18 +97,21 @@ class Tester {
 //        queue.async { [unowned self] in
 //            self.testRedirectForAuthenticatedUrls()
 //        }
-        queue.async {
-            self.testCreateWebhook()
-        }
-        queue.async {
-            self.testListOfWebhooks()
-        }
+//        queue.async {
+//            self.testCreateWebhook()
+//        }
+//        queue.async {
+//            self.testListOfWebhooks()
+//        }
 //		queue.async {
 //            self.testUpdateWebhook()
 //        }
 //		queue.async {
 //            self.testDeleteWebhook()
 //        }
+		queue.async {
+            self.testDocumentConvertion()
+        }
     }
 
     func testUploadFileInfo() {
@@ -726,4 +729,29 @@ class Tester {
 		
         semaphore.wait()
     }
+	
+	func testDocumentConvertion() {
+		print("<------ testDocumentConvertion ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.fileInfo(withUUID: "b40e1f1a-46e1-471e-8a57-cb863719e8b0") { (file, error) in
+			guard let file = file else {
+				print(error ?? "fileInfo error")
+				semaphore.signal()
+				return
+			}
+			
+			self.uploadcare.convertDocuments([file], toFormat: .odt) { (response, error) in
+				defer { semaphore.signal() }
+				
+				guard let response = response else {
+					print(error ?? "error")
+					return
+				}
+				
+				print(response)
+			}
+		}
+        semaphore.wait()
+	}
 }
