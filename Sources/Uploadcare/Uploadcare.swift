@@ -946,6 +946,45 @@ extension Uploadcare {
 		files.forEach({ paths.append("/\($0.uuid)/document/-/format/\(format.rawValue)/") })
 		convertDocuments(paths, store: store, completionHandler)
 	}
+	
+	/// Document conversion job status
+	/// - Parameters:
+	///   - token: Job token
+	///   - completionHandler: completion handler
+	public func documentConvertionJobStatus(token: Int, _ completionHandler: @escaping (DocumentConvertionJobStatus?, RESTAPIError?) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/convert/document/status/\(token)/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+					let decodedData = try? JSONDecoder().decode(DocumentConvertionJobStatus.self, from: data)
+                    
+                    guard let responseData = decodedData else {
+						DLog(data.toString() ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						DLog(response.data?.toString() ?? "no data")
+						DLog(response.response?.statusCode ?? "no code")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+	}
 }
 
 // MARK: - URLSessionTaskDelegate
