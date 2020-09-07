@@ -712,6 +712,386 @@ extension Uploadcare {
         }
         task.resume()
     }
+    
+    /// List of project webhooks.
+    /// - Parameter completionHandler: completion handler
+    public func getListOfWebhooks(_ completionHandler: @escaping ([Webhook]?, RESTAPIError?) -> Void) {
+        let urlString = RESTAPIBaseUrl + "/webhooks/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    let decodedData = try? JSONDecoder().decode([Webhook].self, from: data)
+
+                    guard let responseData = decodedData else {
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+    }
+    
+    /// Create webhook
+    /// - Parameters:
+    ///   - targetUrl: A URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
+    ///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
+    ///   - completionHandler: completion handler
+    public func createWebhook(targetUrl: URL, isActive: Bool, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
+        let urlString = RESTAPIBaseUrl + "/webhooks/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+        let bodyDictionary = [
+            "target_url": targetUrl.absoluteString,
+            "event": "file.uploaded", // Presently, we only support the file.uploaded event.
+            "is_active": "\(isActive)"
+        ]
+        if let body = try? JSONEncoder().encode(bodyDictionary) {
+            urlRequest.httpBody = body
+        }
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    let decodedData = try? JSONDecoder().decode(Webhook.self, from: data)
+                    
+                    guard let responseData = decodedData else {
+                        DLog(String(data: data, encoding: .utf8) ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+                        DLog(response.data?.toString() ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+    }
+	
+	/// Update webhook attributes
+	/// - Parameters:
+	///   - id: Webhook ID
+	///   - targetUrl: Where webhook data will be posted.
+	///   - isActive: Marks a subscription as either active or not
+	///   - completionHandler: completion handler
+	public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/webhooks/\(id)/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+        let bodyDictionary = [
+            "target_url": targetUrl.absoluteString,
+            "event": "file.uploaded", // Presently, we only support the file.uploaded event.
+            "is_active": "\(isActive)"
+        ]
+        if let body = try? JSONEncoder().encode(bodyDictionary) {
+            urlRequest.httpBody = body
+        }
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    let decodedData = try? JSONDecoder().decode(Webhook.self, from: data)
+                    
+                    guard let responseData = decodedData else {
+                        DLog(String(data: data, encoding: .utf8) ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+                        DLog(response.data?.toString() ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+	}
+	
+	/// Delete webhook
+	/// - Parameters:
+	///   - targetUrl: url of webhook target
+	///   - completionHandler: completion handler
+	public func deleteWebhook(forTargetUrl targetUrl: URL, _ completionHandler: @escaping (RESTAPIError?) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/webhooks/unsubscribe/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
+        let bodyDictionary = [
+            "target_url": targetUrl.absoluteString
+        ]
+        if let body = try? JSONEncoder().encode(bodyDictionary) {
+            urlRequest.httpBody = body
+        }
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(_):
+                    completionHandler(nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+                        DLog(response.data?.toString() ?? "")
+                        completionHandler(RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(decodedData)
+                }
+        }
+	}
+	
+	/// Uploadcare allows converting documents to the following target formats: DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG.
+	/// - Parameters:
+	///   - paths: An array of UUIDs of your source documents to convert together with the specified target format.
+	///   See documentation: https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting
+	///   - store: A flag indicating if we should store your outputs.
+	///   - completionHandler: completion handler
+	public func convertDocuments(
+		_ paths: [String],
+		store: StoringBehavior? = nil,
+		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/convert/document/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+		
+		let storeValue = store == StoringBehavior.auto ? .store : store
+		let requestData = ConvertRequestData(
+			paths: paths,
+			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue
+		)
+        
+		urlRequest.httpBody = try? JSONEncoder().encode(requestData)
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+					let decodedData = try? JSONDecoder().decode(ConvertDocumentsResponse.self, from: data)
+                    
+                    guard let responseData = decodedData else {
+						DLog(data.toString() ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						DLog(response.data?.toString() ?? "no data")
+						DLog(response.response?.statusCode ?? "no code")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+	}
+	
+	/// Convert documents
+	/// - Parameters:
+	///   - files: files array
+	///   - format: target format (DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG)
+	///   - store: A flag indicating if we should store your outputs.
+	///   - completionHandler: completion handler
+	public func convertDocumentsWithSettings(
+		_ tasks: [DocumentConversionJobSettings],
+		store: StoringBehavior? = nil,
+		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
+	) {
+		var paths = [String]()
+		tasks.forEach({ paths.append($0.stringValue) })
+		convertDocuments(paths, store: store, completionHandler)
+	}
+	
+	/// Document conversion job status
+	/// - Parameters:
+	///   - token: Job token
+	///   - completionHandler: completion handler
+	public func documentConversionJobStatus(token: Int, _ completionHandler: @escaping (ConvertDocumentJobStatus?, RESTAPIError?) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/convert/document/status/\(token)/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+					let decodedData = try? JSONDecoder().decode(ConvertDocumentJobStatus.self, from: data)
+                    
+                    guard let responseData = decodedData else {
+						DLog(data.toString() ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						DLog(response.data?.toString() ?? "no data")
+						DLog(response.response?.statusCode ?? "no code")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+	}
+	
+	/// Convert videos with settings
+	/// - Parameters:
+	///   - tasks: array of VideoConversionJobSettings objects which settings for conversion for every file
+	///   - store: A flag indicating if we should store your outputs.
+	///   - completionHandler: completion handler
+	public func convertVideosWithSettings(
+		_ tasks: [VideoConversionJobSettings],
+		store: StoringBehavior? = nil,
+		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
+	) {
+		var paths = [String]()
+		tasks.forEach({ paths.append($0.stringValue) })
+		convertVideos(paths, completionHandler)
+	}
+	
+	/// Convert video
+	/// - Parameters:
+	///   - paths: An array of UUIDs of your video files to process together with a set of needed operations.
+	///   See documentation: https://uploadcare.com/docs/transformations/video_encoding/#process-operations
+	///   - store: A flag indicating if we should store your outputs.
+	///   - completionHandler: completion handler
+	public func convertVideos(
+		_ paths: [String],
+		store: StoringBehavior? = nil,
+		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
+	) {
+		let urlString = RESTAPIBaseUrl + "/convert/video/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+		
+		let storeValue = store == StoringBehavior.auto ? .store : store
+		let requestData = ConvertRequestData(
+			paths: paths,
+			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue
+		)
+        
+		urlRequest.httpBody = try? JSONEncoder().encode(requestData)
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+					let decodedData = try? JSONDecoder().decode(ConvertDocumentsResponse.self, from: data)
+                    
+                    guard let responseData = decodedData else {
+						DLog(data.toString() ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						DLog(response.data?.toString() ?? "no data")
+						DLog(response.response?.statusCode ?? "no code")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+	}
+	
+	/// Video conversion job status
+	/// - Parameters:
+	///   - token: Job token
+	///   - completionHandler: completion handler
+	public func videoConversionJobStatus(token: Int, _ completionHandler: @escaping (ConvertVideoJobStatus?, RESTAPIError?) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/convert/video/status/\(token)/"
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+        var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+        signRequest(&urlRequest)
+        
+        manager.request(urlRequest)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+					let decodedData = try? JSONDecoder().decode(ConvertVideoJobStatus.self, from: data)
+                    
+                    guard let responseData = decodedData else {
+						DLog(data.toString() ?? "")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    
+                    completionHandler(responseData, nil)
+                case .failure(_):
+                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
+						DLog(response.data?.toString() ?? "no data")
+						DLog(response.response?.statusCode ?? "no code")
+                        completionHandler(nil, RESTAPIError.defaultError())
+                        return
+                    }
+                    completionHandler(nil, decodedData)
+                }
+        }
+	}
 }
 
 // MARK: - URLSessionTaskDelegate

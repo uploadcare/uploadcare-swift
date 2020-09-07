@@ -91,12 +91,33 @@ class Tester {
 //        queue.async { [unowned self] in
 //            self.testFileGroupInfo()
 //        }
-        queue.async { [unowned self] in
-            self.testMultipartUpload()
+//        queue.async { [unowned self] in
+//            self.testMultipartUpload()
+//        }
+//        queue.async { [unowned self] in
+//            self.testRedirectForAuthenticatedUrls()
+//        }
+//        queue.async {
+//            self.testCreateWebhook()
+//        }
+//        queue.async {
+//            self.testListOfWebhooks()
+//        }
+//		queue.async {
+//            self.testUpdateWebhook()
+//        }
+//		queue.async {
+//            self.testDeleteWebhook()
+//        }
+//		queue.async {
+//            self.testDocumentConversion()
+//        }
+		queue.async {
+            self.testDocumentConversionStatus()
         }
-        queue.async { [unowned self] in
-            self.testRedirectForAuthenticatedUrls()
-        }
+//		queue.async {
+//            self.testVideoConversionStatus()
+//        }
     }
 
     func testUploadFileInfo() {
@@ -611,5 +632,240 @@ class Tester {
         semaphore.wait()
     }
     
+    func testListOfWebhooks() {
+        print("<------ testListOfWebhooks ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        uploadcare.getListOfWebhooks { (value, error) in
+            defer { semaphore.signal() }
+            
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            print(value ?? "")
+        }
+        
+        semaphore.wait()
+    }
     
+    func testCreateWebhook() {
+        print("<------ testCreateWebhook ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+        
+		let random = (0...1000).randomElement()!
+        let url = URL(string: "https://google.com/\(random)")!
+        uploadcare.createWebhook(targetUrl: url, isActive: true) { (value, error) in
+            defer { semaphore.signal() }
+            
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            print(value ?? "")
+        }
+        
+        semaphore.wait()
+    }
+	
+	func testUpdateWebhook() {
+        print("<------ testUpdateWebhook ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+        
+		let random = (0...1000).randomElement()!
+        let url = URL(string: "https://apple.com/\(random)")!
+		
+		uploadcare.getListOfWebhooks { (value, error) in
+            if let error = error {
+                print(error)
+				semaphore.signal()
+                return
+            }
+			
+			guard let webhook = value?.first else {
+				semaphore.signal()
+				return
+			}
+			
+			print(webhook)
+			self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url, isActive: true) { (value, error) in
+				defer { semaphore.signal() }
+				
+				if let error = error {
+					print(error)
+					return
+				}
+				
+				print(value ?? "")
+			}
+        }
+		
+        semaphore.wait()
+    }
+	
+	func testDeleteWebhook() {
+        print("<------ testDeleteWebhook ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+        
+		uploadcare.getListOfWebhooks { (value, error) in
+            if let error = error {
+                print(error)
+				semaphore.signal()
+                return
+            }
+			
+			guard var webhook = value?.first else {
+				semaphore.signal()
+				return
+			}
+			
+			print("will delete:")
+			print(webhook)
+			let url = URL(string: webhook.targetUrl)!
+			self.uploadcare.deleteWebhook(forTargetUrl: url) { (error) in
+				if let error = error {
+					print(error)
+				}
+				
+				semaphore.signal()
+			}
+        }
+		
+        semaphore.wait()
+    }
+	
+	func testDocumentConversion() {
+		print("<------ testDocumentConversion ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.fileInfo(withUUID: "b40e1f1a-46e1-471e-8a57-cb863719e8b0") { (file, error) in
+			guard let file = file else {
+				print(error ?? "fileInfo error")
+				semaphore.signal()
+				return
+			}
+			
+			let convertSettings = DocumentConversionJobSettings(forFile: file)
+				.format(.odt)
+			
+			self.uploadcare.convertDocumentsWithSettings([convertSettings]) { (response, error) in
+				defer { semaphore.signal() }
+				
+				guard let response = response else {
+					print(error ?? "error")
+					return
+				}
+				
+				print(response)
+			}
+		}
+        semaphore.wait()
+	}
+	
+	func testDocumentConversionStatus() {
+		print("<------ testDocumentConversionStatus ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.fileInfo(withUUID: "b40e1f1a-46e1-471e-8a57-cb863719e8b0") { (file, error) in
+			guard let file = file else {
+				print(error ?? "fileInfo error")
+				semaphore.signal()
+				return
+			}
+			
+			let convertSettings = DocumentConversionJobSettings(forFile: file)
+				.format(.odt)
+			
+			self.uploadcare.convertDocumentsWithSettings([convertSettings]) { (response, error) in
+				guard let response = response else {
+					print(error ?? "error")
+					semaphore.signal()
+					return
+				}
+				
+				guard response.problems.isEmpty, let job = response.result.first else {
+					print(response)
+					semaphore.signal()
+					return
+				}
+				
+				let timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { (timer) in
+					self.uploadcare.documentConversionJobStatus(token: job.token) { (status, error) in
+						guard let status = status else {
+							print(error ?? "error")
+							return
+						}
+						
+						print(status)
+						switch status.status {
+						case .finished, .failed(_):
+							timer.invalidate()
+							semaphore.signal()
+						default: break
+						}
+					}
+				}
+				timer.fire()
+			}
+		}
+        semaphore.wait()
+	}
+	
+	func testVideoConversionStatus() {
+		print("<------ testVideoConversionStatus ------>")
+        let semaphore = DispatchSemaphore(value: 0)
+		
+		uploadcare.fileInfo(withUUID: "8968032a-6d52-4d68-8af7-154552412f93") { (file, error) in
+			guard let file = file else {
+				print(error ?? "fileInfo error")
+				semaphore.signal()
+				return
+			}
+			
+			print(file)
+			
+			let convertSettings = VideoConversionJobSettings(forFile: file)
+				.format(.webm)
+				.size(VideoSize(width: 640, height: 480))
+				.resizeMode(.addPadding)
+				.quality(.lightest)
+				.cut( VideoCut(startTime: "0:0:5.000", length: "15") )
+				.thumbs(15)
+			
+			self.uploadcare.convertVideosWithSettings([convertSettings]) { (response, error) in
+				guard let response = response else {
+					print(error ?? "error")
+					semaphore.signal()
+					return
+				}
+
+				guard response.problems.isEmpty, let job = response.result.first else {
+					print(response)
+					semaphore.signal()
+					return
+				}
+
+				let timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { (timer) in
+					self.uploadcare.videoConversionJobStatus(token: job.token) { (status, error) in
+						guard let status = status else {
+							print(error ?? "error")
+							return
+						}
+
+						print(status)
+						switch status.status {
+						case .finished, .failed(_):
+							timer.invalidate()
+							semaphore.signal()
+						default: break
+						}
+					}
+				}
+				timer.fire()
+			}
+		}
+		semaphore.wait()
+	}
 }
