@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Uploadcare, Inc' => 'hello@uploadcare.com' }
   s.source           = { :git => 'https://github.com/uploadcare/uploadcare-swift.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.social_media_url = 'https://twitter.com/uploadcare'
 
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.13'
