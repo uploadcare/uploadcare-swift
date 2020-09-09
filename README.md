@@ -6,7 +6,7 @@
 
 Uploadcare Swift API client for iOS, iPadOS, tvOS, macOS, and Linux handles uploads and further operations with files by wrapping Uploadcare Upload and REST APIs.
 
-Check out out [Demo App](/Demo).
+Check out our [Demo App](/Demo).
 
 * [Installation](#installation)
 * [Initialization](#initialization)
@@ -44,7 +44,7 @@ To use a stable version, add a dependency to your Cartfile:
 github "uploadcare/uploadcare-swift" "0.1.0"
 ```
 
-To use current dev version:
+To use the current dev version:
 
 ```
 github "uploadcare/uploadcare-swift" "develop"
@@ -78,7 +78,7 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_S
 
 ## Using Upload API
 
-Check full [Upload API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/Upload%20API.md) for all available methods.
+Check the [Upload API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/Upload%20API.md) to see all available methods.
 
 Example of direct uploads:
 
@@ -97,7 +97,7 @@ fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (res
 // Completion block is optional
 fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
 
-// Or you can just upload data and provide filename
+// Or you can just upload data and provide a filename
 let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
     print("upload progress: \(progress * 100)%")
 }) { (resultDictionary, error) in
@@ -118,7 +118,7 @@ task.cancel()
 
 ## Using REST API
 
-Check full [REST API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/REST%20API.md) for all available methods.
+Refer to the [REST API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/REST%20API.md) for all methods.
 
 Example of getting list of files:
 
@@ -128,10 +128,10 @@ let query = PaginationQuery()
     .stored(true)
     .ordering(.sizeDESC)
     .limit(5)
-// Make files list object
+// Make a list of files object
 let filesList = uploadcare.list()
 
-// Get files list
+// Get file list
 filesList.get(withQuery: query) { (list, error) in
     if let error = error {
         print(error)

@@ -34,10 +34,10 @@ let query = PaginationQuery()
     .stored(true)
     .ordering(.sizeDESC)
     .limit(5)
-// Make files list object
+// Make a list of files object
 let filesList = uploadcare.list()
 
-// Get files list
+// Get file list
 filesList.get(withQuery: query) { (list, error) in
     if let error = error {
         print(error)
@@ -184,7 +184,7 @@ uploadcare.listOfGroups(withQuery: query) { (list, error) in
     print(list ?? "")
 }
 
-// Using GroupsList object
+// Using a GroupsList object
 let groupsList = uploadcare.listOfGroups()
 
 groupsList.get(withQuery: query) { (list, error) in
@@ -250,7 +250,7 @@ uploadcare.getProjectInfo { (project, error) in
 
 ## Secure delivery ([API Reference](https://uploadcare.com/docs/delivery/file_api/#authenticated-urls?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
-This method allows you to get an authenticated URL from your backend by using a redirect.
+This method allows you to get an authenticated URL from your backend by using redirect.
 To answer a request to that URL, your backend should generate an authenticated URL to your file and perform REDIRECT to a generated URL. A redirected URL will be caught and returned in the completion handler of that method.
 
 Example: https://yourdomain.com/{UUID}/ — backend redirects to https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}.
@@ -288,7 +288,7 @@ uploadcare.convertDocumentsWithSettings([task1, task2]) { (response, error) in
 }
 ```
 
-Alternatively you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
+Alternatively, you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
 
 ```swift
 uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { (response, error) in
@@ -347,7 +347,7 @@ uploadcare.convertVideosWithSettings([task1, task2]) { (response, error) in
 }
 ```
 
-Alternatively you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/video_encoding/#process-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
+Alternatively, you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/video_encoding/#process-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
 
 ```swift
 uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { (response, error) in

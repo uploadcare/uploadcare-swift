@@ -37,7 +37,7 @@ fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (res
 // Completion block is optional
 fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
 
-// Or you can just upload data and provide filename
+// Or you can just upload data and provide a filename
 let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
     print("upload progress: \(progress * 100)%")
 }) { (resultDictionary, error) in
@@ -58,12 +58,12 @@ task.cancel()
 
 ## Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
-Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to accelerate uploads. Each Multipart Upload contains 3 steps:
+Multipart Uploads are useful when you are dealing with files larger than 100MB or you explicitly want to accelerate uploads. Each Multipart Upload contains 3 steps:
 1. Start transaction
 2. Upload file chunks concurrently
 3. Complete transaction
 
-You can use this upload method which will run all 3 steps for you:
+You can use this upload method and it'll run all 3 steps for you:
 
 ```swift
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
@@ -88,6 +88,7 @@ task?.cancel()
 
 // You can pause uploading
 task?.pause()
+
 // To resume uploading
 task?.resume()
 ```
@@ -124,7 +125,7 @@ let task3 = UploadFromURLTask(sourceUrl: url!)
 
 ## Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
-Use token that was recieved with Upload files from URLs method:
+Use a token recieved with Upload files from the URLs method:
 
 ```swift
 uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
@@ -148,7 +149,7 @@ uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { (file, error) in
 }
 ```
 
-## Create files group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Create file group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 Uploadcare library provides 2 methods to create a group:
 
@@ -165,7 +166,7 @@ self.uploadcare.uploadAPI.createFilesGroup(files: files) { (response, error) in
 }
 ```
 
-2. Provide an array of files UUIDs:
+2. Provide an array of file UUIDs:
 
 ```swift
 let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
@@ -192,6 +193,6 @@ uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) 
 
 ## Secure uploads ([API Reference](https://uploadcare.com/docs/api_reference/upload/signed_uploads/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
-Requests signing works by default if secret key is provided during SDK initialization. SDK generates a signature internally. The signature is valid for 30 minutes. The new signature is generated automatically when the old one expires.
+Signing requests works by default if a Secret key is provided during SDK initialization. SDK generates a signature internally, and this signature stays valid for 30 minutes. New signatures are generated automatically when older ones expire.
 
-Please notice that signed uploads should be enabled in your project’s settings in the [Uploadcare dashboard](https://uploadcare.com/dashboard/).
+Note that Signed Uploads should be enabled in the project’s settings in your [Uploadcare dashboard](https://uploadcare.com/dashboard/).
