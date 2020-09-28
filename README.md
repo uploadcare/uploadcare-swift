@@ -41,7 +41,7 @@ Or you can add it in Xcode: https://github.com/uploadcare/uploadcare-swift (sele
 To use a stable version, add a dependency to your Cartfile:
 
 ```
-github "uploadcare/uploadcare-swift" "0.1.0"
+github "uploadcare/uploadcare-swift" "0.2.0"
 ```
 
 To use the current dev version:
