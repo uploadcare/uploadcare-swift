@@ -14,21 +14,21 @@ class Uploader: ObservableObject {
 	// MARK: - Public properties
 	@Published var uploadState: UploadState = .notRunning
 	@Published var isUploading: Bool = false
-	@Published var progressValue: Float = 0.0
+	@Published var progressValue: Double = 0.0
 	@Published var task: UploadTaskResumable?
 	@Published var uploadedFile: UploadedFile?
 	
 	// MARK: - Private properties
 	var uploadcare: Uploadcare
-	private var uploadQueue: Set<URL> = [] {
-		didSet {
-			DispatchQueue.main.async { [weak self] in
-				guard let self = self else { return }
-				self.uploadState = self.uploadQueue.isEmpty ? .notRunning : .uploading
-				self.isUploading = !self.uploadQueue.isEmpty
-			}
-		}
-	}
+//	private var uploadQueue: Set<URL> = [] {
+//		didSet {
+//			DispatchQueue.main.async { [weak self] in
+//				guard let self = self else { return }
+//				self.uploadState = self.uploadQueue.isEmpty ? .notRunning : .uploading
+//				self.isUploading = !self.uploadQueue.isEmpty
+//			}
+//		}
+//	}
 	
 	init(uploadcare: Uploadcare) {
 		self.uploadcare = uploadcare
@@ -45,8 +45,9 @@ extension Uploader {
 			DLog(error)
 			return
 		}
-		uploadQueue.insert(url)
+//		uploadQueue.insert(url)
 		
+		self.isUploading = true
 		self.progressValue = 0
 		let filename = url.lastPathComponent
 
@@ -62,7 +63,7 @@ private extension Uploader {
 	func performDirectUpload(filename: String, data: Data, completionHandler: @escaping (String)->Void) {
 		let onProgress: (Double)->Void = { (progress) in
 			DispatchQueue.main.async { [weak self] in
-				self?.progressValue = Float(progress)
+				self?.progressValue = progress
 			}
 		}
 		self.uploadcare.uploadAPI.upload(files: [filename: data], store: .doNotStore, onProgress, { (uploadData, error) in
@@ -85,7 +86,7 @@ private extension Uploader {
 	func performMultipartUpload(filename: String, fileUrl: URL, completionHandler: @escaping (String)->Void) {
 		let onProgress: (Double)->Void = { (progress) in
 			DispatchQueue.main.async { [weak self] in
-				self?.progressValue = Float(progress)
+				self?.progressValue = progress
 			}
 		}
 

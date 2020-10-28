@@ -31,11 +31,9 @@ struct FilesListView: View {
         ZStack {
             VStack {
                 HStack {
-					// Progress bar
-					ProgressBar(value: $uploader.progressValue)
-                        .frame(height: 20)
-                        .frame(maxWidth: 200)
-                    
+					ProgressView("Uploading…", value: self.uploader.progressValue, total: 1.0)
+						.frame(maxWidth: 200)
+						
 					if self.uploader.uploadState == .uploading {
                         Button(action: {
                             self.toggleUpload()
@@ -50,17 +48,18 @@ struct FilesListView: View {
                             Image(systemName: "play.fill")
                         }
                     }
-                }.opacity(self.uploader.isUploading ? 1 : 0)
+                }
+				.opacity(self.uploader.isUploading ? 1 : 0)
                 
                 List {
                     Section {
                         ForEach(self.filesListStore.files) { file in
                             FileRowView(fileData: file)
-							.onAppear {
-								if file.file.uuid == self.filesListStore.files.last?.file.uuid {
-									self.loadMoreIfNeed()
+								.onAppear {
+									if file.file.uuid == self.filesListStore.files.last?.file.uuid {
+										self.loadMoreIfNeed()
+									}
 								}
-							}
                         }.onDelete(perform: delete)
                     }
                 }
