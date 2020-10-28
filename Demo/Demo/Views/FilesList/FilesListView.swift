@@ -39,17 +39,6 @@ class FilesListStore: ObservableObject {
 
 
 struct FilesListView: View {
-    enum UploadState {
-        case uploading
-        case paused
-        case notRunning
-    }
-	
-	enum PickerType {
-		case photos
-		case files
-	}
-    
 	@ObservedObject private var filesListStore: FilesListStore = FilesListStore(files: [])
     
     @State private var isLoading: Bool = true
