@@ -22,26 +22,27 @@ struct FilesListView: View {
 	
     @State private var alertMessage = ""
 	
+	@State var isUploading: Bool = false
+	
 	@EnvironmentObject var api: APIStore
-	@EnvironmentObject var uploader: Uploader
-    
+	
 	@State private var didLoadData: Bool = false
 	
     var body: some View {
         ZStack {
             VStack {
                 HStack {
-					ProgressView("Uploading…", value: self.uploader.progressValue, total: 1.0)
+					ProgressView( self.filesListStore.uploadState == .paused ? "Paused" : "Uploading", value: self.filesListStore.progressValue, total: 1.0)
 						.frame(maxWidth: 200)
 						
-					if self.uploader.uploadState == .uploading {
+					if self.filesListStore.uploadState == .uploading {
                         Button(action: {
                             self.toggleUpload()
                         }) {
                             Image(systemName: "pause.fill")
                         }
                     }
-					if self.uploader.uploadState == .paused {
+					if self.filesListStore.uploadState == .paused {
                         Button(action: {
                             self.toggleUpload()
                         }) {
@@ -49,7 +50,7 @@ struct FilesListView: View {
                         }
                     }
                 }
-				.opacity(self.uploader.isUploading ? 1 : 0)
+				.opacity(self.isUploading ? 1 : 0)
                 
                 List {
                     Section {
@@ -100,13 +101,18 @@ struct FilesListView: View {
 		.sheet(isPresented: $isShowingSheetWithPicker) {
 			if self.pickerType == .photos {
 				ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
-					self.uploader.uploadFile(imageUrl, completionHandler: { fileId in
+					self.isUploading = true
+					
+					self.filesListStore.uploadFile(imageUrl, completionHandler: { fileId in
+						self.isUploading = false
 						self.insertFileByFileId(fileId)
 					})
 				}
 			} else {
 				DocumentPicker { (url) in
-					self.uploader.uploadFile(url, completionHandler: { fileId in
+					self.isUploading = true
+					self.filesListStore.uploadFile(url, completionHandler: { fileId in
+						self.isUploading = false
 						self.insertFileByFileId(fileId)
 					})
 				}
@@ -126,14 +132,14 @@ struct FilesListView: View {
 	}
     
     func toggleUpload() {
-		guard let task = self.uploader.task else { return }
-		switch self.uploader.uploadState {
+		guard let task = self.filesListStore.task else { return }
+		switch self.filesListStore.uploadState {
         case .uploading:
             task.pause()
-			self.uploader.uploadState = .paused
+			self.filesListStore.uploadState = .paused
         case .paused:
             task.resume()
-			self.uploader.uploadState = .uploading
+			self.filesListStore.uploadState = .uploading
         default: break
         }
     }

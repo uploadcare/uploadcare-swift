@@ -10,7 +10,6 @@ import SwiftUI
 
 struct MainView: View {
 	@EnvironmentObject var api: APIStore
-	@EnvironmentObject var uploader: Uploader
 	
     var body: some View {
 		NavigationView {
