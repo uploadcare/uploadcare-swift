@@ -716,7 +716,7 @@ class Tester {
 				return
 			}
 			
-			guard var webhook = value?.first else {
+			guard let webhook = value?.first else {
 				semaphore.signal()
 				return
 			}
