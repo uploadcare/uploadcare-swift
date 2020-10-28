@@ -33,6 +33,7 @@
 		24BAB4482549E5AC0075E79A /* FilesListStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4472549E5AC0075E79A /* FilesListStore.swift */; };
 		24BAB44B2549E6270075E79A /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB44A2549E6270075E79A /* ImageStore.swift */; };
 		24BAB44E2549E65A0075E79A /* RandomTransformator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB44D2549E65A0075E79A /* RandomTransformator.swift */; };
+		24BAB4512549E9AD0075E79A /* Uploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4502549E9AD0075E79A /* Uploader.swift */; };
 		24BF0F9C2430E323004D87DF /* FileViewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BF0F9B2430E323004D87DF /* FileViewData.swift */; };
 		24FDBBA724A2A55200F92980 /* GroupsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FDBBA624A2A55200F92980 /* GroupsListView.swift */; };
 		24FDBBA924A2A78C00F92980 /* GroupViewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FDBBA824A2A78C00F92980 /* GroupViewData.swift */; };
@@ -69,6 +70,7 @@
 		24BAB4472549E5AC0075E79A /* FilesListStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesListStore.swift; sourceTree = "<group>"; };
 		24BAB44A2549E6270075E79A /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
 		24BAB44D2549E65A0075E79A /* RandomTransformator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomTransformator.swift; sourceTree = "<group>"; };
+		24BAB4502549E9AD0075E79A /* Uploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Uploader.swift; sourceTree = "<group>"; };
 		24BF0F9B2430E323004D87DF /* FileViewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileViewData.swift; sourceTree = "<group>"; };
 		24FDBBA624A2A55200F92980 /* GroupsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsListView.swift; sourceTree = "<group>"; };
 		24FDBBA824A2A78C00F92980 /* GroupViewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupViewData.swift; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 				24BAB4472549E5AC0075E79A /* FilesListStore.swift */,
 				24BAB44A2549E6270075E79A /* ImageStore.swift */,
 				24BAB44D2549E65A0075E79A /* RandomTransformator.swift */,
+				24BAB4502549E9AD0075E79A /* Uploader.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -300,6 +303,7 @@
 				24BAB44E2549E65A0075E79A /* RandomTransformator.swift in Sources */,
 				2492150524A66991008D335D /* GroupFileList.swift in Sources */,
 				243A712C242CEAA200CA229B /* SceneDelegate.swift in Sources */,
+				24BAB4512549E9AD0075E79A /* Uploader.swift in Sources */,
 				24BAB4482549E5AC0075E79A /* FilesListStore.swift in Sources */,
 				24FDBBAB24A2AABD00F92980 /* GroupRowView.swift in Sources */,
 				24BF0F9C2430E323004D87DF /* FileViewData.swift in Sources */,
@@ -458,7 +462,7 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Demo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -482,7 +486,7 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Demo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

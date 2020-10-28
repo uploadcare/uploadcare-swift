@@ -20,6 +20,21 @@ func delay(_ delay: Double, closure: @escaping ()->()) {
 		deadline: DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure)
 }
 
+func DLog(
+	_ messages: Any...,
+	fullPath: String = #file,
+	line: Int = #line,
+	functionName: String = #function
+) {
+	let file = URL(fileURLWithPath: fullPath)
+	for message in messages {
+		#if DEBUG
+		let string = "\(file.pathComponents.last!):\(line) -> \(functionName): \(message)"
+		print(string)
+		#endif
+	}
+}
+
 /// Count size of Data (in mb)
 /// - Parameter data: data
 func sizeString(ofData data: Data) -> String {

@@ -35,7 +35,7 @@ struct GroupsListView: View {
 		groupsListStore.uploadcare = self.api.uploadcare
 		groupsListStore.load { (list, error) in
 			if let error = error {
-				return print(error)
+				return DLog(error)
 			}
 			self.groupsListStore.groups.removeAll()
 			list?.results.forEach { self.groupsListStore.groups.append(GroupViewData(group: $0)) }
@@ -45,7 +45,7 @@ struct GroupsListView: View {
 	func loadMoreIfNeed() {
 		groupsListStore.loadNext { (list, error) in
 			if let error = error {
-				return print(error)
+				return DLog(error)
 			}
 			list?.results.forEach({ self.groupsListStore.groups.append(GroupViewData(group: $0)) })
 		}

@@ -49,7 +49,7 @@ struct FileRowView: View {
 		var str = url.deletingLastPathComponent().absoluteString
 		str = str + "-/preview/30x30/-/crop"
 		
-		print(str)
+//		DLog(str)
 		
 		url = URL(string: str)!
 		

@@ -43,7 +43,7 @@ struct ProjectInfoView: View {
 		}.onAppear {
 			self.api.uploadcare?.getProjectInfo({ (project, error) in
 				if let error = error {
-					return print(error)
+					return DLog(error)
 				}
 				self.projectData = project
 			})

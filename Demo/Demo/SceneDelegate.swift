@@ -28,14 +28,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		    let window = UIWindow(windowScene: windowScene)
 			
             #warning("Set your public key here if need")
-			let apiStore = APIStore(
-				uploadcare: Uploadcare(
-					withPublicKey: "demopublickey",
-					secretKey: "demosecretkey")
+			let uploadcare = Uploadcare(
+				withPublicKey: "demopublickey",
+				secretKey: "demopublickey"
 			)
 			
+			let apiStore = APIStore(uploadcare: uploadcare)
+			let uploader = Uploader(uploadcare: uploadcare)
+			
 		    window.rootViewController = UIHostingController(
-				rootView: contentView.environmentObject(apiStore)
+				rootView: contentView
+					.environmentObject(apiStore)
+					.environmentObject(uploader)
 			)
 		    self.window = window
 		    window.makeKeyAndVisible()

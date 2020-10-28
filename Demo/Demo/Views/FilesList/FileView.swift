@@ -92,7 +92,7 @@ struct FileView: View {
 		.onAppear {
 			UITableView.appearance().separatorStyle = .none
 			
-			print(self.fileData.file)
+			DLog(self.fileData.file)
 			
 			guard self.fileData.file.isImage == true else {
 				self.isLoading = false
@@ -125,7 +125,7 @@ struct FileView: View {
 		let originalUrl = url.deletingLastPathComponent()
 		
 		self.imageUrl = RandomTransformator.getRandomTransformation(imageURL: originalUrl)
-		print(self.imageUrl ?? "")
+		DLog(self.imageUrl ?? "")
 		isLoading.toggle()
 		loadImage()
 	}

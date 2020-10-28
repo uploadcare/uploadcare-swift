@@ -54,7 +54,7 @@ struct GroupFileList: View {
 			if let error = error {
 				self.alertMessage = error.detail
 				self.isShowingAlert.toggle()
-				return print(error)
+				return DLog(error)
 			}
 			
 			self.filesListStore.files.removeAll()
