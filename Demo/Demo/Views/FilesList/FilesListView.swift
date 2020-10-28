@@ -10,34 +10,6 @@ import SwiftUI
 import Combine
 import Uploadcare
 
-
-class FilesListStore: ObservableObject {
-	@Published var files: [FileViewData] = []
-	private var list: FilesList?
-	var uploadcare: Uploadcare? {
-		didSet {
-			self.list = uploadcare?.listOfFiles()
-		}
-	}
-	
-	init(files: [FileViewData]) {
-        self.files = files
-    }
-	
-	func load(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
-		let query = PaginationQuery()
-			.limit(5)
-            .ordering(.dateTimeUploadedDESC)
-		
-		self.list?.get(withQuery: query, completionHandler)
-	}
-	
-	func loadNext(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
-		self.list?.nextPage(completionHandler)
-	}
-}
-
-
 struct FilesListView: View {
 	@ObservedObject private var filesListStore: FilesListStore = FilesListStore(files: [])
     

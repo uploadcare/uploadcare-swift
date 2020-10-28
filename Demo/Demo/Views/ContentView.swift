@@ -7,18 +7,6 @@
 //
 
 import SwiftUI
-import Combine
-import Uploadcare
-
-
-final class APIStore: ObservableObject {
-	var uploadcare: Uploadcare?
-	
-	init(uploadcare: Uploadcare? = nil) {
-		self.uploadcare = uploadcare
-	}
-}
-
 
 struct MainView: View {
 	@EnvironmentObject var api: APIStore
