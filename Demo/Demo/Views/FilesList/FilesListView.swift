@@ -32,22 +32,24 @@ struct FilesListView: View {
         ZStack {
             VStack {
                 HStack {
-					ProgressView( self.filesListStore.uploadState == .paused ? "Paused" : "Uploading", value: self.filesListStore.progressValue, total: 1.0)
-						.frame(maxWidth: 200)
+					#if (macOS)
+					ProgressView(self.filesListStore.uploadState == .paused ? "Paused" : "Uploading", value: self.filesListStore.progressValue, total: 1.0
+					).frame(maxWidth: 200)
+					#endif
 						
 					if self.filesListStore.uploadState == .uploading {
                         Button(action: {
                             self.toggleUpload()
                         }) {
                             Image(systemName: "pause.fill")
-                        }
+						}
                     }
 					if self.filesListStore.uploadState == .paused {
                         Button(action: {
                             self.toggleUpload()
                         }) {
                             Image(systemName: "play.fill")
-                        }
+						}
                     }
                 }
 				.opacity(self.isUploading ? 1 : 0)
@@ -120,11 +122,10 @@ struct FilesListView: View {
 		}
         .navigationBarItems(trailing:
             HStack {
-                Button(
-                    action: { self.isShowingAddFilesAlert.toggle() },
-                    label: { Text("Add") }
-                )
-                EditButton()
+				Button("Add") {
+					self.isShowingAddFilesAlert.toggle()
+				}
+				EditButton()
             }
             
         )
