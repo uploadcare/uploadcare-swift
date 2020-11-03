@@ -11,7 +11,7 @@ import Combine
 import Uploadcare
 
 struct FilesListView: View {
-	@ObservedObject private var filesListStore: FilesListStore = FilesListStore(files: [])
+	@ObservedObject var filesListStore: FilesListStore
     
     @State private var isLoading: Bool = true
 	@State private var isShowingAlert = false
@@ -208,7 +208,7 @@ struct FilesListView: View {
 struct FilesListView_Previews: PreviewProvider {
     static var previews: some View {
 		NavigationView {
-			FilesListView()
+			FilesListView(filesListStore: FilesListStore(files: []))
 				.environmentObject(APIStore())
 				.navigationBarTitle(Text("List of files"))
 		}

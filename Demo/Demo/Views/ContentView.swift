@@ -10,12 +10,13 @@ import SwiftUI
 
 struct MainView: View {
 	@EnvironmentObject var api: APIStore
+	@ObservedObject private var filesListStore: FilesListStore = FilesListStore(files: [])
 	
     var body: some View {
 		NavigationView {
             ZStack {
                 List {
-                    NavigationLink(destination: FilesListView()) {
+					NavigationLink(destination: FilesListView(filesListStore: self.filesListStore)) {
                         Text("List of files")
                     }
 					NavigationLink(destination: GroupsListView()) {
