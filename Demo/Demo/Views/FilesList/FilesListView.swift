@@ -32,10 +32,10 @@ struct FilesListView: View {
         ZStack {
             VStack {
                 HStack {
-					#if (macOS)
-					ProgressView(self.filesListStore.uploadState == .paused ? "Paused" : "Uploading", value: self.filesListStore.progressValue, total: 1.0
+					ProgressView(
+						self.filesListStore.uploadState == .paused ? "Paused" : "Uploading \(self.filesListStore.uploadedFromQueue) of \(self.filesListStore.filesQueue.count)",
+						value: self.filesListStore.progressValue, total: 1.0
 					).frame(maxWidth: 200)
-					#endif
 						
 					if self.filesListStore.uploadState == .uploading {
                         Button(action: {
@@ -111,11 +111,11 @@ struct FilesListView: View {
 					})
 				}
 			} else {
-				DocumentPicker { (url) in
+				DocumentPicker { (urls) in
 					self.isUploading = true
-					self.filesListStore.uploadFile(url, completionHandler: { fileId in
+					self.filesListStore.uploadFiles(urls, completionHandler: { fileIds in
 						self.isUploading = false
-						self.insertFileByFileId(fileId)
+						fileIds.forEach({ self.insertFileByFileId($0) })
 					})
 				}
 			}
@@ -133,7 +133,7 @@ struct FilesListView: View {
 	}
     
     func toggleUpload() {
-		guard let task = self.filesListStore.task else { return }
+		guard let task = self.filesListStore.currentTask else { return }
 		switch self.filesListStore.uploadState {
         case .uploading:
             task.pause()

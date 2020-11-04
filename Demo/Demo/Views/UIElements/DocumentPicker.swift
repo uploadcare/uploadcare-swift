@@ -7,39 +7,41 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct DocumentPicker: UIViewControllerRepresentable {
 	@Environment(\.presentationMode)
     private var presentationMode
 	
-	let onDocumentPicked: (URL) -> Void
+	let onDocumentsPicked: ([URL]) -> Void
 	
 	final class Coordinator: NSObject, UINavigationControllerDelegate, UIDocumentPickerDelegate {
 		@Binding
 		private var presentationMode: PresentationMode
-		private let onDocumentPicked: (URL) -> Void
+		private let onDocumentsPicked: ([URL]) -> Void
 		
 		init(presentationMode: Binding<PresentationMode>,
-			 onDocumentPicked: @escaping (URL) -> Void) {
+			 onDocumentsPicked: @escaping ([URL]) -> Void) {
 			_presentationMode = presentationMode
-			self.onDocumentPicked = onDocumentPicked
+			self.onDocumentsPicked = onDocumentsPicked
 		}
 		
 		func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
 		}
 		
-		func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
-			onDocumentPicked(url)
+		func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+			onDocumentsPicked(urls)
 		}
 	}
 	
 	func makeCoordinator() -> Coordinator {
-		return Coordinator(presentationMode: presentationMode, onDocumentPicked: onDocumentPicked)
+		return Coordinator(presentationMode: presentationMode, onDocumentsPicked: onDocumentsPicked)
 	}
 	
 	func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-		let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.data"], in: .open)
+		let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.data, .image])
 		documentPicker.delegate = context.coordinator
+		documentPicker.allowsMultipleSelection = true
 		return documentPicker
 	}
 
@@ -49,7 +51,7 @@ struct DocumentPicker: UIViewControllerRepresentable {
 
 struct DocumentPicker_Previews: PreviewProvider {
     static var previews: some View {
-		DocumentPicker { (url) in
+		DocumentPicker { (urls) in
 			
 		}
     }

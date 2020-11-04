@@ -16,8 +16,11 @@ class FilesListStore: ObservableObject {
 	@Published var uploadState: UploadState = .notRunning
 	@Published var isUploading: Bool = false
 	@Published var progressValue: Double = 0.0
-	@Published var task: UploadTaskResumable?
+	@Published var currentTask: UploadTaskResumable?
 	@Published var uploadedFile: UploadedFile?
+	@Published var filesQueue: [URL] = []
+	@Published var uploadedFromQueue: Int = 0
+	
 	
 	var uploadcare: Uploadcare? {
 		didSet {
@@ -27,6 +30,7 @@ class FilesListStore: ObservableObject {
 	
 	// MARK: - Private properties
 	private var list: FilesList?
+	private let uploadingQueue: DispatchQueue = DispatchQueue(label: "com.uploadcare.uploadQueue")
 	
 	// MARK: - Init
 	init(files: [FileViewData]) {
@@ -44,6 +48,33 @@ class FilesListStore: ObservableObject {
 	
 	func loadNext(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
 		self.list?.nextPage(completionHandler)
+	}
+	
+	func uploadFiles(_ urls: [URL], completionHandler: @escaping ([String])->Void) {
+		self.filesQueue = urls
+		var fileIds: [String] = []
+		
+		let semaphore = DispatchSemaphore(value: 0)
+		self.uploadedFromQueue = 0
+		uploadingQueue.async { [weak self] in
+			guard let self = self else { return }
+			
+			for fileUrl in self.filesQueue {
+				DispatchQueue.main.async { [weak self] in
+					self?.uploadedFromQueue += 1
+					self?.uploadFile(fileUrl) { (fileId) in
+						fileIds.append(fileId)
+						semaphore.signal()
+					}
+				}
+				semaphore.wait()
+			}
+			
+			DispatchQueue.main.async {
+				completionHandler(fileIds)
+				self.filesQueue.removeAll()
+			}
+		}
 	}
 	
 	func uploadFile(_ url: URL, completionHandler: @escaping (String)->Void) {
@@ -95,18 +126,19 @@ class FilesListStore: ObservableObject {
 		}
 
 		self.uploadState = .uploading
-		self.task = fileForUploading.upload(withName: filename, store: .doNotStore, onProgress, { (file, error) in
+		
+		self.currentTask = fileForUploading.upload(withName: filename, store: .doNotStore, onProgress, { (file, error) in
 			defer {
 				self.isUploading = false
 				self.uploadState = .notRunning
-				self.task = nil
+				self.currentTask = nil
 			}
-
+			
 			if let error = error {
 				DLog(error)
 				return
 			}
-
+			
 			guard let file = file else { return }
 			completionHandler(file.fileId)
 			DLog(file)
