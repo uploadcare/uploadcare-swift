@@ -9,8 +9,7 @@
 import SwiftUI
 
 struct GroupsListView: View {
-	@EnvironmentObject var api: APIStore
-	@ObservedObject private var viewModel: GroupsListViewModel = GroupsListViewModel()
+	@ObservedObject var viewModel: GroupsListViewModel
 	
     var body: some View {
 		ZStack {
@@ -27,7 +26,6 @@ struct GroupsListView: View {
 				}
 			}
 		}.onAppear { [self] in
-			viewModel.uploadcare = self.api.uploadcare
 			viewModel.loadData()
         }.navigationBarTitle(Text("List of groups"))
 	}
@@ -35,6 +33,6 @@ struct GroupsListView: View {
 
 struct GroupsListView_Previews: PreviewProvider {
     static var previews: some View {
-        GroupsListView()
+		GroupsListView(viewModel: GroupsListViewModel())
     }
 }
