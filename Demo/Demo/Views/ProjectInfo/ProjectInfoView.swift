@@ -38,7 +38,8 @@ struct ProjectInfoView: View {
 			VStack {
 				ActivityIndicator(isAnimating: .constant(true), style: .large)
 				Text("Loading...")
-			}.opacity(self.isLoading ? 1 : 0)
+			}
+			.opacity(self.isLoading ? 1 : 0)
 
 			.navigationBarTitle(Text(viewModel.name))
 		}.onAppear { [self] in
@@ -56,6 +57,7 @@ struct ProjectInfo_Previews: PreviewProvider {
 			ProjectInfoView(
 				viewModel: ProjectInfoViewModel(projectData: ProjectInfoViewModel.testProject)
 			)
-		}.previewDevice(PreviewDevice(rawValue: "iPhone X"))
+		}
+		.previewDevice(PreviewDevice(rawValue: "iPhone X"))
     }
 }
