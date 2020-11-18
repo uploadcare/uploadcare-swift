@@ -10,24 +10,26 @@ import SwiftUI
 import Uploadcare
 
 struct ProjectInfoView: View {
-	@EnvironmentObject var api: APIStore
-	@State var projectData: Project?
+	// MARK: - Public properties
+	@ObservedObject var viewModel: ProjectInfoViewModel
+	
+	// MARK: - Private properties
 	@State private var isLoading: Bool = true
     
 	var body: some View {
 		ZStack {
 			List() {
-				Section {
+				Section(header: Text("Keys")) {
 					HStack {
 						Text("Public key: ")
 							.bold()
-						Text(projectData?.pubKey ?? "")
+						Text(viewModel.publicKey)
 					}
 				}
-				if projectData?.collaborators?.isEmpty == false {
+				if viewModel.collaborators.isEmpty == false {
 					Section(header: Text("Collaborators")) {
-						ForEach(0 ..< (projectData?.collaborators ?? []).count) { index in
-							CollaboratorView(collaborator: self.projectData!.collaborators![index])
+						ForEach(0 ..< (viewModel.collaborators).count) { [self] index in
+							CollaboratorView(collaborator: viewModel.collaborators[index])
 						}
 					}
 				}
@@ -39,35 +41,30 @@ struct ProjectInfoView: View {
 				Text("Loading...")
 			}.opacity(self.isLoading ? 1 : 0)
 
-			.navigationBarTitle(Text(projectData?.name ?? "Loading"))
-		}.onAppear {
-			self.api.uploadcare?.getProjectInfo({ (project, error) in
-				if let error = error {
-					return DLog(error)
-				}
-				self.projectData = project
-			})
+			.navigationBarTitle(Text(viewModel.name))
+		}.onAppear { [self] in
+			viewModel.loadData {
+				withAnimation { self.isLoading.toggle() }
+			}
 			
-			withAnimation { self.isLoading.toggle() }
 		}
 	}
 }
 
 struct ProjectInfo_Previews: PreviewProvider {
-    static var previews: some View {
+	static var previews: some View {
 		NavigationView {
 			ProjectInfoView(
-				projectData: testProject
+				viewModel: ProjectInfoViewModel(projectData: testProject)
 			)
 		}.previewDevice(PreviewDevice(rawValue: "iPhone X"))
     }
 }
 
-
 #if DEBUG
 let testProject = Project(
 	name: "Test project",
-	pubKey: "public-key",
+	pubKey: "demopublickey",
 	collaborators: [
 		Collaborator(email: "user1@gmail.com", name: "User 1"),
 		Collaborator(email: "user2@gmail.com", name: "User 2")

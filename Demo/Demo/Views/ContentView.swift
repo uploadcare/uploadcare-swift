@@ -22,7 +22,7 @@ struct MainView: View {
 					NavigationLink(destination: GroupsListView(viewModel: GroupsListViewModel(uploadcare: api.uploadcare))) {
                         Text("List of file groups")
                     }
-					NavigationLink(destination: ProjectInfoView()) {
+					NavigationLink(destination: ProjectInfoView(viewModel: ProjectInfoViewModel(uploadcare: api.uploadcare))) {
                         Text("Project info")
                     }
                 }.listStyle(GroupedListStyle())
