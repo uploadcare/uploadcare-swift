@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import Combine
 import Uploadcare
 
@@ -31,6 +32,7 @@ class FilesListStore: ObservableObject {
 	// MARK: - Private properties
 	private var list: FilesList?
 	private let uploadingQueue: DispatchQueue = DispatchQueue(label: "com.uploadcare.uploadQueue")
+	private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
 	
 	// MARK: - Init
 	init(files: [FileViewData]) {
@@ -56,10 +58,14 @@ class FilesListStore: ObservableObject {
 		
 		let semaphore = DispatchSemaphore(value: 0)
 		self.uploadedFromQueue = 0
+		
+		registerBackgroundTask()
+		
 		uploadingQueue.async { [weak self] in
 			guard let self = self else { return }
 			
 			for fileUrl in self.filesQueue {
+				_ = fileUrl.startAccessingSecurityScopedResource()
 				DispatchQueue.main.async { [weak self] in
 					self?.uploadedFromQueue += 1
 					self?.uploadFile(fileUrl) { (fileId) in
@@ -68,13 +74,16 @@ class FilesListStore: ObservableObject {
 					}
 				}
 				semaphore.wait()
+				fileUrl.stopAccessingSecurityScopedResource()
 			}
 			
-			DispatchQueue.main.async {
+			DispatchQueue.main.async { [weak self] in
+				self?.endBackgroundTask()
 				completionHandler(fileIds)
-				self.filesQueue.removeAll()
+				self?.filesQueue.removeAll()
 			}
 		}
+		
 	}
 	
 	func uploadFile(_ url: URL, completionHandler: @escaping (String)->Void) {
@@ -117,6 +126,13 @@ class FilesListStore: ObservableObject {
 		let onProgress: (Double)->Void = { (progress) in
 			DispatchQueue.main.async { [weak self] in
 				self?.progressValue = progress
+				
+//				switch UIApplication.shared.applicationState {
+//				case .background:
+//					let remain = UIApplication.shared.backgroundTimeRemaining.rounded(toPlaces: 2)
+//					DLog("Background time remaining = \(remain) seconds")
+//				default: break
+//				}
 			}
 		}
 
@@ -143,5 +159,29 @@ class FilesListStore: ObservableObject {
 			completionHandler(file.fileId)
 			DLog(file)
 		})
+	}
+}
+
+private extension FilesListStore {
+	func registerBackgroundTask() {
+		backgroundTask = UIApplication.shared.beginBackgroundTask { [weak self] in
+			self?.endBackgroundTask()
+		}
+		assert(backgroundTask != .invalid)
+	}
+	
+	func endBackgroundTask() {
+		DLog("Background task ended.")
+		UIApplication.shared.endBackgroundTask(backgroundTask)
+		backgroundTask = .invalid
+	}
+}
+
+
+extension Double {
+	/// Rounds the double to decimal places value
+	func rounded(toPlaces places:Int) -> Double {
+		let divisor = pow(10.0, Double(places))
+		return (self * divisor).rounded() / divisor
 	}
 }
