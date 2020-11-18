@@ -10,45 +10,26 @@ import SwiftUI
 
 struct GroupsListView: View {
 	@EnvironmentObject var api: APIStore
-	@ObservedObject private var groupsListStore: GroupsListStore = GroupsListStore(groups: [])
+	@ObservedObject private var viewModel: GroupsListViewModel = GroupsListViewModel()
 	
     var body: some View {
 		ZStack {
 			List {
 				Section {
-					ForEach(self.groupsListStore.groups) { group in
+					ForEach(self.viewModel.groups) { [self] group in
 						GroupRowView(groupData: group)
 						.onAppear {
-							if group.group.id == self.groupsListStore.groups.last?.group.id {
-								self.loadMoreIfNeed()
+							if group.group.id == viewModel.groups.last?.group.id {
+								viewModel.loadMoreIfNeed()
 							}
 						}
 					}
 				}
 			}
-		}.onAppear {
-            self.loadData()
-        }
-	}
-	
-	func loadData() {
-		groupsListStore.uploadcare = self.api.uploadcare
-		groupsListStore.load { (list, error) in
-			if let error = error {
-				return DLog(error)
-			}
-			self.groupsListStore.groups.removeAll()
-			list?.results.forEach { self.groupsListStore.groups.append(GroupViewData(group: $0)) }
-		}
-	}
-	
-	func loadMoreIfNeed() {
-		groupsListStore.loadNext { (list, error) in
-			if let error = error {
-				return DLog(error)
-			}
-			list?.results.forEach({ self.groupsListStore.groups.append(GroupViewData(group: $0)) })
-		}
+		}.onAppear { [self] in
+			viewModel.uploadcare = self.api.uploadcare
+			viewModel.loadData()
+        }.navigationBarTitle(Text("List of groups"))
 	}
 }
 

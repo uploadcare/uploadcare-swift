@@ -28,7 +28,7 @@
 		24BAB4392549E4070075E79A /* PickerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4382549E4070075E79A /* PickerType.swift */; };
 		24BAB43C2549E42D0075E79A /* UploadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB43B2549E42D0075E79A /* UploadState.swift */; };
 		24BAB4412549E4DA0075E79A /* APIStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4402549E4DA0075E79A /* APIStore.swift */; };
-		24BAB4452549E53A0075E79A /* GroupsListStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4442549E53A0075E79A /* GroupsListStore.swift */; };
+		24BAB4452549E53A0075E79A /* GroupsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4442549E53A0075E79A /* GroupsListViewModel.swift */; };
 		24BAB4482549E5AC0075E79A /* FilesListStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4472549E5AC0075E79A /* FilesListStore.swift */; };
 		24BAB44B2549E6270075E79A /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB44A2549E6270075E79A /* ImageStore.swift */; };
 		24BAB44E2549E65A0075E79A /* RandomTransformator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB44D2549E65A0075E79A /* RandomTransformator.swift */; };
@@ -63,7 +63,7 @@
 		24BAB4382549E4070075E79A /* PickerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerType.swift; sourceTree = "<group>"; };
 		24BAB43B2549E42D0075E79A /* UploadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadState.swift; sourceTree = "<group>"; };
 		24BAB4402549E4DA0075E79A /* APIStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIStore.swift; sourceTree = "<group>"; };
-		24BAB4442549E53A0075E79A /* GroupsListStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsListStore.swift; sourceTree = "<group>"; };
+		24BAB4442549E53A0075E79A /* GroupsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsListViewModel.swift; sourceTree = "<group>"; };
 		24BAB4472549E5AC0075E79A /* FilesListStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesListStore.swift; sourceTree = "<group>"; };
 		24BAB44A2549E6270075E79A /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
 		24BAB44D2549E65A0075E79A /* RandomTransformator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomTransformator.swift; sourceTree = "<group>"; };
@@ -125,6 +125,7 @@
 		243A7128242CEAA200CA229B /* Demo */ = {
 			isa = PBXGroup;
 			children = (
+				24D7A2E925651A1700C4C555 /* ViewModels */,
 				24BAB43E2549E4930075E79A /* Modules */,
 				24BF0F9A2430E30A004D87DF /* Models */,
 				243A7146242D307A00CA229B /* Views */,
@@ -171,7 +172,6 @@
 			isa = PBXGroup;
 			children = (
 				24BAB4402549E4DA0075E79A /* APIStore.swift */,
-				24BAB4442549E53A0075E79A /* GroupsListStore.swift */,
 				24BAB4472549E5AC0075E79A /* FilesListStore.swift */,
 				24BAB44A2549E6270075E79A /* ImageStore.swift */,
 				24BAB44D2549E65A0075E79A /* RandomTransformator.swift */,
@@ -198,6 +198,14 @@
 				24BAB43B2549E42D0075E79A /* UploadState.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		24D7A2E925651A1700C4C555 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				24BAB4442549E53A0075E79A /* GroupsListViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		24FDBBA524A2A53200F92980 /* GroupsList */ = {
@@ -293,7 +301,7 @@
 				243A712A242CEAA200CA229B /* AppDelegate.swift in Sources */,
 				24FDBBA724A2A55200F92980 /* GroupsListView.swift in Sources */,
 				2449A746242E35FE0015A618 /* FilesListView.swift in Sources */,
-				24BAB4452549E53A0075E79A /* GroupsListStore.swift in Sources */,
+				24BAB4452549E53A0075E79A /* GroupsListViewModel.swift in Sources */,
 				24BAB44E2549E65A0075E79A /* RandomTransformator.swift in Sources */,
 				2492150524A66991008D335D /* GroupFileList.swift in Sources */,
 				243A712C242CEAA200CA229B /* SceneDelegate.swift in Sources */,
@@ -455,6 +463,7 @@
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Demo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -479,6 +488,7 @@
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Demo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

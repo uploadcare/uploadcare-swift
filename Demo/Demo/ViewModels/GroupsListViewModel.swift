@@ -1,5 +1,5 @@
 //
-//  GroupsListStore.swift
+//  GroupsListViewModel.swift
 //  Demo
 //
 //  Created by Sergey Armodin on 28.10.2020.
@@ -10,7 +10,7 @@ import Foundation
 import Combine
 import Uploadcare
 
-class GroupsListStore: ObservableObject {
+class GroupsListViewModel: ObservableObject {
 	@Published var groups: [GroupViewData] = []
 	private var list: GroupsList?
 	var uploadcare: Uploadcare? {
@@ -20,11 +20,37 @@ class GroupsListStore: ObservableObject {
 	}
 	
 	// MARK: - Init
-	init(groups: [GroupViewData]) {
+	init(groups: [GroupViewData] = [], uploadcare: Uploadcare? = nil) {
 		self.groups = groups
+		self.uploadcare = uploadcare
 	}
 	
-	// MARK: - Public methods
+}
+
+// MARK: - Public methods
+extension GroupsListViewModel {
+	func loadData() {
+		load { [weak self] (list, error) in
+			if let error = error {
+				return DLog(error)
+			}
+			self?.groups.removeAll()
+			list?.results.forEach { self?.groups.append(GroupViewData(group: $0)) }
+		}
+	}
+	
+	func loadMoreIfNeed() {
+		loadNext { [weak self] (list, error) in
+			if let error = error {
+				return DLog(error)
+			}
+			self?.list?.results.forEach({ self?.groups.append(GroupViewData(group: $0)) })
+		}
+	}
+}
+
+// MARK: - Private methods
+private extension GroupsListViewModel {
 	func load(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
 		let query = GroupsListQuery()
 			.limit(5)
