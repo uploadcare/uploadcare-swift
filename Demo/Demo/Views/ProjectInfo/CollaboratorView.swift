@@ -7,17 +7,15 @@
 //
 
 import SwiftUI
-import Uploadcare
-
 
 struct CollaboratorView: View {
-    let collaborator: Collaborator
+    let viewData: CollaboratorViewData
 	
 	var body: some View {
 		VStack(alignment: .leading, spacing: 4) {
-			Text(collaborator.name)
+			Text(viewData.name)
 				.font(.headline)
-			Text(collaborator.email)
+			Text(viewData.email)
 				.font(.subheadline)
 		}
     }
@@ -27,7 +25,7 @@ struct CollaboratorView_Previews: PreviewProvider {
     static var previews: some View {
 		Group {
 			CollaboratorView(
-				collaborator: Collaborator(email: "user1@gmail.com", name: "User 1")
+				viewData: CollaboratorViewData(name: "user 1", email: "user1@example.com")
 			).previewDevice(PreviewDevice(rawValue: "iPhone X"))
 		}
     }

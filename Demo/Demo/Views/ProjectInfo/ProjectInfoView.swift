@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Uploadcare
 
 struct ProjectInfoView: View {
 	// MARK: - Public properties
@@ -29,7 +28,7 @@ struct ProjectInfoView: View {
 				if viewModel.collaborators.isEmpty == false {
 					Section(header: Text("Collaborators")) {
 						ForEach(0 ..< (viewModel.collaborators).count) { [self] index in
-							CollaboratorView(collaborator: viewModel.collaborators[index])
+							CollaboratorView(viewData: viewModel.collaborators[index])
 						}
 					}
 				}
@@ -55,19 +54,8 @@ struct ProjectInfo_Previews: PreviewProvider {
 	static var previews: some View {
 		NavigationView {
 			ProjectInfoView(
-				viewModel: ProjectInfoViewModel(projectData: testProject)
+				viewModel: ProjectInfoViewModel(projectData: ProjectInfoViewModel.testProject)
 			)
 		}.previewDevice(PreviewDevice(rawValue: "iPhone X"))
     }
 }
-
-#if DEBUG
-let testProject = Project(
-	name: "Test project",
-	pubKey: "demopublickey",
-	collaborators: [
-		Collaborator(email: "user1@gmail.com", name: "User 1"),
-		Collaborator(email: "user2@gmail.com", name: "User 2")
-	]
-)
-#endif
