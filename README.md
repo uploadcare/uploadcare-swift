@@ -12,6 +12,7 @@ Check out our [Demo App](/Demo).
 * [Initialization](#initialization)
 * [Using Upload API](#using-upload-api)
 * [Using REST API](#using-rest-api)
+* [Demo app](#demo-app)
 * [Useful links](#useful-links)
 
 ## Installation
@@ -171,6 +172,15 @@ filesList.previousPage { (list, error) in
     print(list ?? "")
 }
 ```
+
+## Demo app
+Check the [demo app](https://github.com/uploadcare/uploadcare-swift/tree/master/Demo) for some usage examples: 
+* List of files
+* List of groups
+* File info
+* File uploads (direct and multipart uploading including uploading in background)
+* Pause and continue multipart uploading
+* Project info
 
 ## Useful links
 
