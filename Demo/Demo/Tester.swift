@@ -605,7 +605,7 @@ class Tester {
 			}
 		}
 		
-		task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", onProgress, { (file, error) in
+		task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", store: .store, onProgress, { (file, error) in
 			defer {
 				semaphore.signal()
 			}
