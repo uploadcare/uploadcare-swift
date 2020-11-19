@@ -256,7 +256,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1140;
 				LastUpgradeCheck = 1210;
-				ORGANIZATIONNAME = "Sergei Armodin";
+				ORGANIZATIONNAME = "Uploadcare, Inc";
 				TargetAttributes = {
 					243A7125242CEAA200CA229B = {
 						CreatedOnToolsVersion = 11.4;

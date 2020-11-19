@@ -2,7 +2,8 @@
 //  ConvertDocumentJobStatus.swift
 //  
 //
-//  Created by Sergei Armodin on 26.08.2020.
+//  Created by Sergey Armodin on 26.08.2020.
+//  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
 import Foundation

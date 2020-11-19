@@ -3,6 +3,7 @@
 //  
 //
 //  Created by Sergey Armodin on 26.04.2020.
+//  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
 import Foundation

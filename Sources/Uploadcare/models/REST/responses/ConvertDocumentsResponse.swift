@@ -2,7 +2,8 @@
 //  ConvertDocumentsResponse.swift
 //  
 //
-//  Created by Sergei Armodin on 03.08.2020.
+//  Created by Sergey Armodin on 03.08.2020.
+//  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
 import Foundation
