@@ -23,7 +23,7 @@ To use a stable version, add a dependency to your Package.swift file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", from: "0.3.0")
+    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", .branch("master"))
 ]
 ```
 
@@ -33,6 +33,11 @@ If you want to try the current dev version, change dependency to:
 dependencies: [
     .package(url: "https://github.com/uploadcare/uploadcare-swift.git", branch("develop"))
 ]
+```
+
+To add from Xcode select File -> Swift Packages -> Add Package Dependency and enter repository URL:
+```
+https://github.com/uploadcare/uploadcare-swift
 ```
 
 Or you can add it in Xcode: https://github.com/uploadcare/uploadcare-swift (select master branch).
