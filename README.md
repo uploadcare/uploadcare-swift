@@ -178,7 +178,8 @@ Check the [demo app](https://github.com/uploadcare/uploadcare-swift/tree/master/
 * List of files
 * List of groups
 * File info
-* File uploads (direct and multipart uploading including uploading in background)
+* File upload (direct and multipart including upload in background)
+* Multiple file upload
 * Pause and continue multipart uploading
 * Project info
 
