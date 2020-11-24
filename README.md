@@ -179,11 +179,12 @@ filesList.previousPage { (list, error) in
 ```
 
 ## Demo app
-Check the [demo app](https://github.com/uploadcare/uploadcare-swift/tree/master/Demo) for some usage examples: 
+
+Check the [demo app](https://github.com/uploadcare/uploadcare-swift/tree/master/Demo) for usage examples: 
 * List of files
 * List of groups
 * File info
-* File upload (direct and multipart including upload in background)
+* File upload (both direct and multipart, including upload in background)
 * Multiple file upload
 * Pause and continue multipart uploading
 * Project info
