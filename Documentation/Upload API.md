@@ -73,7 +73,7 @@ let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url)
 fileForUploading?.upload(withName: "Mona_Lisa_big.jpg")
 
 // Upload with getting data about progress
-let task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", { (progress) in
+let task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", store: .store, { (progress) in
     print("progress: \(progress)")
 }, { (file, error) in
     if let error = error {
@@ -97,8 +97,19 @@ task?.resume()
 
 ```swift
 guard let url = URL(string: "https://source.unsplash.com/random") else { return }
-let task1 = UploadFromURLTask(sourceUrl: url)
 
+// Set parameters by accessing properties
+let task1 = UploadFromURLTask(sourceUrl: url)
+task.checkURLDuplicates = true
+task.saveURLDuplicates = true
+task.store = .store
+
+// Or set parameters using chaining
+let task2 = UploadFromURLTask(sourceUrl: url)
+    .checkURLDuplicates(true)
+    .saveURLDuplicates(true)
+    .store(.store)
+    
 // Upload
 uploadcare.uploadAPI.upload(task: task1) { [unowned self] (result, error) in
     if let error = error {
@@ -107,20 +118,6 @@ uploadcare.uploadAPI.upload(task: task1) { [unowned self] (result, error) in
     }
     print(result)
 }
-```
-
-UploadFromURLTask is used to store upload parameters:
-
-```swift
-// Set parameters by accessing properties
-let task2 = UploadFromURLTask(sourceUrl: url!)
-task2.store = .store
-
-// Set parameters by using chaining
-let task3 = UploadFromURLTask(sourceUrl: url!)
-    .checkURLDuplicates(true)
-    .saveURLDuplicates(true)
-    .store(.store)
 ```
 
 ## Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##

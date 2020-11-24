@@ -3,21 +3,19 @@
 //  Demo
 //
 //  Created by Sergey Armodin on 26.03.2020.
-//  Copyright © 2020 Sergei Armodin. All rights reserved.
+//  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
 import SwiftUI
-import Uploadcare
-
 
 struct CollaboratorView: View {
-    let collaborator: Collaborator
+    let viewData: CollaboratorViewData
 	
 	var body: some View {
 		VStack(alignment: .leading, spacing: 4) {
-			Text(collaborator.name)
+			Text(viewData.name)
 				.font(.headline)
-			Text(collaborator.email)
+			Text(viewData.email)
 				.font(.subheadline)
 		}
     }
@@ -27,7 +25,7 @@ struct CollaboratorView_Previews: PreviewProvider {
     static var previews: some View {
 		Group {
 			CollaboratorView(
-				collaborator: Collaborator(email: "user1@gmail.com", name: "User 1")
+				viewData: CollaboratorViewData(name: "user 1", email: "user1@example.com")
 			).previewDevice(PreviewDevice(rawValue: "iPhone X"))
 		}
     }

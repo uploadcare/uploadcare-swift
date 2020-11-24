@@ -3,7 +3,7 @@
 //  Demo
 //
 //  Created by Sergey Armodin on 27.03.2020.
-//  Copyright © 2020 Sergei Armodin. All rights reserved.
+//  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
 import SwiftUI
@@ -49,7 +49,7 @@ struct FileRowView: View {
 		var str = url.deletingLastPathComponent().absoluteString
 		str = str + "-/preview/30x30/-/crop"
 		
-		print(str)
+//		DLog(str)
 		
 		url = URL(string: str)!
 		

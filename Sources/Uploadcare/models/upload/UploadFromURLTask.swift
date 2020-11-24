@@ -3,6 +3,7 @@
 //  
 //
 //  Created by Sergey Armodin on 25.01.2020.
+//  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
 import Foundation
@@ -58,21 +59,25 @@ public class UploadFromURLTask {
 		self.saveURLDuplicates = saveURLDuplicates
 	}
 	
+	/// Sets the file storing behavior.
 	public func store(_ val: StoringBehavior?) -> Self {
 		store = val ?? .auto
 		return self
 	}
 	
+	/// Sets the name for a file uploaded from URL. If not defined, the filename is obtained from either response headers or a source URL.
 	public func filename(_ val: String?) -> Self {
 		filename = val
 		return self
 	}
 	
+	/// Runs the duplicate check and provides the immediate-download behavior.
 	public func checkURLDuplicates(_ val: Bool?) -> Self {
 		checkURLDuplicates = val
 		return self
 	}
 	
+	/// Provides the save/update URL behavior. The parameter can be used if you believe a source_url will be used more than once. If you don’t explicitly define save_URL_duplicates, it is by default set to the value of check_URL_duplicates.
 	public func saveURLDuplicates(_ val: Bool?) -> Self {
 		saveURLDuplicates = val
 		return self

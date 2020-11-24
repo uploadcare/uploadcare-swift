@@ -3,7 +3,7 @@
 //  Demo
 //
 //  Created by Sergey Armodin on 26.03.2020.
-//  Copyright © 2020 Sergei Armodin. All rights reserved.
+//  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
 import UIKit
@@ -28,14 +28,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		    let window = UIWindow(windowScene: windowScene)
 			
             #warning("Set your public key here if need")
-			let apiStore = APIStore(
-				uploadcare: Uploadcare(
-					withPublicKey: "demopublickey",
-					secretKey: "demosecretkey")
+			let uploadcare = Uploadcare(
+				withPublicKey: "demopublickey",
+				secretKey: "demopublickey"
 			)
 			
+			let apiStore = APIStore(uploadcare: uploadcare)
+			
 		    window.rootViewController = UIHostingController(
-				rootView: contentView.environmentObject(apiStore)
+				rootView: contentView
+					.environmentObject(apiStore)
 			)
 		    self.window = window
 		    window.makeKeyAndVisible()

@@ -12,6 +12,7 @@ Check out our [Demo App](/Demo).
 * [Initialization](#initialization)
 * [Using Upload API](#using-upload-api)
 * [Using REST API](#using-rest-api)
+* [Demo app](#demo-app)
 * [Useful links](#useful-links)
 
 ## Installation
@@ -22,7 +23,7 @@ To use a stable version, add a dependency to your Package.swift file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", from: "0.2.0")
+    .package(url: "https://github.com/uploadcare/uploadcare-swift.git", .branch("master"))
 ]
 ```
 
@@ -34,6 +35,11 @@ dependencies: [
 ]
 ```
 
+To add from Xcode select File -> Swift Packages -> Add Package Dependency and enter repository URL:
+```
+https://github.com/uploadcare/uploadcare-swift
+```
+
 Or you can add it in Xcode: https://github.com/uploadcare/uploadcare-swift (select master branch).
 
 ### Carthage
@@ -41,7 +47,7 @@ Or you can add it in Xcode: https://github.com/uploadcare/uploadcare-swift (sele
 To use a stable version, add a dependency to your Cartfile:
 
 ```
-github "uploadcare/uploadcare-swift" "0.2.0"
+github "uploadcare/uploadcare-swift"
 ```
 
 To use the current dev version:
@@ -171,6 +177,17 @@ filesList.previousPage { (list, error) in
     print(list ?? "")
 }
 ```
+
+## Demo app
+
+Check the [demo app](https://github.com/uploadcare/uploadcare-swift/tree/master/Demo) for usage examples: 
+* List of files
+* List of groups
+* File info
+* File upload (both direct and multipart, including upload in background)
+* Multiple file upload
+* Pause and continue multipart uploading
+* Project info
 
 ## Useful links
 

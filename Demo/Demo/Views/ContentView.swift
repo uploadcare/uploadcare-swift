@@ -3,37 +3,26 @@
 //  Demo
 //
 //  Created by Sergey Armodin on 26.03.2020.
-//  Copyright © 2020 Sergei Armodin. All rights reserved.
+//  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
 import SwiftUI
-import Combine
-import Uploadcare
-
-
-final class APIStore: ObservableObject {
-	var uploadcare: Uploadcare?
-	
-	init(uploadcare: Uploadcare? = nil) {
-		self.uploadcare = uploadcare
-	}
-}
-
 
 struct MainView: View {
 	@EnvironmentObject var api: APIStore
+	@ObservedObject private var filesListStore: FilesListStore = FilesListStore(files: [])
 	
     var body: some View {
 		NavigationView {
             ZStack {
                 List {
-                    NavigationLink(destination: FilesListView()) {
+					NavigationLink(destination: FilesListView(filesListStore: self.filesListStore)) {
                         Text("List of files")
                     }
-					NavigationLink(destination: GroupsListView()) {
+					NavigationLink(destination: GroupsListView(viewModel: GroupsListViewModel(uploadcare: api.uploadcare))) {
                         Text("List of file groups")
                     }
-					NavigationLink(destination: ProjectInfoView()) {
+					NavigationLink(destination: ProjectInfoView(viewModel: ProjectInfoViewModel(uploadcare: api.uploadcare))) {
                         Text("Project info")
                     }
                 }.listStyle(GroupedListStyle())

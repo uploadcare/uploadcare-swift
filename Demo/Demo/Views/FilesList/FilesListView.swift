@@ -3,57 +3,17 @@
 //  Demo
 //
 //  Created by Sergey Armodin on 27.03.2020.
-//  Copyright © 2020 Sergei Armodin. All rights reserved.
+//  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
 import SwiftUI
 import Combine
 import Uploadcare
 
-
-class FilesListStore: ObservableObject {
-	@Published var files: [FileViewData] = []
-	private var list: FilesList?
-	var uploadcare: Uploadcare? {
-		didSet {
-			self.list = uploadcare?.listOfFiles()
-		}
-	}
-	
-	init(files: [FileViewData]) {
-        self.files = files
-    }
-	
-	func load(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
-		let query = PaginationQuery()
-			.limit(5)
-            .ordering(.dateTimeUploadedDESC)
-		
-		self.list?.get(withQuery: query, completionHandler)
-	}
-	
-	func loadNext(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
-		self.list?.nextPage(completionHandler)
-	}
-}
-
-
 struct FilesListView: View {
-    enum UploadState {
-        case uploading
-        case paused
-        case notRunning
-    }
-	
-	enum PickerType {
-		case photos
-		case files
-	}
-    
-	@ObservedObject private var filesListStore: FilesListStore = FilesListStore(files: [])
+	@ObservedObject var filesListStore: FilesListStore
     
     @State private var isLoading: Bool = true
-    @State private var isUploading: Bool = false
 	@State private var isShowingAlert = false
     
 	@State private var isShowingAddFilesAlert = false
@@ -61,51 +21,48 @@ struct FilesListView: View {
 	@State private var pickerType: PickerType = .photos
 	
     @State private var alertMessage = ""
-    @State private var inputImage: UIImage?
-    @State private var progressValue: Float = 0.0
-    @State private var task: UploadTaskResumable?
-    
-    @State private var uploadState: UploadState = .notRunning
+	
+	@State var isUploading: Bool = false
 	
 	@EnvironmentObject var api: APIStore
-    
-    private var uploadingFile: UploadedFile?
+	
 	@State private var didLoadData: Bool = false
 	
     var body: some View {
         ZStack {
             VStack {
                 HStack {
-					// Progress bar
-                    ProgressBar(value: $progressValue)
-                        .frame(height: 20)
-                        .frame(maxWidth: 200)
-                    
-                    if self.uploadState == .uploading {
+					ProgressView(
+						self.filesListStore.uploadState == .paused ? "Paused" : "Uploading \(self.filesListStore.uploadedFromQueue) of \(self.filesListStore.filesQueue.count)",
+						value: self.filesListStore.progressValue, total: 1.0
+					).frame(maxWidth: 200)
+						
+					if self.filesListStore.uploadState == .uploading {
                         Button(action: {
                             self.toggleUpload()
                         }) {
                             Image(systemName: "pause.fill")
-                        }
+						}
                     }
-                    if self.uploadState == .paused {
+					if self.filesListStore.uploadState == .paused {
                         Button(action: {
                             self.toggleUpload()
                         }) {
                             Image(systemName: "play.fill")
-                        }
+						}
                     }
-                }.opacity(self.isUploading ? 1 : 0)
+                }
+				.opacity(self.isUploading ? 1 : 0)
                 
                 List {
                     Section {
                         ForEach(self.filesListStore.files) { file in
                             FileRowView(fileData: file)
-							.onAppear {
-								if file.file.uuid == self.filesListStore.files.last?.file.uuid {
-									self.loadMoreIfNeed()
+								.onAppear {
+									if file.file.uuid == self.filesListStore.files.last?.file.uuid {
+										self.loadMoreIfNeed()
+									}
 								}
-							}
                         }.onDelete(perform: delete)
                     }
                 }
@@ -118,7 +75,6 @@ struct FilesListView: View {
         }
         .onAppear {
 			guard self.didLoadData == false else { return }
-			self.didLoadData = true
             self.loadData()
         }
         .actionSheet(isPresented: $isShowingAddFilesAlert, content: { ActionSheet(
@@ -147,56 +103,44 @@ struct FilesListView: View {
 		.sheet(isPresented: $isShowingSheetWithPicker) {
 			if self.pickerType == .photos {
 				ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
-					self.uploadFile(imageUrl)
+					self.isUploading = true
+					
+					self.filesListStore.uploadFile(imageUrl, completionHandler: { fileId in
+						self.isUploading = false
+						self.insertFileByFileId(fileId)
+					})
 				}
 			} else {
-				DocumentPicker { (url) in
-					self.uploadFile(url)
+				DocumentPicker { (urls) in
+					self.isUploading = true
+					self.filesListStore.uploadFiles(urls, completionHandler: { fileIds in
+						self.isUploading = false
+						fileIds.forEach({ self.insertFileByFileId($0) })
+					})
 				}
 			}
 		}
         .navigationBarItems(trailing:
             HStack {
-                Button(
-                    action: { self.isShowingAddFilesAlert.toggle() },
-                    label: { Text("Add") }
-                )
-                EditButton()
+				Button("Add") {
+					self.isShowingAddFilesAlert.toggle()
+				}
+				EditButton()
             }
             
         )
         .navigationBarTitle(Text("List of files"))
 	}
-	
-	func uploadFile(_ url: URL) {
-        let data: Data
-        do {
-            data = try Data(contentsOf: url)
-        } catch let error {
-            print(error)
-            return
-        }
-        
-        self.progressValue = 0
-        self.isUploading = true
-        let filename = url.lastPathComponent
-            
-        if data.count < UploadAPI.multipartMinFileSize {
-            self.performDirectUpload(filename: filename, data: data)
-        } else {
-            self.performMultipartUpload(filename: filename, fileUrl: url)
-        }
-    }
     
     func toggleUpload() {
-        guard let task = self.task else { return }
-        switch self.uploadState {
+		guard let task = self.filesListStore.currentTask else { return }
+		switch self.filesListStore.uploadState {
         case .uploading:
             task.pause()
-            self.uploadState = .paused
+			self.filesListStore.uploadState = .paused
         case .paused:
             task.resume()
-            self.uploadState = .uploading
+			self.filesListStore.uploadState = .uploading
         default: break
         }
     }
@@ -208,7 +152,7 @@ struct FilesListView: View {
 			if let error = error {
 				self.alertMessage = error.detail
 				self.isShowingAlert.toggle()
-				return print(error)
+				return DLog(error)
 			}
 			list?.results.forEach({ self.filesListStore.files.append(FileViewData( file: $0)) })
 		}
@@ -221,7 +165,7 @@ struct FilesListView: View {
             
             self.api.uploadcare?.deleteFile(withUUID: uuid, { (_, error) in
                 if let error = error {
-                    print(error)
+					DLog(error)
                 }
             })
         }
@@ -236,87 +180,36 @@ struct FilesListView: View {
 			if let error = error {
 				self.alertMessage = error.detail
 				self.isShowingAlert.toggle()
-				return print(error)
+				return DLog(error)
 			}
+			self.didLoadData = true
 			self.filesListStore.files.removeAll()
 			list?.results.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
 			
 //			list?.results.forEach { print($0) }
 		}
 	}
-}
-
-// MARK: - Uploading
-private extension FilesListView {
-    func performDirectUpload(filename: String, data: Data) {
-        let onProgress: (Double)->Void = { (progress) in
-            self.progressValue = Float(progress)
-        }
-        self.api.uploadcare?.uploadAPI.upload(files: [filename: data], store: .doNotStore, onProgress, { (uploadData, error) in
-            defer { self.isUploading = false }
-            
-            if let error = error {
-                self.alertMessage = error.detail
-                self.isShowingAlert.toggle()
-                return print(error)
-            }
-            
-            guard let uploadData = uploadData, let fileId = uploadData.first?.value else { return }
-            
-            self.insertFileByFileId(fileId)
-            print(uploadData)
-        })
-    }
-    
-    func insertFileByFileId(_ fileId: String) {
-        // getting file by uuid
-        self.api.uploadcare?.fileInfo(withUUID: fileId, { (file, error) in
-            if let error = error {
-                self.alertMessage = error.detail
-                self.isShowingAlert.toggle()
-                return print(error)
-            }
-            guard let file = file else { return }
-            let viewData = FileViewData(file: file)
-            self.filesListStore.files.insert(viewData, at: 0)
-        })
-    }
-    
-    func performMultipartUpload(filename: String, fileUrl: URL) {
-        let onProgress: (Double)->Void = { (progress) in
-            self.progressValue = Float(progress)
-        }
-        
-        guard let fileForUploading = self.api.uploadcare?.uploadAPI.file(withContentsOf: fileUrl) else {
-            assertionFailure("file not found")
-            return
-        }
-        
-        self.uploadState = .uploading
-		self.task = fileForUploading.upload(withName: filename, store: .doNotStore, onProgress, { (file, error) in
-            defer {
-                self.isUploading = false
-                self.uploadState = .notRunning
-                self.task = nil
-            }
-            
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            guard let file = file else { return }
-            self.insertFileByFileId(file.fileId)
-            print(file)
-        })
-    }
+	
+	func insertFileByFileId(_ fileId: String) {
+		// getting file by uuid
+		self.api.uploadcare?.fileInfo(withUUID: fileId, { (file, error) in
+			if let error = error {
+				self.alertMessage = error.detail
+				self.isShowingAlert.toggle()
+				return DLog(error)
+			}
+			guard let file = file else { return }
+			let viewData = FileViewData(file: file)
+			self.filesListStore.files.insert(viewData, at: 0)
+		})
+	}
 }
 
 // MARK: - Preview
 struct FilesListView_Previews: PreviewProvider {
     static var previews: some View {
 		NavigationView {
-			FilesListView()
+			FilesListView(filesListStore: FilesListStore(files: []))
 				.environmentObject(APIStore())
 				.navigationBarTitle(Text("List of files"))
 		}
