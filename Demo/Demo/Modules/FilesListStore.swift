@@ -15,7 +15,6 @@ class FilesListStore: ObservableObject {
 	// MARK: - Public properties
 	@Published var files: [FileViewData] = []
 	@Published var uploadState: UploadState = .notRunning
-	@Published var isUploading: Bool = false
 	@Published var progressValue: Double = 0.0
 	@Published var currentTask: UploadTaskResumable?
 	@Published var uploadedFile: UploadedFile?
@@ -58,6 +57,7 @@ class FilesListStore: ObservableObject {
 		
 		let semaphore = DispatchSemaphore(value: 0)
 		self.uploadedFromQueue = 0
+		self.uploadState = .uploading
 		
 		registerBackgroundTask()
 		
@@ -79,6 +79,7 @@ class FilesListStore: ObservableObject {
 			
 			DispatchQueue.main.async { [weak self] in
 				self?.endBackgroundTask()
+				self?.uploadState = .notRunning
 				completionHandler(fileIds)
 				self?.filesQueue.removeAll()
 			}
@@ -140,13 +141,9 @@ class FilesListStore: ObservableObject {
 			assertionFailure("file not found")
 			return
 		}
-
-		self.uploadState = .uploading
 		
 		self.currentTask = fileForUploading.upload(withName: filename, store: .doNotStore, onProgress, { (file, error) in
 			defer {
-				self.isUploading = false
-				self.uploadState = .notRunning
 				self.currentTask = nil
 			}
 			
