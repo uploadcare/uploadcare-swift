@@ -48,7 +48,7 @@ func sizeString(ofData data: Data) -> String {
 class Tester {
 	private lazy var uploadcare: Uploadcare = {
 		// Define your Public Key here
-		let uploadcare = Uploadcare(withPublicKey: "", secretKey: "")
+		let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
 		// uploadcare.authScheme = .simple
 		// or
 		// uploadcare.authScheme = .signed
@@ -127,12 +127,20 @@ class Tester {
 		//		queue.async {
 		//            self.testDocumentConversion()
 		//        }
-		queue.async {
-			self.testDocumentConversionStatus()
-		}
+//		queue.async {
+//			self.testDocumentConversionStatus()
+//		}
 		//		queue.async {
 		//            self.testVideoConversionStatus()
 		//        }
+		
+		queue.async {
+			self.testDirectUploadBug()
+		}
+		queue.async {
+			self.testDirectUploadBug()
+		}
+		
 	}
 	
 	func testUploadFileInfo() {
@@ -196,6 +204,31 @@ class Tester {
 			print(status?.error ?? "no error")
 			semaphore.signal()
 		}
+		semaphore.wait()
+	}
+	
+	func testDirectUploadBug() {
+		print("<------ testDirectUpload ------>")
+		guard let url = URL(string: "https://source.unsplash.com/random"), let data = try? Data(contentsOf: url) else { return }
+		
+		print("size of file: \(sizeString(ofData: data))")
+		
+		let semaphore = DispatchSemaphore(value: 0)
+		
+		let api = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
+		api.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, { (progress) in
+			
+		}) { (resultDictionary, error) in
+			defer { semaphore.signal() }
+			
+			if let error = error {
+				print(error)
+				return
+			}
+			
+			print(resultDictionary ?? "nil")
+		}
+		
 		semaphore.wait()
 	}
 	

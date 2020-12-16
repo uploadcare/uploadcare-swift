@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  UploadAPI.swift
 //  
 //
 //  Created by Sergey Armodin on 13.02.2020.
@@ -35,21 +35,6 @@ public class UploadAPI: NSObject {
 	/// Upload queue for multipart uploading
 	private var uploadQueue = DispatchQueue(label: "com.uploadcare.upload", qos: .utility, attributes: .concurrent)
 	
-	/// URLSession for background uploads
-	private lazy var backgroundUrlSession: URLSession = {
-		let bundle = Bundle.main.bundleIdentifier ?? ""
-		let config = URLSessionConfiguration.background(withIdentifier: "\(bundle).com.uploadcare.backgroundUrlSession")
-		config.isDiscretionary = false
-		
-		// TODO: add a public settings for that
-		#if !os(macOS)
-		config.sessionSendsLaunchEvents = true
-		#endif
-		
-		config.waitsForConnectivity = true
-		return URLSession(configuration: config, delegate: self, delegateQueue: nil)
-	}()
-	
 	/// Running background tasks where key is URLSessionTask.taskIdentifier
 	private var backgroundTasks = [Int: BackgroundUploadTask]()
 	
@@ -60,6 +45,10 @@ public class UploadAPI: NSObject {
 		self.publicKey = publicKey
 		self.secretKey = secretKey
 		self.manager = manager
+		
+		super.init()
+		
+		BackgroundSessionManager.instance.sessionDelegate = self
 	}
 }
 
@@ -296,7 +285,7 @@ extension UploadAPI {
 		if let data = urlRequest.httpBody {
 			try? data.write(to: localURL)
 		}
-		let backgroundTask = backgroundUrlSession.uploadTask(with: urlRequest, fromFile: localURL)
+		let backgroundTask = BackgroundSessionManager.instance.session.uploadTask(with: urlRequest, fromFile: localURL)
 		backgroundTask.earliestBeginDate = Date()
 		backgroundTask.countOfBytesClientExpectsToSend = Int64(urlRequest.httpBody?.count ?? 0)
 		
@@ -805,6 +794,7 @@ extension UploadAPI: URLSessionDataDelegate {
 	}
 }
 
+// MARK: - URLSessionTaskDelegate
 extension UploadAPI: URLSessionTaskDelegate {
 	public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
 		guard let backgroundTask = backgroundTasks[task.taskIdentifier] else { return }
