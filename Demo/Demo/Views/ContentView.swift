@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UploadcareWidget
 
 struct MainView: View {
 	@EnvironmentObject var api: APIStore
@@ -25,6 +26,9 @@ struct MainView: View {
 					NavigationLink(destination: ProjectInfoView(viewModel: ProjectInfoViewModel(uploadcare: api.uploadcare))) {
                         Text("Project info")
                     }
+					NavigationLink(destination: SelectSourceView()) {
+						Text("Social Sources Widget")
+					}
                 }.listStyle(GroupedListStyle())
                 .navigationBarTitle(Text("Uploadcare demo"), displayMode: .automatic)
             }

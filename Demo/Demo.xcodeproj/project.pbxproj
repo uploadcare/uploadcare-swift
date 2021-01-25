@@ -27,6 +27,7 @@
 		2492150524A66991008D335D /* GroupFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2492150424A66991008D335D /* GroupFileList.swift */; };
 		24931A5C24755311003EE044 /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24931A5B24755311003EE044 /* Tester.swift */; };
 		2496853B2498FAF3006A2AF8 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2496853A2498FAF3006A2AF8 /* DocumentPicker.swift */; };
+		249FF0D125BEDADA00BCFDD3 /* UploadcareWidget in Frameworks */ = {isa = PBXBuildFile; productRef = 249FF0D025BEDADA00BCFDD3 /* UploadcareWidget */; };
 		24BAB4392549E4070075E79A /* PickerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4382549E4070075E79A /* PickerType.swift */; };
 		24BAB43C2549E42D0075E79A /* UploadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB43B2549E42D0075E79A /* UploadState.swift */; };
 		24BAB4412549E4DA0075E79A /* APIStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4402549E4DA0075E79A /* APIStore.swift */; };
@@ -82,6 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				249FF0D125BEDADA00BCFDD3 /* UploadcareWidget in Frameworks */,
 				243A7142242CECC700CA229B /* Uploadcare in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -243,6 +245,7 @@
 			name = Demo;
 			packageProductDependencies = (
 				243A7141242CECC700CA229B /* Uploadcare */,
+				249FF0D025BEDADA00BCFDD3 /* UploadcareWidget */,
 			);
 			productName = Demo;
 			productReference = 243A7126242CEAA200CA229B /* Demo.app */;
@@ -536,6 +539,10 @@
 		243A7141242CECC700CA229B /* Uploadcare */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Uploadcare;
+		};
+		249FF0D025BEDADA00BCFDD3 /* UploadcareWidget */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UploadcareWidget;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

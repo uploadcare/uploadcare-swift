@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "Uploadcare",
 	platforms: [
-		.macOS(.v10_15),
+		.macOS(.v10_13),
 		.iOS(.v11),
 		.tvOS(.v11),
 		.watchOS(.v5)
