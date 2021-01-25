@@ -10,7 +10,7 @@ import WebKit
 
 struct WebView: UIViewRepresentable {
 	var url: URL
-	var onComplete: (()->Void)?
+	var onComplete: (([HTTPCookie])->Void)?
 	var mainWebView: WKWebView = {
 		let configuration = WKWebViewConfiguration()
 		let webView = WKWebView(frame: CGRect.zero, configuration: configuration)
@@ -38,15 +38,30 @@ struct WebView: UIViewRepresentable {
 		var parent: WebView
 		var newWebviewPopupWindow: WKWebView?
 		
-		var onComplete: (()->Void)?
+		var onComplete: (([HTTPCookie])->Void)?
 		
-		init(_ uiWebView: WebView, onComplete: (()->Void)?) {
+		init(_ uiWebView: WebView, onComplete: (([HTTPCookie])->Void)?) {
 			self.parent = uiWebView
 			self.onComplete = onComplete
 		}
 		
 		func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
 			decisionHandler(.allow)
+		}
+		
+		func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+			defer { decisionHandler(.allow) }
+			
+			guard let urlResponse = navigationResponse.response as? HTTPURLResponse, let url = urlResponse.url else { return }
+			
+			guard url.absoluteString.hasPrefix(Config.baseUrl) else { return }
+			
+			WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (all) in
+				let cookies = all.filter({ $0.domain == Config.cookieDomain })
+				if cookies.count > 0 {
+					self.onComplete?(cookies)
+				}
+			}
 		}
 		
 		func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {

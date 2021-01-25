@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Config {
 	static let baseUrl: String = "https://social.uploadcare.com"
+	static let cookieDomain: String = "social.uploadcare.com"
 }
 
 @available(iOS 13.0.0, OSX 10.15.0, *)
