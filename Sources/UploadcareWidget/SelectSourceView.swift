@@ -24,8 +24,16 @@ public struct SelectSourceView: View {
 		VStack(alignment: .leading) {
 			List {
 				ForEach(self.sources) { source in
-					NavigationLink(destination: WebView(url: source.url, onComplete: nil)) {
+					if let savedCookie = source.getCookie() {
 						Text(source.title)
+					} else {
+						NavigationLink(destination: WebView(url: source.url, onComplete: { cookies in
+							if let cookie = cookies.filter({ $0.path == source.cookiePath }).first {
+								source.saveCookie(cookie)
+							}
+						})) {
+							Text(source.title)
+						}
 					}
 				}
 			}

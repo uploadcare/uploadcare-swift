@@ -17,6 +17,7 @@ public class SocialSource: Identifiable {
 	
 	public var id = UUID()
 	public let source: Source
+	
 	var title: String {
 		switch self.source {
 		case .facebook:
@@ -28,6 +29,10 @@ public class SocialSource: Identifiable {
 		}
 	}
 	
+	var cookiePath: String {
+		return "/\(source.rawValue)/"
+	}
+	
 	var url: URL {
 		return URL(string: Config.baseUrl + "/window3/" + source.rawValue)!
 	}
@@ -35,5 +40,14 @@ public class SocialSource: Identifiable {
 	internal init(id: UUID = UUID(), source: SocialSource.Source) {
 		self.id = id
 		self.source = source
+	}
+}
+
+public extension SocialSource {
+	func saveCookie(_ value: HTTPCookie) {
+		UserDefaults.standard.setValue(value.value, forKey: "cookie_\(source.rawValue)")
+	}
+	func getCookie() -> String? {
+		return UserDefaults.standard.value(forKey: "cookie_\(source.rawValue)") as? String
 	}
 }

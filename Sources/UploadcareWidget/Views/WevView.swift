@@ -57,7 +57,9 @@ struct WebView: UIViewRepresentable {
 			guard url.absoluteString.hasPrefix(Config.baseUrl) else { return }
 			
 			WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (all) in
-				let cookies = all.filter({ $0.domain == Config.cookieDomain })
+				let cookies = all
+					.filter({ $0.domain == Config.cookieDomain })
+					.filter({ $0.path.count > 1 })
 				if cookies.count > 0 {
 					self.onComplete?(cookies)
 				}
