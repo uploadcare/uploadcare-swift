@@ -21,15 +21,15 @@ public struct SelectSourceView: View {
 	
 	public var body: some View {
 		VStack(alignment: .leading) {
-			Text("Select Source")
-				.font(.title)
-			
 			List {
 				ForEach(self.sources) { source in
-					Text(source.title)
+					NavigationLink(destination: WebView(url: source.url, onComplete: nil)) {
+						Text(source.title)
+					}
 				}
 			}
 		}
+		.navigationBarTitle(Text("Select Source"))
     }
 	
 	public init() {

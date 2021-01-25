@@ -13,6 +13,8 @@ struct MainView: View {
 	@EnvironmentObject var api: APIStore
 	@ObservedObject private var filesListStore: FilesListStore = FilesListStore(files: [])
 	
+	@State var widgetVisible: Bool = false
+	
     var body: some View {
 		NavigationView {
             ZStack {
@@ -26,11 +28,21 @@ struct MainView: View {
 					NavigationLink(destination: ProjectInfoView(viewModel: ProjectInfoViewModel(uploadcare: api.uploadcare))) {
                         Text("Project info")
                     }
-					NavigationLink(destination: SelectSourceView()) {
-						Text("Social Sources Widget")
+					
+					Button("Social Sources Widget") {
+						self.widgetVisible = true
 					}
                 }.listStyle(GroupedListStyle())
                 .navigationBarTitle(Text("Uploadcare demo"), displayMode: .automatic)
+				
+				.sheet(isPresented: self.$widgetVisible, content: {
+					NavigationView {
+						SelectSourceView()
+							.navigationBarItems(trailing: Button("Close") {
+								self.widgetVisible = false
+							})
+					}
+				})
             }
 		}
 		
