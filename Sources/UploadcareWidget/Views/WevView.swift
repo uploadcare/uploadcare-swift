@@ -46,7 +46,16 @@ struct WebView: UIViewRepresentable {
 		}
 		
 		func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-			decisionHandler(.allow)
+			defer { decisionHandler(.allow) }
+			
+			WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (all) in
+				let cookies = all
+					.filter({ $0.domain == Config.cookieDomain })
+					.filter({ $0.path.count > 1 })
+				if cookies.count > 0 {
+					self.onComplete?(cookies)
+				}
+			}
 		}
 		
 		func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {

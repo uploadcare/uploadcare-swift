@@ -25,7 +25,9 @@ public struct SelectSourceView: View {
 			List {
 				ForEach(self.sources) { source in
 					if let savedCookie = source.getCookie() {
-						Text(source.title)
+						NavigationLink(destination: FilesLIstView(viewModel: FilesLIstViewModel(source: source, cookie: savedCookie))) {
+							Text(source.title)
+						}
 					} else {
 						NavigationLink(destination: WebView(url: source.url, onComplete: { cookies in
 							if let cookie = cookies.filter({ $0.path == source.cookiePath }).first {
