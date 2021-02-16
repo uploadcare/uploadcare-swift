@@ -56,73 +56,73 @@ public class SocialSource: Identifiable {
 		}
 	}
 	
-	var chunks: [String: String] {
+	var chunks: [[String: String]] {
 		switch self.source {
 		case .facebook:
 			return [
-				"My Albums": "me"
+				["My Albums": "me"]
 			]
 		case .instagram:
 			return [
-				"My Photos": "my"
+				["My Photos": "my"]
 			]
 		case .vk:
 			return [
-				"My Albums": "my",
-				"Profile Pictures": "page",
-				"Photos with Me": "with_me",
-				"Saved Photos": "saved",
-				"My Friends": "friends",
-				"My Documents": "docs",
+				["My Albums": "my"],
+				["Profile Pictures": "page"],
+				["Photos with Me": "with_me"],
+				["Saved Photos": "saved"],
+				["My Friends": "friends"],
+				["My Documents": "docs"],
 			]
 		case .dropbox:
 			return [
-				"Files": "root",
-				"Team files": "team"
+				["Files": "root"],
+				["Team files": "team"]
 			]
 		case .gdrive:
 			return [
-				"My Files": "root",
-				"Shared with Me": "shared",
-				"Starred": "starred",
-				"Team drives": "team_drives",
+				["My Files": "root"],
+				["Shared with Me": "shared"],
+				["Starred": "starred"],
+				["Team drives": "team_drives"]
 			]
 		case .gphotos:
 			return [
-				"Photos": "root",
-				"Albums": "albums"
+				["Photos": "root"],
+				["Albums": "albums"]
 			]
 		case .evernote:
 			return [
-				"All Notes": "all_notes",
-				"Notebooks": "notebooks",
-				"Tags": "tags"
+				["All Notes": "all_notes"],
+				["Notebooks": "notebooks"],
+				["Tags": "tags"]
 			]
 		case .box:
 			return [
-				"My Files": "root"
+				["My Files": "root"]
 			]
 		case .skydrive:
 			return [
-				"My Files": "root"
+				["My Files": "root"]
 			]
 		case .onedrive:
 			return [
-				"My drives": "root_v2",
-				"Shared with me": "shared_v2",
-				"SharePoint": "sharepoint",
-				"My groups": "groups"
+				["My drives": "root_v2"],
+				["Shared with me": "shared_v2"],
+				["SharePoint": "sharepoint"],
+				["My groups": "groups"]
 			]
 		case .flickr:
 			return [
-				"Photo Stream": "photostream",
-				"Albums": "albums",
-				"Favorites": "favorites",
-				"Follows": "follows"
+				["Photo Stream": "photostream"],
+				["Albums": "albums"],
+				["Favorites": "favorites"],
+				["Follows": "follows"]
 			]
 		case .huddle:
 			return [
-				"My Files": "root"
+				["My Files": "root"]
 			]
 		}
 	}

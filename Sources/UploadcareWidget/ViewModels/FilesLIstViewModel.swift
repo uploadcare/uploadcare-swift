@@ -19,9 +19,10 @@ class FilesLIstViewModel: ObservableObject {
 	}
 	
 	// MARK: - Public properties
-	
+	var source: SocialSource
+	@Published var currentChunk: ChunkResponse?
+
 	// MARK: - Private properties
-	private var source: SocialSource
 	private var cookie: String
 	
 	// MARK: - Init
@@ -31,14 +32,72 @@ class FilesLIstViewModel: ObservableObject {
 	}
 }
 
+enum ThingAction: String, Codable {
+	case select_file
+	case open_path
+}
+
+struct Chunk: Codable {
+	let path_chunk: String
+	let title: String
+	let obj_type: String
+}
+
+struct Path: Codable {
+	let chunks: [Chunk]
+	let obj_type: String?
+}
+
+struct Action: Codable {
+	let action: ThingAction
+	let path: Path?
+	let url: String?
+	let obj_type: String
+}
+
+struct ChunkThing: Codable, Identifiable {
+	let id = UUID()
+
+	var action: Action?
+	var thumbnail: String
+	var obj_type: String
+	var title: String
+	var mimetype: String?
+
+	enum CodingKeys: String, CodingKey {
+		case action
+		case thumbnail
+		case obj_type
+		case title
+		case mimetype
+	}
+
+	init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+
+		action = try container.decodeIfPresent(Action.self, forKey: .action)
+		thumbnail = try container.decodeIfPresent(String.self, forKey: .thumbnail) ?? ""
+		obj_type = try container.decodeIfPresent(String.self, forKey: .obj_type) ?? ""
+		title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
+		mimetype = try container.decodeIfPresent(String.self, forKey: .mimetype)
+	}
+}
+
+struct ChunkResponse: Codable {
+	var next_page: String?
+	let things: [ChunkThing]
+}
+
 // MARK: - Public methods
 @available(iOS 13.0.0, OSX 10.15.0, *)
 extension FilesLIstViewModel {
-	func getSourceChunk() {
+	func getSourceChunk(_ chunk: [String: String]) {
+		let value = chunk.values.first!
+
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
 		urlComponents.host = Config.cookieDomain
-		urlComponents.path = "/\(source.source.rawValue)/source/my"
+		urlComponents.path = "/\(source.source.rawValue)/source/\(value)"
 		
 		guard let url = urlComponents.url else { return }
 		
@@ -50,7 +109,11 @@ extension FilesLIstViewModel {
 			case .failure(let error):
 				print(error.localizedDescription)
 			case .success(let data):
-				print(data)
+				do {
+					self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
+				} catch let error {
+					print(error.localizedDescription)
+				}
 			}
 		}
 	}
@@ -100,5 +163,11 @@ private extension FilesLIstViewModel {
 		}
 		
 		task.resume()
+	}
+}
+
+extension Data {
+	func toString() -> String? {
+		return String(data: self, encoding: .utf8)
 	}
 }

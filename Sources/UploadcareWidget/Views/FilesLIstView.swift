@@ -10,20 +10,42 @@ import SwiftUI
 @available(iOS 13.0.0, OSX 10.15.0, *)
 struct FilesLIstView: View {
 	@Environment(\.presentationMode) var presentation
-	var viewModel: FilesLIstViewModel
+	@ObservedObject var viewModel: FilesLIstViewModel
+	@State var chunk: [String: String] = [:]
 	
 	var body: some View {
-		
-		
-        Text("Hello, World!")
-			.onAppear {
-				viewModel.getSourceChunk()
+		List() {
+			Section {
+				ForEach(0 ..< self.viewModel.source.chunks.count) { index in
+					let chunk = self.viewModel.source.chunks[index]
+					HStack(spacing: 8) {
+						Text("✓")
+						Text(chunk.keys.first ?? "")
+					}
+				}
 			}
-			.navigationBarTitle(Text("Files"))
-			.navigationBarItems(trailing: Button("Logout") {
-				self.viewModel.logout()
-				self.presentation.wrappedValue.dismiss()
-			})
+
+			Section {
+				ForEach(self.viewModel.currentChunk?.things ?? []) { thing in
+					if thing.action?.action == .open_path {
+						OpenPathView(thing: thing)
+					} else {
+						HStack {
+							Text(thing.title)
+						}
+					}
+				}
+			}
+		}
+		.onAppear {
+			self.chunk = self.viewModel.source.chunks.first!
+			viewModel.getSourceChunk(self.chunk)
+		}
+		.navigationBarTitle(Text(viewModel.source.title))
+		.navigationBarItems(trailing: Button("Logout") {
+			self.viewModel.logout()
+			self.presentation.wrappedValue.dismiss()
+		})
     }
 }
 
