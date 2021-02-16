@@ -25,7 +25,7 @@ public struct SelectSourceView: View {
 			List {
 				ForEach(self.sources) { source in
 					if let savedCookie = source.getCookie() {
-						NavigationLink(destination: FilesLIstView(viewModel: FilesLIstViewModel(source: source, cookie: savedCookie))) {
+						NavigationLink(destination: FilesLIstView(viewModel: FilesLIstViewModel(source: source, cookie: savedCookie, chunkPath: source.chunks.first!.values.first!), isRoot: true)) {
 							Text(source.title)
 						}
 					} else {

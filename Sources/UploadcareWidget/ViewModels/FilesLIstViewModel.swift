@@ -21,14 +21,16 @@ class FilesLIstViewModel: ObservableObject {
 	// MARK: - Public properties
 	var source: SocialSource
 	@Published var currentChunk: ChunkResponse?
+	var chunkPath: String
 
 	// MARK: - Private properties
 	private var cookie: String
 	
 	// MARK: - Init
-	init(source: SocialSource, cookie: String) {
+	init(source: SocialSource, cookie: String, chunkPath: String) {
 		self.source = source
 		self.cookie = cookie
+		self.chunkPath = chunkPath
 	}
 }
 
@@ -84,20 +86,22 @@ struct ChunkThing: Codable, Identifiable {
 }
 
 struct ChunkResponse: Codable {
-	var next_page: String?
+	var next_page: Path?
 	let things: [ChunkThing]
 }
 
 // MARK: - Public methods
 @available(iOS 13.0.0, OSX 10.15.0, *)
 extension FilesLIstViewModel {
-	func getSourceChunk(_ chunk: [String: String]) {
-		let value = chunk.values.first!
+	func modelWithChunkPath(_ chunk: String) -> FilesLIstViewModel {
+		return FilesLIstViewModel(source: source, cookie: cookie, chunkPath: self.chunkPath + "/" + chunk)
+	}
 
+	func getSourceChunk() {
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
 		urlComponents.host = Config.cookieDomain
-		urlComponents.path = "/\(source.source.rawValue)/source/\(value)"
+		urlComponents.path = "/\(source.source.rawValue)/source/\(chunkPath)"
 		
 		guard let url = urlComponents.url else { return }
 		
@@ -109,10 +113,12 @@ extension FilesLIstViewModel {
 			case .failure(let error):
 				print(error.localizedDescription)
 			case .success(let data):
-				do {
-					self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
-				} catch let error {
-					print(error.localizedDescription)
+				DispatchQueue.main.async {
+					do {
+						self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
+					} catch let error {
+						print(error.localizedDescription)
+					}
 				}
 			}
 		}
