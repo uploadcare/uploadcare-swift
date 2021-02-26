@@ -24,11 +24,22 @@ struct FilesLIstView: View {
 						Section {
 							ForEach(0 ..< self.viewModel.source.chunks.count) { index in
 								let chunk = self.viewModel.source.chunks[index]
-								let isCurrent = (index == 0 && self.currentChunk.isEmpty) || (chunk.values.first ?? "" == self.currentChunk)
+								let chunkName = chunk.keys.first ?? ""
+								let chunkValue = chunk.values.first ?? ""
+								let isCurrent = (index == 0 && self.currentChunk.isEmpty) || (chunkValue == self.currentChunk)
 								HStack(spacing: 8) {
 									Text("✓")
 										.opacity(isCurrent ? 1 : 0)
-									Text(chunk.keys.first ?? "")
+									Text(chunkName)
+								}.onTapGesture {
+									if let value = chunk.values.first {
+										self.viewModel.chunkPath = value
+										self.isLoading = true
+										self.viewModel.getSourceChunk {
+											self.isLoading = false
+											self.currentChunk = value
+										}
+									}
 								}
 							}
 						}
