@@ -15,18 +15,23 @@ struct Config {
 
 @available(iOS 13.0.0, OSX 10.15.0, *)
 public struct SelectSourceView: View {
-	let sources: [SocialSource] = {
-		var arr: [SocialSource] = []
-		SocialSource.Source.allCases.forEach({ arr.append(SocialSource(source: $0)) })
-		return arr
-	}()
+	let sources: [SocialSource] = SocialSource.Source.allCases.map { SocialSource(source: $0) }
 	
 	public var body: some View {
 		VStack(alignment: .leading) {
 			List {
 				ForEach(self.sources) { source in
 					if let savedCookie = source.getCookie() {
-						NavigationLink(destination: FilesLIstView(viewModel: FilesLIstViewModel(source: source, cookie: savedCookie, chunkPath: source.chunks.first!.values.first!), isRoot: true)) {
+						NavigationLink(
+							destination: FilesLIstView(
+								viewModel: FilesLIstViewModel(
+									source: source,
+									cookie: savedCookie,
+									chunkPath: source.chunks.first!.values.first!
+								),
+								isRoot: true
+							)
+						) {
 							Text(source.title)
 						}
 					} else {
