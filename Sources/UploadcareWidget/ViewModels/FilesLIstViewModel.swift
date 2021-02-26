@@ -98,6 +98,7 @@ extension FilesLIstViewModel {
 	}
 
 	func getSourceChunk(_ onComplete: @escaping ()->Void) {
+		currentChunk = nil
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
 		urlComponents.host = Config.cookieDomain
