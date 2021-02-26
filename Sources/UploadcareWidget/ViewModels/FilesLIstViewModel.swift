@@ -97,7 +97,7 @@ extension FilesLIstViewModel {
 		return FilesLIstViewModel(source: source, cookie: cookie, chunkPath: self.chunkPath + "/" + chunk)
 	}
 
-	func getSourceChunk() {
+	func getSourceChunk(_ onComplete: @escaping ()->Void) {
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
 		urlComponents.host = Config.cookieDomain
@@ -112,6 +112,7 @@ extension FilesLIstViewModel {
 			switch result {
 			case .failure(let error):
 				print(error.localizedDescription)
+				onComplete()
 			case .success(let data):
 				DispatchQueue.main.async {
 					do {
@@ -119,6 +120,7 @@ extension FilesLIstViewModel {
 					} catch let error {
 						print(error.localizedDescription)
 					}
+					onComplete()
 				}
 			}
 		}

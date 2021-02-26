@@ -13,6 +13,7 @@ struct FilesLIstView: View {
 	@ObservedObject var viewModel: FilesLIstViewModel
 	@State var isRoot: Bool
 	@State var didLoad: Bool = false
+	@State var currentChunk: String = ""
 	
 	var body: some View {
 		GeometryReader { geometry in
@@ -21,8 +22,10 @@ struct FilesLIstView: View {
 					Section {
 						ForEach(0 ..< self.viewModel.source.chunks.count) { index in
 							let chunk = self.viewModel.source.chunks[index]
+							let isCurrent = (index == 0 && self.currentChunk.isEmpty) || (chunk.values.first ?? "" == self.currentChunk)
 							HStack(spacing: 8) {
 								Text("✓")
+									.opacity(isCurrent ? 1 : 0)
 								Text(chunk.keys.first ?? "")
 							}
 						}
@@ -62,10 +65,15 @@ struct FilesLIstView: View {
 					}
 				}
 			}
+			.listStyle(GroupedListStyle())
 		}
 		.onAppear {
 			guard !didLoad else { return }
-			viewModel.getSourceChunk()
+			viewModel.getSourceChunk {
+				if let firstChunk = self.viewModel.source.chunks.first {
+					self.currentChunk = firstChunk.values.first ?? ""
+				}
+			}
 			self.didLoad = true
 		}
 		.navigationBarTitle(Text(viewModel.source.title))
