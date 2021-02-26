@@ -46,11 +46,9 @@ struct FilesLIstView: View {
 					}
 
 					let things = self.viewModel.currentChunk?.things ?? []
-					let hasFolders = things.filter({ $0.action?.action == .open_path }).count > 0
-					let hasFiles = things.filter({ $0.action?.action == .select_file }).count > 0
-
+					
 					Section {
-						if hasFolders {
+						if things.hasFolders {
 							ForEach(things) { thing in
 								let chunkPath = thing.action!.path?.chunks.last?.path_chunk ?? ""
 								NavigationLink(destination: FilesLIstView(viewModel: self.viewModel.modelWithChunkPath(chunkPath), isRoot: false)) {
@@ -61,7 +59,7 @@ struct FilesLIstView: View {
 					}
 
 					Section {
-						if hasFiles {
+						if things.hasFiles {
 							let cols = 4
 							let num = things.count
 
