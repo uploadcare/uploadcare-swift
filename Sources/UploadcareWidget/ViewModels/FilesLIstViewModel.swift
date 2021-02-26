@@ -43,6 +43,25 @@ struct Chunk: Codable {
 	let path_chunk: String
 	let title: String
 	let obj_type: String
+
+	enum CodingKeys: String, CodingKey {
+		case path_chunk
+		case title
+		case obj_type
+	}
+
+	init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+
+		// Int might come for VK
+		if let intVal = try? container.decodeIfPresent(Int.self, forKey: .path_chunk) {
+			path_chunk = "\(intVal)"
+		} else {
+			path_chunk = try container.decodeIfPresent(String.self, forKey: .path_chunk) ?? ""
+		}
+		title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
+		obj_type = try container.decodeIfPresent(String.self, forKey: .obj_type) ?? ""
+	}
 }
 
 struct Path: Codable {
