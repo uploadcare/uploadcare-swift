@@ -14,65 +14,74 @@ struct FilesLIstView: View {
 	@State var isRoot: Bool
 	@State var didLoad: Bool = false
 	@State var currentChunk: String = ""
+	@State var isLoading: Bool = true
 	
 	var body: some View {
 		GeometryReader { geometry in
-			List() {
-				if self.isRoot {
+			ZStack {
+				List() {
+					if self.isRoot {
+						Section {
+							ForEach(0 ..< self.viewModel.source.chunks.count) { index in
+								let chunk = self.viewModel.source.chunks[index]
+								let isCurrent = (index == 0 && self.currentChunk.isEmpty) || (chunk.values.first ?? "" == self.currentChunk)
+								HStack(spacing: 8) {
+									Text("✓")
+										.opacity(isCurrent ? 1 : 0)
+									Text(chunk.keys.first ?? "")
+								}
+							}
+						}
+					}
+
+					let things = self.viewModel.currentChunk?.things ?? []
+					let hasFolders = things.filter({ $0.action?.action == .open_path }).count > 0
+					let hasFiles = things.filter({ $0.action?.action == .select_file }).count > 0
+
 					Section {
-						ForEach(0 ..< self.viewModel.source.chunks.count) { index in
-							let chunk = self.viewModel.source.chunks[index]
-							let isCurrent = (index == 0 && self.currentChunk.isEmpty) || (chunk.values.first ?? "" == self.currentChunk)
-							HStack(spacing: 8) {
-								Text("✓")
-									.opacity(isCurrent ? 1 : 0)
-								Text(chunk.keys.first ?? "")
+						if hasFolders {
+							ForEach(things) { thing in
+								let chunkPath = thing.action!.path?.chunks.last?.path_chunk ?? ""
+								NavigationLink(destination: FilesLIstView(viewModel: self.viewModel.modelWithChunkPath(chunkPath), isRoot: false)) {
+									OpenPathView(thing: thing)
+								}
+							}
+						}
+					}
+
+					Section {
+						if hasFiles {
+							let cols = 4
+							let num = things.count
+
+							let dev = num / cols
+							let rows = num % cols == 0 ? dev : dev + 1
+
+							GridView(rows: rows, columns: cols) { (row, col) in
+								let index = row * cols + col
+								if index < num {
+									let thing = things[index]
+									SelectFileView(thing: thing, size: geometry.size.width / CGFloat(cols))
+								}
 							}
 						}
 					}
 				}
+				.listStyle(GroupedListStyle())
 
-				let things = self.viewModel.currentChunk?.things ?? []
-				let hasFolders = things.filter({ $0.action?.action == .open_path }).count > 0
-				let hasFiles = things.filter({ $0.action?.action == .select_file }).count > 0
-
-				Section {
-					if hasFolders {
-						ForEach(things) { thing in
-							let chunkPath = thing.action!.path?.chunks.last?.path_chunk ?? ""
-							NavigationLink(destination: FilesLIstView(viewModel: self.viewModel.modelWithChunkPath(chunkPath), isRoot: false)) {
-								OpenPathView(thing: thing)
-							}
-						}
-					}
-				}
-
-				Section {
-					if hasFiles {
-						let cols = 4
-						let num = things.count
-
-						let dev = num / cols
-						let rows = num % cols == 0 ? dev : dev + 1
-
-						GridView(rows: rows, columns: cols) { (row, col) in
-							let index = row * cols + col
-							if index < num {
-								let thing = things[index]
-								SelectFileView(thing: thing, size: geometry.size.width / CGFloat(cols))
-							}
-						}
-					}
-				}
+				ActivityIndicator(isAnimating: .constant(true), style: .large)
+					.padding(.all)
+					.opacity(self.isLoading ? 1 : 0)
 			}
-			.listStyle(GroupedListStyle())
 		}
 		.onAppear {
 			guard !didLoad else { return }
+			self.isLoading = true
 			viewModel.getSourceChunk {
 				if let firstChunk = self.viewModel.source.chunks.first {
 					self.currentChunk = firstChunk.values.first ?? ""
 				}
+				self.isLoading = false
 			}
 			self.didLoad = true
 		}
