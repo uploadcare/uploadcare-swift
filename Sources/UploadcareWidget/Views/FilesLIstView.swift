@@ -15,6 +15,7 @@ struct FilesLIstView: View {
 	@State var didLoad: Bool = false
 	@State var currentChunk: String = ""
 	@State var isLoading: Bool = true
+	@State private var alertVisible: Bool = false
 	
 	var body: some View {
 		GeometryReader { geometry in
@@ -94,10 +95,19 @@ struct FilesLIstView: View {
 			}
 			self.didLoad = true
 		}
+		.alert(isPresented: $alertVisible) {
+			Alert(
+				title: Text("Logout"),
+				message: Text("Are you sure?"),
+				primaryButton: .default(Text("Logout"), action: {
+					self.viewModel.logout()
+					self.presentation.wrappedValue.dismiss()
+				}),
+				secondaryButton: .cancel())
+		}
 		.navigationBarTitle(Text(viewModel.source.title))
 		.navigationBarItems(trailing: Button("Logout") {
-			self.viewModel.logout()
-			self.presentation.wrappedValue.dismiss()
+			self.alertVisible = true
 		})
     }
 }
