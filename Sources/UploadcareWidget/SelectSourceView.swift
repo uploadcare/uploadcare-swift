@@ -16,38 +16,57 @@ struct Config {
 @available(iOS 13.0.0, OSX 10.15.0, *)
 public struct SelectSourceView: View {
 	let sources: [SocialSource] = SocialSource.Source.allCases.map { SocialSource(source: $0) }
+	@State var currentSource: SocialSource?
+	@State var isWebViewVisible: Bool = false
+	@State private var selection: String? = nil
 	
 	public var body: some View {
 		VStack(alignment: .leading) {
+			if let source = $currentSource.wrappedValue {
+				NavigationLink(
+					destination: FilesLIstView(viewModel: self.createViewModelForSource(source), isRoot: true),
+					tag: source.source.rawValue,
+					selection: $selection
+				) {
+					Text(source.title)
+				}.opacity(0)
+			}
+
 			List {
 				ForEach(self.sources) { source in
-					if let savedCookie = source.getCookie() {
-						NavigationLink(
-							destination: FilesLIstView(
-								viewModel: FilesLIstViewModel(
-									source: source,
-									cookie: savedCookie,
-									chunkPath: source.chunks.first!.values.first!
-								),
-								isRoot: true
-							)
-						) {
-							Text(source.title)
-						}
-					} else {
-						NavigationLink(destination: WebView(url: source.url, onComplete: { cookies in
-							if let cookie = cookies.filter({ $0.path == source.cookiePath }).first {
-								source.saveCookie(cookie)
-							}
-						})) {
-							Text(source.title)
+					Button(source.getCookie() == nil ? source.title : "✓ " + source.title) {
+						self.currentSource = source
+
+						if source.getCookie() != nil  {
+							self.selection = source.source.rawValue
+						} else {
+							self.isWebViewVisible = true
 						}
 					}
 				}
 			}
+			.sheet(isPresented: self.$isWebViewVisible) {
+				WebView(url: $currentSource.wrappedValue?.url, onComplete: { cookies in
+					if let cookie = cookies.filter({ $0.path == currentSource?.cookiePath }).first {
+						currentSource?.saveCookie(cookie)
+						self.isWebViewVisible = false
+						if let source =  $currentSource.wrappedValue {
+							self.selection = source.source.rawValue
+						}
+					}
+				})
+			}
 		}
 		.navigationBarTitle(Text("Select Source"))
     }
+
+	private func createViewModelForSource(_ source: SocialSource) -> FilesLIstViewModel {
+		return FilesLIstViewModel(
+			source: source,
+			cookie: source.getCookie() ?? "",
+			chunkPath: source.chunks.first!.values.first!
+		)
+	}
 	
 	public init() {
 		

@@ -9,7 +9,7 @@ import SwiftUI
 import WebKit
 
 struct WebView: UIViewRepresentable {
-	var url: URL
+	var url: URL?
 	var onComplete: (([HTTPCookie])->Void)?
 	var mainWebView: WKWebView = {
 		let configuration = WKWebViewConfiguration()
@@ -31,15 +31,15 @@ struct WebView: UIViewRepresentable {
 	}
 	
 	func updateUIView(_ webView: WKWebView, context: Context) {
+		guard let url = self.url else { return }
 		webView.load(URLRequest(url: url))
 	}
 	
 	class Coordinator : NSObject, WKNavigationDelegate, WKUIDelegate {
 		var parent: WebView
-		var newWebviewPopupWindow: WKWebView?
-		
+		var newWebviewPopupWindow: WKWebView?		
 		var onComplete: (([HTTPCookie])->Void)?
-		
+
 		init(_ uiWebView: WebView, onComplete: (([HTTPCookie])->Void)?) {
 			self.parent = uiWebView
 			self.onComplete = onComplete
