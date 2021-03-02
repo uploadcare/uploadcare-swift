@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import WebKit
 
 @available(iOS 13.0.0, OSX 10.15.0, *)
 class FilesLIstViewModel: ObservableObject {
@@ -147,7 +148,10 @@ extension FilesLIstViewModel {
 	}
 	
 	func logout() {
-		source.deleteCookie()
+		SocialSource.Source.allCases.forEach({ SocialSource(source: $0).deleteCookie() })
+		WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (cookies) in
+			cookies.forEach({ WKWebsiteDataStore.default().httpCookieStore.delete($0, completionHandler: nil) })
+		}
 	}
 }
 
@@ -184,7 +188,7 @@ private extension FilesLIstViewModel {
 
 				print("error: \(error)")
 				if let data = data {
-					print(String(data: data, encoding: .utf8))
+					print(data.toString() ?? "")
 				}
 				completionHandler(.failure(error))
 			}
