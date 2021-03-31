@@ -145,28 +145,22 @@ extension FilesLIstViewModel {
 		
 		var urlRequest = URLRequest(url: url)
 
-		WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (cookies) in
-			let storedCookie = cookies
-				.filter({ $0.domain == url.host })
-				.filter({ $0.path == self.source.cookiePath })
+		urlRequest.setValue("auth=\(self.cookie)", forHTTPHeaderField: "Cookie")
 
-			urlRequest.setValue("auth=\(storedCookie.first?.value ?? self.cookie)", forHTTPHeaderField: "Cookie")
-
-			self.performRequest(urlRequest) { (result) in
-				switch result {
-				case .failure(let error):
-					DLog(error.localizedDescription)
-					onComplete()
-				case .success(let data):
-					DispatchQueue.main.async {
-						do {
-							self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
-						} catch let error {
-							DLog(error.localizedDescription)
-							DLog(data.toString() ?? "")
-						}
-						onComplete()
+		self.performRequest(urlRequest) { (result) in
+			switch result {
+			case .failure(let error):
+				DLog(error.localizedDescription)
+				onComplete()
+			case .success(let data):
+				DispatchQueue.main.async {
+					do {
+						self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
+					} catch let error {
+						DLog(error.localizedDescription)
+						DLog(data.toString() ?? "")
 					}
+					onComplete()
 				}
 			}
 		}
@@ -237,18 +231,6 @@ private extension FilesLIstViewModel {
 			if (200...299).contains(response.statusCode) {
 				guard let data = data else {
 					completionHandler(.failure(FilesListViewModelError.decodingError))
-					return
-				}
-
-				if let cookie = response.value(forHTTPHeaderField: "Set-Cookie"),
-				   let url = URL(string: "https://\(Config.cookieDomain)/\(self.source.source.rawValue)/"),
-				   let httpCookie = HTTPCookie.cookies(withResponseHeaderFields: ["Set-Cookie": cookie], for: url).first
-				{
-					DispatchQueue.main.async {
-						WKWebsiteDataStore.default().httpCookieStore.setCookie(httpCookie) {
-							completionHandler(.success(data))
-						}
-					}
 					return
 				}
 				completionHandler(.success(data))
