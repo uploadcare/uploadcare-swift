@@ -21,7 +21,7 @@ struct WebView: UIViewRepresentable {
 	
 	// Make a coordinator to co-ordinate with WKWebView's default delegate functions
 	func makeCoordinator() -> Coordinator {
-		Coordinator(self, onComplete: self.onComplete)
+		Coordinator(self, cookiePathToDetect: url?.lastPathComponent ?? "", onComplete: self.onComplete)
 	}
 	
 	func makeUIView(context: Context) -> WKWebView {
@@ -36,39 +36,46 @@ struct WebView: UIViewRepresentable {
 	}
 	
 	class Coordinator : NSObject, WKNavigationDelegate, WKUIDelegate {
+		var cookiePathToDetect: String
 		var parent: WebView
 		var newWebviewPopupWindow: WKWebView?		
 		var onComplete: (([HTTPCookie])->Void)?
 
-		init(_ uiWebView: WebView, onComplete: (([HTTPCookie])->Void)?) {
+		init(_ uiWebView: WebView, cookiePathToDetect: String, onComplete: (([HTTPCookie])->Void)?) {
 			self.parent = uiWebView
+			self.cookiePathToDetect = cookiePathToDetect
 			self.onComplete = onComplete
 		}
 		
-		func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-			defer { decisionHandler(.allow) }
-			
-			WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (all) in
-				let cookies = all
-					.filter({ $0.domain == Config.cookieDomain })
-					.filter({ $0.path.count > 1 })
-				if cookies.count > 0 {
-					self.onComplete?(cookies)
-				}
-			}
-		}
+//		func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+//			defer { decisionHandler(.allow) }
+//
+//			guard let url = navigationAction.request.url,
+//				  url.absoluteString.hasPrefix(Config.baseUrl) else { return }
+//
+//			let lastPath = url.lastPathComponent
+//
+//			WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (all) in
+//				let cookies = all
+//					.filter({ $0.domain == Config.cookieDomain })
+//					.filter({ $0.path == "/\(lastPath)/" })
+//				if cookies.count > 0 {
+//					self.onComplete?(cookies)
+//				}
+//			}
+//		}
 		
 		func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
 			defer { decisionHandler(.allow) }
 			
-			guard let urlResponse = navigationResponse.response as? HTTPURLResponse, let url = urlResponse.url else { return }
-			
-			guard url.absoluteString.hasPrefix(Config.baseUrl) else { return }
+			guard let urlResponse = navigationResponse.response as? HTTPURLResponse,
+				  let url = urlResponse.url,
+				  url.absoluteString.hasPrefix(Config.baseUrl) else { return }
 			
 			WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (all) in
 				let cookies = all
 					.filter({ $0.domain == Config.cookieDomain })
-					.filter({ $0.path.count > 1 })
+					.filter({ $0.path == "/\(self.cookiePathToDetect)/" })
 				if cookies.count > 0 {
 					self.onComplete?(cookies)
 				}

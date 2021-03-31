@@ -10,6 +10,23 @@ import SwiftUI
 import Combine
 import WebKit
 
+/// Debug log function with printing filename, method and line number
+///
+/// - Parameters:
+///   - messages: arguments
+///   - fullPath: filepath
+///   - line: line number
+///   - functionName: function/method name
+func DLog(_ messages: Any..., fullPath: String = #file, line: Int = #line, functionName: String = #function) {
+	#if DEBUG
+	let file = URL(fileURLWithPath: fullPath)
+	for message in messages {
+		let string = "\(file.pathComponents.last!):\(line) -> \(functionName): \(message)"
+		print(string)
+	}
+	#endif
+}
+
 @available(iOS 13.0.0, OSX 10.15.0, *)
 class FilesLIstViewModel: ObservableObject {
 	enum FilesListViewModelError: Error {
@@ -127,31 +144,77 @@ extension FilesLIstViewModel {
 		guard let url = urlComponents.url else { return }
 		
 		var urlRequest = URLRequest(url: url)
-		urlRequest.setValue("auth=\(cookie)", forHTTPHeaderField: "Cookie")
-		
-		performRequest(urlRequest) { (result) in
-			switch result {
-			case .failure(let error):
-				print(error.localizedDescription)
-				onComplete()
-			case .success(let data):
-				DispatchQueue.main.async {
-					do {
-						self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
-					} catch let error {
-						print(error.localizedDescription)
-					}
+
+		WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (cookies) in
+			let storedCookie = cookies
+				.filter({ $0.domain == url.host })
+				.filter({ $0.path == self.source.cookiePath })
+
+			urlRequest.setValue("auth=\(storedCookie.first?.value ?? self.cookie)", forHTTPHeaderField: "Cookie")
+
+			self.performRequest(urlRequest) { (result) in
+				switch result {
+				case .failure(let error):
+					DLog(error.localizedDescription)
 					onComplete()
+				case .success(let data):
+					DispatchQueue.main.async {
+						do {
+							self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
+						} catch let error {
+							DLog(error.localizedDescription)
+							DLog(data.toString() ?? "")
+						}
+						onComplete()
+					}
 				}
 			}
 		}
 	}
 	
 	func logout() {
-		SocialSource.Source.allCases.forEach({ SocialSource(source: $0).deleteCookie() })
-		WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (cookies) in
-			cookies.forEach({ WKWebsiteDataStore.default().httpCookieStore.delete($0, completionHandler: nil) })
+		if let cookie = self.source.getCookie() {
+			var urlComponents = URLComponents()
+			urlComponents.scheme = "https"
+			urlComponents.host = Config.cookieDomain
+			urlComponents.path = "/\(self.source.source.rawValue)/session"
+
+			guard let url = urlComponents.url else { return }
+
+			var urlRequest = URLRequest(url: url)
+			urlRequest.httpMethod = "DELETE"
+
+			WKWebsiteDataStore.default().httpCookieStore.getAllCookies { (cookies) in
+				let storedCookie = cookies
+					.filter({ $0.domain == url.host })
+					.filter({ $0.path == self.source.cookiePath })
+
+				urlRequest.setValue("auth=\(storedCookie.first?.value ?? cookie)", forHTTPHeaderField: "Cookie")
+
+				self.performRequest(urlRequest) { (result) in
+					switch result {
+					case .failure(let error):
+						DLog(error.localizedDescription)
+					case .success(let data):
+						DLog("logged out")
+//						DLog(data.toString() ?? "")
+					}
+
+					let dataStore = WKWebsiteDataStore.default()
+					dataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+						DLog(records)
+						dataStore.removeData(
+							ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
+//							for: records.filter { $0.displayName.contains(self.source.source.rawValue) },
+							for: records.filter { $0.displayName.contains("uploadcare.com") },
+							completionHandler: {
+							}
+						)
+					}
+				}
+			}
 		}
+		self.source.deleteCookie()
 	}
 }
 
@@ -174,6 +237,18 @@ private extension FilesLIstViewModel {
 					completionHandler(.failure(FilesListViewModelError.decodingError))
 					return
 				}
+
+				if let cookie = response.value(forHTTPHeaderField: "Set-Cookie"),
+				   let url = URL(string: "https://\(Config.cookieDomain)/\(self.source.source.rawValue)/"),
+				   let httpCookie = HTTPCookie.cookies(withResponseHeaderFields: ["Set-Cookie": cookie], for: url).first
+				{
+					DispatchQueue.main.async {
+						WKWebsiteDataStore.default().httpCookieStore.setCookie(httpCookie) {
+							completionHandler(.success(data))
+						}
+					}
+					return
+				}
 				completionHandler(.success(data))
 			} else {
 				var errorMessage = ""
@@ -186,9 +261,9 @@ private extension FilesLIstViewModel {
 					error = FilesListViewModelError.requestCancelled
 				}
 
-				print("error: \(error)")
+				DLog("error: \(error)")
 				if let data = data {
-					print(data.toString() ?? "")
+					DLog(data.toString() ?? "")
 				}
 				completionHandler(.failure(error))
 			}
