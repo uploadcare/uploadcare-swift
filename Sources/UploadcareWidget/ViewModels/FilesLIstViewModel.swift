@@ -182,19 +182,60 @@ extension FilesLIstViewModel {
 	}
 
 	func uploadFileFromPath(_ path: String) {
-		guard let url = URL(string: path) else { return }
+		// Request to /done
+		var urlComponents = URLComponents()
+		urlComponents.scheme = "https"
+		urlComponents.host = Config.cookieDomain
+		urlComponents.path = "/\(source.source.rawValue)/done"
 
-		let task = UploadFromURLTask(sourceUrl: url)
-		task.store = .store
+		guard let url = urlComponents.url else { return }
 
-		api.uploadcare?.uploadAPI.upload(task: task, { (response, error) in
-			if let error = error {
-				DLog(error)
-				return
+		var urlRequest = URLRequest(url: url)
+
+		urlRequest.setValue("auth=\(self.cookie)", forHTTPHeaderField: "Cookie")
+		urlRequest.httpMethod = "POST"
+
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(path, forName: "file")
+		builder.addMultiformValue(self.chunkPath, forName: "root")
+		builder.addMultiformValue("false", forName: "need_image")
+		urlRequest = builder.finalize()
+
+		self.performRequest(urlRequest) { (result) in
+			switch result {
+			case .failure(let error):
+				DLog(error.localizedDescription)
+			case .success(let data):
+				guard let file = try? JSONDecoder().decode(SelectedFile.self, from: data),
+					  let fileUrlString = file.url,
+					  let publicKey = self.api.uploadcare?.publicKey else { return }
+
+				// Calling upload from URL
+				var urlComponents = URLComponents()
+				urlComponents.scheme = "https"
+				urlComponents.host = "upload.uploadcare.com"
+				urlComponents.path = "/from_url/"
+
+				urlComponents.queryItems = [
+					URLQueryItem(name: "pub_key", value: publicKey),
+					URLQueryItem(name: "source_url", value: fileUrlString),
+					URLQueryItem(name: "source", value: self.source.source.rawValue),
+					URLQueryItem(name: "store", value: "1")
+				]
+
+				guard let url = urlComponents.url else { return }
+
+				let urlRequest = URLRequest(url: url)
+				self.performRequest(urlRequest) { (result) in
+					switch result {
+					case .success(let data):
+						DLog(data.toString() ?? "")
+					case .failure(let error):
+						DLog(error)
+					}
+				}
 			}
-
-			DLog(response ?? "")
-		})
+		}
 	}
 
 	func getSourceChunk(_ onComplete: @escaping ()->Void) {
@@ -252,7 +293,7 @@ extension FilesLIstViewModel {
 					switch result {
 					case .failure(let error):
 						DLog(error.localizedDescription)
-					case .success(let data):
+					case .success(let _):
 						DLog("logged out")
 //						DLog(data.toString() ?? "")
 					}
@@ -263,7 +304,6 @@ extension FilesLIstViewModel {
 							DLog(records)
 							dataStore.removeData(
 								ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
-//								for: records.filter { $0.displayName.contains(self.source.source.rawValue) },
 								for: records.filter { $0.displayName.contains("uploadcare.com") },
 								completionHandler: {
 								}
