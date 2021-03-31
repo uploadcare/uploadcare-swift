@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import Combine
 import WebKit
+import Uploadcare
 
 /// Debug log function with printing filename, method and line number
 ///
@@ -40,15 +41,17 @@ class FilesLIstViewModel: ObservableObject {
 	var source: SocialSource
 	@Published var currentChunk: ChunkResponse?
 	var chunkPath: String
+	var api: APIStore
 
 	// MARK: - Private properties
 	private var cookie: String
 	
 	// MARK: - Init
-	init(source: SocialSource, cookie: String, chunkPath: String) {
+	init(source: SocialSource, cookie: String, chunkPath: String, api: APIStore) {
 		self.source = source
 		self.cookie = cookie
 		self.chunkPath = chunkPath
+		self.api = api
 	}
 }
 
@@ -131,7 +134,67 @@ struct ChunkResponse: Codable {
 @available(iOS 13.0.0, OSX 10.15.0, *)
 extension FilesLIstViewModel {
 	func modelWithChunkPath(_ chunk: String) -> FilesLIstViewModel {
-		return FilesLIstViewModel(source: source, cookie: cookie, chunkPath: self.chunkPath + "/" + chunk)
+		return FilesLIstViewModel(source: source, cookie: cookie, chunkPath: self.chunkPath + "/" + chunk, api: api)
+	}
+
+	func performDirectUpload(filename: String, data: Data, completionHandler: @escaping (String)->Void) {
+		api.uploadcare?.uploadAPI.upload(files: [filename: data], store: .store, nil, { (uploadData, error) in
+			if let error = error {
+				return DLog(error)
+			}
+
+			guard let uploadData = uploadData, let fileId = uploadData.first?.value else { return }
+			completionHandler(fileId)
+			DLog(uploadData)
+		})
+	}
+
+	func performMultipartUpload(filename: String, fileUrl: URL, completionHandler: @escaping (String)->Void) {
+		guard let fileForUploading = api.uploadcare?.uploadAPI.file(withContentsOf: fileUrl) else {
+			assertionFailure("file not found")
+			return
+		}
+
+		fileForUploading.upload(withName: filename, store: .store, nil, { (file, error) in
+			if let error = error {
+				DLog(error)
+				return
+			}
+
+			guard let file = file else { return }
+			completionHandler(file.fileId)
+			DLog(file)
+		})
+	}
+
+	func tryDirectUploadFromUrl(_ url: URL) {
+
+		guard let data = try? Data(contentsOf: url) else { return }
+
+		let filename = url.lastPathComponent
+
+		if data.count < UploadAPI.multipartMinFileSize {
+			self.performDirectUpload(filename: filename, data: data, completionHandler: {_ in })
+		} else {
+			self.performMultipartUpload(filename: filename, fileUrl: url, completionHandler: {_ in })
+		}
+
+	}
+
+	func uploadFileFromPath(_ path: String) {
+		guard let url = URL(string: path) else { return }
+
+		let task = UploadFromURLTask(sourceUrl: url)
+		task.store = .store
+
+		api.uploadcare?.uploadAPI.upload(task: task, { (response, error) in
+			if let error = error {
+				DLog(error)
+				return
+			}
+
+			DLog(response ?? "")
+		})
 	}
 
 	func getSourceChunk(_ onComplete: @escaping ()->Void) {

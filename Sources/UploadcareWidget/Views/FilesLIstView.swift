@@ -72,6 +72,11 @@ struct FilesLIstView: View {
 								if index < num {
 									let thing = things[index]
 									SelectFileView(thing: thing, size: geometry.size.width / CGFloat(cols))
+										.onTapGesture {
+											if let path = thing.action?.url {
+												self.viewModel.uploadFileFromPath(path)
+											}
+										}
 								}
 							}
 						}
@@ -115,8 +120,9 @@ struct FilesLIstView: View {
 @available(iOS 13.0.0, OSX 10.15.0, *)
 struct FilesLIstView_Previews: PreviewProvider {
     static var previews: some View {
-		FilesLIstView(
-			viewModel: FilesLIstViewModel(source: SocialSource(source: .vk), cookie: "", chunkPath: ""), isRoot: true
-		)
+		Text("")
+//		FilesLIstView(
+//			viewModel: FilesLIstViewModel(source: SocialSource(source: .vk), cookie: "", chunkPath: ""), isRoot: true
+//		)
     }
 }

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Uploadcare
 
 struct GroupFileList: View {
 	var viewData: GroupViewData

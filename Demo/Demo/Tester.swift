@@ -61,9 +61,9 @@ class Tester {
 		//        queue.async { [unowned self] in
 		//            self.testUploadFileInfo()
 		//        }
-		//        queue.async { [unowned self] in
-		//            self.testUploadFileFromURL()
-		//        }
+		        queue.async { [self] in
+		            testUploadFileFromURL()
+		        }
 		//        queue.async { [unowned self] in
 		//            self.testDirectUpload()
 		//        }
@@ -134,12 +134,12 @@ class Tester {
 		//            self.testVideoConversionStatus()
 		//        }
 		
-		queue.async {
-			self.testDirectUploadBug()
-		}
-		queue.async {
-			self.testDirectUploadBug()
-		}
+//		queue.async {
+//			self.testDirectUploadBug()
+//		}
+//		queue.async {
+//			self.testDirectUploadBug()
+//		}
 		
 	}
 	

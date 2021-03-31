@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Uploadcare
 
 struct Config {
 	static let baseUrl: String = "https://social.uploadcare.com"
@@ -15,6 +16,8 @@ struct Config {
 
 @available(iOS 13.0.0, OSX 10.15.0, *)
 public struct SelectSourceView: View {
+	@EnvironmentObject var api: APIStore
+	
 	let sources: [SocialSource] = SocialSource.Source.allCases.map { SocialSource(source: $0) }
 	@State var currentSource: SocialSource?
 	@State var isWebViewVisible: Bool = false
@@ -64,13 +67,12 @@ public struct SelectSourceView: View {
 		return FilesLIstViewModel(
 			source: source,
 			cookie: source.getCookie() ?? "",
-			chunkPath: source.chunks.first!.values.first!
+			chunkPath: source.chunks.first!.values.first!,
+			api: self.api
 		)
 	}
 	
-	public init() {
-		
-	}
+	public init() {}
 }
 
 @available(iOS 13.0.0, OSX 10.15.0, *)

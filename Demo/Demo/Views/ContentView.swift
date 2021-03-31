@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Uploadcare
 import UploadcareWidget
 
 struct MainView: View {
@@ -38,6 +39,7 @@ struct MainView: View {
 				.sheet(isPresented: self.$widgetVisible, content: {
 					NavigationView {
 						SelectSourceView()
+							.environmentObject(api)
 							.navigationBarItems(trailing: Button("Close") {
 								self.widgetVisible = false
 							})
