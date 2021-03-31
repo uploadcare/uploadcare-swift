@@ -27,12 +27,11 @@ public class Uploadcare: NSObject {
 
 	// MARK: - Public properties
 	public var uploadAPI: UploadAPI
+
+	/// Public Key.  It is required when using Upload API.
+	public var publicKey: String
 	
 	// MARK: - Private properties
-	
-	/// Public Key.  It is required when using Upload API.
-	internal var publicKey: String
-	
 	/// Secret Key. Optional. Is used for authorization
 	internal var secretKey: String?
 	
