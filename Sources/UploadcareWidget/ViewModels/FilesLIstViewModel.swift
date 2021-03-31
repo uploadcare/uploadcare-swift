@@ -200,16 +200,18 @@ extension FilesLIstViewModel {
 //						DLog(data.toString() ?? "")
 					}
 
-					let dataStore = WKWebsiteDataStore.default()
-					dataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-						DLog(records)
-						dataStore.removeData(
-							ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
-//							for: records.filter { $0.displayName.contains(self.source.source.rawValue) },
-							for: records.filter { $0.displayName.contains("uploadcare.com") },
-							completionHandler: {
-							}
-						)
+					DispatchQueue.main.async {
+						let dataStore = WKWebsiteDataStore.default()
+						dataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+							DLog(records)
+							dataStore.removeData(
+								ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
+//								for: records.filter { $0.displayName.contains(self.source.source.rawValue) },
+								for: records.filter { $0.displayName.contains("uploadcare.com") },
+								completionHandler: {
+								}
+							)
+						}
 					}
 				}
 			}
