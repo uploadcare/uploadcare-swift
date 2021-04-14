@@ -137,50 +137,6 @@ extension FilesLIstViewModel {
 		return FilesLIstViewModel(source: source, cookie: cookie, chunkPath: self.chunkPath + "/" + chunk, api: api)
 	}
 
-	func performDirectUpload(filename: String, data: Data, completionHandler: @escaping (String)->Void) {
-		api.uploadcare?.uploadAPI.upload(files: [filename: data], store: .store, nil, { (uploadData, error) in
-			if let error = error {
-				return DLog(error)
-			}
-
-			guard let uploadData = uploadData, let fileId = uploadData.first?.value else { return }
-			completionHandler(fileId)
-			DLog(uploadData)
-		})
-	}
-
-	func performMultipartUpload(filename: String, fileUrl: URL, completionHandler: @escaping (String)->Void) {
-		guard let fileForUploading = api.uploadcare?.uploadAPI.file(withContentsOf: fileUrl) else {
-			assertionFailure("file not found")
-			return
-		}
-
-		fileForUploading.upload(withName: filename, store: .store, nil, { (file, error) in
-			if let error = error {
-				DLog(error)
-				return
-			}
-
-			guard let file = file else { return }
-			completionHandler(file.fileId)
-			DLog(file)
-		})
-	}
-
-	func tryDirectUploadFromUrl(_ url: URL) {
-
-		guard let data = try? Data(contentsOf: url) else { return }
-
-		let filename = url.lastPathComponent
-
-		if data.count < UploadAPI.multipartMinFileSize {
-			self.performDirectUpload(filename: filename, data: data, completionHandler: {_ in })
-		} else {
-			self.performMultipartUpload(filename: filename, fileUrl: url, completionHandler: {_ in })
-		}
-
-	}
-
 	func uploadFileFromPath(_ path: String) {
 		// Request to /done
 		var urlComponents = URLComponents()
