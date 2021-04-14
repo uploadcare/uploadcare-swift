@@ -30,7 +30,7 @@ struct MainView: View {
                         Text("Project info")
                     }
 					
-					Button("Social Sources Widget") {
+					Button("External Sources") {
 						self.widgetVisible = true
 					}
                 }.listStyle(GroupedListStyle())
