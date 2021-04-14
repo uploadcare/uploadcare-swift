@@ -98,8 +98,10 @@ struct FilesLIstView: View {
 				}
 				.listStyle(GroupedListStyle())
 
-				ActivityIndicator(isAnimating: .constant(true), style: .large)
+				ActivityIndicator(isAnimating: .constant(true), style: .whiteLarge)
 					.padding(.all)
+					.background(Color.gray)
+					.cornerRadius(16)
 					.opacity(self.isLoading ? 1 : 0)
 			}
 		}
