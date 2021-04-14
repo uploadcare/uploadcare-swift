@@ -47,10 +47,13 @@ struct FilesLIstView: View {
 					}
 
 					let things = self.viewModel.currentChunk?.things ?? []
+
+					let folders = things.filter({ $0.obj_type == "album" })
+					let files = things.filter({ $0.obj_type != "album" })
 					
 					Section {
-						if things.hasFolders {
-							ForEach(things) { thing in
+						if folders.count > 0 {
+							ForEach(folders) { thing in
 								let chunkPath = thing.action!.path?.chunks.last?.path_chunk ?? ""
 								NavigationLink(destination: FilesLIstView(viewModel: self.viewModel.modelWithChunkPath(chunkPath), isRoot: false)) {
 									OpenPathView(thing: thing)
@@ -60,9 +63,9 @@ struct FilesLIstView: View {
 					}
 
 					Section {
-						if things.hasFiles {
+						if files.count > 0 {
 							let cols = 4
-							let num = things.count
+							let num = files.count
 
 							let dev = num / cols
 							let rows = num % cols == 0 ? dev : dev + 1
@@ -70,7 +73,7 @@ struct FilesLIstView: View {
 							GridView(rows: rows, columns: cols) { (row, col) in
 								let index = row * cols + col
 								if index < num {
-									let thing = things[index]
+									let thing = files[index]
 									SelectFileView(thing: thing, size: geometry.size.width / CGFloat(cols))
 										.onTapGesture {
 											if let path = thing.action?.url {
