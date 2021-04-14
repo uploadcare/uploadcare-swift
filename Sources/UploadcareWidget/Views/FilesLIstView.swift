@@ -15,12 +15,14 @@ struct FilesLIstView: View {
 	@State var didLoad: Bool = false
 	@State var currentChunk: String = ""
 	@State var isLoading: Bool = true
+	@State var fileUploadedMessageVisible: Bool = false
 	@State private var alertVisible: Bool = false
 	
 	var body: some View {
 		GeometryReader { geometry in
 			ZStack {
 				List() {
+					// Root chunks
 					if self.isRoot {
 						Section {
 							ForEach(0 ..< self.viewModel.source.chunks.count) { index in
@@ -51,7 +53,8 @@ struct FilesLIstView: View {
 
 					let folders = things.filter({ $0.obj_type == "album" })
 					let files = things.filter({ $0.obj_type != "album" })
-					
+
+					// Folders (albums)
 					Section {
 						if folders.count > 0 {
 							ForEach(folders) { thing in
@@ -63,6 +66,7 @@ struct FilesLIstView: View {
 						}
 					}
 
+					// Files
 					Section {
 						if files.count > 0 {
 							let cols = 4
@@ -79,6 +83,15 @@ struct FilesLIstView: View {
 										.onTapGesture {
 											if let path = thing.action?.url {
 												self.viewModel.uploadFileFromPath(path)
+												withAnimation {
+													self.fileUploadedMessageVisible = true
+												}
+
+												DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+													withAnimation {
+														self.fileUploadedMessageVisible = false
+													}
+												}
 											}
 										}
 								}
@@ -86,6 +99,7 @@ struct FilesLIstView: View {
 						}
 					}
 
+					// Pagination
 					if nextPage != nil {
 						Section {
 							Button("Load more") {
@@ -103,6 +117,14 @@ struct FilesLIstView: View {
 					.background(Color.gray)
 					.cornerRadius(16)
 					.opacity(self.isLoading ? 1 : 0)
+
+				Text("File uploaded")
+					.font(.title)
+					.padding(.all)
+					.background(Color.gray)
+					.foregroundColor(.white)
+					.cornerRadius(16)
+					.opacity(self.fileUploadedMessageVisible ? 1 : 0)
 			}
 		}
 		.onAppear {
