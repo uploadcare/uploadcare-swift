@@ -127,7 +127,7 @@ struct ChunkThing: Codable, Identifiable {
 
 struct ChunkResponse: Codable {
 	var next_page: Path?
-	let things: [ChunkThing]
+	var things: [ChunkThing]
 }
 
 // MARK: - Public methods
@@ -216,6 +216,39 @@ extension FilesLIstViewModel {
 				DispatchQueue.main.async {
 					do {
 						self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
+					} catch let error {
+						DLog(error.localizedDescription)
+						DLog(data.toString() ?? "")
+					}
+					onComplete()
+				}
+			}
+		}
+	}
+
+	func loadMore(path: String, _ onComplete: @escaping ()->Void) {
+		var urlComponents = URLComponents()
+		urlComponents.scheme = "https"
+		urlComponents.host = Config.cookieDomain
+		urlComponents.path = "/\(source.source.rawValue)/source/\(chunkPath)/\(path)"
+
+		guard let url = urlComponents.url else { return }
+
+		var urlRequest = URLRequest(url: url)
+
+		urlRequest.setValue("auth=\(self.cookie)", forHTTPHeaderField: "Cookie")
+
+		self.performRequest(urlRequest) { (result) in
+			switch result {
+			case .failure(let error):
+				DLog(error.localizedDescription)
+				onComplete()
+			case .success(let data):
+				DispatchQueue.main.async {
+					do {
+						let newChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
+						self.currentChunk?.next_page = newChunk.next_page
+						newChunk.things.forEach({ self.currentChunk?.things.append($0) })
 					} catch let error {
 						DLog(error.localizedDescription)
 						DLog(data.toString() ?? "")

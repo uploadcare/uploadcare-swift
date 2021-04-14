@@ -47,6 +47,7 @@ struct FilesLIstView: View {
 					}
 
 					let things = self.viewModel.currentChunk?.things ?? []
+					let nextPage = self.viewModel.currentChunk?.next_page
 
 					let folders = things.filter({ $0.obj_type == "album" })
 					let files = things.filter({ $0.obj_type != "album" })
@@ -84,6 +85,16 @@ struct FilesLIstView: View {
 							}
 						}
 					}
+
+					if nextPage != nil {
+						Section {
+							Button("Load more") {
+								self.loadMore()
+							}.onAppear {
+								self.loadMore()
+							}
+						}
+					}
 				}
 				.listStyle(GroupedListStyle())
 
@@ -93,15 +104,7 @@ struct FilesLIstView: View {
 			}
 		}
 		.onAppear {
-			guard !didLoad else { return }
-			self.isLoading = true
-			viewModel.getSourceChunk {
-				if let firstChunk = self.viewModel.source.chunks.first {
-					self.currentChunk = firstChunk.values.first ?? ""
-				}
-				self.isLoading = false
-			}
-			self.didLoad = true
+			self.loadData()
 		}
 		.alert(isPresented: $alertVisible) {
 			Alert(
@@ -118,6 +121,29 @@ struct FilesLIstView: View {
 			self.alertVisible = true
 		})
     }
+
+	func loadData() {
+		guard !didLoad else { return }
+		isLoading = true
+		viewModel.getSourceChunk {
+			DLog("loaded first page")
+			if let firstChunk = viewModel.source.chunks.first {
+				currentChunk = firstChunk.values.first ?? ""
+			}
+			self.isLoading = false
+		}
+		didLoad = true
+	}
+
+	func loadMore() {
+		guard let nextPage = self.viewModel.currentChunk?.next_page,
+			  let path = nextPage.chunks.first?.path_chunk else { return }
+		isLoading = true
+		viewModel.loadMore(path: path) {
+			DLog("loaded next page")
+			self.isLoading = false
+		}
+	}
 }
 
 @available(iOS 13.0.0, OSX 10.15.0, *)
