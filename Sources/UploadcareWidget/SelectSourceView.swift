@@ -15,13 +15,12 @@ struct Config {
 }
 
 @available(iOS 13.0.0, OSX 10.15.0, *)
-public struct SelectSourceView: View {
-	@EnvironmentObject var api: APIStore
-	
+public struct SelectSourceView: View {	
 	let sources: [SocialSource] = SocialSource.Source.allCases.map { SocialSource(source: $0) }
 	@State var currentSource: SocialSource?
 	@State var isWebViewVisible: Bool = false
 	@State private var selection: String? = nil
+	private let publicKey: String
 	
 	public var body: some View {
 		VStack(alignment: .leading) {
@@ -68,17 +67,19 @@ public struct SelectSourceView: View {
 			source: source,
 			cookie: source.getCookie() ?? "",
 			chunkPath: source.chunks.first!.values.first!,
-			api: self.api
+			publicKey: publicKey
 		)
 	}
 	
-	public init() {}
+	public init(publicKey: String) {
+		self.publicKey = publicKey
+	}
 }
 
-@available(iOS 13.0.0, OSX 10.15.0, *)
-struct SelectSourceView_Previews: PreviewProvider {
-    static var previews: some View {
-		SelectSourceView()
-			.previewLayout(.sizeThatFits)
-    }
-}
+//@available(iOS 13.0.0, OSX 10.15.0, *)
+//struct SelectSourceView_Previews: PreviewProvider {
+//    static var previews: some View {
+//		SelectSourceView()
+//			.previewLayout(.sizeThatFits)
+//    }
+//}

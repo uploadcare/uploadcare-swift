@@ -10,6 +10,10 @@ import UIKit
 import SwiftUI
 import Uploadcare
 
+#warning("Set your public key here if need")
+let publicKey = "demopublickey"
+let secretKey = "demopublickey"
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 	var window: UIWindow?
@@ -26,11 +30,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		// Use a UIHostingController as window root view controller.
 		if let windowScene = scene as? UIWindowScene {
 		    let window = UIWindow(windowScene: windowScene)
-			
-            #warning("Set your public key here if need")
+
 			let uploadcare = Uploadcare(
-				withPublicKey: "demopublickey",
-				secretKey: "demopublickey"
+				withPublicKey: publicKey,
+				secretKey: secretKey
 			)
 			
 			let apiStore = APIStore(uploadcare: uploadcare)

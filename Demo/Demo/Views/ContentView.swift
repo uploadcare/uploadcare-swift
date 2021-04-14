@@ -38,8 +38,7 @@ struct MainView: View {
 				
 				.sheet(isPresented: self.$widgetVisible, content: {
 					NavigationView {
-						SelectSourceView()
-							.environmentObject(api)
+						SelectSourceView(publicKey: publicKey)
 							.navigationBarItems(trailing: Button("Close") {
 								self.widgetVisible = false
 							})

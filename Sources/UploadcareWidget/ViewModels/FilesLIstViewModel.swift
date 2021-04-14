@@ -41,17 +41,17 @@ class FilesLIstViewModel: ObservableObject {
 	var source: SocialSource
 	@Published var currentChunk: ChunkResponse?
 	var chunkPath: String
-	var api: APIStore
 
 	// MARK: - Private properties
 	private var cookie: String
+	private let publicKey: String
 	
 	// MARK: - Init
-	init(source: SocialSource, cookie: String, chunkPath: String, api: APIStore) {
+	init(source: SocialSource, cookie: String, chunkPath: String, publicKey: String) {
 		self.source = source
 		self.cookie = cookie
 		self.chunkPath = chunkPath
-		self.api = api
+		self.publicKey = publicKey
 	}
 }
 
@@ -134,7 +134,7 @@ struct ChunkResponse: Codable {
 @available(iOS 13.0.0, OSX 10.15.0, *)
 extension FilesLIstViewModel {
 	func modelWithChunkPath(_ chunk: String) -> FilesLIstViewModel {
-		return FilesLIstViewModel(source: source, cookie: cookie, chunkPath: self.chunkPath + "/" + chunk, api: api)
+		return FilesLIstViewModel(source: source, cookie: cookie, chunkPath: self.chunkPath + "/" + chunk, publicKey: publicKey)
 	}
 
 	func uploadFileFromPath(_ path: String) {
@@ -163,8 +163,7 @@ extension FilesLIstViewModel {
 				DLog(error.localizedDescription)
 			case .success(let data):
 				guard let file = try? JSONDecoder().decode(SelectedFile.self, from: data),
-					  let fileUrlString = file.url,
-					  let publicKey = self.api.uploadcare?.publicKey else { return }
+					  let fileUrlString = file.url else { return }
 
 				// Calling upload from URL
 				var urlComponents = URLComponents()
@@ -173,7 +172,7 @@ extension FilesLIstViewModel {
 				urlComponents.path = "/from_url/"
 
 				urlComponents.queryItems = [
-					URLQueryItem(name: "pub_key", value: publicKey),
+					URLQueryItem(name: "pub_key", value: self.publicKey),
 					URLQueryItem(name: "source_url", value: fileUrlString),
 					URLQueryItem(name: "source", value: self.source.source.rawValue),
 					URLQueryItem(name: "store", value: "1")
@@ -282,7 +281,7 @@ extension FilesLIstViewModel {
 					switch result {
 					case .failure(let error):
 						DLog(error.localizedDescription)
-					case .success(let _):
+					case .success(_):
 						DLog("logged out")
 //						DLog(data.toString() ?? "")
 					}
@@ -327,11 +326,7 @@ private extension FilesLIstViewModel {
 				}
 				completionHandler(.success(data))
 			} else {
-				var errorMessage = ""
-//				if let responseData = data, let errorResponse = try? JSONDecoder().decode(FilesListViewModelError.self, from: responseData) {
-//					errorMessage = errorResponse.message
-//				}
-				var error = FilesListViewModelError.wrongStatus(status: response.statusCode, message: errorMessage)
+				var error = FilesListViewModelError.wrongStatus(status: response.statusCode, message: data?.toString() ?? "")
 
 				if response.statusCode == NSURLErrorCancelled {
 					error = FilesListViewModelError.requestCancelled
