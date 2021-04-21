@@ -1,8 +1,9 @@
 //
-//  File.swift
+//  WebView.swift
 //  
 //
 //  Created by Sergei Armodin on 25.01.2021.
+//  Copyright © 2021 Uploadcare, Inc. All rights reserved.`
 //
 
 import SwiftUI

@@ -3,6 +3,7 @@
 //  
 //
 //  Created by Sergey Armodin on 16.02.2021.
+//  Copyright © 2021 Uploadcare, Inc. All rights reserved.
 //
 
 import SwiftUI
