@@ -42,7 +42,12 @@ class FilesLIstViewModel: ObservableObject {
 @available(iOS 13.0.0, OSX 10.15.0, *)
 extension FilesLIstViewModel {
 	func modelWithChunkPath(_ chunk: String) -> FilesLIstViewModel {
-		return FilesLIstViewModel(source: source, cookie: cookie, chunkPath: self.chunkPath + "/" + chunk, publicKey: publicKey)
+		return FilesLIstViewModel(
+			source: source,
+			cookie: cookie,
+			chunkPath: self.chunkPath + "/" + chunk,
+			publicKey: publicKey
+		)
 	}
 
 	func uploadFileFromPath(_ path: String) {

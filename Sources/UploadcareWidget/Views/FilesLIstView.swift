@@ -50,24 +50,21 @@ struct FilesLIstView: View {
 					}
 
 					let things = self.viewModel.currentChunk?.things ?? []
-					let nextPage = self.viewModel.currentChunk?.next_page
-
-					let folders = things.filter({ $0.obj_type == "album" })
-					let files = things.filter({ $0.obj_type != "album" })
 
 					// Folders (albums)
+					let folders = things.filter({ $0.obj_type == "album" })
 					Section {
-						if folders.count > 0 {
-							ForEach(folders) { thing in
-								let chunkPath = thing.action!.path?.chunks.last?.path_chunk ?? ""
-								NavigationLink(destination: FilesLIstView(viewModel: self.viewModel.modelWithChunkPath(chunkPath), isRoot: false)) {
-									OpenPathView(thing: thing)
-								}
+						ForEach(folders) { thing in
+							let chunkPath = thing.action!.path?.chunks.last?.path_chunk ?? ""
+							let viewModel = self.viewModel.modelWithChunkPath(chunkPath)
+							NavigationLink(destination: FilesLIstView(viewModel: viewModel, isRoot: false)) {
+								OpenPathView(thing: thing)
 							}
 						}
 					}
 
 					// Files
+					let files = things.filter({ $0.obj_type != "album" })
 					Section {
 						if files.count > 0 {
 							let cols = 4
@@ -101,7 +98,7 @@ struct FilesLIstView: View {
 					}
 
 					// Pagination
-					if nextPage != nil {
+					if self.viewModel.currentChunk?.next_page != nil {
 						Section {
 							Button("Load more") {
 								self.loadMore()
