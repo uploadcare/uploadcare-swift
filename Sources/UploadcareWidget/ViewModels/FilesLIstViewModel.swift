@@ -10,24 +10,6 @@ import Foundation
 import SwiftUI
 import Combine
 import WebKit
-import Uploadcare
-
-/// Debug log function with printing filename, method and line number
-///
-/// - Parameters:
-///   - messages: arguments
-///   - fullPath: filepath
-///   - line: line number
-///   - functionName: function/method name
-func DLog(_ messages: Any..., fullPath: String = #file, line: Int = #line, functionName: String = #function) {
-	#if DEBUG
-	let file = URL(fileURLWithPath: fullPath)
-	for message in messages {
-		let string = "\(file.pathComponents.last!):\(line) -> \(functionName): \(message)"
-		print(string)
-	}
-	#endif
-}
 
 @available(iOS 13.0.0, OSX 10.15.0, *)
 class FilesLIstViewModel: ObservableObject {
@@ -54,81 +36,6 @@ class FilesLIstViewModel: ObservableObject {
 		self.chunkPath = chunkPath
 		self.publicKey = publicKey
 	}
-}
-
-enum ThingAction: String, Codable {
-	case select_file
-	case open_path
-}
-
-struct Chunk: Codable {
-	let path_chunk: String
-	let title: String
-	let obj_type: String
-
-	enum CodingKeys: String, CodingKey {
-		case path_chunk
-		case title
-		case obj_type
-	}
-
-	init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: CodingKeys.self)
-
-		// Int might come for VK
-		if let intVal = try? container.decodeIfPresent(Int.self, forKey: .path_chunk) {
-			path_chunk = "\(intVal)"
-		} else {
-			path_chunk = try container.decodeIfPresent(String.self, forKey: .path_chunk) ?? ""
-		}
-		title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
-		obj_type = try container.decodeIfPresent(String.self, forKey: .obj_type) ?? ""
-	}
-}
-
-struct Path: Codable {
-	let chunks: [Chunk]
-	let obj_type: String?
-}
-
-struct Action: Codable {
-	let action: ThingAction
-	let path: Path?
-	let url: String?
-	let obj_type: String
-}
-
-struct ChunkThing: Codable, Identifiable {
-	let id = UUID()
-
-	var action: Action?
-	var thumbnail: String
-	var obj_type: String
-	var title: String
-	var mimetype: String?
-
-	enum CodingKeys: String, CodingKey {
-		case action
-		case thumbnail
-		case obj_type
-		case title
-		case mimetype
-	}
-
-	init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: CodingKeys.self)
-
-		action = try container.decodeIfPresent(Action.self, forKey: .action)
-		thumbnail = try container.decodeIfPresent(String.self, forKey: .thumbnail) ?? ""
-		obj_type = try container.decodeIfPresent(String.self, forKey: .obj_type) ?? ""
-		title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
-		mimetype = try container.decodeIfPresent(String.self, forKey: .mimetype)
-	}
-}
-
-struct ChunkResponse: Codable {
-	var next_page: Path?
-	var things: [ChunkThing]
 }
 
 // MARK: - Public methods
@@ -306,6 +213,7 @@ extension FilesLIstViewModel {
 	}
 }
 
+// MARK: - Private methods
 @available(iOS 13.0.0, OSX 10.15.0, *)
 private extension FilesLIstViewModel {
 	func performRequest(_ urlRequest: URLRequest, _ completionHandler: @escaping (Result<Data, Error>)->Void) {

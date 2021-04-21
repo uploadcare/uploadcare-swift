@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Uploadcare
 
 struct Config {
 	static let baseUrl: String = "https://social.uploadcare.com"
