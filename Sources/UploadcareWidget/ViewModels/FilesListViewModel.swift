@@ -1,5 +1,5 @@
 //
-//  FilesLIstViewModel.swift
+//  FilesListViewModel.swift
 //  
 //
 //  Created by Sergei Armodin on 26.01.2021.
@@ -12,7 +12,7 @@ import Combine
 import WebKit
 
 @available(iOS 13.0.0, OSX 10.15.0, *)
-class FilesLIstViewModel: ObservableObject {
+class FilesListViewModel: ObservableObject {
 	enum FilesListViewModelError: Error {
 		case noData
 		case decodingError
@@ -40,9 +40,9 @@ class FilesLIstViewModel: ObservableObject {
 
 // MARK: - Public methods
 @available(iOS 13.0.0, OSX 10.15.0, *)
-extension FilesLIstViewModel {
-	func modelWithChunkPath(_ chunk: String) -> FilesLIstViewModel {
-		return FilesLIstViewModel(
+extension FilesListViewModel {
+	func modelWithChunkPath(_ chunk: String) -> FilesListViewModel {
+		return FilesListViewModel(
 			source: source,
 			cookie: cookie,
 			chunkPath: self.chunkPath + "/" + chunk,
@@ -220,7 +220,7 @@ extension FilesLIstViewModel {
 
 // MARK: - Private methods
 @available(iOS 13.0.0, OSX 10.15.0, *)
-private extension FilesLIstViewModel {
+private extension FilesListViewModel {
 	func performRequest(_ urlRequest: URLRequest, _ completionHandler: @escaping (Result<Data, Error>)->Void) {
 		let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 			if let error = error {

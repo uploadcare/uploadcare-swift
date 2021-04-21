@@ -25,7 +25,7 @@ public struct SelectSourceView: View {
 		VStack(alignment: .leading) {
 			if let source = $currentSource.wrappedValue {
 				NavigationLink(
-					destination: FilesLIstView(viewModel: self.createViewModelForSource(source), isRoot: true),
+					destination: FilesListView(viewModel: self.createViewModelForSource(source), isRoot: true),
 					tag: source.source.rawValue,
 					selection: $selection
 				) {
@@ -61,8 +61,8 @@ public struct SelectSourceView: View {
 		.navigationBarTitle(Text("Select Source"))
     }
 
-	private func createViewModelForSource(_ source: SocialSource) -> FilesLIstViewModel {
-		return FilesLIstViewModel(
+	private func createViewModelForSource(_ source: SocialSource) -> FilesListViewModel {
+		return FilesListViewModel(
 			source: source,
 			cookie: source.getCookie() ?? "",
 			chunkPath: source.chunks.first!.values.first!,

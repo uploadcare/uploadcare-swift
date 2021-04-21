@@ -1,5 +1,5 @@
 //
-//  FilesLIstView.swift
+//  FilesListView.swift
 //  
 //
 //  Created by Sergei Armodin on 26.01.2021.
@@ -9,9 +9,9 @@
 import SwiftUI
 
 @available(iOS 13.0.0, OSX 10.15.0, *)
-struct FilesLIstView: View {
+struct FilesListView: View {
 	@Environment(\.presentationMode) var presentation
-	@ObservedObject var viewModel: FilesLIstViewModel
+	@ObservedObject var viewModel: FilesListViewModel
 	@State var isRoot: Bool
 	@State var didLoad: Bool = false
 	@State var currentChunk: String = ""
@@ -57,7 +57,7 @@ struct FilesLIstView: View {
 						ForEach(folders) { thing in
 							let chunkPath = thing.action!.path?.chunks.last?.path_chunk ?? ""
 							let viewModel = self.viewModel.modelWithChunkPath(chunkPath)
-							NavigationLink(destination: FilesLIstView(viewModel: viewModel, isRoot: false)) {
+							NavigationLink(destination: FilesListView(viewModel: viewModel, isRoot: false)) {
 								OpenPathView(thing: thing)
 							}
 						}
