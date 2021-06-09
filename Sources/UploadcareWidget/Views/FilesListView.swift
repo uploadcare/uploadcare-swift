@@ -8,10 +8,10 @@
 
 import SwiftUI
 
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 14.0.0, OSX 10.15.0, *)
 struct FilesListView: View {
 	@Environment(\.presentationMode) var presentation
-	@ObservedObject var viewModel: FilesListViewModel
+	@StateObject var viewModel: FilesListViewModel
 	@State var isRoot: Bool
 	@State var didLoad: Bool = false
 	@State var currentChunk: String = ""
@@ -49,12 +49,9 @@ struct FilesListView: View {
 						}
 					}
 
-					let things = self.viewModel.currentChunk?.things ?? []
-
 					// Folders (albums)
-					let folders = things.filter({ $0.obj_type == "album" })
 					Section {
-						ForEach(folders) { thing in
+						ForEach(self.viewModel.folders) { thing in
 							let chunkPath = thing.action!.path?.chunks.last?.path_chunk ?? ""
 							let viewModel = self.viewModel.modelWithChunkPath(chunkPath)
 							NavigationLink(destination: FilesListView(viewModel: viewModel, isRoot: false)) {
@@ -64,11 +61,10 @@ struct FilesListView: View {
 					}
 
 					// Files
-					let files = things.filter({ $0.obj_type != "album" })
 					Section {
-						if files.count > 0 {
+						if self.viewModel.files.count > 0 {
 							let cols = 4
-							let num = files.count
+							let num = self.viewModel.files.count
 
 							let dev = num / cols
 							let rows = num % cols == 0 ? dev : dev + 1
@@ -76,7 +72,7 @@ struct FilesListView: View {
 							GridView(rows: rows, columns: cols) { (row, col) in
 								let index = row * cols + col
 								if index < num {
-									let thing = files[index]
+									let thing = self.viewModel.files[index]
 									SelectFileView(thing: thing, size: geometry.size.width / CGFloat(cols))
 										.onTapGesture {
 											if let path = thing.action?.url {

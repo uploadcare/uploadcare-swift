@@ -22,7 +22,14 @@ class FilesListViewModel: ObservableObject {
 	
 	// MARK: - Public properties
 	var source: SocialSource
-	@Published var currentChunk: ChunkResponse?
+	@Published var currentChunk: ChunkResponse? {
+		didSet {
+			self.files = (self.currentChunk?.things ?? []).filter({ $0.obj_type != "album" })
+			self.folders = (self.currentChunk?.things ?? []).filter({ $0.obj_type == "album" })
+		}
+	}
+	@Published var files: [ChunkThing] = []
+	@Published var folders: [ChunkThing] = []
 	var chunkPath: String
 
 	// MARK: - Private properties
