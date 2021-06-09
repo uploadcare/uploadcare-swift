@@ -9,6 +9,7 @@
 import SwiftUI
 import WebKit
 
+@available(iOS 13.0, *)
 struct WebView: UIViewRepresentable {
 	var url: URL?
 	var onComplete: (([HTTPCookie])->Void)?
