@@ -10,9 +10,12 @@ import SwiftUI
 
 @available(iOS 14.0.0, OSX 10.15.0, *)
 struct SelectFileView: View {
+	// MARK: - Public properties
 	let thing: ChunkThing
-	@State private var image: UIImage?
 	let size: CGFloat
+
+	// MARK: - Private properties
+	@State private var image: UIImage?
 	
     var body: some View {
 		if let url = URL(string: self.thing.thumbnail) {

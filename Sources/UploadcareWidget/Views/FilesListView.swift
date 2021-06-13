@@ -17,7 +17,9 @@ struct FilesListView: View {
 	@State var currentChunk: String = ""
 	@State var isLoading: Bool = true
 	@State var fileUploadedMessageVisible: Bool = false
+
 	@State private var alertVisible: Bool = false
+	@State private var pathsToUpload: [String] = []
 	
 	var body: some View {
 		GeometryReader { geometry in
@@ -73,21 +75,23 @@ struct FilesListView: View {
 								let index = row * cols + col
 								if index < num {
 									let thing = self.viewModel.files[index]
-									SelectFileView(thing: thing, size: geometry.size.width / CGFloat(cols))
-										.onTapGesture {
-											if let path = thing.action?.url {
-												self.viewModel.uploadFileFromPath(path)
-												withAnimation {
-													self.fileUploadedMessageVisible = true
-												}
+									let size = geometry.size.width / CGFloat(cols)
 
-												DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-													withAnimation {
-														self.fileUploadedMessageVisible = false
-													}
+									ZStack {
+										SelectFileView(thing: thing, size: size)
+											.onTapGesture {
+												if let path = thing.action?.url {
+													self.pathsToUpload.contains(path) == true
+													? self.pathsToUpload.removeAll(where: { $0 == path })
+													: self.pathsToUpload.append(path)
 												}
 											}
-										}
+
+										Image(systemName: "checkmark.circle.fill")
+											.resizable()
+											.frame(width: size / 3, height: size / 3, alignment: .center)
+											.opacity(self.pathsToUpload.contains(thing.action?.url ?? "") ? 1 : 0)
+									}
 								}
 							}
 						}
@@ -112,7 +116,7 @@ struct FilesListView: View {
 					.cornerRadius(16)
 					.opacity(self.isLoading ? 1 : 0)
 
-				Text("File uploaded")
+				Text(self.pathsToUpload.count > 1 ? "Files uploaded" : "File uploaded" )
 					.font(.title)
 					.padding(.all)
 					.background(Color.gray)
@@ -135,9 +139,30 @@ struct FilesListView: View {
 				secondaryButton: .cancel())
 		}
 		.navigationBarTitle(Text(viewModel.source.title))
-		.navigationBarItems(trailing: Button("Logout") {
-			self.alertVisible = true
-		})
+		.navigationBarItems(trailing:
+			HStack {
+				if self.pathsToUpload.count > 0 {
+					Button("Upload") {
+						self.pathsToUpload.forEach({ self.viewModel.uploadFileFromPath($0) })
+						self.pathsToUpload.removeAll()
+
+						withAnimation {
+							self.fileUploadedMessageVisible = true
+						}
+
+						DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+							withAnimation {
+								self.fileUploadedMessageVisible = false
+							}
+						}
+					}
+				} else {
+					Button("Logout") {
+						self.alertVisible = true
+					}
+				}
+			}
+		)
     }
 
 	func loadData() {
