@@ -29,8 +29,8 @@ struct SelectFileView: View {
 						.resizable()
 				}
 			)
-			.frame(width: size - 12, height: size - 12, alignment: .center)
 			.aspectRatio(contentMode: .fill)
+			.frame(width: size - 12, height: size - 12, alignment: .center)
 			.clipped()
 		}
     }
