@@ -146,9 +146,11 @@ struct FileView: View {
 
 struct FileView_Previews: PreviewProvider {
     static var previews: some View {
+		#if DEBUG
 		NavigationView {
 			FileView(fileData: testFileViewData)
 		}
+		#endif
     }
 }
 
