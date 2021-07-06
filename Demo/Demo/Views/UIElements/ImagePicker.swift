@@ -32,10 +32,28 @@ struct ImagePicker: UIViewControllerRepresentable {
 		}
 
 		func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-			let imageUrl = info[UIImagePickerController.InfoKey.imageURL] as! URL
+			defer { presentationMode.dismiss() }
 			
-			onImagePicked(imageUrl)
-			presentationMode.dismiss()
+			if self.sourceType == .photoLibrary || self.sourceType == .savedPhotosAlbum {
+				let imageUrl = info[.imageURL] as! URL
+				
+				onImagePicked(imageUrl)
+			}
+			
+			if self.sourceType == .camera {				
+				guard let image = info[.originalImage] as? UIImage else { return }
+				let data = image.jpegData(compressionQuality: 1.0)
+				let tempDirectoryURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true)
+				let targetURL = tempDirectoryURL.appendingPathComponent("\(UUID()).jpeg")
+				
+				do {
+					try data?.write(to: targetURL)
+				} catch let error {
+					DLog(error.localizedDescription)
+				}
+				
+				onImagePicked(targetURL)
+			}
 		}
 		
 		func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
