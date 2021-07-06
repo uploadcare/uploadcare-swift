@@ -20,6 +20,7 @@ public struct SelectSourceView: View {
 	@State var isWebViewVisible: Bool = false
 	@State private var selection: String? = nil
 	private let publicKey: String
+	@State var isShowingSheetWithPicker: Bool = false
 	
 	public var body: some View {
 		VStack(alignment: .leading) {
@@ -34,6 +35,10 @@ public struct SelectSourceView: View {
 			}
 
 			List {
+				Button("Camera") {
+					self.isShowingSheetWithPicker.toggle()
+				}
+				
 				ForEach(self.sources) { source in
 					Button(source.getCookie() == nil ? source.title : "✓ " + source.title) {
 						self.currentSource = source
@@ -56,6 +61,11 @@ public struct SelectSourceView: View {
 						}
 					}
 				})
+			}
+			.sheet(isPresented: $isShowingSheetWithPicker) {
+				ImagePicker(sourceType: .camera) { (imageUrl) in
+					self.isShowingSheetWithPicker = false
+				}
 			}
 		}
 		.navigationBarTitle(Text("Select Source"))

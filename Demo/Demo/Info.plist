@@ -22,6 +22,8 @@
 	<string>public.app-category.utilities</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>For demo</string>
 	<key>NSDocumentsFolderUsageDescription</key>
 	<string>For demo</string>
 	<key>NSFileProviderDomainUsageDescription</key>
