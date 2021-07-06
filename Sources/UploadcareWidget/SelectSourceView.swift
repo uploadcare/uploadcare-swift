@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Uploadcare
 
 struct Config {
 	static let baseUrl: String = "https://social.uploadcare.com"
@@ -21,6 +22,7 @@ public struct SelectSourceView: View {
 	@State private var selection: String? = nil
 	private let publicKey: String
 	@State var isShowingSheetWithPicker: Bool = false
+	@EnvironmentObject var api: APIStore
 	
 	public var body: some View {
 		VStack(alignment: .leading) {

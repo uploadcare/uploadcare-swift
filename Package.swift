@@ -27,7 +27,7 @@ let package = Package(
 		),
 		.target(
 			name: "UploadcareWidget",
-			dependencies: []
+			dependencies: ["Uploadcare"]
 		),
         .testTarget(
             name: "UploadcareTests",

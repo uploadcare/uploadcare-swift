@@ -42,6 +42,7 @@ struct MainView: View {
 							.navigationBarItems(trailing: Button("Close") {
 								self.widgetVisible = false
 							})
+							.environmentObject(api)
 					}
 				})
             }
