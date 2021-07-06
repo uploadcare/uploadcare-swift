@@ -16,13 +16,17 @@ struct Config {
 
 @available(iOS 14.0.0, OSX 10.15.0, *)
 public struct SelectSourceView: View {	
-	let sources: [SocialSource] = SocialSource.Source.allCases.map { SocialSource(source: $0) }
-	@State var currentSource: SocialSource?
-	@State var isWebViewVisible: Bool = false
-	@State private var selection: String? = nil
+	private let sources: [SocialSource] = SocialSource.Source.allCases.map { SocialSource(source: $0) }
 	private let publicKey: String
-	@State var isShowingSheetWithPicker: Bool = true
-	@State var isUploading: Bool = false
+	
+	@State private var currentSource: SocialSource?
+	@State private var isWebViewVisible: Bool = false
+	@State private var selection: String? = nil
+	@State private var isShowingSheetWithPicker: Bool = true
+	
+	@State private var isUploading: Bool = false
+	@State private var fileUploadedMessageVisible: Bool = false
+	@State private var fileUploadedMessage: String = ""
 	
 	@EnvironmentObject var api: APIStore
 	
@@ -73,8 +77,24 @@ public struct SelectSourceView: View {
 					ImagePicker(sourceType: .camera) { (imageUrl) in
 						self.isShowingSheetWithPicker = false
 						self.isUploading = true
-						self.uploadFile(imageUrl) { _ in
+						self.uploadFile(imageUrl) { uploadError in
 							self.isUploading = false
+							
+							if let uploadError = uploadError {
+								self.fileUploadedMessage = uploadError.detail
+							} else {
+								self.fileUploadedMessage = "File uploaded"
+							}
+							
+							withAnimation {
+								self.fileUploadedMessageVisible = true
+							}
+
+							DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+								withAnimation {
+									self.fileUploadedMessageVisible = false
+								}
+							}
 						}
 					}
 				}
@@ -85,6 +105,14 @@ public struct SelectSourceView: View {
 				.background(Color.gray)
 				.cornerRadius(16)
 				.opacity(self.isUploading ? 1 : 0)
+			
+			Text(self.fileUploadedMessage)
+				.font(.title)
+				.padding(.all)
+				.background(Color.gray)
+				.foregroundColor(.white)
+				.cornerRadius(16)
+				.opacity(self.fileUploadedMessageVisible ? 1 : 0)
 		}
 		.navigationBarTitle(Text("Select Source"))
     }
@@ -98,7 +126,7 @@ public struct SelectSourceView: View {
 		)
 	}
 	
-	private func uploadFile(_ url: URL, completionHandler: @escaping (String)->Void) {
+	private func uploadFile(_ url: URL, completionHandler: @escaping (UploadError?)->Void) {
 		let data: Data
 		do {
 			data = try Data(contentsOf: url)
@@ -116,22 +144,22 @@ public struct SelectSourceView: View {
 		}
 	}
 	
-	private func performDirectUpload(filename: String, data: Data, completionHandler: @escaping (String)->Void) {
+	private func performDirectUpload(filename: String, data: Data, completionHandler: @escaping (UploadError?)->Void) {
 		let onProgress: (Double)->Void = { (progress) in
 			
 		}
 		self.api.uploadcare?.uploadAPI.upload(files: [filename: data], store: .store, onProgress, { (uploadData, error) in
 			if let error = error {
-				return DLog(error)
+				DLog(error)
+				completionHandler(error)
 			}
 
-			guard let uploadData = uploadData, let fileId = uploadData.first?.value else { return }
-			completionHandler(fileId)
-			DLog(uploadData)
+			completionHandler(nil)
+			DLog(uploadData ?? "no data")
 		})
 	}
 	
-	private func performMultipartUpload(filename: String, fileUrl: URL, completionHandler: @escaping (String)->Void) {
+	private func performMultipartUpload(filename: String, fileUrl: URL, completionHandler: @escaping (UploadError?)->Void) {
 		let onProgress: (Double)->Void = { (progress) in
 		}
 
@@ -143,12 +171,12 @@ public struct SelectSourceView: View {
 		fileForUploading.upload(withName: filename, store: .store, onProgress, { (file, error) in
 			if let error = error {
 				DLog(error)
+				completionHandler(error)
 				return
 			}
 			
-			guard let file = file else { return }
-			completionHandler(file.fileId)
-			DLog(file)
+			completionHandler(nil)
+			DLog(file ?? "no file")
 		})
 	}
 	
