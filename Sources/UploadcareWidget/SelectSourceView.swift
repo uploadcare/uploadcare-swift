@@ -73,7 +73,7 @@ public struct SelectSourceView: View {
 						}
 					})
 				}
-				.sheet(isPresented: $isShowingCameraPicker) {
+				.fullScreenCover(isPresented: $isShowingCameraPicker) {
 					ImagePicker(sourceType: .camera) { (imageUrl) in
 						self.isShowingCameraPicker = false
 						self.isUploading = true
