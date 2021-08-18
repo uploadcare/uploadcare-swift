@@ -37,10 +37,6 @@ struct MainView: View {
 						NavigationLink(destination: ProjectInfoView(viewModel: ProjectInfoViewModel(uploadcare: api.uploadcare))) {
 							Text("Project info")
 						}
-
-						Button("External Sources") {
-							self.widgetVisible = true
-						}
 					}
 					.listStyle(GroupedListStyle())
 					.navigationBarTitle(Text("Uploadcare demo"), displayMode: .automatic)
@@ -66,6 +62,9 @@ struct MainView: View {
 								.default(Text("Files"), action: {
 									self.pickerType = .files
 									self.isShowingSheetWithPicker.toggle()
+								}),
+								.default(Text("External Sources"), action: {
+									self.widgetVisible = true
 								}),
 								.cancel()
 							]
