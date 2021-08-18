@@ -145,7 +145,7 @@ struct MainView: View {
 							self.filesListStore.uploadcare = self.api.uploadcare
 						}
 						self.isShowingAddFilesAlert.toggle()
-					}
+					}.buttonStyle(NeumorphicButtonStyle(bgColor: Color.gray.opacity(0.05)))
 				}
 			}
 		}
@@ -171,4 +171,23 @@ struct MainView_Previews: PreviewProvider {
 			.environmentObject(APIStore())
 			.previewDevice(PreviewDevice(rawValue: "iPhone X"))
     }
+}
+
+struct NeumorphicButtonStyle: ButtonStyle {
+	var bgColor: Color
+
+	func makeBody(configuration: Self.Configuration) -> some View {
+		configuration.label
+			.padding(EdgeInsets(top: 12, leading: 18, bottom: 12, trailing: 18))
+			.background(
+				ZStack {
+					RoundedRectangle(cornerRadius: 10, style: .continuous)
+						.blendMode(.overlay)
+					RoundedRectangle(cornerRadius: 10, style: .continuous)
+						.fill(bgColor)
+				}
+		)
+			.scaleEffect(configuration.isPressed ? 0.95: 1)
+			.foregroundColor(.primary)
+	}
 }
