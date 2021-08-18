@@ -79,6 +79,7 @@ struct GroupFileList_Previews: PreviewProvider {
     static var previews: some View {
 		#if DEBUG
         GroupFileList(viewData: testGroupViewData)
+			.environmentObject(APIStore())
 		#endif
     }
 }
