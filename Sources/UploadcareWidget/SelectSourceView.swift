@@ -22,7 +22,7 @@ public struct SelectSourceView: View {
 	@State private var currentSource: SocialSource?
 	@State private var isWebViewVisible: Bool = false
 	@State private var selection: String? = nil
-	@State private var isShowingSheetWithPicker: Bool = true
+	@State private var isShowingCameraPicker: Bool = false
 	
 	@State private var isUploading: Bool = false
 	@State private var fileUploadedMessageVisible: Bool = false
@@ -46,7 +46,7 @@ public struct SelectSourceView: View {
 				List {
 					if UIImagePickerController.isSourceTypeAvailable(.camera) {
 						Button("Camera") {
-							self.isShowingSheetWithPicker.toggle()
+							self.isShowingCameraPicker.toggle()
 						}
 					}
 					
@@ -73,9 +73,9 @@ public struct SelectSourceView: View {
 						}
 					})
 				}
-				.sheet(isPresented: $isShowingSheetWithPicker) {
+				.sheet(isPresented: $isShowingCameraPicker) {
 					ImagePicker(sourceType: .camera) { (imageUrl) in
-						self.isShowingSheetWithPicker = false
+						self.isShowingCameraPicker = false
 						self.isUploading = true
 						self.uploadFile(imageUrl) { uploadError in
 							self.isUploading = false
@@ -97,6 +97,7 @@ public struct SelectSourceView: View {
 							}
 						}
 					}
+					.ignoresSafeArea()
 				}
 			}
 			
