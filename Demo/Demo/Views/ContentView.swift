@@ -19,36 +19,14 @@ struct MainView: View {
 	@State private var isShowingAddFilesAlert = false
 	@State private var isShowingSheetWithPicker = false
 	@State private var pickerType: PickerType = .photos
+	@State private var messageText: String = ""
 
 	@State var isUploading: Bool = false
 	
-    var body: some View {
+	var body: some View {
 		NavigationView {
-            ZStack {
+			ZStack {
 				VStack {
-					HStack {
-						ProgressView(
-							self.filesListStore.uploadState == .paused ? "Paused" : "Uploading \(self.filesListStore.uploadedFromQueue) of \(self.filesListStore.filesQueue.count)",
-							value: self.filesListStore.progressValue, total: 1.0
-						).frame(maxWidth: 200)
-
-						if self.filesListStore.uploadState == .uploading {
-							Button(action: {
-								self.toggleUpload()
-							}) {
-								Image(systemName: "pause.fill")
-							}
-						}
-						if self.filesListStore.uploadState == .paused {
-							Button(action: {
-								self.toggleUpload()
-							}) {
-								Image(systemName: "play.fill")
-							}
-						}
-					}
-					.opacity(self.isUploading ? 1 : 0)
-
 					List {
 						NavigationLink(destination: FilesListView(filesListStore: self.filesListStore)) {
 							Text("List of files")
@@ -96,25 +74,72 @@ struct MainView: View {
 					.sheet(isPresented: $isShowingSheetWithPicker) {
 						if self.pickerType == .photos {
 							ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
-								self.isUploading = true
+								withAnimation(.easeIn) {
+									self.isUploading = true
+								}
 
 								self.filesListStore.uploadFile(imageUrl, completionHandler: { fileId in
-									self.isUploading = false
+									withAnimation(.easeOut) {
+										self.isUploading = false
+										delay(0.5) {
+											self.messageText = "Upload finished"
+											delay(3) {
+												self.messageText = ""
+											}
+										}
+									}
 								})
 							}
 						} else {
 							DocumentPicker { (urls) in
-								self.isUploading = true
+								withAnimation(.easeIn) {
+									self.isUploading = true
+								}
 								self.filesListStore.uploadFiles(urls, completionHandler: { fileIds in
-									self.isUploading = false
+									withAnimation(.easeOut) {
+										self.isUploading = false
+										delay(0.5) {
+											self.messageText = "Upload finished"
+											delay(3) {
+												self.messageText = ""
+											}
+										}
+									}
 								})
 							}
 						}
 					}
-			}
+				}
 
-				VStack {
+				VStack(spacing: 16) {
 					Spacer()
+					if !self.messageText.isEmpty {
+						Text(self.messageText)
+					}
+					if self.isUploading {
+						HStack {
+							ProgressView(
+								self.filesListStore.uploadState == .paused ? "Paused" : "Uploading \(self.filesListStore.uploadedFromQueue) of \(self.filesListStore.filesQueue.count)",
+								value: self.filesListStore.progressValue, total: 1.0
+							).frame(maxWidth: 200)
+
+							if self.filesListStore.uploadState == .uploading {
+								Button(action: {
+									self.toggleUpload()
+								}) {
+									Image(systemName: "pause.fill")
+								}
+							}
+							if self.filesListStore.uploadState == .paused {
+								Button(action: {
+									self.toggleUpload()
+								}) {
+									Image(systemName: "play.fill")
+								}
+							}
+						}
+					}
+
 					Button("Upload file") {
 						if self.filesListStore.uploadcare == nil {
 							self.filesListStore.uploadcare = self.api.uploadcare
@@ -122,7 +147,7 @@ struct MainView: View {
 						self.isShowingAddFilesAlert.toggle()
 					}
 				}
-            }
+			}
 		}
     }
 
