@@ -265,7 +265,7 @@ class Tester {
 		}
 		
 		// cancel if need
-//		task.cancel()
+		task.cancel()
 		
 		semaphore.wait()
 	}
