@@ -29,17 +29,17 @@ guard let data = try? Data(contentsOf: url) else { return }
 uploadcare.uploadFile(data, withName: filename, store: .doNotStore, , { (progress) in
     print("progress: \(progress)")
 }, { file, error in
-	if let error = error {
-		print(error)
-		return
+    if let error = error {
+        print(error)
+        return
     }
 
-	guard let file = file else {
-		print("error: no file")
-		return
-	}
-	
-	print(file)
+    guard let file = file else {
+        print("error: no file")
+        return
+    }
+
+    print(file)
 })
 
 // You can cancel uploading if needed
