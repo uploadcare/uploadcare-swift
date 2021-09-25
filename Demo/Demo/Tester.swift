@@ -658,17 +658,17 @@ class Tester {
 		
 		let semaphore = DispatchSemaphore(value: 0)
 		
-		var task: UploadTaskResumable?
+		var task: UploadTaskable?
 		var didPause = false
 		let onProgress: (Double)->Void = { (progress) in
 			print("progress: \(progress)")
 			
 			if !didPause {
 				didPause.toggle()
-				task?.pause()
+				(task as? UploadTaskResumable)?.pause()
 				
 				delay(10.0) {
-					task?.resume()
+					(task as? UploadTaskResumable)?.resume()
 				}
 			}
 		}
@@ -685,9 +685,9 @@ class Tester {
 		})
 		
 		// pause
-		task?.pause()
+		(task as? UploadTaskResumable)?.pause()
 		delay(2.0) {
-			task?.resume()
+			(task as? UploadTaskResumable)?.resume()
 		}
 		
 		// cancel if need

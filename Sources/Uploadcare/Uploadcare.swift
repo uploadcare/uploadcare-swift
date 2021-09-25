@@ -1180,7 +1180,7 @@ extension Uploadcare {
 	///   - data: data
 	///   - fileName: file name
 	public func file(fromData data: Data) -> UploadedFile {
-		return UploadedFile(withData: data, uploadAPI: uploadAPI, restAPI: self)
+		return UploadedFile(withData: data, restAPI: self)
 	}
 
 	/// Create file model for uploading from URL
@@ -1197,7 +1197,7 @@ extension Uploadcare {
 		semaphore.wait()
 
 		guard let data = dataFromURL else { return nil }
-		let file = UploadedFile(withData: data, uploadAPI: uploadAPI, restAPI: self)
+		let file = UploadedFile(withData: data, restAPI: self)
 		file.filename = url.lastPathComponent
 		file.originalFilename = url.lastPathComponent
 		return file
