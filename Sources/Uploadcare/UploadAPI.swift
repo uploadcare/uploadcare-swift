@@ -241,8 +241,116 @@ extension UploadAPI {
 	}
 }
 
+// MARK: - Upload file
+extension UploadAPI {
+	/// Upload file. This method will decide internally which upload will be used (direct or multipart)
+	/// - Parameters:
+	///   - data: File data
+	///   - name: File name
+	///   - store: Sets the file storing behavior
+	///   - onProgress: A callback that will be used to report upload progress
+	///   - completionHandler: Completion handler
+	/// - Returns: Upload task. It's nil if file size is small and direct upload will be used. If it's not nil you can use that task to pause, resume or cancel uploading.
+	@discardableResult
+	public func uploadFile(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		_ onProgress: ((Double) -> Void)? = nil,
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) -> UploadTaskResumable {
+		let totalSize = data.count
+		let fileMimeType = detectMimeType(for: data)
+
+		let task = MultipartUploadTask()
+		task.queue = self.uploadQueue
+		let filename = name.isEmpty ? "noname.ext" : name
+
+		// Starting a multipart upload transaction
+		startMulipartUpload(
+			withName: filename,
+			size: totalSize,
+			mimeType: fileMimeType) { [weak self] (response, error) in
+				guard let self = self else { return }
+				if let error = error {
+					completionHandler(nil, error)
+					return
+				}
+
+				// Uploading individual file parts
+				guard let parts = response?.parts, let uuid = response?.uuid else {
+					completionHandler(nil, UploadError.defaultError())
+					return
+				}
+
+				var offset = 0
+				var i = 0
+				var numberOfUploadedChunks = 0
+				let uploadGroup = DispatchGroup()
+
+				while offset < totalSize {
+					let bytesLeft = totalSize - offset
+					let currentChunkSize = bytesLeft > Self.uploadChunkSize ? Self.uploadChunkSize : bytesLeft
+
+					// data chunk
+					let range = NSRange(location: offset, length: currentChunkSize)
+					guard let dataRange = Range(range) else {
+						completionHandler(nil, UploadError.defaultError())
+						return
+					}
+					let chunk = data.subdata(in: dataRange)
+
+					// presigned upload url
+					let partUrl = parts[i]
+
+					// uploading individual part
+					self.uploadIndividualFilePart(
+						chunk,
+						toPresignedUrl: partUrl,
+						withMimeType: fileMimeType,
+						task: task,
+						group: uploadGroup,
+						completeMessage: nil, //"Uploaded \(i) of \(parts.count)",
+						onComplete: {
+							numberOfUploadedChunks += 1
+
+							let total = Double(parts.count)
+							let ready = Double(numberOfUploadedChunks)
+							let percent = round(ready * 100 / total)
+							onProgress?(percent / 100)
+					})
+
+					offset += currentChunkSize
+					i += 1
+				}
+
+				// Completing a multipart upload
+				uploadGroup.notify(queue: self.uploadQueue) {
+					guard task.isCancelled == false else {
+						completionHandler(nil, UploadError(status: 0, detail: "Upload cancelled"))
+						return
+					}
+					task.complete()
+					self.completeMultipartUpload(forFileUIID: uuid) { (file, error) in
+						if let error = error {
+							completionHandler(nil, error)
+							return
+						}
+						guard let uploadedFile = file else {
+							completionHandler(nil, UploadError.defaultError())
+							return
+						}
+						completionHandler(uploadedFile, nil)
+					}
+				}
+		}
+
+		return task
+	}
+}
+
 // MARK: - Direct upload
-extension UploadAPI {	
+extension UploadAPI {
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
 	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed
 	/// - Parameters:
@@ -369,109 +477,6 @@ extension UploadAPI {
 
 // MARK: - Multipart uploading
 extension UploadAPI {
-	/// Multipart file uploading
-	/// - Parameters:
-	///   - data: Data
-	///   - filename: File name
-	///   - store: Sets the file storing behavior
-	///   - completionHandler: completion handler
-	@discardableResult
-	public func uploadFile(
-		_ data: Data,
-		withName name: String,
-		store: StoringBehavior? = nil,
-		_ onProgress: ((Double) -> Void)? = nil,
-		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
-	) -> UploadTaskResumable {
-		let totalSize = data.count
-		let fileMimeType = detectMimeType(for: data)
-
-		let task = MultipartUploadTask()
-		task.queue = self.uploadQueue
-		let filename = name.isEmpty ? "noname.ext" : name
-
-		// Starting a multipart upload transaction
-		startMulipartUpload(
-			withName: filename,
-			size: totalSize,
-			mimeType: fileMimeType) { [weak self] (response, error) in
-				guard let self = self else { return }
-				if let error = error {
-					completionHandler(nil, error)
-					return
-				}
-
-				// Uploading individual file parts
-				guard let parts = response?.parts, let uuid = response?.uuid else {
-					completionHandler(nil, UploadError.defaultError())
-					return
-				}
-
-				var offset = 0
-				var i = 0
-				var numberOfUploadedChunks = 0
-				let uploadGroup = DispatchGroup()
-
-				while offset < totalSize {
-					let bytesLeft = totalSize - offset
-					let currentChunkSize = bytesLeft > Self.uploadChunkSize ? Self.uploadChunkSize : bytesLeft
-
-					// data chunk
-					let range = NSRange(location: offset, length: currentChunkSize)
-					guard let dataRange = Range(range) else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-					let chunk = data.subdata(in: dataRange)
-
-					// presigned upload url
-					let partUrl = parts[i]
-
-					// uploading individual part
-					self.uploadIndividualFilePart(
-						chunk,
-						toPresignedUrl: partUrl,
-						withMimeType: fileMimeType,
-						task: task,
-						group: uploadGroup,
-						completeMessage: nil, //"Uploaded \(i) of \(parts.count)",
-						onComplete: {
-							numberOfUploadedChunks += 1
-
-							let total = Double(parts.count)
-							let ready = Double(numberOfUploadedChunks)
-							let percent = round(ready * 100 / total)
-							onProgress?(percent / 100)
-					})
-
-					offset += currentChunkSize
-					i += 1
-				}
-
-				// Completing a multipart upload
-				uploadGroup.notify(queue: self.uploadQueue) {
-					guard task.isCancelled == false else {
-						completionHandler(nil, UploadError(status: 0, detail: "Upload cancelled"))
-						return
-					}
-					task.complete()
-					self.completeMultipartUpload(forFileUIID: uuid) { (file, error) in
-						if let error = error {
-							completionHandler(nil, error)
-							return
-						}
-						guard let uploadedFile = file else {
-							completionHandler(nil, UploadError.defaultError())
-							return
-						}
-						completionHandler(uploadedFile, nil)
-					}
-				}
-		}
-
-		return task
-	}
-
 	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
 	/// - Parameters:
 	///   - filename: An original filename
