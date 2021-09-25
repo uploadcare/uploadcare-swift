@@ -298,6 +298,17 @@ extension UploadAPI {
 		backgroundTask.resume()
 		return backgroundUploadTask
 	}
+
+	@available(*, deprecated, renamed: "directUpload")
+	@discardableResult
+	public func upload(
+		files: [String: Data],
+		store: StoringBehavior? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
+		_ completionHandler: @escaping TaskCompletionHandler
+	) -> UploadTaskable {
+		return directUpload(files: files, store: store, onProgress, completionHandler)
+	}
 	
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
 	/// - Parameters:
@@ -474,6 +485,18 @@ extension UploadAPI {
 
 		return task
 	}
+
+	@available(*, deprecated, renamed: "directUpload")
+	public func upload(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) -> UploadTaskResumable {
+		return multipartUpload(data, withName: name, store: store, onProgress, completionHandler)
+	}
+
 	
 	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
 	/// - Parameters:
