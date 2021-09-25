@@ -149,7 +149,7 @@ public struct SelectSourceView: View {
 		let onProgress: (Double)->Void = { (progress) in
 			
 		}
-		self.api.uploadcare?.uploadAPI.upload(files: [filename: data], store: .store, onProgress, { (uploadData, error) in
+		self.api.uploadcare?.uploadAPI.directUpload(files: [filename: data], store: .store, onProgress, { (uploadData, error) in
 			if let error = error {
 				DLog(error)
 				completionHandler(error)

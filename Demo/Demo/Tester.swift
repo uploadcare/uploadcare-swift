@@ -221,7 +221,7 @@ class Tester {
 		let semaphore = DispatchSemaphore(value: 0)
 		
 		let api = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
-		api.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, { (progress) in
+		api.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .store, { (progress) in
 			
 		}) { (resultDictionary, error) in
 			defer { semaphore.signal() }
@@ -244,7 +244,7 @@ class Tester {
 		print("size of file: \(sizeString(ofData: data))")
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+		let task = uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			print("upload progress: \(progress * 100)%")
 		}) { (resultDictionary, error) in
 			defer {

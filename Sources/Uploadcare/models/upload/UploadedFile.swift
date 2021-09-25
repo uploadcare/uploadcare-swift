@@ -180,7 +180,7 @@ public class UploadedFile: Codable {
 		self.originalFilename = name
 		self.filename = name
 		
-		let uploadTask = uploadAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { (progress) in
+		let uploadTask = uploadAPI?.multipartUpload(fileData, withName: name, store: store ?? .store, { (progress) in
 			onProgress?(progress)
 		}, { [weak self] (file, error) in
             if let error = error {

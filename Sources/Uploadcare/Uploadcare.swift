@@ -1117,7 +1117,7 @@ extension Uploadcare {
 		// using direct upload if file is small
 		if data.count < UploadAPI.multipartMinFileSize {
 			let files = [filename: data]
-			return uploadAPI.upload(files: files, store: store, onProgress) { [weak self] response, error in
+			return uploadAPI.directUpload(files: files, store: store, onProgress) { [weak self] response, error in
 				if let error = error {
 					completionHandler(nil, error)
 					return
@@ -1163,7 +1163,7 @@ extension Uploadcare {
 		}
 
 		// using multipart upload otherwise
-		return uploadAPI.uploadFile(data, withName: filename, store: store, onProgress, completionHandler)
+		return uploadAPI.multipartUpload(data, withName: filename, store: store, onProgress, completionHandler)
 	}
 }
 

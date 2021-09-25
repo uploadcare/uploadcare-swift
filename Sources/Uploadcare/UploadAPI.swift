@@ -15,7 +15,7 @@ public typealias TaskProgressBlock = (Double) -> Void
 public class UploadAPI: NSObject {
     // MARK: - Public properties
     /// Minimum file size for multipart uploads
-    public static let multipartMinFileSize = 10485760
+    public static let multipartMinFileSize = 1024 * 1024 * 100
     
 	/// Each uploaded part should be 5MB
 	static let uploadChunkSize = 5242880
@@ -250,7 +250,7 @@ extension UploadAPI {
 	///   - store: Sets the file storing behavior
 	///   - completionHandler: callback
 	@discardableResult
-	public func upload(
+	public func directUpload(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
@@ -305,7 +305,7 @@ extension UploadAPI {
 	///   - store: Sets the file storing behavior
 	///   - completionHandler: callback
 	@discardableResult
-	func uploadInForeground(
+	func directUploadInForeground(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
@@ -378,7 +378,7 @@ extension UploadAPI {
 	///   - onProgress: A callback that will be used to report upload progress
 	///   - completionHandler: Completion handler
 	/// - Returns: Upload task. You can use that task to pause, resume or cancel uploading.
-	public func uploadFile(
+	public func multipartUpload(
 		_ data: Data,
 		withName name: String,
 		store: StoringBehavior? = nil,
