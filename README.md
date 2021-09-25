@@ -104,22 +104,24 @@ fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (res
 fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
 
 // Or you can just upload data and provide a filename
-let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
+let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .store { (progress) in
     print("upload progress: \(progress * 100)%")
-}) { (resultDictionary, error) in
+}) { (file, error) in
     if let error = error {
-        print(error)
+        print(error.detail)
         return
     }
-
-    guard let files = result else { return }			
-    for file in files {
-        print("uploaded file name: \(file.key) | file id: \(file.value)")
-    }
+    
+    print(file ?? "Error: no file")
 }
 
 // You can cancel uploading if needed
 task.cancel()
+
+// task will confirm UploadTaskable protocol if file size is less than 10 mb, and UploadTaskResumable if file size is >= 10mb
+// You can pause or resume uploading of file with size >= 10mb if needed
+(task as? UploadTaskResumable)?.pause()
+(task as? UploadTaskResumable)?.resume()
 ```
 
 ## Using REST API
