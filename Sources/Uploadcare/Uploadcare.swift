@@ -1112,13 +1112,10 @@ extension Uploadcare {
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) -> UploadTaskable {
-		let totalSize = data.count
-		let fileMimeType = detectMimeType(for: data)
-
 		let filename = name.isEmpty ? "noname.ext" : name
 
 		// using direct upload if file is small
-		if totalSize < UploadAPI.multipartMinFileSize {
+		if data.count < UploadAPI.multipartMinFileSize {
 			let files = [filename: data]
 			return uploadAPI.upload(files: files, store: store, onProgress) { [weak self] response, error in
 				if let error = error {
