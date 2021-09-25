@@ -101,7 +101,7 @@ public struct SelectSourceView: View {
 				}
 			}
 			
-			ActivityIndicator(isAnimating: .constant(true), style: .whiteLarge)
+			ActivityIndicator(isAnimating: .constant(true), style: .large)
 				.padding(.all)
 				.background(Color.gray)
 				.cornerRadius(16)
