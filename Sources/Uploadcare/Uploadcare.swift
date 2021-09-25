@@ -1094,6 +1094,82 @@ extension Uploadcare {
 	}
 }
 
+// MARK: - Upload
+extension Uploadcare {
+	/// Upload file. This method will decide internally which upload will be used (direct or multipart)
+	/// - Parameters:
+	///   - data: File data
+	///   - name: File name
+	///   - store: Sets the file storing behavior
+	///   - onProgress: A callback that will be used to report upload progress
+	///   - completionHandler: Completion handler
+	/// - Returns: Upload task. Confirms to UploadTaskable protocol in anycase. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload
+	@discardableResult
+	public func uploadFile(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		_ onProgress: ((Double) -> Void)? = nil,
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) -> UploadTaskable {
+		let totalSize = data.count
+		let fileMimeType = detectMimeType(for: data)
+
+		let filename = name.isEmpty ? "noname.ext" : name
+
+		// using direct upload if file is small
+		if totalSize < UploadAPI.multipartMinFileSize {
+			let files = [filename: data]
+			return uploadAPI.upload(files: files, store: store, onProgress) { [weak self] response, error in
+				if let error = error {
+					completionHandler(nil, error)
+					return
+				}
+
+				guard let response = response, let fileUUID = response[filename] else {
+					completionHandler(nil, UploadError.defaultError())
+					return
+				}
+
+				self?.fileInfo(withUUID: fileUUID, { file, error in
+					if let error = error {
+						let uploadError = UploadError(status: 0, detail: error.detail)
+						completionHandler(nil, uploadError)
+						return
+					}
+
+					guard let file = file else {
+						completionHandler(nil, UploadError.defaultError())
+						return
+					}
+
+					let uploadedFile = UploadedFile(
+						size: file.size,
+						total: file.size,
+						uuid: file.uuid,
+						fileId: file.uuid,
+						originalFilename: file.originalFilename,
+						filename: file.originalFilename,
+						mimeType: file.mimeType,
+						isImage: file.isImage,
+						isStored: store != .doNotStore,
+						isReady: file.isReady,
+						imageInfo: file.imageInfo,
+						videoInfo: file.videoInfo,
+						s3Bucket: nil
+					)
+
+					completionHandler(uploadedFile, nil)
+					return
+				})
+			}
+		}
+
+		// using multipart upload otherwise
+		return uploadAPI.uploadFile(data, withName: filename, store: store, onProgress, completionHandler)
+	}
+}
+
 // MARK: - URLSessionTaskDelegate
 extension Uploadcare: URLSessionTaskDelegate {
     public func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
