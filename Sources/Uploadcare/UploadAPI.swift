@@ -382,7 +382,7 @@ extension UploadAPI {
 		_ data: Data,
 		withName name: String,
 		store: StoringBehavior? = nil,
-		_ onProgress: ((Double) -> Void)? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) -> UploadTaskResumable {
 		let totalSize = data.count
