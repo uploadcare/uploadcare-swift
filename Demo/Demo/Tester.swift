@@ -61,9 +61,6 @@ class Tester {
 		//        queue.async { [unowned self] in
 		//            self.testUploadFileInfo()
 		//        }
-		        queue.async { [self] in
-		            testUploadFileFromURL()
-		        }
 //		        queue.async { [unowned self] in
 //		            self.testDirectUpload()
 //		        }
@@ -161,42 +158,6 @@ class Tester {
 			}
 			
 			print(info ?? "nil")
-		}
-		semaphore.wait()
-	}
-	
-	func testUploadFileFromURL() {
-		print("<------ testUploadFileFromURL ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		// upload from url
-		let url = URL(string: "https://source.unsplash.com/random")
-		let task = UploadFromURLTask(sourceUrl: url!)
-			.checkURLDuplicates(true)
-			.saveURLDuplicates(true)
-			.filename("file_from_url")
-			.store(.store)
-		
-		uploadcare.uploadAPI.upload(task: task) { [unowned self] (result, error) in
-			if let error = error {
-				print(error)
-				return
-			}
-			print(result ?? "")
-			
-			guard let token = result?.token else {
-				semaphore.signal()
-				return
-			}
-			
-			delay(1.0) { [unowned self] in
-				self.uploadcare.uploadAPI.uploadStatus(forToken: token) { (status, error) in
-					print(status ?? "no data")
-					print(error ?? "no error")
-					semaphore.signal()
-				}
-			}
-			
 		}
 		semaphore.wait()
 	}
