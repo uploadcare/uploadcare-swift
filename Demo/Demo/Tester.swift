@@ -611,7 +611,7 @@ class Tester {
 				return
 			}
 			
-			let newGroup = self.uploadcare.uploadAPI.group(ofFiles: [])
+			let newGroup = self.uploadcare.group(ofFiles: [])
 			newGroup.files = group?.files ?? []
 			newGroup.create { (_, error) in
 				print(error ?? "")
@@ -646,7 +646,7 @@ class Tester {
 			return
 		}
 		
-		guard let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url) else {
+		guard let fileForUploading = uploadcare.file(withContentsOf: url) else {
 			assertionFailure("file not found")
 			return
 		}

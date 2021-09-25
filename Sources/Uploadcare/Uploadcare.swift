@@ -1167,6 +1167,43 @@ extension Uploadcare {
 	}
 }
 
+// MARK: - Factory
+extension Uploadcare {
+	/// Create group of uploaded files from array
+	/// - Parameter files: files array
+	public func group(ofFiles files: [UploadedFile]) -> UploadedFilesGroup {
+		return UploadedFilesGroup(withFiles: files, uploadAPI: uploadAPI)
+	}
+
+	/// Create file model for uploading from Data
+	/// - Parameters:
+	///   - data: data
+	///   - fileName: file name
+	public func file(fromData data: Data) -> UploadedFile {
+		return UploadedFile(withData: data, uploadAPI: uploadAPI, restAPI: self)
+	}
+
+	/// Create file model for uploading from URL
+	/// - Parameters:
+	///   - url: file url
+	public func file(withContentsOf url: URL) -> UploadedFile? {
+		var dataFromURL: Data?
+
+		let semaphore = DispatchSemaphore(value: 0)
+		DispatchQueue.global(qos: .utility).async {
+			dataFromURL = try? Data(contentsOf: url, options: .mappedIfSafe)
+			semaphore.signal()
+		}
+		semaphore.wait()
+
+		guard let data = dataFromURL else { return nil }
+		let file = UploadedFile(withData: data, uploadAPI: uploadAPI, restAPI: self)
+		file.filename = url.lastPathComponent
+		file.originalFilename = url.lastPathComponent
+		return file
+	}
+}
+
 // MARK: - URLSessionTaskDelegate
 extension Uploadcare: URLSessionTaskDelegate {
     public func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {

@@ -11,6 +11,8 @@ import Foundation
 
 /// File Info model that is used for Upload API
 public class UploadedFile: Codable {
+
+	// MARK: - Public properties
 	
 	/// File size in bytes.
 	public var size: Int
@@ -50,9 +52,14 @@ public class UploadedFile: Codable {
 	
 	/// Your custom user bucket on which file are stored. Only available of you setup foreign storage bucket for your project.
 	public var s3Bucket: String?
-	
+
+	// MARK: - Private properties
+
 	/// Upload API
 	private weak var uploadAPI: UploadAPI?
+
+	/// REST API
+	private weak var restAPI: Uploadcare?
 	
 	/// File URL
 	private var fileUrl: URL?
@@ -143,7 +150,7 @@ public class UploadedFile: Codable {
 		)
 	}
 	
-	public init(withData data: Data, uploadAPI: UploadAPI) {
+	public init(withData data: Data, uploadAPI: UploadAPI, restAPI: Uploadcare) {
 		self.data = data
 		self.uploadAPI = uploadAPI
 		

@@ -164,7 +164,7 @@ public struct SelectSourceView: View {
 		let onProgress: (Double)->Void = { (progress) in
 		}
 
-		guard let fileForUploading = self.api.uploadcare?.uploadAPI.file(withContentsOf: fileUrl) else {
+		guard let fileForUploading = self.api.uploadcare?.file(withContentsOf: fileUrl) else {
 			assertionFailure("file not found")
 			return
 		}
