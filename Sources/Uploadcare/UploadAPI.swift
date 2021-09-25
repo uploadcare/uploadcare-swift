@@ -359,7 +359,7 @@ extension UploadAPI {
 	///   - completionHandler: callback
 	@discardableResult
 	public func upload(
-		files: [String:Data],
+		files: [String: Data],
 		store: StoringBehavior? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskCompletionHandler
@@ -414,7 +414,7 @@ extension UploadAPI {
 	///   - completionHandler: callback
 	@discardableResult
 	func uploadInForeground(
-		files: [String:Data],
+		files: [String: Data],
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping ([String: String]?, UploadError?) -> Void
