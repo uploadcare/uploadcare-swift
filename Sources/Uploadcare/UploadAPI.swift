@@ -396,7 +396,8 @@ extension UploadAPI {
 		startMulipartUpload(
 			withName: filename,
 			size: totalSize,
-			mimeType: fileMimeType) { [weak self] (response, error) in
+			mimeType: fileMimeType,
+			store: store ?? .store) { [weak self] (response, error) in
 				guard let self = self else { return }
 				if let error = error {
 					completionHandler(nil, error)
@@ -485,7 +486,7 @@ extension UploadAPI {
 		withName filename: String,
 		size: Int,
 		mimeType: String,
-		store: StoringBehavior = .store,
+		store: StoringBehavior,
 		_ completionHandler: @escaping (StartMulipartUploadResponse?, UploadError?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/multipart/start/"
