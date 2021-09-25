@@ -3,10 +3,12 @@ import Alamofire
 
 
 /// Upload API base url
-let uploadAPIBaseUrl: String = "https://upload.uploadcare.com"
+let uploadAPIBaseUrl = "https://upload.uploadcare.com"
+let uploadAPIHost = "upload.uploadcare.com"
 
 /// REST API base URL
-let RESTAPIBaseUrl: String = "https://api.uploadcare.com"
+let RESTAPIBaseUrl = "https://api.uploadcare.com"
+let RESTAPIHost = "api.uploadcare.com"
 
 
 public class Uploadcare: NSObject {

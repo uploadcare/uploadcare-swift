@@ -61,16 +61,16 @@ class Tester {
 		//        queue.async { [unowned self] in
 		//            self.testUploadFileInfo()
 		//        }
-//		        queue.async { [self] in
-//		            testUploadFileFromURL()
-//		        }
+		        queue.async { [self] in
+		            testUploadFileFromURL()
+		        }
 //		        queue.async { [unowned self] in
 //		            self.testDirectUpload()
 //		        }
 
-				queue.async { [unowned self] in
-					self.testMainUpload()
-				}
+//				queue.async { [unowned self] in
+//					self.testMainUpload()
+//				}
 
 		//        queue.async { [unowned self] in
 		//            self.testRESTListOfFiles()

@@ -155,29 +155,46 @@ extension UploadAPI {
 		task: UploadFromURLTask,
 		_ completionHandler: @escaping (UploadFromURLResponse?, UploadError?) -> Void
 	) {
-		var urlString = uploadAPIBaseUrl + "/from_url?pub_key=\(self.publicKey)&source_url=\(task.sourceUrl.absoluteString)"
+		var components = URLComponents()
+		components.scheme = "https"
+		components.host = uploadAPIHost
+		components.path = "/from_url"
 
-		urlString += "&store=\(task.store.rawValue)"
+		var queryItems = [
+			URLQueryItem(name: "pub_key", value: publicKey),
+			URLQueryItem(name: "source_url", value: task.sourceUrl.absoluteString),
+			URLQueryItem(name: "store", value: task.store.rawValue)
+		]
+		components.queryItems = queryItems
 
 		if let filenameVal = task.filename {
 			let name = filenameVal.isEmpty ? "noname.ext" : filenameVal
-			urlString += "&filename=\(name)"
+			queryItems.append(
+				URLQueryItem(name: "filename", value: name)
+			)
 		}
 		if let checkURLDuplicatesVal = task.checkURLDuplicates {
 			let val = checkURLDuplicatesVal == true ? "1" : "0"
-			urlString += "&check_URL_duplicates=\(val)"
+			queryItems.append(
+				URLQueryItem(name: "check_URL_duplicates", value: val)
+			)
 		}
 		if let saveURLDuplicatesVal = task.saveURLDuplicates {
 			let val = saveURLDuplicatesVal == true ? "1" : "0"
-			urlString += "&save_URL_duplicates=\(val)"
+			queryItems.append(
+				URLQueryItem(name: "save_URL_duplicates", value: val)
+			)
 		}
 
 		if let uploadSignature = getSignature() {
-			urlString += "&signature=\(uploadSignature.signature)"
-			urlString += "&expire=\(uploadSignature.expire)"
+			queryItems.append(contentsOf: [
+				URLQueryItem(name: "signature", value: uploadSignature.signature),
+				URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
+			])
 		}
 
-		guard let url = URL(string: urlString) else {
+		components.queryItems = queryItems
+		guard let url = components.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
