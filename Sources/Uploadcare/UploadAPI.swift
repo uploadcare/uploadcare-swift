@@ -258,13 +258,22 @@ extension UploadAPI {
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
-	) -> UploadTaskResumable {
+	) -> UploadTaskResumable? {
 		let totalSize = data.count
 		let fileMimeType = detectMimeType(for: data)
 
+		let filename = name.isEmpty ? "noname.ext" : name
+
+		if totalSize < UploadAPI.multipartMinFileSize {
+			let files = [filename: data]
+			upload(files: files, store: store, onProgress) { response, error in
+
+			}
+			return nil
+		}
+
 		let task = MultipartUploadTask()
 		task.queue = self.uploadQueue
-		let filename = name.isEmpty ? "noname.ext" : name
 
 		// Starting a multipart upload transaction
 		startMulipartUpload(
