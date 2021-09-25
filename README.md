@@ -118,8 +118,8 @@ let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: 
 // You can cancel uploading if needed
 task.cancel()
 
-// task will confirm UploadTaskable protocol if file size is less than 10 mb, and UploadTaskResumable if file size is >= 10mb
-// You can pause or resume uploading of file with size >= 10mb if needed
+// task will confirm UploadTaskable protocol if file size is less than 100 mb, and UploadTaskResumable if file size is >= 100mb
+// You can pause or resume uploading of file with size >= 100mb if needed
 (task as? UploadTaskResumable)?.pause()
 (task as? UploadTaskResumable)?.resume()
 ```
