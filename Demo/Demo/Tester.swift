@@ -48,7 +48,7 @@ func sizeString(ofData data: Data) -> String {
 class Tester {
 	private lazy var uploadcare: Uploadcare = {
 		// Define your Public Key here
-		let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
+		let uploadcare = Uploadcare(withPublicKey: publicKey, secretKey: secretKey)
 		// uploadcare.authScheme = .simple
 		// or
 		// uploadcare.authScheme = .signed
@@ -61,12 +61,17 @@ class Tester {
 		//        queue.async { [unowned self] in
 		//            self.testUploadFileInfo()
 		//        }
-		        queue.async { [self] in
-		            testUploadFileFromURL()
-		        }
-		//        queue.async { [unowned self] in
-		//            self.testDirectUpload()
-		//        }
+//		        queue.async { [self] in
+//		            testUploadFileFromURL()
+//		        }
+//		        queue.async { [unowned self] in
+//		            self.testDirectUpload()
+//		        }
+
+				queue.async { [unowned self] in
+					self.testMainUpload()
+				}
+
 		//        queue.async { [unowned self] in
 		//            self.testRESTListOfFiles()
 		//        }
@@ -239,7 +244,7 @@ class Tester {
 		print("size of file: \(sizeString(ofData: data))")
 		
 		let semaphore = DispatchSemaphore(value: 0)
-		let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, { (progress) in
+		let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			print("upload progress: \(progress * 100)%")
 		}) { (resultDictionary, error) in
 			defer {
@@ -260,8 +265,38 @@ class Tester {
 		}
 		
 		// cancel if need
-		task.cancel()
+//		task.cancel()
 		
+		semaphore.wait()
+	}
+
+	func testMainUpload() {
+		print("<------ testMainUpload ------>")
+		guard let url = URL(string: "https://source.unsplash.com/random"), let data = try? Data(contentsOf: url) else { return }
+
+		let semaphore = DispatchSemaphore(value: 0)
+		let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
+			print("upload progress: \(progress * 100)%")
+		} _: { file, error in
+			defer {
+				semaphore.signal()
+			}
+
+			if let error = error {
+				print(error)
+				return
+			}
+
+			print(file ?? "nil")
+		}
+
+		// cancel if need
+//		task.cancel()
+
+		// pause or resume
+		(task as? UploadTaskResumable)?.pause()
+		(task as? UploadTaskResumable)?.resume()
+
 		semaphore.wait()
 	}
 	
