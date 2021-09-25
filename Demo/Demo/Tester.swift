@@ -61,9 +61,6 @@ class Tester {
 		//        queue.async { [unowned self] in
 		//            self.testUploadFileInfo()
 		//        }
-//		        queue.async { [unowned self] in
-//		            self.testDirectUpload()
-//		        }
 
 //				queue.async { [unowned self] in
 //					self.testMainUpload()
@@ -139,9 +136,6 @@ class Tester {
 //		queue.async {
 //			self.testDirectUploadBug()
 //		}
-//		queue.async {
-//			self.testDirectUploadBug()
-//		}
 		
 	}
 	
@@ -194,39 +188,6 @@ class Tester {
 			
 			print(resultDictionary ?? "nil")
 		}
-		
-		semaphore.wait()
-	}
-	
-	func testDirectUpload() {
-		print("<------ testDirectUpload ------>")
-		guard let url = URL(string: "https://source.unsplash.com/random"), let data = try? Data(contentsOf: url) else { return }
-		
-		print("size of file: \(sizeString(ofData: data))")
-		
-		let semaphore = DispatchSemaphore(value: 0)
-		let task = uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
-			print("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			guard let files = resultDictionary else { return }
-			
-			for file in files {
-				print("uploaded file name: \(file.key) | file id: \(file.value)")
-			}
-			print(resultDictionary ?? "nil")
-		}
-		
-		// cancel if need
-		task.cancel()
 		
 		semaphore.wait()
 	}

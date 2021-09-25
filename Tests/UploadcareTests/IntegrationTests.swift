@@ -9,28 +9,37 @@
 import XCTest
 @testable import Uploadcare
 
+func DLog(
+	_ messages: Any...,
+	fullPath: String = #file,
+	line: Int = #line,
+	functionName: String = #function
+) {
+	let file = URL(fileURLWithPath: fullPath)
+	for message in messages {
+		#if DEBUG
+		let string = "\(file.pathComponents.last!):\(line) -> \(functionName): \(message)"
+		print(string)
+		#endif
+	}
+}
+
+/// Count size of Data (in mb)
+/// - Parameter data: data
+func sizeString(ofData data: Data) -> String {
+	let bcf = ByteCountFormatter()
+	bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
+	bcf.countStyle = .file
+	return bcf.string(fromByteCount: Int64(data.count))
+}
+
+func delay(_ delay: Double, closure: @escaping ()->()) {
+	DispatchQueue.main.asyncAfter(
+		deadline: DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure)
+}
+
 final class IntegrationTests: XCTestCase {
 	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
-
-	func delay(_ delay: Double, closure: @escaping ()->()) {
-		DispatchQueue.main.asyncAfter(
-			deadline: DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure)
-	}
-
-	func DLog(
-		_ messages: Any...,
-		fullPath: String = #file,
-		line: Int = #line,
-		functionName: String = #function
-	) {
-		let file = URL(fileURLWithPath: fullPath)
-		for message in messages {
-			#if DEBUG
-			let string = "\(file.pathComponents.last!):\(line) -> \(functionName): \(message)"
-			print(string)
-			#endif
-		}
-	}
 
 	func testUploadFileFromURL() {
 		let expectation = XCTestExpectation(description: "testUploadFileFromURL")
@@ -72,6 +81,66 @@ final class IntegrationTests: XCTestCase {
 
 		wait(for: [expectation], timeout: 10.0)
 	}
+
+	func testDirectUpload() {
+		let expectation = XCTestExpectation(description: "testUploadFileFromURL")
+
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+
+		DLog("size of file: \(sizeString(ofData: data))")
+
+
+		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+			DLog("upload progress: \(progress * 100)%")
+		}) { (resultDictionary, error) in
+			defer {
+				expectation.fulfill()
+			}
+
+			if let error = error {
+				XCTFail(error.detail)
+				return
+			}
+
+			XCTAssertNotNil(resultDictionary)
+
+			for file in resultDictionary! {
+				DLog("uploaded file name: \(file.key) | file id: \(file.value)")
+			}
+			DLog(resultDictionary ?? "nil")
+		}
+
+		wait(for: [expectation], timeout: 10.0)
+	}
+
+	func testDirectUploadCancel() {
+		let expectation = XCTestExpectation(description: "testUploadFileFromURL")
+
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+
+		DLog("size of file: \(sizeString(ofData: data))")
+
+
+		let task = uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+			DLog("upload progress: \(progress * 100)%")
+		}) { (resultDictionary, error) in
+			defer {
+				expectation.fulfill()
+			}
+
+			XCTAssertNotNil(error)
+			XCTAssertNil(resultDictionary)
+
+			DLog(resultDictionary ?? "nil")
+		}
+
+		task.cancel()
+
+		wait(for: [expectation], timeout: 10.0)
+	}
+
 
 }
 
