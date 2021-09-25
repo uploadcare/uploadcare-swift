@@ -267,7 +267,15 @@ extension UploadAPI {
 		if totalSize < UploadAPI.multipartMinFileSize {
 			let files = [filename: data]
 			upload(files: files, store: store, onProgress) { response, error in
+				if let error = error {
+					completionHandler(nil, error)
+					return
+				}
 
+				guard let response = response, let fileId = response[filename] else {
+					completionHandler(nil, UploadError.defaultError())
+					return
+				}
 			}
 			return nil
 		}
