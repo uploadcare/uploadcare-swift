@@ -114,7 +114,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func testDirectUploadCancel() {
+	func testDirectUploadInForegroundCancel() {
 		let expectation = XCTestExpectation(description: "testDirectUploadCancel")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
