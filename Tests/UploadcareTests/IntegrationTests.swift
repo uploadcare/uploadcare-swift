@@ -41,11 +41,11 @@ func delay(_ delay: Double, closure: @escaping ()->()) {
 final class IntegrationTests: XCTestCase {
 	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
 
-	func test1UploadFileFromURL() {
+	func test1_UploadFileFromURL_and_UploadStatus() {
 		let expectation = XCTestExpectation(description: "test1UploadFileFromURL")
 
 		// upload from url
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_60fps_normal.mp4")!
 		let task = UploadFromURLTask(sourceUrl: url)
 			.checkURLDuplicates(true)
 			.saveURLDuplicates(true)
@@ -62,7 +62,7 @@ final class IntegrationTests: XCTestCase {
 			DLog(result!)
 
 			guard let token = result?.token else {
-				expectation.fulfill()
+				XCTFail("no token")
 				return
 			}
 
@@ -82,7 +82,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func test2DirectUpload() {
+	func test2_DirectUpload() {
 		let expectation = XCTestExpectation(description: "test2DirectUpload")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
@@ -113,7 +113,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func test3DirectUploadInForeground() {
+	func test3_DirectUploadInForeground() {
 		let expectation = XCTestExpectation(description: "test3DirectUploadInForeground")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
@@ -145,7 +145,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func test4DirectUploadInForegroundCancel() {
+	func test4_DirectUploadInForegroundCancel() {
 		let expectation = XCTestExpectation(description: "test4DirectUploadInForegroundCancel")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
@@ -172,7 +172,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func test5UploadFileInfo() {
+	func test5_UploadFileInfo() {
 		let expectation = XCTestExpectation(description: "test4UploadFileInfo")
 
 		let url = URL(string: "https://source.unsplash.com/random")!

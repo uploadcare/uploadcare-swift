@@ -134,17 +134,6 @@ class Tester {
 		//        }
 		
 	}
-	
-	func testUploadStatus() {
-		print("<------ testUploadStatus ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadAPI.uploadStatus(forToken: "ede4e436-9ff4-4027-8ffe-3b3e4d4a7f5b") { (status, error) in
-			print(status ?? "no data")
-			print(status?.error ?? "no error")
-			semaphore.signal()
-		}
-		semaphore.wait()
-	}
 
 	func testMainUpload() {
 		print("<------ testMainUpload ------>")
