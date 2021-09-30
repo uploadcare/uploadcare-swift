@@ -133,10 +133,6 @@ class Tester {
 		//            self.testVideoConversionStatus()
 		//        }
 		
-//		queue.async {
-//			self.testDirectUploadBug()
-//		}
-		
 	}
 	
 	func testUploadFileInfo() {
@@ -164,31 +160,6 @@ class Tester {
 			print(status?.error ?? "no error")
 			semaphore.signal()
 		}
-		semaphore.wait()
-	}
-	
-	func testDirectUploadBug() {
-		print("<------ testDirectUpload ------>")
-		guard let url = URL(string: "https://source.unsplash.com/random"), let data = try? Data(contentsOf: url) else { return }
-		
-		print("size of file: \(sizeString(ofData: data))")
-		
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		let api = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
-		api.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .store, { (progress) in
-			
-		}) { (resultDictionary, error) in
-			defer { semaphore.signal() }
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(resultDictionary ?? "nil")
-		}
-		
 		semaphore.wait()
 	}
 

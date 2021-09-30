@@ -82,6 +82,37 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
+	func testDirectUpload() {
+		let expectation = XCTestExpectation(description: "testUploadFileFromURL")
+
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+
+		DLog("size of file: \(sizeString(ofData: data))")
+
+		uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+			DLog("upload progress: \(progress * 100)%")
+		}) { (resultDictionary, error) in
+			defer {
+				expectation.fulfill()
+			}
+
+			if let error = error {
+				XCTFail(error.detail)
+				return
+			}
+
+			XCTAssertNotNil(resultDictionary)
+
+			for file in resultDictionary! {
+				DLog("uploaded file name: \(file.key) | file id: \(file.value)")
+			}
+			DLog(resultDictionary ?? "nil")
+		}
+
+		wait(for: [expectation], timeout: 10.0)
+	}
+
 	func testDirectUploadInForeground() {
 		let expectation = XCTestExpectation(description: "testUploadFileFromURL")
 
