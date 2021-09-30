@@ -135,23 +135,6 @@ class Tester {
 		
 	}
 	
-	func testUploadFileInfo() {
-		print("<------ testUploadFileInfo ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadAPI.fileInfo(withFileId: "530384dd-f43a-46de-b3c2-9448a24170cf") { (info, error) in
-			defer {
-				semaphore.signal()
-			}
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(info ?? "nil")
-		}
-		semaphore.wait()
-	}
-	
 	func testUploadStatus() {
 		print("<------ testUploadStatus ------>")
 		let semaphore = DispatchSemaphore(value: 0)
