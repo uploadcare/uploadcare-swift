@@ -82,7 +82,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func testDirectUpload() {
+	func testDirectUploadInForeground() {
 		let expectation = XCTestExpectation(description: "testUploadFileFromURL")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
