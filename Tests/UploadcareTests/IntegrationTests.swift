@@ -173,13 +173,12 @@ final class IntegrationTests: XCTestCase {
 	}
 
 	func test5_UploadFileInfo() {
-		let expectation = XCTestExpectation(description: "test4UploadFileInfo")
+		let expectation = XCTestExpectation(description: "test5_UploadFileInfo")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
-
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
@@ -209,6 +208,91 @@ final class IntegrationTests: XCTestCase {
 		}
 
 		wait(for: [expectation], timeout: 10.0)
+	}
+
+	func test6_MainUpload() {
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+
+		let expectation = XCTestExpectation(description: "test6_MainUpload")
+		uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
+			DLog("upload progress: \(progress * 100)%")
+		} _: { file, error in
+			defer {
+				expectation.fulfill()
+			}
+
+			if let error = error {
+				XCTFail(error.detail)
+				return
+			}
+
+			DLog(file ?? "nil")
+		}
+
+		wait(for: [expectation], timeout: 10.0)
+	}
+
+	func test6_MainUpload_Cancel() {
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+
+		let expectation = XCTestExpectation(description: "test6_MainUpload_Cancel")
+		let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
+			DLog("upload progress: \(progress * 100)%")
+		} _: { file, error in
+			defer {
+				expectation.fulfill()
+			}
+
+			XCTAssertNotNil(error)
+			XCTAssertEqual(error?.detail, "cancelled")
+		}
+
+		task.cancel()
+
+		wait(for: [expectation], timeout: 10.0)
+	}
+
+	func test7_MainUpload_PauseResume() {
+		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
+		let fileForUploading = uploadcare.file(withContentsOf: url)!
+
+		let expectation = XCTestExpectation(description: "test7_MainUpload_PauseResume")
+
+		var task: UploadTaskable?
+		var didPause = false
+		let onProgress: (Double)->Void = { (progress) in
+			DLog("progress: \(progress)")
+
+			if !didPause {
+				didPause.toggle()
+				(task as? UploadTaskResumable)?.pause()
+
+				delay(5.0) {
+					(task as? UploadTaskResumable)?.resume()
+				}
+			}
+		}
+
+		task = fileForUploading.upload(withName: "Mona_Lisa_23mb.jpg", store: .store, onProgress, { (file, error) in
+			defer {
+				expectation.fulfill()
+			}
+			if let error = error {
+				XCTFail(error.detail)
+				return
+			}
+			DLog(file ?? "")
+		})
+
+		// pause
+		(task as? UploadTaskResumable)?.pause()
+		delay(2.0) {
+			(task as? UploadTaskResumable)?.resume()
+		}
+
+		wait(for: [expectation], timeout: 120.0)
 	}
 
 }

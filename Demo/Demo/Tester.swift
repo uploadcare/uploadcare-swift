@@ -57,15 +57,6 @@ class Tester {
 	
 	func start() {
 		let queue = DispatchQueue(label: "uploadcare.test.queue")
-		
-		//        queue.async { [unowned self] in
-		//            self.testUploadFileInfo()
-		//        }
-
-//				queue.async { [unowned self] in
-//					self.testMainUpload()
-//				}
-
 		//        queue.async { [unowned self] in
 		//            self.testRESTListOfFiles()
 		//        }
@@ -106,9 +97,6 @@ class Tester {
 		//            self.testFileGroupInfo()
 		//        }
 		//        queue.async { [unowned self] in
-		//            self.testMultipartUpload()
-		//        }
-		//        queue.async { [unowned self] in
 		//            self.testRedirectForAuthenticatedUrls()
 		//        }
 		//        queue.async {
@@ -133,36 +121,6 @@ class Tester {
 		//            self.testVideoConversionStatus()
 		//        }
 		
-	}
-
-	func testMainUpload() {
-		print("<------ testMainUpload ------>")
-		guard let url = URL(string: "https://source.unsplash.com/random"), let data = try? Data(contentsOf: url) else { return }
-
-		let semaphore = DispatchSemaphore(value: 0)
-		let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
-			print("upload progress: \(progress * 100)%")
-		} _: { file, error in
-			defer {
-				semaphore.signal()
-			}
-
-			if let error = error {
-				print(error)
-				return
-			}
-
-			print(file ?? "nil")
-		}
-
-		// cancel if need
-//		task.cancel()
-
-		// pause or resume
-		(task as? UploadTaskResumable)?.pause()
-		(task as? UploadTaskResumable)?.resume()
-
-		semaphore.wait()
 	}
 	
 	func testRESTListOfFiles() {
@@ -500,64 +458,6 @@ class Tester {
 			}
 			print(group ?? "")
 		}
-		semaphore.wait()
-	}
-	
-	func testMultipartUpload() {
-		print("<------ testMultipartUpload ------>")
-		
-		guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else {
-			assertionFailure("no file")
-			return
-		}
-		
-		guard let fileForUploading = uploadcare.file(withContentsOf: url) else {
-			assertionFailure("file not found")
-			return
-		}
-		
-		// upload without any callbacks
-		//        fileForUploading.upload(withName: "Mona_Lisa_big111.jpg")
-		
-		// or
-		
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		var task: UploadTaskable?
-		var didPause = false
-		let onProgress: (Double)->Void = { (progress) in
-			print("progress: \(progress)")
-			
-			if !didPause {
-				didPause.toggle()
-				(task as? UploadTaskResumable)?.pause()
-				
-				delay(10.0) {
-					(task as? UploadTaskResumable)?.resume()
-				}
-			}
-		}
-		
-		task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", store: .store, onProgress, { (file, error) in
-			defer {
-				semaphore.signal()
-			}
-			if let error = error {
-				print(error)
-				return
-			}
-			print(file ?? "")
-		})
-		
-		// pause
-		(task as? UploadTaskResumable)?.pause()
-		delay(2.0) {
-			(task as? UploadTaskResumable)?.resume()
-		}
-		
-		// cancel if need
-		//        task?.cancel()
-		
 		semaphore.wait()
 	}
 	
