@@ -115,7 +115,7 @@ final class IntegrationTests: XCTestCase {
 	}
 
 	func testDirectUploadCancel() {
-		let expectation = XCTestExpectation(description: "testUploadFileFromURL")
+		let expectation = XCTestExpectation(description: "testDirectUploadCancel")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
 		let data = try! Data(contentsOf: url)
