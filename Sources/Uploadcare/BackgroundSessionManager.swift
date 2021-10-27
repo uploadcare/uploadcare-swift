@@ -13,6 +13,12 @@ class BackgroundSessionManager: NSObject {
 	
 	lazy var session: URLSession = {
 		let bundle = Bundle.main.bundleIdentifier ?? ""
+
+		if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+			let config = URLSessionConfiguration.default
+			return URLSession(configuration: config, delegate: self, delegateQueue: nil)
+		}
+
 		let config = URLSessionConfiguration.background(withIdentifier: "\(bundle).com.uploadcare.backgroundUrlSession")
 		config.isDiscretionary = false
 		

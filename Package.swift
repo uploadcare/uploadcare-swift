@@ -13,6 +13,7 @@ let package = Package(
     ],
     products: [
         .library(name: "Uploadcare", targets: ["Uploadcare"]),
+		.library(name: "UploadcareWidget", targets: ["UploadcareWidget"])
     ],
     dependencies: [
 		.package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.0.4")
@@ -23,6 +24,10 @@ let package = Package(
         .target(
             name: "Uploadcare",
             dependencies: ["Alamofire"]
+		),
+		.target(
+			name: "UploadcareWidget",
+			dependencies: ["Uploadcare"]
 		),
         .testTarget(
             name: "UploadcareTests",

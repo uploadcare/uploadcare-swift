@@ -11,6 +11,8 @@ import Foundation
 
 /// File Info model that is used for Upload API
 public class UploadedFile: Codable {
+
+	// MARK: - Public properties
 	
 	/// File size in bytes.
 	public var size: Int
@@ -50,9 +52,11 @@ public class UploadedFile: Codable {
 	
 	/// Your custom user bucket on which file are stored. Only available of you setup foreign storage bucket for your project.
 	public var s3Bucket: String?
-	
-	/// Upload API
-	private weak var uploadAPI: UploadAPI?
+
+	// MARK: - Private properties
+
+	/// REST API
+	private weak var restAPI: Uploadcare?
 	
 	/// File URL
 	private var fileUrl: URL?
@@ -143,9 +147,9 @@ public class UploadedFile: Codable {
 		)
 	}
 	
-	public init(withData data: Data, uploadAPI: UploadAPI) {
+	public init(withData data: Data, restAPI: Uploadcare) {
 		self.data = data
-		self.uploadAPI = uploadAPI
+		self.restAPI = restAPI
 		
 		self.size = data.count
 		self.total = data.count
@@ -170,7 +174,7 @@ public class UploadedFile: Codable {
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: ((UploadedFile?, UploadError?) -> Void)? = nil
-	) -> UploadTaskResumable? {
+	) -> UploadTaskable? {
 		guard let fileData = self.data else {
 			let error = UploadError(status: 0, detail: "Unable to upload file: Data is empty")
 			completionHandler?(nil, error)
@@ -179,24 +183,24 @@ public class UploadedFile: Codable {
 		
 		self.originalFilename = name
 		self.filename = name
-		
-		let uploadTask = uploadAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { (progress) in
+
+		return restAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { progress in
 			onProgress?(progress)
-		}, { [weak self] (file, error) in
-            if let error = error {
-                completionHandler?(nil, error)
-                return
-            }
-            
-            guard let uploadedFile = file else {
-                completionHandler?(nil, UploadError.defaultError())
-                return
-            }
-            
-            defer { completionHandler?(file, nil) }
-            
+		}, { [weak self] file, error in
+			if let error = error {
+				completionHandler?(nil, error)
+				return
+			}
+
+			guard let uploadedFile = file else {
+				completionHandler?(nil, UploadError.defaultError())
+				return
+			}
+
+			defer { completionHandler?(file, nil) }
+
 			guard let self = self else { return }
-			
+
 			self.size = uploadedFile.size
 			self.total = uploadedFile.total
 			self.uuid = uploadedFile.uuid
@@ -211,7 +215,6 @@ public class UploadedFile: Codable {
 			self.videoInfo = uploadedFile.videoInfo
 			self.s3Bucket = uploadedFile.s3Bucket
 		})
-		return uploadTask
 	}
 }
 

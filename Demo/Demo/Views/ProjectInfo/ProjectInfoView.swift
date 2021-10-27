@@ -53,11 +53,13 @@ struct ProjectInfoView: View {
 
 struct ProjectInfo_Previews: PreviewProvider {
 	static var previews: some View {
+		#if DEBUG
 		NavigationView {
 			ProjectInfoView(
 				viewModel: ProjectInfoViewModel(projectData: ProjectInfoViewModel.testProject)
 			)
 		}
 		.previewDevice(PreviewDevice(rawValue: "iPhone X"))
+		#endif
     }
 }

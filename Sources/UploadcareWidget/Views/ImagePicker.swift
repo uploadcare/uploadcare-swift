@@ -8,13 +8,14 @@
 
 import SwiftUI
 
+@available(iOS 13.0, *)
 struct ImagePicker: UIViewControllerRepresentable {
 
-    @Environment(\.presentationMode)
-    private var presentationMode
+	@Environment(\.presentationMode)
+	private var presentationMode
 
-    let sourceType: UIImagePickerController.SourceType
-    let onImagePicked: (URL) -> Void
+	let sourceType: UIImagePickerController.SourceType
+	let onImagePicked: (URL) -> Void
 
 	final class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
 
@@ -36,11 +37,10 @@ struct ImagePicker: UIViewControllerRepresentable {
 			
 			if self.sourceType == .photoLibrary || self.sourceType == .savedPhotosAlbum {
 				let imageUrl = info[.imageURL] as! URL
-				
 				onImagePicked(imageUrl)
 			}
 			
-			if self.sourceType == .camera {				
+			if self.sourceType == .camera {
 				guard let image = info[.originalImage] as? UIImage else { return }
 				let data = image.jpegData(compressionQuality: 1.0)
 				let tempDirectoryURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true)
@@ -61,33 +61,34 @@ struct ImagePicker: UIViewControllerRepresentable {
 		}
 	}
 
-    func makeCoordinator() -> Coordinator {
-        return Coordinator(presentationMode: presentationMode,
-                           sourceType: sourceType,
-                           onImagePicked: onImagePicked)
-    }
+	func makeCoordinator() -> Coordinator {
+		return Coordinator(presentationMode: presentationMode,
+						   sourceType: sourceType,
+						   onImagePicked: onImagePicked)
+	}
 
-    func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.sourceType = sourceType
-        picker.delegate = context.coordinator
-        return picker
-    }
+	func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {
+		let picker = UIImagePickerController()
+		picker.sourceType = sourceType
+		picker.delegate = context.coordinator
+		return picker
+	}
 
-    func updateUIViewController(_ uiViewController: UIImagePickerController,
-                                context: UIViewControllerRepresentableContext<ImagePicker>) {
+	func updateUIViewController(_ uiViewController: UIImagePickerController,
+								context: UIViewControllerRepresentableContext<ImagePicker>) {
 
-    }
+	}
 
 }
 
+@available(iOS 13.0.0, *)
 struct ImagePicker_Previews: PreviewProvider {
 	@State private var isShowingImagePicker = false
 	
-    static var previews: some View {
+	static var previews: some View {
 		ZStack {
 			ImagePicker(sourceType: .photoLibrary) { (_) in
 			}
 		}
-    }
+	}
 }

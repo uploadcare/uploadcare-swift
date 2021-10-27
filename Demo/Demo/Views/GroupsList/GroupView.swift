@@ -53,8 +53,10 @@ struct GroupView: View {
 
 struct GroupView_Previews: PreviewProvider {
     static var previews: some View {
+		#if DEBUG
 		NavigationView {
 			GroupView(viewData: testGroupViewData)
 		}
+		#endif
     }
 }

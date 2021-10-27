@@ -27,9 +27,9 @@
 		2492150524A66991008D335D /* GroupFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2492150424A66991008D335D /* GroupFileList.swift */; };
 		24931A5C24755311003EE044 /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24931A5B24755311003EE044 /* Tester.swift */; };
 		2496853B2498FAF3006A2AF8 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2496853A2498FAF3006A2AF8 /* DocumentPicker.swift */; };
+		249FF0D125BEDADA00BCFDD3 /* UploadcareWidget in Frameworks */ = {isa = PBXBuildFile; productRef = 249FF0D025BEDADA00BCFDD3 /* UploadcareWidget */; };
 		24BAB4392549E4070075E79A /* PickerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4382549E4070075E79A /* PickerType.swift */; };
 		24BAB43C2549E42D0075E79A /* UploadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB43B2549E42D0075E79A /* UploadState.swift */; };
-		24BAB4412549E4DA0075E79A /* APIStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4402549E4DA0075E79A /* APIStore.swift */; };
 		24BAB4452549E53A0075E79A /* GroupsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4442549E53A0075E79A /* GroupsListViewModel.swift */; };
 		24BAB4482549E5AC0075E79A /* FilesListStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4472549E5AC0075E79A /* FilesListStore.swift */; };
 		24BAB44B2549E6270075E79A /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB44A2549E6270075E79A /* ImageStore.swift */; };
@@ -82,6 +82,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				249FF0D125BEDADA00BCFDD3 /* UploadcareWidget in Frameworks */,
 				243A7142242CECC700CA229B /* Uploadcare in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -243,6 +244,7 @@
 			name = Demo;
 			packageProductDependencies = (
 				243A7141242CECC700CA229B /* Uploadcare */,
+				249FF0D025BEDADA00BCFDD3 /* UploadcareWidget */,
 			);
 			productName = Demo;
 			productReference = 243A7126242CEAA200CA229B /* Demo.app */;
@@ -299,7 +301,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24BAB4412549E4DA0075E79A /* APIStore.swift in Sources */,
 				24FDBBA924A2A78C00F92980 /* GroupViewData.swift in Sources */,
 				247301842565285B0052BE65 /* ProjectInfoViewModel.swift in Sources */,
 				243A7148242D309000CA229B /* CollaboratorView.swift in Sources */,
@@ -465,6 +466,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Demo/Demo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"Demo/Preview Content\"";
 				DEVELOPMENT_TEAM = 345VKAJA5N;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
@@ -490,6 +492,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Demo/Demo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"Demo/Preview Content\"";
 				DEVELOPMENT_TEAM = 345VKAJA5N;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
@@ -536,6 +539,10 @@
 		243A7141242CECC700CA229B /* Uploadcare */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Uploadcare;
+		};
+		249FF0D025BEDADA00BCFDD3 /* UploadcareWidget */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UploadcareWidget;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

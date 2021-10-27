@@ -3,10 +3,12 @@ import Alamofire
 
 
 /// Upload API base url
-let uploadAPIBaseUrl: String = "https://upload.uploadcare.com"
+let uploadAPIBaseUrl = "https://upload.uploadcare.com"
+let uploadAPIHost = "upload.uploadcare.com"
 
 /// REST API base URL
-let RESTAPIBaseUrl: String = "https://api.uploadcare.com"
+let RESTAPIBaseUrl = "https://api.uploadcare.com"
+let RESTAPIHost = "api.uploadcare.com"
 
 
 public class Uploadcare: NSObject {
@@ -27,12 +29,12 @@ public class Uploadcare: NSObject {
 
 	// MARK: - Public properties
 	public var uploadAPI: UploadAPI
+
 	
 	// MARK: - Private properties
-	
 	/// Public Key.  It is required when using Upload API.
 	internal var publicKey: String
-	
+
 	/// Secret Key. Optional. Is used for authorization
 	internal var secretKey: String?
 	
@@ -1091,6 +1093,116 @@ extension Uploadcare {
                     completionHandler(nil, decodedData)
                 }
         }
+	}
+}
+
+// MARK: - Upload
+extension Uploadcare {
+	/// Upload file. This method will decide internally which upload will be used (direct or multipart)
+	/// - Parameters:
+	///   - data: File data
+	///   - name: File name
+	///   - store: Sets the file storing behavior
+	///   - onProgress: A callback that will be used to report upload progress
+	///   - completionHandler: Completion handler
+	/// - Returns: Upload task. Confirms to UploadTaskable protocol in anycase. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload
+	@discardableResult
+	public func uploadFile(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		_ onProgress: ((Double) -> Void)? = nil,
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) -> UploadTaskable {
+		let filename = name.isEmpty ? "noname.ext" : name
+
+		// using direct upload if file is small
+		if data.count < UploadAPI.multipartMinFileSize {
+			let files = [filename: data]
+			return uploadAPI.directUpload(files: files, store: store, onProgress) { [weak self] response, error in
+				if let error = error {
+					completionHandler(nil, error)
+					return
+				}
+
+				guard let response = response, let fileUUID = response[filename] else {
+					completionHandler(nil, UploadError.defaultError())
+					return
+				}
+
+				self?.fileInfo(withUUID: fileUUID, { file, error in
+					if let error = error {
+						let uploadError = UploadError(status: 0, detail: error.detail)
+						completionHandler(nil, uploadError)
+						return
+					}
+
+					guard let file = file else {
+						completionHandler(nil, UploadError.defaultError())
+						return
+					}
+
+					let uploadedFile = UploadedFile(
+						size: file.size,
+						total: file.size,
+						uuid: file.uuid,
+						fileId: file.uuid,
+						originalFilename: file.originalFilename,
+						filename: file.originalFilename,
+						mimeType: file.mimeType,
+						isImage: file.isImage,
+						isStored: store != .doNotStore,
+						isReady: file.isReady,
+						imageInfo: file.imageInfo,
+						videoInfo: file.videoInfo,
+						s3Bucket: nil
+					)
+
+					completionHandler(uploadedFile, nil)
+					return
+				})
+			}
+		}
+
+		// using multipart upload otherwise
+		return uploadAPI.multipartUpload(data, withName: filename, store: store, onProgress, completionHandler)
+	}
+}
+
+// MARK: - Factory
+extension Uploadcare {
+	/// Create group of uploaded files from array
+	/// - Parameter files: files array
+	public func group(ofFiles files: [UploadedFile]) -> UploadedFilesGroup {
+		return UploadedFilesGroup(withFiles: files, uploadAPI: uploadAPI)
+	}
+
+	/// Create file model for uploading from Data
+	/// - Parameters:
+	///   - data: data
+	///   - fileName: file name
+	public func file(fromData data: Data) -> UploadedFile {
+		return UploadedFile(withData: data, restAPI: self)
+	}
+
+	/// Create file model for uploading from URL
+	/// - Parameters:
+	///   - url: file url
+	public func file(withContentsOf url: URL) -> UploadedFile? {
+		var dataFromURL: Data?
+
+		let semaphore = DispatchSemaphore(value: 0)
+		DispatchQueue.global(qos: .utility).async {
+			dataFromURL = try? Data(contentsOf: url, options: .mappedIfSafe)
+			semaphore.signal()
+		}
+		semaphore.wait()
+
+		guard let data = dataFromURL else { return nil }
+		let file = UploadedFile(withData: data, restAPI: self)
+		file.filename = url.lastPathComponent
+		file.originalFilename = url.lastPathComponent
+		return file
 	}
 }
 
