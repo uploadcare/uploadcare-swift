@@ -110,7 +110,7 @@ final class IntegrationTests: XCTestCase {
 			DLog(resultDictionary ?? "nil")
 		}
 
-		wait(for: [expectation], timeout: 10.0)
+		wait(for: [expectation], timeout: 20.0)
 	}
 
 	func test3_DirectUploadInForeground() {
@@ -205,29 +205,6 @@ final class IntegrationTests: XCTestCase {
 
 				DLog(info ?? "nil")
 			}
-		}
-
-		wait(for: [expectation], timeout: 10.0)
-	}
-
-	func test6_MainUpload() {
-		let url = URL(string: "https://source.unsplash.com/random")!
-		let data = try! Data(contentsOf: url)
-
-		let expectation = XCTestExpectation(description: "test6_MainUpload")
-		uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
-			DLog("upload progress: \(progress * 100)%")
-		} _: { file, error in
-			defer {
-				expectation.fulfill()
-			}
-
-			if let error = error {
-				XCTFail(error.detail)
-				return
-			}
-
-			DLog(file ?? "nil")
 		}
 
 		wait(for: [expectation], timeout: 10.0)

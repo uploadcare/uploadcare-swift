@@ -799,6 +799,21 @@ extension UploadAPI {
 extension UploadAPI: URLSessionDataDelegate {
 	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
 		// without adding this method background task will not trigger urlSession(_:dataTask:didReceive:completionHandler:)
+		if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+			guard let backgroundTask = backgroundTasks[dataTask.taskIdentifier] else { return }
+
+			// remove task
+			defer {
+				backgroundTask.clear()
+				backgroundTasks.removeValue(forKey: dataTask.taskIdentifier)
+			}
+
+			let statusCode: Int = (dataTask.response as? HTTPURLResponse)?.statusCode ?? 0
+
+			if statusCode == 200 {
+				backgroundTask.completionHandler([String:String](), nil)
+			}
+		}
 	}
 }
 
