@@ -68,8 +68,10 @@ struct FileRowView: View {
 
 struct FileRowView_Previews: PreviewProvider {
     static var previews: some View {
+		#if DEBUG
 		FileRowView(fileData: testFileViewData)
 			.previewLayout(.sizeThatFits)
+		#endif
     }
 }
 

@@ -48,7 +48,7 @@ func sizeString(ofData data: Data) -> String {
 class Tester {
 	private lazy var uploadcare: Uploadcare = {
 		// Define your Public Key here
-		let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
+		let uploadcare = Uploadcare(withPublicKey: publicKey, secretKey: secretKey)
 		// uploadcare.authScheme = .simple
 		// or
 		// uploadcare.authScheme = .signed
@@ -57,16 +57,6 @@ class Tester {
 	
 	func start() {
 		let queue = DispatchQueue(label: "uploadcare.test.queue")
-		
-		//        queue.async { [unowned self] in
-		//            self.testUploadFileInfo()
-		//        }
-		//        queue.async { [unowned self] in
-		//            self.testUploadFileFromURL()
-		//        }
-		//        queue.async { [unowned self] in
-		//            self.testDirectUpload()
-		//        }
 		//        queue.async { [unowned self] in
 		//            self.testRESTListOfFiles()
 		//        }
@@ -107,9 +97,6 @@ class Tester {
 		//            self.testFileGroupInfo()
 		//        }
 		//        queue.async { [unowned self] in
-		//            self.testMultipartUpload()
-		//        }
-		//        queue.async { [unowned self] in
 		//            self.testRedirectForAuthenticatedUrls()
 		//        }
 		//        queue.async {
@@ -134,135 +121,6 @@ class Tester {
 		//            self.testVideoConversionStatus()
 		//        }
 		
-		queue.async {
-			self.testDirectUploadBug()
-		}
-		queue.async {
-			self.testDirectUploadBug()
-		}
-		
-	}
-	
-	func testUploadFileInfo() {
-		print("<------ testUploadFileInfo ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadAPI.fileInfo(withFileId: "530384dd-f43a-46de-b3c2-9448a24170cf") { (info, error) in
-			defer {
-				semaphore.signal()
-			}
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(info ?? "nil")
-		}
-		semaphore.wait()
-	}
-	
-	func testUploadFileFromURL() {
-		print("<------ testUploadFileFromURL ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		// upload from url
-		let url = URL(string: "https://source.unsplash.com/random")
-		let task = UploadFromURLTask(sourceUrl: url!)
-			.checkURLDuplicates(true)
-			.saveURLDuplicates(true)
-			.filename("file_from_url")
-			.store(.store)
-		
-		uploadcare.uploadAPI.upload(task: task) { [unowned self] (result, error) in
-			if let error = error {
-				print(error)
-				return
-			}
-			print(result ?? "")
-			
-			guard let token = result?.token else {
-				semaphore.signal()
-				return
-			}
-			
-			delay(1.0) { [unowned self] in
-				self.uploadcare.uploadAPI.uploadStatus(forToken: token) { (status, error) in
-					print(status ?? "no data")
-					print(error ?? "no error")
-					semaphore.signal()
-				}
-			}
-			
-		}
-		semaphore.wait()
-	}
-	
-	func testUploadStatus() {
-		print("<------ testUploadStatus ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		uploadcare.uploadAPI.uploadStatus(forToken: "ede4e436-9ff4-4027-8ffe-3b3e4d4a7f5b") { (status, error) in
-			print(status ?? "no data")
-			print(status?.error ?? "no error")
-			semaphore.signal()
-		}
-		semaphore.wait()
-	}
-	
-	func testDirectUploadBug() {
-		print("<------ testDirectUpload ------>")
-		guard let url = URL(string: "https://source.unsplash.com/random"), let data = try? Data(contentsOf: url) else { return }
-		
-		print("size of file: \(sizeString(ofData: data))")
-		
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		let api = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
-		api.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, { (progress) in
-			
-		}) { (resultDictionary, error) in
-			defer { semaphore.signal() }
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(resultDictionary ?? "nil")
-		}
-		
-		semaphore.wait()
-	}
-	
-	func testDirectUpload() {
-		print("<------ testDirectUpload ------>")
-		guard let url = URL(string: "https://source.unsplash.com/random"), let data = try? Data(contentsOf: url) else { return }
-		
-		print("size of file: \(sizeString(ofData: data))")
-		
-		let semaphore = DispatchSemaphore(value: 0)
-		let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, { (progress) in
-			print("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			guard let files = resultDictionary else { return }
-			
-			for file in files {
-				print("uploaded file name: \(file.key) | file id: \(file.value)")
-			}
-			print(resultDictionary ?? "nil")
-		}
-		
-		// cancel if need
-		//        task.cancel()
-		
-		semaphore.wait()
 	}
 	
 	func testRESTListOfFiles() {
@@ -576,7 +434,7 @@ class Tester {
 				return
 			}
 			
-			let newGroup = self.uploadcare.uploadAPI.group(ofFiles: [])
+			let newGroup = self.uploadcare.group(ofFiles: [])
 			newGroup.files = group?.files ?? []
 			newGroup.create { (_, error) in
 				print(error ?? "")
@@ -600,64 +458,6 @@ class Tester {
 			}
 			print(group ?? "")
 		}
-		semaphore.wait()
-	}
-	
-	func testMultipartUpload() {
-		print("<------ testMultipartUpload ------>")
-		
-		guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else {
-			assertionFailure("no file")
-			return
-		}
-		
-		guard let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url) else {
-			assertionFailure("file not found")
-			return
-		}
-		
-		// upload without any callbacks
-		//        fileForUploading.upload(withName: "Mona_Lisa_big111.jpg")
-		
-		// or
-		
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		var task: UploadTaskResumable?
-		var didPause = false
-		let onProgress: (Double)->Void = { (progress) in
-			print("progress: \(progress)")
-			
-			if !didPause {
-				didPause.toggle()
-				task?.pause()
-				
-				delay(10.0) {
-					task?.resume()
-				}
-			}
-		}
-		
-		task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", store: .store, onProgress, { (file, error) in
-			defer {
-				semaphore.signal()
-			}
-			if let error = error {
-				print(error)
-				return
-			}
-			print(file ?? "")
-		})
-		
-		// pause
-		task?.pause()
-		delay(2.0) {
-			task?.resume()
-		}
-		
-		// cancel if need
-		//        task?.cancel()
-		
 		semaphore.wait()
 	}
 	

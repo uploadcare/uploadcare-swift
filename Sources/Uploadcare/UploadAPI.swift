@@ -145,8 +145,7 @@ extension UploadAPI {
 	}
 }
 
-
-// MARK: - Uploading
+// MARK: - Upload from URL
 extension UploadAPI {
 	/// Direct upload from url
 	/// - Parameters:
@@ -156,34 +155,51 @@ extension UploadAPI {
 		task: UploadFromURLTask,
 		_ completionHandler: @escaping (UploadFromURLResponse?, UploadError?) -> Void
 	) {
-		var urlString = uploadAPIBaseUrl + "/from_url?pub_key=\(self.publicKey)&source_url=\(task.sourceUrl.absoluteString)"
-			
-		urlString += "&store=\(task.store.rawValue)"
-		
+		var components = URLComponents()
+		components.scheme = "https"
+		components.host = uploadAPIHost
+		components.path = "/from_url"
+
+		var queryItems = [
+			URLQueryItem(name: "pub_key", value: publicKey),
+			URLQueryItem(name: "source_url", value: task.sourceUrl.absoluteString),
+			URLQueryItem(name: "store", value: task.store.rawValue)
+		]
+		components.queryItems = queryItems
+
 		if let filenameVal = task.filename {
 			let name = filenameVal.isEmpty ? "noname.ext" : filenameVal
-			urlString += "&filename=\(name)"
+			queryItems.append(
+				URLQueryItem(name: "filename", value: name)
+			)
 		}
 		if let checkURLDuplicatesVal = task.checkURLDuplicates {
 			let val = checkURLDuplicatesVal == true ? "1" : "0"
-			urlString += "&check_URL_duplicates=\(val)"
+			queryItems.append(
+				URLQueryItem(name: "check_URL_duplicates", value: val)
+			)
 		}
 		if let saveURLDuplicatesVal = task.saveURLDuplicates {
 			let val = saveURLDuplicatesVal == true ? "1" : "0"
-			urlString += "&save_URL_duplicates=\(val)"
+			queryItems.append(
+				URLQueryItem(name: "save_URL_duplicates", value: val)
+			)
 		}
-		
+
 		if let uploadSignature = getSignature() {
-			urlString += "&signature=\(uploadSignature.signature)"
-			urlString += "&expire=\(uploadSignature.expire)"
+			queryItems.append(contentsOf: [
+				URLQueryItem(name: "signature", value: uploadSignature.signature),
+				URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
+			])
 		}
-		
-		guard let url = URL(string: urlString) else {
+
+		components.queryItems = queryItems
+		guard let url = components.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
-		
+
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
@@ -204,7 +220,7 @@ extension UploadAPI {
 				}
 		}
 	}
-	
+
 	/// Get status for file upload from URL
 	/// - Parameters:
 	///   - token: token recieved from upload method
@@ -219,7 +235,7 @@ extension UploadAPI {
 			return
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
-		
+
 		manager.request(urlRequest)
 			.validate(statusCode: 200..<300)
 			.responseData { response in
@@ -240,7 +256,10 @@ extension UploadAPI {
 				}
 		}
 	}
-	
+}
+
+// MARK: - Direct upload
+extension UploadAPI {
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
 	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed
 	/// - Parameters:
@@ -248,8 +267,8 @@ extension UploadAPI {
 	///   - store: Sets the file storing behavior
 	///   - completionHandler: callback
 	@discardableResult
-	public func upload(
-		files: [String:Data],
+	public func directUpload(
+		files: [String: Data],
 		store: StoringBehavior? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskCompletionHandler
@@ -296,6 +315,17 @@ extension UploadAPI {
 		backgroundTask.resume()
 		return backgroundUploadTask
 	}
+
+	@available(*, deprecated, renamed: "directUpload")
+	@discardableResult
+	public func upload(
+		files: [String: Data],
+		store: StoringBehavior? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
+		_ completionHandler: @escaping TaskCompletionHandler
+	) -> UploadTaskable {
+		return directUpload(files: files, store: store, onProgress, completionHandler)
+	}
 	
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
 	/// - Parameters:
@@ -303,8 +333,8 @@ extension UploadAPI {
 	///   - store: Sets the file storing behavior
 	///   - completionHandler: callback
 	@discardableResult
-	func uploadInForeground(
-		files: [String:Data],
+	func directUploadInForeground(
+		files: [String: Data],
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping ([String: String]?, UploadError?) -> Void
@@ -363,50 +393,56 @@ extension UploadAPI {
 		
 		return UploadTask(request: request)
 	}
-	
+}
+
+// MARK: - Multipart uploading
+extension UploadAPI {
+	@discardableResult
 	/// Multipart file uploading
 	/// - Parameters:
-	///   - data: Data
-	///   - filename: File name
+	///   - data: File data
+	///   - name: File name
 	///   - store: Sets the file storing behavior
-	///   - completionHandler: completion handler
-	@discardableResult
-	public func uploadFile(
+	///   - onProgress: A callback that will be used to report upload progress
+	///   - completionHandler: Completion handler
+	/// - Returns: Upload task. You can use that task to pause, resume or cancel uploading.
+	public func multipartUpload(
 		_ data: Data,
 		withName name: String,
 		store: StoringBehavior? = nil,
-		_ onProgress: ((Double) -> Void)? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) -> UploadTaskResumable {
 		let totalSize = data.count
 		let fileMimeType = detectMimeType(for: data)
-	
-		let task = MultipartUploadTask()
-		task.queue = self.uploadQueue
 		let filename = name.isEmpty ? "noname.ext" : name
 		
+		let task = MultipartUploadTask()
+		task.queue = self.uploadQueue
+
 		// Starting a multipart upload transaction
 		startMulipartUpload(
 			withName: filename,
 			size: totalSize,
-			mimeType: fileMimeType) { [weak self] (response, error) in
+			mimeType: fileMimeType,
+			store: store ?? .store) { [weak self] (response, error) in
 				guard let self = self else { return }
 				if let error = error {
 					completionHandler(nil, error)
 					return
 				}
-				
+
 				// Uploading individual file parts
 				guard let parts = response?.parts, let uuid = response?.uuid else {
 					completionHandler(nil, UploadError.defaultError())
 					return
 				}
-				
+
 				var offset = 0
 				var i = 0
 				var numberOfUploadedChunks = 0
 				let uploadGroup = DispatchGroup()
-				
+
 				while offset < totalSize {
 					let bytesLeft = totalSize - offset
 					let currentChunkSize = bytesLeft > Self.uploadChunkSize ? Self.uploadChunkSize : bytesLeft
@@ -421,7 +457,7 @@ extension UploadAPI {
 
 					// presigned upload url
 					let partUrl = parts[i]
-					
+
 					// uploading individual part
 					self.uploadIndividualFilePart(
 						chunk,
@@ -432,17 +468,17 @@ extension UploadAPI {
 						completeMessage: nil, //"Uploaded \(i) of \(parts.count)",
 						onComplete: {
 							numberOfUploadedChunks += 1
-							
+
 							let total = Double(parts.count)
 							let ready = Double(numberOfUploadedChunks)
 							let percent = round(ready * 100 / total)
 							onProgress?(percent / 100)
 					})
-					
+
 					offset += currentChunkSize
 					i += 1
 				}
-				
+
 				// Completing a multipart upload
 				uploadGroup.notify(queue: self.uploadQueue) {
 					guard task.isCancelled == false else {
@@ -463,10 +499,22 @@ extension UploadAPI {
 					}
 				}
 		}
-		
+
 		return task
 	}
-		
+
+	@available(*, deprecated, renamed: "directUpload")
+	public func upload(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) -> UploadTaskResumable {
+		return multipartUpload(data, withName: name, store: store, onProgress, completionHandler)
+	}
+
+	
 	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
 	/// - Parameters:
 	///   - filename: An original filename
@@ -478,7 +526,7 @@ extension UploadAPI {
 		withName filename: String,
 		size: Int,
 		mimeType: String,
-        store: StoringBehavior = .store,
+		store: StoringBehavior,
 		_ completionHandler: @escaping (StartMulipartUploadResponse?, UploadError?) -> Void
 	) {
 		let urlString = uploadAPIBaseUrl + "/multipart/start/"
@@ -491,20 +539,20 @@ extension UploadAPI {
 				if let sizeData = "\(size)".data(using: .utf8) {
 					multipartFormData.append(sizeData, withName: "size")
 				}
-				
+
 				if let contentTypeData = mimeType.data(using: .utf8) {
 					multipartFormData.append(contentTypeData, withName: "content_type")
 				}
-				
+
 				if let publicKeyData = self?.publicKey.data(using: .utf8) {
 					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
 				}
-				
+
 				if let data = store.rawValue.data(using: .utf8) {
 					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
 				}
-				
-                if let uploadSignature = self?.getSignature() {
+
+				if let uploadSignature = self?.getSignature() {
 					if let signatureData = uploadSignature.signature.data(using: .utf8) {
 						multipartFormData.append(signatureData, withName: "signature")
 					}
@@ -528,7 +576,7 @@ extension UploadAPI {
 						completionHandler(resultData, nil)
 						return
 					}
-					
+
 					// error happened
 					let status: Int = response.response?.statusCode ?? 0
 					var message = ""
@@ -542,7 +590,7 @@ extension UploadAPI {
 				}
 		}
 	}
-	
+
 	private func uploadIndividualFilePart(
 		_ part: Data,
 		toPresignedUrl urlString: String,
@@ -553,10 +601,10 @@ extension UploadAPI {
 		onComplete: (()->Void)? = nil
 	) {
 		group?.enter()
-		
+
 		let workItem = DispatchWorkItem { [weak self, weak task] in
 			guard let self = self, let task = task else { return }
-			
+
 			guard let url = URL(string: urlString) else {
 				assertionFailure("Incorrect url")
 				group?.leave()
@@ -566,7 +614,7 @@ extension UploadAPI {
 			urlRequest.httpMethod = HTTPMethod.put.rawValue
 			urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
 			urlRequest.httpBody = part
-			
+
 			let request = self.manager.request(urlRequest)
 				.responseData { response in
 					if response.response?.statusCode == 200 {
@@ -587,11 +635,11 @@ extension UploadAPI {
 			}
 			task.appendRequest(request)
 		}
-		
+
 		// using concurrent queue for parts uploading
 		uploadQueue.async(execute: workItem)
 	}
-	
+
 	/// Complete multipart upload transaction when all files parts are uploaded.
 	/// - Parameters:
 	///   - forFileUIID: Uploaded file UUID from multipart upload start response.
@@ -624,7 +672,7 @@ extension UploadAPI {
 						completionHandler(resultData, nil)
 						return
 					}
-					
+
 					// error happened
 					let status: Int = response.response?.statusCode ?? 0
 					var message = ""
@@ -633,7 +681,7 @@ extension UploadAPI {
 					}
 					let error = UploadError(status: status, detail: message)
 					completionHandler(nil, error)
-					
+
 				case .failure(let encodingError):
 					completionHandler(
 						nil,
@@ -747,50 +795,25 @@ extension UploadAPI {
 	}
 }
 
-
-// MARK: - Factory
-extension UploadAPI {
-	/// Create group of uploaded files from array
-	/// - Parameter files: files array
-	public func group(ofFiles files: [UploadedFile]) -> UploadedFilesGroup {
-		return UploadedFilesGroup(withFiles: files, uploadAPI: self)
-	}
-	
-	/// Create file model for uploading from Data
-	/// - Parameters:
-	///   - data: data
-	///   - fileName: file name
-	public func file(fromData data: Data) -> UploadedFile {
-		return UploadedFile(withData: data, uploadAPI: self)
-	}
-	
-	/// Create file model for uploading from URL
-	/// - Parameters:
-	///   - url: file url
-	public func file(withContentsOf url: URL) -> UploadedFile? {
-		var dataFromURL: Data?
-		
-		let semaphore = DispatchSemaphore(value: 0)
-		DispatchQueue.global(qos: .utility).async {
-			dataFromURL = try? Data(contentsOf: url, options: .mappedIfSafe)
-			semaphore.signal()
-		}
-		semaphore.wait()
-		
-		guard let data = dataFromURL else { return nil }
-		let file = UploadedFile(withData: data, uploadAPI: self)
-		file.filename = url.lastPathComponent
-		file.originalFilename = url.lastPathComponent
-		return file
-	}
-}
-
-
-
 // MARK: - URLSessionTaskDelegate
 extension UploadAPI: URLSessionDataDelegate {
 	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
 		// without adding this method background task will not trigger urlSession(_:dataTask:didReceive:completionHandler:)
+		if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+			guard let backgroundTask = backgroundTasks[dataTask.taskIdentifier] else { return }
+
+			// remove task
+			defer {
+				backgroundTask.clear()
+				backgroundTasks.removeValue(forKey: dataTask.taskIdentifier)
+			}
+
+			let statusCode: Int = (dataTask.response as? HTTPURLResponse)?.statusCode ?? 0
+
+			if statusCode == 200 {
+				backgroundTask.completionHandler([String:String](), nil)
+			}
+		}
 	}
 }
 

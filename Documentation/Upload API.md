@@ -1,6 +1,7 @@
 # Upload API
 
 * [Initialization](#initialization)
+* [File upload](#file-upload)
 * [Direct uploads](#direct-uploads-api-reference)
 * [Multipart uploads](#multipart-uploads-api-reference)
 * [Upload files from URLs](#upload-files-from-urls-api-reference)
@@ -18,9 +19,42 @@ Upload API requires only a public key:
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY")
 ```
 
+## File upload ##
+Uploadcare provides simple method that will handle file upload. It will decide internally best way to upload file (direct upload or multipart upload)
+
+```swift
+guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
+guard let data = try? Data(contentsOf: url) else { return }
+
+uploadcare.uploadFile(data, withName: filename, store: .doNotStore, , { (progress) in
+    print("progress: \(progress)")
+}, { file, error in
+    if let error = error {
+        print(error)
+        return
+    }
+
+    guard let file = file else {
+        print("error: no file")
+        return
+    }
+
+    print(file)
+})
+
+// You can cancel uploading if needed
+task.cancel()
+
+// You can pause uploading
+(task as? UploadTaskResumable)?.pause()
+
+// To resume uploading
+(task as? UploadTaskResumable)?.resume()
+```
+
 ## Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
-Direct uploads work with background URLSession, so uploading will continue if the app goes to the background state.
+Direct uploads work with background URLSession, so uploading will continue if the app goes to the background state. It support files smaller than 100MB only
 
 ```swift
 guard let url = URL(string: "https://source.unsplash.com/random") else { return }
@@ -38,7 +72,7 @@ fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (res
 fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
 
 // Or you can just upload data and provide a filename
-let task = uploadcare.uploadAPI.upload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
+let task = uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
     print("upload progress: \(progress * 100)%")
 }) { (resultDictionary, error) in
     if let error = error {
@@ -73,7 +107,7 @@ let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url)
 fileForUploading?.upload(withName: "Mona_Lisa_big.jpg")
 
 // Upload with getting data about progress
-let task = fileForUploading.upload(withName: "Mona_Lisa_big.jpg", store: .store, { (progress) in
+let task = fileForUploading.multipartUpload(withName: "Mona_Lisa_big.jpg", store: .store, { (progress) in
     print("progress: \(progress)")
 }, { (file, error) in
     if let error = error {

@@ -34,8 +34,10 @@ struct GroupRowView: View {
 
 struct GroupRowView_Previews: PreviewProvider {
     static var previews: some View {
+		#if DEBUG
         GroupRowView(groupData: testGroupViewData)
 			.previewLayout(.sizeThatFits)
+		#endif
     }
 }
 
