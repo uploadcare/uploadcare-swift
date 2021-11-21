@@ -99,15 +99,15 @@ class Tester {
 		//        queue.async { [unowned self] in
 		//            self.testRedirectForAuthenticatedUrls()
 		//        }
-		//        queue.async {
-		//            self.testCreateWebhook()
-		//        }
-		//        queue.async {
-		//            self.testListOfWebhooks()
-		//        }
-		//		queue.async {
-		//            self.testUpdateWebhook()
-		//        }
+//		        queue.async {
+//		            self.testCreateWebhook()
+//		        }
+//		        queue.async {
+//		            self.testListOfWebhooks()
+//		        }
+				queue.async {
+		            self.testUpdateWebhook()
+		        }
 		//		queue.async {
 		//            self.testDeleteWebhook()
 		//        }
@@ -504,7 +504,7 @@ class Tester {
 		
 		let random = (0...1000).randomElement()!
 		let url = URL(string: "https://google.com/\(random)")!
-		uploadcare.createWebhook(targetUrl: url, isActive: true) { (value, error) in
+		uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "sss1") { (value, error) in
 			defer { semaphore.signal() }
 			
 			if let error = error {
@@ -538,7 +538,7 @@ class Tester {
 			}
 			
 			print(webhook)
-			self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url, isActive: true) { (value, error) in
+			self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url, isActive: true, signingSecret: "sss2") { (value, error) in
 				defer { semaphore.signal() }
 				
 				if let error = error {
