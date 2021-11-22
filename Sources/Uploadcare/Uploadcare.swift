@@ -753,6 +753,7 @@ extension Uploadcare {
     /// - Parameters:
     ///   - targetUrl: A URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
     ///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
+	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
     ///   - completionHandler: completion handler
 	public func createWebhook(targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
         let urlString = RESTAPIBaseUrl + "/webhooks/"
@@ -806,6 +807,7 @@ extension Uploadcare {
 	///   - id: Webhook ID
 	///   - targetUrl: Where webhook data will be posted.
 	///   - isActive: Marks a subscription as either active or not
+	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
 	///   - completionHandler: completion handler
 	public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
 		let urlString = RESTAPIBaseUrl + "/webhooks/\(id)/"
