@@ -746,16 +746,16 @@ extension Uploadcare {
                     }
                     completionHandler(nil, decodedData)
                 }
-        }
+            }
     }
     
     /// Create webhook
     /// - Parameters:
     ///   - targetUrl: A URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
     ///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
-	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
+    ///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
     ///   - completionHandler: completion handler
-	public func createWebhook(targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
+    public func createWebhook(targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
         let urlString = RESTAPIBaseUrl + "/webhooks/"
         guard let url = URL(string: urlString) else {
             assertionFailure("Incorrect url")
@@ -768,9 +768,9 @@ extension Uploadcare {
             "is_active": "\(isActive)"
         ]
 
-		if let signingSecret = signingSecret {
-			bodyDictionary["signing_secret"] = signingSecret
-		}
+        if let signingSecret = signingSecret {
+            bodyDictionary["signing_secret"] = signingSecret
+        }
 
         if let body = try? JSONEncoder().encode(bodyDictionary) {
             urlRequest.httpBody = body
@@ -802,15 +802,15 @@ extension Uploadcare {
         }
     }
 	
-	/// Update webhook attributes
-	/// - Parameters:
-	///   - id: Webhook ID
-	///   - targetUrl: Where webhook data will be posted.
-	///   - isActive: Marks a subscription as either active or not
-	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
-	///   - completionHandler: completion handler
-	public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
-		let urlString = RESTAPIBaseUrl + "/webhooks/\(id)/"
+    /// Update webhook attributes
+    /// - Parameters:
+    ///   - id: Webhook ID
+    ///   - targetUrl: Where webhook data will be posted.
+    ///   - isActive: Marks a subscription as either active or not
+    ///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
+    ///   - completionHandler: completion handler
+    public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
+        let urlString = RESTAPIBaseUrl + "/webhooks/\(id)/"
         guard let url = URL(string: urlString) else {
             assertionFailure("Incorrect url")
             return
@@ -822,9 +822,9 @@ extension Uploadcare {
             "is_active": "\(isActive)"
         ]
 
-		if let signingSecret = signingSecret {
-			bodyDictionary["signing_secret"] = signingSecret
-		}
+        if let signingSecret = signingSecret {
+            bodyDictionary["signing_secret"] = signingSecret
+        }
 
         if let body = try? JSONEncoder().encode(bodyDictionary) {
             urlRequest.httpBody = body
