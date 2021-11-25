@@ -12,6 +12,10 @@
 * [Store group](#store-group-api-reference)
 * [Project info](#project-info-api-reference)
 * [Secure delivery](#secure-delivery-api-reference)
+* [List of webhooks](#list-of-webhooks-api-reference)
+* [Create webhook](#create-webhook-api-reference)
+* [Update webhook](#update-webhook-api-reference)
+* [Delete webhook](#delete-webhook-api-reference)
 * [Convert document](#convert-document-api-reference)
 * [Document conversion job status](#document-conversion-job-status-api-reference)
 * [Convert video](#convert-video-api-reference)
@@ -266,6 +270,64 @@ uploadcare.getAuthenticatedUrlFromUrl(url, { (value, error) in
     // Value is https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
     print(value)
 })
+```
+
+## List of webhooks ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhooksList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+```swift
+uploadcare.getListOfWebhooks { (value, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+			
+    print(value)
+}
+```
+
+## Create webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhookCreate?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+Create and subscribe to a webhook. You can use webhooks to receive notifications about your uploads. For instance, once a file gets uploaded to your project, we can notify you by sending a message to a target URL.
+
+```swift
+let url = URL(string: "https://yourwebhook.com")!
+uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSigningSecret") { (value, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+
+    print(value)
+}
+```
+
+## Update webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/updateWebhook?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+Update webhook attributes.
+
+```swift
+let url = URL(string: "https://yourwebhook.com")!
+uploadcare.updateWebhook(id: "webhookId", targetUrl: url, isActive: true, signingSecret: "someNewSigningSecret") { (value, error) in
+    if let error = error {
+        print(error)
+        return
+    }
+				
+    print(value)
+}
+```
+
+## Delete webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhookUnsubscribe?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+
+Unsubscribe and delete a webhook.
+
+```swift
+let url = URL(string: "https://yourwebhook.com")!
+uploadcare.deleteWebhook(forTargetUrl: url) { (error) in
+    if let error = error {
+        print(error)
+    }				
+}
 ```
 
 ## Convert document ([API Reference](https://uploadcare.com/docs/transformations/document_conversion/#convert?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
