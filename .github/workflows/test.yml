@@ -6,19 +6,30 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  DEVELOPER_DIR: /Applications/Xcode_11.5.app/Contents/Developer
-
 jobs:
   build:
 
     runs-on: macos-latest
 
+    strategy:
+      matrix:
+        destination: ['platform=iOS Simulator,OS=13.2.2,name=iPhone 11 Pro Max']
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Package update
-      run: swift package update
-    - name: Build
-      run: swift build -v
-    - name: Run tests
-      run: swift test -v
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Fix for Alamofire
+        run: |
+          for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts; \
+          git config --global url."git@github.com:".insteadOf "https://github.com/"
+      - name: Build
+        run: |
+          xcodebuild clean build -project Uploadcare.xcodeproj -scheme Uploadcare -destination "${destination}" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
+        env:
+          destination: ${{ matrix.destination }}
+      - name: Test
+        run: |
+          xcodebuild clean test -project Uploadcare.xcodeproj -scheme UploadcareTests -destination "${destination}" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
+        env:
+          destination: ${{ matrix.destination }}
+
