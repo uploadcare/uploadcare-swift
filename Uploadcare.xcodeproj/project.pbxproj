@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		245DBAC924900FE2002FB70B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 245DBAC824900FE2002FB70B /* Alamofire */; };
-		245DBB3F2490194B002FB70B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 245DBB3E2490194B002FB70B /* Alamofire */; };
-		245DBB432490195A002FB70B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 245DBB422490195A002FB70B /* Alamofire */; };
 		245DBB4D24901B9B002FB70B /* Uploadcare_watchOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 245DBB4B24901B9B002FB70B /* Uploadcare_watchOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		247B6126258A860A00CF34A0 /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247B60F7258A860A00CF34A0 /* VideoInfo.swift */; };
 		247B6127258A860A00CF34A0 /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247B60F7258A860A00CF34A0 /* VideoInfo.swift */; };
@@ -177,7 +174,10 @@
 		247B61C9258A860B00CF34A0 /* UploadAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247B6125258A860A00CF34A0 /* UploadAPI.swift */; };
 		24875B1D243B33EC003F3E06 /* Uploadcare_tvOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B1B243B33EB003F3E06 /* Uploadcare_tvOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		24875B37243B3518003F3E06 /* Uploadcare_macOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B35243B3518003F3E06 /* Uploadcare_macOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		24B722502502B8A400462BD8 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 24B7224F2502B8A400462BD8 /* Alamofire */; };
+		24B985EF27A093320095D204 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 24B985EE27A093320095D204 /* Alamofire */; };
+		24B985F127A093390095D204 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 24B985F027A093390095D204 /* Alamofire */; };
+		24B985F327A0933D0095D204 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 24B985F227A0933D0095D204 /* Alamofire */; };
+		24B985F527A093410095D204 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 24B985F427A093410095D204 /* Alamofire */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -276,7 +276,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24B722502502B8A400462BD8 /* Alamofire in Frameworks */,
+				24B985F527A093410095D204 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,7 +284,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				245DBB3F2490194B002FB70B /* Alamofire in Frameworks */,
+				24B985F127A093390095D204 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,7 +292,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				245DBB432490195A002FB70B /* Alamofire in Frameworks */,
+				24B985F327A0933D0095D204 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,7 +300,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
-				245DBAC924900FE2002FB70B /* Alamofire in Frameworks */,
+				24B985EF27A093320095D204 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -624,7 +624,7 @@
 			);
 			name = "Uploadcare-watchOS";
 			packageProductDependencies = (
-				24B7224F2502B8A400462BD8 /* Alamofire */,
+				24B985F427A093410095D204 /* Alamofire */,
 			);
 			productName = "Uploadcare-watchOS";
 			productReference = 245DBB4924901B9B002FB70B /* Uploadcare_watchOS.framework */;
@@ -645,7 +645,7 @@
 			);
 			name = "Uploadcare-tvOS";
 			packageProductDependencies = (
-				245DBB3E2490194B002FB70B /* Alamofire */,
+				24B985F027A093390095D204 /* Alamofire */,
 			);
 			productName = "Uploadcare-tvOS";
 			productReference = 24875B19243B33EB003F3E06 /* Uploadcare_tvOS.framework */;
@@ -666,7 +666,7 @@
 			);
 			name = "Uploadcare-macOS";
 			packageProductDependencies = (
-				245DBB422490195A002FB70B /* Alamofire */,
+				24B985F227A0933D0095D204 /* Alamofire */,
 			);
 			productName = "Uploadcare-macOS";
 			productReference = 24875B33243B3518003F3E06 /* Uploadcare_macOS.framework */;
@@ -685,7 +685,7 @@
 			);
 			name = Uploadcare;
 			packageProductDependencies = (
-				245DBAC824900FE2002FB70B /* Alamofire */,
+				24B985EE27A093320095D204 /* Alamofire */,
 			);
 			productName = Uploadcare;
 			productReference = 2495945323B77F51006BB9BF /* Uploadcare.framework */;
@@ -721,7 +721,7 @@
 			);
 			mainGroup = OBJ_5;
 			packageReferences = (
-				2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */,
+				24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			productRefGroup = OBJ_34 /* Products */;
 			projectDirPath = "";
@@ -1628,35 +1628,35 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+		24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:Alamofire/Alamofire.git";
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.5;
+				minimumVersion = 5.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		245DBAC824900FE2002FB70B /* Alamofire */ = {
+		24B985EE27A093320095D204 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */;
+			package = 24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
 		};
-		245DBB3E2490194B002FB70B /* Alamofire */ = {
+		24B985F027A093390095D204 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */;
+			package = 24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
 		};
-		245DBB422490195A002FB70B /* Alamofire */ = {
+		24B985F227A0933D0095D204 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */;
+			package = 24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
 		};
-		24B7224F2502B8A400462BD8 /* Alamofire */ = {
+		24B985F427A093410095D204 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2495945A23B784AF006BB9BF /* XCRemoteSwiftPackageReference "Alamofire" */;
+			package = 24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
