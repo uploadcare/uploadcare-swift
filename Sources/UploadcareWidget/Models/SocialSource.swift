@@ -5,7 +5,7 @@
 //  Created by Sergey Armodin on 25.01.2021.
 //  Copyright © 2021 Uploadcare, Inc. All rights reserved.
 //
-
+#if os(iOS)
 import Foundation
 
 public class SocialSource: Identifiable {
@@ -152,3 +152,4 @@ public extension SocialSource {
 		UserDefaults.standard.removeObject(forKey: "cookie_\(source.rawValue)")
 	}
 }
+#endif

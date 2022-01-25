@@ -8,7 +8,8 @@
 
 import SwiftUI
 
-@available(iOS 13.0.0, OSX 10.15.0, *)
+#if os(iOS)
+@available(iOS 13.0.0, *)
 struct ActivityIndicator: UIViewRepresentable {
 
 	@Binding var isAnimating: Bool
@@ -25,10 +26,11 @@ struct ActivityIndicator: UIViewRepresentable {
 	}
 }
 
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, *)
 struct ActivityIndicator_Previews: PreviewProvider {
 	static var previews: some View {
 		ActivityIndicator(isAnimating: .constant(true), style: .large)
 			.previewLayout(.sizeThatFits)
 	}
 }
+#endif

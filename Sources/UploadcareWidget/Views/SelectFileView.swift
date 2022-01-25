@@ -8,7 +8,8 @@
 
 import SwiftUI
 
-@available(iOS 14.0.0, OSX 10.15.0, *)
+#if os(iOS)
+@available(iOS 14.0.0, *)
 struct SelectFileView: View {
 	// MARK: - Public properties
 	let thing: ChunkThing
@@ -35,3 +36,4 @@ struct SelectFileView: View {
 		}
     }
 }
+#endif

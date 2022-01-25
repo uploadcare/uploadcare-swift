@@ -8,7 +8,8 @@
 
 import SwiftUI
 
-@available(iOS 14.0.0, OSX 10.15.0, *)
+#if os(iOS)
+@available(iOS 14.0.0, *)
 struct FilesListView: View {
 	@Environment(\.presentationMode) var presentation
 	@StateObject var viewModel: FilesListViewModel
@@ -198,3 +199,4 @@ struct FilesLIstView_Previews: PreviewProvider {
 //		)
     }
 }
+#endif

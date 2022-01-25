@@ -8,6 +8,7 @@
 
 import SwiftUI
 
+#if os(iOS)
 @available(iOS 13.0, *)
 struct ImagePicker: UIViewControllerRepresentable {
 
@@ -92,3 +93,4 @@ struct ImagePicker_Previews: PreviewProvider {
 		}
 	}
 }
+#endif

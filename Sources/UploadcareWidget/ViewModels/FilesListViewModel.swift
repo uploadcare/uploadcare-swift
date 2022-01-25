@@ -5,7 +5,7 @@
 //  Created by Sergei Armodin on 26.01.2021.
 //  Copyright © 2021 Uploadcare, Inc. All rights reserved.
 //
-
+#if os(iOS)
 import Foundation
 import SwiftUI
 import Combine
@@ -270,3 +270,4 @@ extension Data {
 		return String(data: self, encoding: .utf8)
 	}
 }
+#endif

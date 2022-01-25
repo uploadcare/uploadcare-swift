@@ -8,7 +8,8 @@
 
 import SwiftUI
 
-@available(iOS 14.0.0, OSX 10.15.0, *)
+#if os(iOS)
+@available(iOS 14.0.0, *)
 struct AsyncImage<Placeholder: View>: View {
 	@StateObject private var loader: ImageLoader
 	private let placeholder: Placeholder
@@ -47,10 +48,11 @@ struct ImageCacheKey: EnvironmentKey {
 	static let defaultValue: ImageCache = ImageCache()
 }
 
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, *)
 extension EnvironmentValues {
 	var imageCache: ImageCache {
 		get { self[ImageCacheKey.self] }
 		set { self[ImageCacheKey.self] = newValue }
 	}
 }
+#endif

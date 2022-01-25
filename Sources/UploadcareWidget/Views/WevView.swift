@@ -9,6 +9,7 @@
 import SwiftUI
 import WebKit
 
+#if os(iOS)
 @available(iOS 13.0, *)
 struct WebView: UIViewRepresentable {
 	var url: URL?
@@ -105,4 +106,4 @@ struct WebView: UIViewRepresentable {
 		}
 	}
 }
-
+#endif
