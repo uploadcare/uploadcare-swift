@@ -7,29 +7,28 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  SwiftBuild:
     runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
 
+    - name: Swift build for iOS
+      run: swift build -c release -Xswiftc "-sdk" -Xswiftc "`xcrun --sdk iphonesimulator --show-sdk-path`" -Xswiftc "-target" -Xswiftc "x86_64-apple-ios13.0-simulator"
+
+    - name: Swift build for macOS
+      run: swift build -c release
+
+  carthage:
+    runs-on: macos-latest
     strategy:
       matrix:
-        destination: ['platform=iOS Simulator,OS=13.2.2,name=iPhone 11 Pro Max']
+        target: ['Uploadcare', 'Uploadcare-tvOS', 'Uploadcare-macOS', 'Uploadcare-watchOS']
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Fix for Alamofire
-        run: |
-          for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts; \
-          git config --global url."git@github.com:".insteadOf "https://github.com/"
-      - name: Build
-        run: |
-          xcodebuild clean build -project Uploadcare.xcodeproj -scheme Uploadcare -destination "${destination}" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
-        env:
-          destination: ${{ matrix.destination }}
-      - name: Test
-        run: |
-          xcodebuild clean test -project Uploadcare.xcodeproj -scheme UploadcareTests -destination "${destination}" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
-        env:
-          destination: ${{ matrix.destination }}
-
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Build Carthage target ${{matrix.target}}
+      run: xcodebuild build -project Uploadcare.xcodeproj -scheme ${{matrix.target}} -configuration Release
