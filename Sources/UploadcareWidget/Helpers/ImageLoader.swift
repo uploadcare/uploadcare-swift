@@ -5,7 +5,7 @@
 //  Created by Sergey Armodin on 13.06.2021.
 //  Copyright © 2021 Uploadcare, Inc. All rights reserved.
 //
-
+#if os(iOS)
 import Combine
 import UIKit
 
@@ -73,3 +73,4 @@ private extension ImageLoader {
 		image.map { cache?[url] = $0 }
 	}
 }
+#endif

@@ -1,0 +1,34 @@
+name: test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  SwiftBuild:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Swift build for iOS
+      run: swift build -c release -Xswiftc "-sdk" -Xswiftc "`xcrun --sdk iphonesimulator --show-sdk-path`" -Xswiftc "-target" -Xswiftc "x86_64-apple-ios13.0-simulator"
+
+    - name: Swift build for macOS
+      run: swift build -c release
+
+  carthage:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        target: ['Uploadcare', 'Uploadcare-tvOS', 'Uploadcare-macOS', 'Uploadcare-watchOS']
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Build Carthage target ${{matrix.target}}
+      run: xcodebuild build -project Uploadcare.xcodeproj -scheme ${{matrix.target}} -configuration Release

@@ -6,6 +6,7 @@
 //  Copyright © 2021 Uploadcare, Inc. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 struct ImageCache {
@@ -25,3 +26,4 @@ struct ImageCache {
 		}
 	}
 }
+#endif

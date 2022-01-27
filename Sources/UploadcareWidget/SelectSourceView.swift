@@ -6,6 +6,7 @@
 //  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
+#if os(iOS)
 import SwiftUI
 import Uploadcare
 
@@ -193,3 +194,4 @@ public struct SelectSourceView: View {
 //			.previewLayout(.sizeThatFits)
 //    }
 //}
+#endif
