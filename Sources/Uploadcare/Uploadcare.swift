@@ -24,7 +24,11 @@ public class Uploadcare: NSObject {
 	}
 	
 	/// Uploadcare authentication method
-	public var authScheme: AuthScheme = .signed
+    public var authScheme: AuthScheme = .signed {
+        didSet {
+            requestManager.authScheme = authScheme
+        }
+    }
 	
 
 	// MARK: - Public properties
@@ -43,9 +47,10 @@ public class Uploadcare: NSObject {
 	
 	/// Library name
 	private var libraryName = "UploadcareSwift"
-	
 	/// Library version
-	private var libraryVersion = "0.1.0"
+	private var libraryVersion = "0.5.0"
+    
+    private let requestManager: RequestManager
     
     private var redirectValues = [String: String]()
 	
@@ -55,6 +60,7 @@ public class Uploadcare: NSObject {
 	public init(withPublicKey publicKey: String, secretKey: String? = nil) {
 		self.publicKey = publicKey
 		self.secretKey = secretKey
+        self.requestManager = RequestManager(publicKey: publicKey, secretKey: secretKey)
 		
 		self.uploadAPI = UploadAPI(withPublicKey: publicKey, secretKey: secretKey, manager: self.manager)
 	}
@@ -148,30 +154,22 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
-		signRequest(&urlRequest)
-		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(FilesList.self, from: data)
+        var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+        requestManager.signRequest(&urlRequest)
+        
+        requestManager.performRequest(urlRequest) { result in
+            switch result {
+            case .failure(let error):
+                completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let data):
+                guard let responseData = try? JSONDecoder().decode(FilesList.self, from: data) else {
+                    completionHandler(nil, RESTAPIError.defaultError())
+                    return
+                }
 
-					guard let responseData = decodedData else {
-						completionHandler(nil, RESTAPIError.defaultError())
-						return
-					}
-
-					completionHandler(responseData, nil)
-				case .failure(_):
-					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-						completionHandler(nil, RESTAPIError.defaultError())
-						return
-					}
-					completionHandler(nil, decodedData)
-				}
-		}
+                completionHandler(responseData, nil)
+            }
+        }
 	}
 	
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
