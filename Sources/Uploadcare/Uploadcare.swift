@@ -127,15 +127,8 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - query: query object
 	///   - completionHandler: completion handler
-	public func listOfFiles(
-		withQuery query: PaginationQuery?,
-		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
-	) {
-		var queryString: String?
-		if let queryValue = query {
-			queryString = "\(queryValue.stringValue)"
-		}
-		listOfFiles(withQueryString: queryString, completionHandler)
+	public func listOfFiles(withQuery query: PaginationQuery?, _ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
+		listOfFiles(withQueryString: query?.stringValue, completionHandler)
 	}
 	
 	/// Get list of files
