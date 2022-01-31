@@ -20,7 +20,7 @@ jobs:
     - name: Swift build for macOS
       run: swift build -c release
 
-  carthage:
+  CarthageBuild:
     runs-on: macos-latest
     strategy:
       matrix:
