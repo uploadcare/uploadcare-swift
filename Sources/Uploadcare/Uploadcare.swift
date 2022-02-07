@@ -177,14 +177,14 @@ extension Uploadcare {
 		urlComponents.scheme = "https"
 		urlComponents.host = RESTAPIHost
 		urlComponents.path = "/files/\(uuid)/"
-		
+
 		guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
 		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
-		
+
 		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
 			switch result {
 			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))

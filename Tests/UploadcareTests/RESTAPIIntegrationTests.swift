@@ -62,7 +62,63 @@ final class RESTAPIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 15.0)
     }
 
-    func test3_fileInfo_with_UUID() {
+    func test3_listOfFiles_pagination() {
+        let expectation = XCTestExpectation(description: "test2_listOfFiles_signed_authScheme")
+        uploadcare.authScheme = .signed
+
+        let query = PaginationQuery()
+            .stored(true)
+            .ordering(.dateTimeUploadedDESC)
+            .limit(5)
+
+        let filesList = uploadcare.listOfFiles()
+
+        DispatchQueue.global(qos: .utility).async {
+            let semaphore = DispatchSemaphore(value: 0)
+            filesList.get(withQuery: query) { (list, error) in
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
+                }
+
+                XCTAssertNotNil(list)
+                XCTAssertFalse(list!.results.isEmpty)
+                semaphore.signal()
+            }
+            semaphore.wait()
+
+            // get next page
+            filesList.nextPage { (list, error) in
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
+                }
+
+                XCTAssertNotNil(list)
+                XCTAssertFalse(list!.results.isEmpty)
+                semaphore.signal()
+            }
+            semaphore.wait()
+
+            // get previous page
+            filesList.previousPage { (list, error) in
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
+                }
+
+                XCTAssertNotNil(list)
+                XCTAssertFalse(list!.results.isEmpty)
+                semaphore.signal()
+            }
+            semaphore.wait()
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 150.0)
+    }
+
+    func test4_fileInfo_with_UUID() {
         let expectation = XCTestExpectation(description: "test3_fileInfo_with_UUID")
 
         // get any file from list of files

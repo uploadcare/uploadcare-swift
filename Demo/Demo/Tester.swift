@@ -58,9 +58,6 @@ class Tester {
 	func start() {
 		let queue = DispatchQueue(label: "uploadcare.test.queue")
 		//        queue.async { [unowned self] in
-		//            self.testRESTListOfFiles()
-		//        }
-		//        queue.async { [unowned self] in
 		//            self.testRESTFileInfo()
 		//        }
 		//        queue.async { [unowned self] in
@@ -105,9 +102,9 @@ class Tester {
 //		        queue.async {
 //		            self.testListOfWebhooks()
 //		        }
-				queue.async {
-		            self.testUpdateWebhook()
-		        }
+//				queue.async {
+//		            self.testUpdateWebhook()
+//		        }
 		//		queue.async {
 		//            self.testDeleteWebhook()
 		//        }
@@ -121,82 +118,6 @@ class Tester {
 		//            self.testVideoConversionStatus()
 		//        }
 		
-	}
-	
-	func testRESTListOfFiles() {
-		print("<------ testRESTListOfFiles ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		let query = PaginationQuery()
-			.stored(true)
-			.ordering(.sizeDESC)
-			.limit(5)
-		
-		let filesList = uploadcare.listOfFiles()
-		filesList.get(withQuery: query) { (list, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(list ?? "")
-		}
-		semaphore.wait()
-		
-		// get next page
-		print("-------------- next page")
-		filesList.nextPage { (list, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(list ?? "")
-		}
-		semaphore.wait()
-		
-		// get previous page
-		print("-------------- previous page")
-		filesList.previousPage { (list, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(list ?? "")
-		}
-		semaphore.wait()
-	}
-	
-	func testRESTFileInfo() {
-		print("<------ testListOfFiles ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(file ?? "")
-		}
-		semaphore.wait()
 	}
 	
 	func testRESTDeleteFile() {
