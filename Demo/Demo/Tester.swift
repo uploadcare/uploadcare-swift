@@ -194,12 +194,6 @@ class Tester {
 				return
 			}
 			
-			//            let urlString = file.keyCDNUrl(
-			//                withToken: "fa3f69df3f4bcc9d4631bc7144838259bb26b34e26b4cc11c52e69f264b6c9fd",
-			//                expire: 1589136407
-			//            )
-			// https://railsmuffin.ucarecdn.com/{UUID}/?token=fa3f69df3f4bcc9d4631bc7144838259bb26b34e26b4cc11c52e69f264b6c9fd&expire=1589136407
-			
 			print(file ?? "")
 		}
 		semaphore.wait()
