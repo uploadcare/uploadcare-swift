@@ -154,20 +154,13 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
+        
         var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
         requestManager.signRequest(&urlRequest)
-        
-        requestManager.performRequest(urlRequest) { result in
+        requestManager.performRequest(urlRequest) { (result: Result<FilesList, Error>) in
             switch result {
-            case .failure(let error):
-                completionHandler(nil, RESTAPIError.fromError(error))
-            case .success(let data):
-                guard let responseData = try? JSONDecoder().decode(FilesList.self, from: data) else {
-                    completionHandler(nil, RESTAPIError.defaultError())
-                    return
-                }
-
-                completionHandler(responseData, nil)
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
             }
         }
 	}

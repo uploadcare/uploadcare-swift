@@ -10,6 +10,7 @@ import Foundation
 internal enum RequestManagerError: Error {
     case invalidResponse(error: RESTAPIError)
     case noResponse
+    case parsingError
 }
 
 internal class RequestManager {
@@ -99,8 +100,10 @@ extension RequestManager {
     }
     
     @discardableResult
-    func performRequest(_ request: URLRequest, _ completion: @escaping(Result<Data, Error>) -> Void) -> URLSessionDataTask? {
+    func performRequest<T: Codable>(_ request: URLRequest, _ completion: @escaping(Result<T, Error>) -> Void) -> URLSessionDataTask? {
         let task = urlSession.dataTask(with: request) { [weak self] (data, response, error) in
+            guard let self = self else { return }
+
             if let error = error {
                 completion(.failure(error))
                 return
@@ -111,13 +114,16 @@ extension RequestManager {
                 return
             }
 
+            let responseData: T
             do {
-                try self?.validate(response: response, data: data)
+                try self.validate(response: response, data: data)
+                responseData = try JSONDecoder().decode(T.self, from: data)
             } catch let error {
                 completion(.failure(error))
+                return
             }
-            
-            completion(.success(data))
+
+            completion(.success(responseData))
         }
         task.resume()
         return task
