@@ -33,7 +33,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
             XCTAssertFalse(list!.results.isEmpty)
         }
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 15.0)
     }
     
     func test2_listOfFiles_signed_authScheme() {
@@ -57,7 +57,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
             XCTAssertFalse(list!.results.isEmpty)
         }
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 15.0)
     }
 }
 
