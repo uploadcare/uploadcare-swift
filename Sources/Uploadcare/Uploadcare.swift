@@ -244,7 +244,7 @@ extension Uploadcare {
 			urlRequest.httpBody = body
 		}
 		signRequest(&urlRequest)
-		
+
         requestManager.performRequest(urlRequest) { (result: Result<BatchFilesOperationResponse, Error>) in
             switch result {
             case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
@@ -261,36 +261,24 @@ extension Uploadcare {
 		withUUID uuid: String,
 		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
 	) {
-		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/storage/"
-		guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/files/\(uuid)/storage/"
+
+        guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
 		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
 		signRequest(&urlRequest)
-		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					
-					let decodedData = try? JSONDecoder().decode(File.self, from: data)
-					
-					guard let responseData = decodedData else {
-						completionHandler(nil, RESTAPIError.defaultError())
-						return
-					}
-					
-					completionHandler(responseData, nil)
-				case .failure(_):
-					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-						completionHandler(nil, RESTAPIError.defaultError())
-						return
-					}
-					completionHandler(nil, decodedData)
-				}
-		}
+
+        requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 	
 	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
