@@ -61,9 +61,6 @@ class Tester {
 		//            self.testRESTFileInfo()
 		//        }
 		//        queue.async { [unowned self] in
-		//            self.testStoreGroup()
-		//        }
-		//        queue.async { [unowned self] in
 		//            self.testCopyFileToLocalStorage()
 		//        }
 		//        queue.async { [unowned self] in
@@ -100,24 +97,6 @@ class Tester {
 		//            self.testVideoConversionStatus()
 		//        }
 		
-	}
-	
-	func testStoreGroup() {
-		print("<------ testStoreGroup ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			print("store group success")
-		}
-		semaphore.wait()
 	}
 	
 	func testCopyFileToLocalStorage() {
