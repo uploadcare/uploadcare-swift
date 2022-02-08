@@ -48,7 +48,7 @@ public class Uploadcare: NSObject {
 	/// Library name
 	private var libraryName = "UploadcareSwift"
 	/// Library version
-	private var libraryVersion = "0.5.0"
+	private var libraryVersion = "0.6.0"
     
     private let requestManager: RequestManager
     

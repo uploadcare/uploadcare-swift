@@ -33,7 +33,7 @@ internal class RequestManager {
     /// Library name
     private var libraryName = "UploadcareSwift"
     /// Library version
-    private var libraryVersion = "0.5.0"
+    private var libraryVersion = "0.6.0"
     /// API public key
     private var publicKey: String
     /// Secret Key. Optional. Is used for authorization
