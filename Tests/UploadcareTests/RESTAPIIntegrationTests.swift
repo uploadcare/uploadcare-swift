@@ -63,7 +63,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
     }
 
     func test3_listOfFiles_pagination() {
-        let expectation = XCTestExpectation(description: "test2_listOfFiles_signed_authScheme")
+        let expectation = XCTestExpectation(description: "test3_listOfFiles_pagination")
         uploadcare.authScheme = .signed
 
         let query = PaginationQuery()
@@ -119,7 +119,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
     }
 
     func test4_fileInfo_with_UUID() {
-        let expectation = XCTestExpectation(description: "test3_fileInfo_with_UUID")
+        let expectation = XCTestExpectation(description: "test4_fileInfo_with_UUID")
 
         // get any file from list of files
         let query = PaginationQuery().limit(1)
@@ -152,7 +152,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
     }
 
     func test5_delete_file() {
-        let expectation = XCTestExpectation(description: "test3_fileInfo_with_UUID")
+        let expectation = XCTestExpectation(description: "test5_delete_file")
 
         let url = URL(string: "https://source.unsplash.com/random")!
         let data = try! Data(contentsOf: url)
@@ -190,7 +190,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
     }
 
     func test6_batch_delete_files() {
-        let expectation = XCTestExpectation(description: "test3_fileInfo_with_UUID")
+        let expectation = XCTestExpectation(description: "test6_batch_delete_files")
 
         let url = URL(string: "https://source.unsplash.com/random")!
         let data = try! Data(contentsOf: url)
@@ -220,6 +220,48 @@ final class RESTAPIIntegrationTests: XCTestCase {
                     XCTAssertEqual(uuid, response?.result.first?.uuid)
                     XCTAssertNotNil(response?.problems["shouldBeInProblems"])
                     expectation.fulfill()
+                }
+            }
+        }
+
+        wait(for: [expectation], timeout: 20.0)
+    }
+
+    func test7_store_file() {
+        let expectation = XCTestExpectation(description: "test6_batch_delete_files")
+
+        let url = URL(string: "https://source.unsplash.com/random")!
+        let data = try! Data(contentsOf: url)
+
+        DLog("size of file: \(sizeString(ofData: data))")
+
+
+        uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+            DLog("upload progress: \(progress * 100)%")
+        }) { (resultDictionary, error) in
+
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertNotNil(resultDictionary)
+
+            for file in resultDictionary! {
+                let uuid = file.value
+                self.uploadcare.storeFile(withUUID: uuid) { file, error in
+                    if let error = error {
+                        XCTFail(error.detail)
+                        return
+                    }
+
+                    XCTAssertNotNil(file)
+                    XCTAssertEqual(uuid, file!.uuid)
+
+                    // cleanup
+                    self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
+                        expectation.fulfill()
+                    }
                 }
             }
         }
