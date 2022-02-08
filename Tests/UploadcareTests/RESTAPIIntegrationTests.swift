@@ -404,6 +404,37 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         wait(for: [expectation], timeout: 20.0)
     }
+
+    func test11_group_info() {
+        let expectation = XCTestExpectation(description: "test11_group_info")
+
+        let query = GroupsListQuery()
+            .limit(100)
+            .ordering(.datetimeCreatedDESC)
+
+        uploadcare.listOfGroups(withQuery: query) { (list, error) in
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertFalse(list!.results.isEmpty)
+
+            let uuid = list!.results.first!.id
+            self.uploadcare.groupInfo(withUUID: uuid) { group, error in
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
+                }
+
+                XCTAssertEqual(uuid, group!.id)
+
+                expectation.fulfill()
+            }
+        }
+
+        wait(for: [expectation], timeout: 20.0)
+    }
 }
 
 #endif

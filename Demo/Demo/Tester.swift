@@ -61,9 +61,6 @@ class Tester {
 		//            self.testRESTFileInfo()
 		//        }
 		//        queue.async { [unowned self] in
-		//            self.testGroupInfo()
-		//        }
-		//        queue.async { [unowned self] in
 		//            self.testStoreGroup()
 		//        }
 		//        queue.async { [unowned self] in
@@ -103,25 +100,6 @@ class Tester {
 		//            self.testVideoConversionStatus()
 		//        }
 		
-	}
-	
-	func testGroupInfo() {
-		print("<------ testGroupInfo ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (group, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(group ?? "")
-		}
-		semaphore.wait()
 	}
 	
 	func testStoreGroup() {
