@@ -364,8 +364,12 @@ extension Uploadcare {
 		withUUID uuid: String,
 		_ completionHandler: @escaping (Group?, RESTAPIError?) -> Void
 	) {
-		let urlString = RESTAPIBaseUrl + "/groups/\(uuid)/"
-		guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/groups/\(uuid)/"
+
+        guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
@@ -388,28 +392,24 @@ extension Uploadcare {
 		withUUID uuid: String,
 		_ completionHandler: @escaping (RESTAPIError?) -> Void
 	) {
-		let urlString = RESTAPIBaseUrl + "/groups/\(uuid)/storage/"
-		guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/groups/\(uuid)/storage/"
+
+        guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
 		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
 		signRequest(&urlRequest)
-		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(_):
-					completionHandler(nil)
-				case .failure(_):
-					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-						completionHandler(RESTAPIError.defaultError())
-						return
-					}
-					completionHandler(decodedData)
-				}
-		}
+
+        requestManager.performRequest(urlRequest) { (result: Result<Group, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(RESTAPIError.fromError(error))
+            case .success(_): completionHandler(nil)
+            }
+        }
 	}
 	
 	/// Copy file to local storage. Used to copy original files or their modified versions to default storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
