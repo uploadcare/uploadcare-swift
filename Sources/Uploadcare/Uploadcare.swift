@@ -209,35 +209,12 @@ extension Uploadcare {
 		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
 		signRequest(&urlRequest)
 		
-		let redirector = Redirector(behavior: .modify({ [weak self] (task, request, response) -> URLRequest? in
-			guard let url = request.url else { return request }
-			guard var newRequest = self?.makeUrlRequest(fromURL: url, method: .delete) else { return request }
-			self?.signRequest(&newRequest)
-			return newRequest
-		}))
-		manager.request(urlRequest)
-			.redirect(using: redirector)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					
-					let decodedData = try? JSONDecoder().decode(File.self, from: data)
-					
-					guard let responseData = decodedData else {
-						completionHandler(nil, RESTAPIError.defaultError())
-						return
-					}
-					
-					completionHandler(responseData, nil)
-				case .failure(_):
-					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-						completionHandler(nil, RESTAPIError.defaultError())
-						return
-					}
-					completionHandler(nil, decodedData)
-				}
-		}
+		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 	
 	/// Batch file delete. Used to delete multiple files in one go. Up to 100 files are supported per request.
