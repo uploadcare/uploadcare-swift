@@ -304,7 +304,7 @@ extension Uploadcare {
 			urlRequest.httpBody = body
 		}
 		signRequest(&urlRequest)
-		
+
         requestManager.performRequest(urlRequest) { (result: Result<BatchFilesOperationResponse, Error>) in
             switch result {
             case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))

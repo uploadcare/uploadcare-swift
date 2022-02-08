@@ -228,7 +228,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
     }
 
     func test7_store_file() {
-        let expectation = XCTestExpectation(description: "test6_batch_delete_files")
+        let expectation = XCTestExpectation(description: "test7_store_file")
 
         let url = URL(string: "https://source.unsplash.com/random")!
         let data = try! Data(contentsOf: url)
@@ -270,7 +270,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
     }
 
     func test8_batch_store_files() {
-        let expectation = XCTestExpectation(description: "test6_batch_delete_files")
+        let expectation = XCTestExpectation(description: "test8_batch_store_files")
 
         let url = URL(string: "https://source.unsplash.com/random")!
         let data = try! Data(contentsOf: url)
@@ -305,6 +305,29 @@ final class RESTAPIIntegrationTests: XCTestCase {
                     }
                 }
             }
+        }
+
+        wait(for: [expectation], timeout: 20.0)
+    }
+
+    func test9_list_of_groups() {
+        let expectation = XCTestExpectation(description: "test9_list_of_groups")
+
+        let query = GroupsListQuery()
+            .limit(100)
+            .ordering(.datetimeCreatedDESC)
+
+        uploadcare.listOfGroups(withQuery: query) { (list, error) in
+
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertNotNil(list)
+            XCTAssertFalse(list!.results.isEmpty)
+
+            expectation.fulfill()
         }
 
         wait(for: [expectation], timeout: 20.0)
