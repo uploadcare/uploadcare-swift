@@ -61,9 +61,6 @@ class Tester {
 		//            self.testRESTFileInfo()
 		//        }
 		//        queue.async { [unowned self] in
-		//            self.testRESTDeleteFile()
-		//        }
-		//        queue.async { [unowned self] in
 		//            self.testRESTBatchDeleteFiles()
 		//        }
 		//        queue.async { [unowned self] in
@@ -119,26 +116,7 @@ class Tester {
 		//        }
 		
 	}
-	
-	func testRESTDeleteFile() {
-		print("<------ testRESTDeleteFile ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.deleteFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(file ?? "")
-		}
-		semaphore.wait()
-	}
-	
+
 	func testRESTBatchDeleteFiles() {
 		print("<------ testRESTBatchDeleteFiles ------>")
 		let semaphore = DispatchSemaphore(value: 0)
