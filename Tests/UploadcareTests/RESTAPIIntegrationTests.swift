@@ -268,6 +268,47 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         wait(for: [expectation], timeout: 20.0)
     }
+
+    func test8_batch_store_files() {
+        let expectation = XCTestExpectation(description: "test6_batch_delete_files")
+
+        let url = URL(string: "https://source.unsplash.com/random")!
+        let data = try! Data(contentsOf: url)
+
+        DLog("size of file: \(sizeString(ofData: data))")
+
+
+        uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+            DLog("upload progress: \(progress * 100)%")
+        }) { (resultDictionary, error) in
+
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertNotNil(resultDictionary)
+
+            for file in resultDictionary! {
+                let uuid = file.value
+                self.uploadcare.storeFiles(withUUIDs: [uuid]) { response, error in
+                    if let error = error {
+                        XCTFail(error.detail)
+                        return
+                    }
+
+                    XCTAssertEqual(uuid, response?.result.first?.uuid)
+
+                    // cleanup
+                    self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
+                        expectation.fulfill()
+                    }
+                }
+            }
+        }
+
+        wait(for: [expectation], timeout: 20.0)
+    }
 }
 
 #endif
