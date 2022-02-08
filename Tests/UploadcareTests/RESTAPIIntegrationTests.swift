@@ -463,6 +463,46 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         wait(for: [expectation], timeout: 20.0)
     }
+
+    func test13_copy_file_to_local_storage() {
+        let expectation = XCTestExpectation(description: "test13_copy_file_to_local_storage")
+
+        let url = URL(string: "https://source.unsplash.com/random")!
+        let data = try! Data(contentsOf: url)
+
+        DLog("size of file: \(sizeString(ofData: data))")
+
+        uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+            DLog("upload progress: \(progress * 100)%")
+        }) { (resultDictionary, error) in
+
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertNotNil(resultDictionary)
+
+            for file in resultDictionary! {
+                let uuid = file.value
+                self.uploadcare.copyFileToLocalStorage(source: uuid) { response, error in
+                    if let error = error {
+                        XCTFail(error.detail)
+                        return
+                    }
+
+                    XCTAssertEqual("file", response!.type)
+
+                    // cleanup
+                    self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
+                        expectation.fulfill()
+                    }
+                }
+            }
+        }
+
+        wait(for: [expectation], timeout: 20.0)
+    }
 }
 
 #endif
