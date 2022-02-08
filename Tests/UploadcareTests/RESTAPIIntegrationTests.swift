@@ -115,7 +115,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
             expectation.fulfill()
         }
 
-        wait(for: [expectation], timeout: 150.0)
+        wait(for: [expectation], timeout: 20.0)
     }
 
     func test4_fileInfo_with_UUID() {
@@ -145,6 +145,44 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
                 XCTAssertNotNil(file)
                 XCTAssertEqual(uuid, file?.uuid)
+            }
+        }
+
+        wait(for: [expectation], timeout: 15.0)
+    }
+
+    func test5_delete_file() {
+        let expectation = XCTestExpectation(description: "test3_fileInfo_with_UUID")
+
+        let url = URL(string: "https://source.unsplash.com/random")!
+        let data = try! Data(contentsOf: url)
+
+        DLog("size of file: \(sizeString(ofData: data))")
+
+
+        uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+            DLog("upload progress: \(progress * 100)%")
+        }) { (resultDictionary, error) in
+
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertNotNil(resultDictionary)
+
+            for file in resultDictionary! {
+                let uuid = file.value
+
+                self.uploadcare.deleteFile(withUUID: uuid) { file, error in
+                    if let error = error {
+                        XCTFail(error.detail)
+                        return
+                    }
+
+                    XCTAssertEqual(uuid, file?.uuid)
+                    expectation.fulfill()
+                }
             }
         }
 
