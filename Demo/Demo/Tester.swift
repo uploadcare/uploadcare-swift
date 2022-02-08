@@ -61,9 +61,6 @@ class Tester {
 		//            self.testRESTFileInfo()
 		//        }
 		//        queue.async { [unowned self] in
-		//            self.testCopyFileToLocalStorage()
-		//        }
-		//        queue.async { [unowned self] in
 		//            self.testCopyFileToRemoteStorate()
 		//        }
 		//        queue.async { [unowned self] in
@@ -99,26 +96,8 @@ class Tester {
 		
 	}
 	
-	func testCopyFileToLocalStorage() {
-		print("<------ testCopyFileToLocalStorage ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { (response, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			print(response ?? "")
-		}
-		semaphore.wait()
-	}
-	
 	func testCopyFileToRemoteStorate() {
-		print("<------ testCopyFileToLocalStorage ------>")
+		print("<------ testCopyFileToRemoteStorate ------>")
 		let semaphore = DispatchSemaphore(value: 0)
 		
 		uploadcare.copyFileToRemoteStorage(source: "99c48392-46ab-4877-a6e1-e2557b011176", target: "one_more_project", pattern: .uuid) { (response, error) in
