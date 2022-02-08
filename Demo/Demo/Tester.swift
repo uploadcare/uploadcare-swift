@@ -61,9 +61,6 @@ class Tester {
 		//            self.testRESTFileInfo()
 		//        }
 		//        queue.async { [unowned self] in
-		//            self.testListOfGroups()
-		//        }
-		//        queue.async { [unowned self] in
 		//            self.testGroupInfo()
 		//        }
 		//        queue.async { [unowned self] in
@@ -106,77 +103,6 @@ class Tester {
 		//            self.testVideoConversionStatus()
 		//        }
 		
-	}
-	
-	func testListOfGroups() {
-		print("<------ testListOfGroups ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		let query = GroupsListQuery()
-			.limit(100)
-			.ordering(.datetimeCreatedDESC)
-		
-		uploadcare.listOfGroups(withQuery: query) { (list, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(list ?? "")
-		}
-		semaphore.wait()
-		
-		// using GroupsList object:
-		let groupsList = uploadcare.listOfGroups()
-		groupsList.get(withQuery: query) { (list, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(list ?? "")
-		}
-		semaphore.wait()
-		
-		// get next page
-		print("-------------- next page")
-		groupsList.nextPage { (list, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(list ?? "")
-		}
-		semaphore.wait()
-		
-		// get previous page
-		print("-------------- previous page")
-		groupsList.previousPage { (list, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(list ?? "")
-		}
-		semaphore.wait()
 	}
 	
 	func testGroupInfo() {

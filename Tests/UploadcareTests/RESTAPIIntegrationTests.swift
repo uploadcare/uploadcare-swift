@@ -332,6 +332,78 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         wait(for: [expectation], timeout: 20.0)
     }
+
+    func test10_list_of_groups_pagination() {
+        let expectation = XCTestExpectation(description: "test10_list_of_groups_pagination")
+
+        let query = GroupsListQuery()
+            .limit(5)
+            .ordering(.datetimeCreatedDESC)
+
+        let groupsList = uploadcare.listOfGroups()
+
+        DispatchQueue.global(qos: .utility).async {
+            let semaphore = DispatchSemaphore(value: 0)
+            groupsList.get(withQuery: query) { (list, error) in
+
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
+                }
+
+                XCTAssertNotNil(list)
+                XCTAssertFalse(list!.results.isEmpty)
+                XCTAssertNotNil(list!.next)
+                XCTAssertFalse(list!.next!.isEmpty)
+
+                semaphore.signal()
+            }
+            semaphore.wait()
+
+            // get next page
+            groupsList.nextPage { (list, error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+
+                XCTAssertNotNil(list)
+                XCTAssertFalse(list!.results.isEmpty)
+
+                XCTAssertNotNil(list!.next)
+                XCTAssertFalse(list!.next!.isEmpty)
+
+                XCTAssertNotNil(list!.previous)
+                XCTAssertFalse(list!.previous!.isEmpty)
+
+                semaphore.signal()
+            }
+            semaphore.wait()
+
+            // get previous page
+            groupsList.previousPage { (list, error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+
+                XCTAssertNotNil(list)
+                XCTAssertFalse(list!.results.isEmpty)
+
+                XCTAssertNotNil(list!.next)
+                XCTAssertFalse(list!.next!.isEmpty)
+
+                XCTAssertNil(list!.previous)
+
+                semaphore.signal()
+            }
+            semaphore.wait()
+
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 20.0)
+    }
 }
 
 #endif
