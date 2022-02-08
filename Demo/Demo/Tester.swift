@@ -61,9 +61,6 @@ class Tester {
 		//            self.testRESTFileInfo()
 		//        }
 		//        queue.async { [unowned self] in
-		//            self.testRESTBatchStoreFiles()
-		//        }
-		//        queue.async { [unowned self] in
 		//            self.testListOfGroups()
 		//        }
 		//        queue.async { [unowned self] in
@@ -109,25 +106,6 @@ class Tester {
 		//            self.testVideoConversionStatus()
 		//        }
 		
-	}
-	
-	func testRESTBatchStoreFiles() {
-		print("<------ testRESTBatchStoreFiles ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.storeFiles(withUUIDs: ["1bac376c-aa7e-4356-861b-dd2657b5bfd2", "shouldBeInProblems"]) { (response, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(response ?? "")
-		}
-		semaphore.wait()
 	}
 	
 	func testListOfGroups() {
