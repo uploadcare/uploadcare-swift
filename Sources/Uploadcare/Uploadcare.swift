@@ -201,8 +201,12 @@ extension Uploadcare {
 		withUUID uuid: String,
 		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
 	) {
-		let urlString = RESTAPIBaseUrl + "/files/\(uuid)/storage/"
-		guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/files/\(uuid)/storage/"
+
+        guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
@@ -225,8 +229,12 @@ extension Uploadcare {
 		withUUIDs uuids: [String],
 		_ completionHandler: @escaping (BatchFilesOperationResponse?, RESTAPIError?) -> Void
 	) {
-		let urlString = RESTAPIBaseUrl + "/files/storage/"
-		guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/files/storage/"
+
+        guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
@@ -237,27 +245,12 @@ extension Uploadcare {
 		}
 		signRequest(&urlRequest)
 		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(BatchFilesOperationResponse.self, from: data)
-					
-					guard let responseData = decodedData else {
-						completionHandler(nil, RESTAPIError.defaultError())
-						return
-					}
-					
-					completionHandler(responseData, nil)
-				case .failure(_):
-					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-						completionHandler(nil, RESTAPIError.defaultError())
-						return
-					}
-					completionHandler(nil, decodedData)
-				}
-		}
+        requestManager.performRequest(urlRequest) { (result: Result<BatchFilesOperationResponse, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 	
 	/// Store a single file by UUID.
