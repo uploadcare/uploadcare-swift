@@ -571,35 +571,24 @@ extension Uploadcare {
     /// List of project webhooks.
     /// - Parameter completionHandler: completion handler
     public func getListOfWebhooks(_ completionHandler: @escaping ([Webhook]?, RESTAPIError?) -> Void) {
-        let urlString = RESTAPIBaseUrl + "/webhooks/"
-        guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/webhooks/"
+
+        guard let url = urlComponents.url else {
             assertionFailure("Incorrect url")
             return
         }
         var urlRequest = makeUrlRequest(fromURL: url, method: .get)
         signRequest(&urlRequest)
-        
-        manager.request(urlRequest)
-            .validate(statusCode: 200..<300)
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-                    let decodedData = try? JSONDecoder().decode([Webhook].self, from: data)
 
-                    guard let responseData = decodedData else {
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-
-                    completionHandler(responseData, nil)
-                case .failure(_):
-                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    completionHandler(nil, decodedData)
-                }
+        requestManager.performRequest(urlRequest) { (result: Result<[Webhook], Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
             }
+        }
     }
     
     /// Create webhook
