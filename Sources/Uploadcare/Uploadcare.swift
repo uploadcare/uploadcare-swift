@@ -506,35 +506,24 @@ extension Uploadcare {
 	/// Getting info about account project.
 	/// - Parameter completionHandler: completion handler
 	public func getProjectInfo(_ completionHandler: @escaping (Project?, RESTAPIError?) -> Void) {
-		let urlString = RESTAPIBaseUrl + "/project/"
-		guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/project/"
+
+        guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
 		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
-		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(Project.self, from: data)
 
-					guard let responseData = decodedData else {
-						completionHandler(nil, RESTAPIError.defaultError())
-						return
-					}
-
-					completionHandler(responseData, nil)
-				case .failure(_):
-					guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-						completionHandler(nil, RESTAPIError.defaultError())
-						return
-					}
-					completionHandler(nil, decodedData)
-				}
-		}
+        requestManager.performRequest(urlRequest) { (result: Result<Project, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
     
     /// This method allows you to get authonticated url from your backend using redirect.
