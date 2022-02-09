@@ -66,9 +66,6 @@ class Tester {
 		//        queue.async { [unowned self] in
 		//            self.testFileGroupInfo()
 		//        }
-		//        queue.async { [unowned self] in
-		//            self.testRedirectForAuthenticatedUrls()
-		//        }
 //		        queue.async {
 //		            self.testCreateWebhook()
 //		        }
@@ -126,25 +123,6 @@ class Tester {
 			}
 			print(group ?? "")
 		}
-		semaphore.wait()
-	}
-	
-	func testRedirectForAuthenticatedUrls() {
-		print("<------ testRedirectForAuthenticatedUrls ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		let url = URL(string: "http://goo.gl/")!
-		uploadcare.getAuthenticatedUrlFromUrl(url, { (value, error) in
-			defer { semaphore.signal() }
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(value ?? "")
-		})
-		
 		semaphore.wait()
 	}
 	

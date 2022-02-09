@@ -571,6 +571,24 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         wait(for: [expectation], timeout: 20.0)
     }
+
+    func test16_redirect_for_Authenticated_urls() {
+        let expectation = XCTestExpectation(description: "test16_redirect_for_Authenticated_urls")
+
+        let url = URL(string: "https://goo.gl/")!
+        uploadcare.getAuthenticatedUrlFromUrl(url, { (value, error) in
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertFalse(value!.isEmpty)
+
+            expectation.fulfill()
+        })
+
+        wait(for: [expectation], timeout: 20.0)
+    }
 }
 
 #endif
