@@ -598,8 +598,12 @@ extension Uploadcare {
     ///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
     ///   - completionHandler: completion handler
     public func createWebhook(targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
-        let urlString = RESTAPIBaseUrl + "/webhooks/"
-        guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/webhooks/"
+
+        guard let url = urlComponents.url else {
             assertionFailure("Incorrect url")
             return
         }
@@ -614,33 +618,19 @@ extension Uploadcare {
             bodyDictionary["signing_secret"] = signingSecret
         }
 
-        if let body = try? JSONEncoder().encode(bodyDictionary) {
+        do {
+            let body = try JSONEncoder().encode(bodyDictionary)
             urlRequest.httpBody = body
+        } catch let error {
+            DLog(error.localizedDescription)
         }
         signRequest(&urlRequest)
-        
-        manager.request(urlRequest)
-            .validate(statusCode: 200..<300)
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-                    let decodedData = try? JSONDecoder().decode(Webhook.self, from: data)
-                    
-                    guard let responseData = decodedData else {
-                        DLog(String(data: data, encoding: .utf8) ?? "")
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    
-                    completionHandler(responseData, nil)
-                case .failure(_):
-                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-                        DLog(response.data?.toString() ?? "")
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    completionHandler(nil, decodedData)
-                }
+
+        requestManager.performRequest(urlRequest) { (result: Result<Webhook, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
         }
     }
 	
