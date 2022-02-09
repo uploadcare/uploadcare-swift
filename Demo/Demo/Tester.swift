@@ -61,9 +61,6 @@ class Tester {
 		//            self.testRESTFileInfo()
 		//        }
 		//        queue.async { [unowned self] in
-		//            self.testCopyFileToRemoteStorate()
-		//        }
-		//        queue.async { [unowned self] in
 		//            self.testCreateFileGroups()
 		//        }
 		//        queue.async { [unowned self] in
@@ -94,24 +91,6 @@ class Tester {
 		//            self.testVideoConversionStatus()
 		//        }
 		
-	}
-	
-	func testCopyFileToRemoteStorate() {
-		print("<------ testCopyFileToRemoteStorate ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.copyFileToRemoteStorage(source: "99c48392-46ab-4877-a6e1-e2557b011176", target: "one_more_project", pattern: .uuid) { (response, error) in
-			defer {
-				semaphore.signal()
-			}
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			print(response ?? "")
-		}
-		semaphore.wait()
 	}
 	
 	func testCreateFileGroups() {
