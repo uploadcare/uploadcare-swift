@@ -619,8 +619,7 @@ extension Uploadcare {
         }
 
         do {
-            let body = try JSONEncoder().encode(bodyDictionary)
-            urlRequest.httpBody = body
+            urlRequest.httpBody = try JSONEncoder().encode(bodyDictionary)
         } catch let error {
             DLog(error.localizedDescription)
         }
@@ -662,12 +661,8 @@ extension Uploadcare {
             bodyDictionary["signing_secret"] = signingSecret
         }
 
-        if let body = try? JSONEncoder().encode(bodyDictionary) {
-            urlRequest.httpBody = body
-        }
         do {
-            let body = try JSONEncoder().encode(bodyDictionary)
-            urlRequest.httpBody = body
+            urlRequest.httpBody = try JSONEncoder().encode(bodyDictionary)
         } catch let error {
             DLog(error.localizedDescription)
         }
@@ -686,8 +681,12 @@ extension Uploadcare {
 	///   - targetUrl: url of webhook target
 	///   - completionHandler: completion handler
 	public func deleteWebhook(forTargetUrl targetUrl: URL, _ completionHandler: @escaping (RESTAPIError?) -> Void) {
-		let urlString = RESTAPIBaseUrl + "/webhooks/unsubscribe/"
-        guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/webhooks/unsubscribe/"
+
+        guard let url = urlComponents.url else {
             assertionFailure("Incorrect url")
             return
         }
@@ -695,25 +694,20 @@ extension Uploadcare {
         let bodyDictionary = [
             "target_url": targetUrl.absoluteString
         ]
-        if let body = try? JSONEncoder().encode(bodyDictionary) {
-            urlRequest.httpBody = body
+        do {
+            urlRequest.httpBody = try JSONEncoder().encode(bodyDictionary)
+        } catch let error {
+            DLog(error.localizedDescription)
         }
         signRequest(&urlRequest)
-        
-        manager.request(urlRequest)
-            .validate(statusCode: 200..<300)
-            .responseData { response in
-                switch response.result {
-                case .success(_):
-                    completionHandler(nil)
-                case .failure(_):
-                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-                        DLog(response.data?.toString() ?? "")
-                        completionHandler(RESTAPIError.defaultError())
-                        return
-                    }
-                    completionHandler(decodedData)
-                }
+
+        requestManager.performRequest(urlRequest) { (result: Result<Bool, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(RESTAPIError.fromError(error))
+            case .success(let responseData):
+                DLog(responseData)
+                completionHandler(nil)
+            }
         }
 	}
 	
