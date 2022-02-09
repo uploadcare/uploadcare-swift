@@ -576,7 +576,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         let expectation = XCTestExpectation(description: "test16_redirect_for_Authenticated_urls")
 
         let url = URL(string: "https://goo.gl/")!
-        uploadcare.getAuthenticatedUrlFromUrl(url, { (value, error) in
+        uploadcare.getAuthenticatedUrlFromUrl(url) { value, error in
             if let error = error {
                 XCTFail(error.detail)
                 return
@@ -585,7 +585,25 @@ final class RESTAPIIntegrationTests: XCTestCase {
             XCTAssertFalse(value!.isEmpty)
 
             expectation.fulfill()
-        })
+        }
+
+        wait(for: [expectation], timeout: 20.0)
+    }
+
+    func test17_get_list_of_webhooks() {
+        let expectation = XCTestExpectation(description: "test17_get_list_of_webhooks")
+
+        uploadcare.getListOfWebhooks { webhooks, error in
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertFalse(webhooks!.isEmpty)
+
+            expectation.fulfill()
+        }
+
 
         wait(for: [expectation], timeout: 20.0)
     }

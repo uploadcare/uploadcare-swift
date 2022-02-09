@@ -69,9 +69,6 @@ class Tester {
 //		        queue.async {
 //		            self.testCreateWebhook()
 //		        }
-//		        queue.async {
-//		            self.testListOfWebhooks()
-//		        }
 //				queue.async {
 //		            self.testUpdateWebhook()
 //		        }
@@ -123,24 +120,6 @@ class Tester {
 			}
 			print(group ?? "")
 		}
-		semaphore.wait()
-	}
-	
-	func testListOfWebhooks() {
-		print("<------ testListOfWebhooks ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.getListOfWebhooks { (value, error) in
-			defer { semaphore.signal() }
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(value ?? "")
-		}
-		
 		semaphore.wait()
 	}
 	
