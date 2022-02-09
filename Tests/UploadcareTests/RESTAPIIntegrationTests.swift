@@ -607,8 +607,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 20.0)
     }
 
-    func test18_create_webhook() {
-        let expectation = XCTestExpectation(description: "test18_create_webhook")
+    func test18_create_update_delete_webhook() {
+        let expectation = XCTestExpectation(description: "test18_create_update_delete_webhook")
 
         let random = (0...1000).randomElement()!
         let url = URL(string: "https://google.com/\(random)")!
@@ -620,53 +620,21 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             XCTAssertEqual(url.absoluteString, webhook!.targetUrl)
 
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 20.0)
-    }
-
-    func test19_update_webhook() {
-        let expectation = XCTestExpectation(description: "test19_update_webhook")
-
-        let random = (0...1000).randomElement()!
-        let url = URL(string: "https://apple.com/\(random)")!
-
-        uploadcare.getListOfWebhooks { webhooks, error in
-            if let error = error {
-                XCTFail(error.detail)
-                return
-            }
-
-            let webhook = webhooks!.first!
-
-            self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url, isActive: true, signingSecret: "sss2") { webhook, error in
+            let random2 = (0...1000).randomElement()!
+            let url2 = URL(string: "https://google.com/\(random2)")!
+            self.uploadcare.updateWebhook(id: webhook!.id, targetUrl: url2, isActive: true, signingSecret: "sss2") { webhook, error in
                 if let error = error {
                     XCTFail(error.detail)
                     return
                 }
 
-                XCTAssertEqual(url.absoluteString, webhook!.targetUrl)
-                expectation.fulfill()
-            }
-        }
+                XCTAssertEqual(url2.absoluteString, webhook!.targetUrl)
 
-        wait(for: [expectation], timeout: 20.0)
-    }
-
-    func test20_delete_webhook() {
-        let expectation = XCTestExpectation(description: "test20_delete_webhook")
-
-        uploadcare.getListOfWebhooks { webhooks, error in
-            if let error = error {
-                XCTFail(error.detail)
-                return
-            }
-
-            let webhook = webhooks!.first!
-            let url = URL(string: webhook.targetUrl)!
-            self.uploadcare.deleteWebhook(forTargetUrl: url) { error in
-                XCTAssertNil(error)
+                let url = URL(string: webhook!.targetUrl)!
+                self.uploadcare.deleteWebhook(forTargetUrl: url) { error in
+                    XCTAssertNil(error)
+                    expectation.fulfill()
+                }
                 expectation.fulfill()
             }
         }
