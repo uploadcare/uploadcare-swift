@@ -67,9 +67,6 @@ class Tester {
 		//            self.testFileGroupInfo()
 		//        }
 		//		queue.async {
-		//            self.testDeleteWebhook()
-		//        }
-		//		queue.async {
 		//            self.testDocumentConversion()
 		//        }
 //		queue.async {
@@ -114,37 +111,6 @@ class Tester {
 			}
 			print(group ?? "")
 		}
-		semaphore.wait()
-	}
-	
-	func testDeleteWebhook() {
-		print("<------ testDeleteWebhook ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.getListOfWebhooks { (value, error) in
-			if let error = error {
-				print(error)
-				semaphore.signal()
-				return
-			}
-			
-			guard let webhook = value?.first else {
-				semaphore.signal()
-				return
-			}
-			
-			print("will delete:")
-			print(webhook)
-			let url = URL(string: webhook.targetUrl)!
-			self.uploadcare.deleteWebhook(forTargetUrl: url) { (error) in
-				if let error = error {
-					print(error)
-				}
-				
-				semaphore.signal()
-			}
-		}
-		
 		semaphore.wait()
 	}
 	

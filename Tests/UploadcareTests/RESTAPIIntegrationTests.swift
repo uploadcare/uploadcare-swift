@@ -653,6 +653,26 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         wait(for: [expectation], timeout: 20.0)
     }
+
+    func test20_delete_webhook() {
+        let expectation = XCTestExpectation(description: "test20_delete_webhook")
+
+        uploadcare.getListOfWebhooks { webhooks, error in
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            let webhook = webhooks!.first!
+            let url = URL(string: webhook.targetUrl)!
+            self.uploadcare.deleteWebhook(forTargetUrl: url) { error in
+                XCTAssertNil(error)
+                expectation.fulfill()
+            }
+        }
+
+        wait(for: [expectation], timeout: 20.0)
+    }
 }
 
 #endif
