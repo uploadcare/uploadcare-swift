@@ -553,6 +553,24 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         wait(for: [expectation], timeout: 20.0)
     }
+
+    func test15_get_project_info() {
+        let expectation = XCTestExpectation(description: "test15_get_project_info")
+
+        uploadcare.getProjectInfo { project, error in
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertFalse(project!.pubKey.isEmpty)
+            XCTAssertFalse(project!.name.isEmpty)
+
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 20.0)
+    }
 }
 
 #endif
