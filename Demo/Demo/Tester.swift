@@ -66,9 +66,6 @@ class Tester {
 		//        queue.async { [unowned self] in
 		//            self.testFileGroupInfo()
 		//        }
-//		        queue.async {
-//		            self.testCreateWebhook()
-//		        }
 //				queue.async {
 //		            self.testUpdateWebhook()
 //		        }
@@ -120,26 +117,6 @@ class Tester {
 			}
 			print(group ?? "")
 		}
-		semaphore.wait()
-	}
-	
-	func testCreateWebhook() {
-		print("<------ testCreateWebhook ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		let random = (0...1000).randomElement()!
-		let url = URL(string: "https://google.com/\(random)")!
-		uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "sss1") { (value, error) in
-			defer { semaphore.signal() }
-			
-			if let error = error {
-				print(error)
-				return
-			}
-			
-			print(value ?? "")
-		}
-		
 		semaphore.wait()
 	}
 	

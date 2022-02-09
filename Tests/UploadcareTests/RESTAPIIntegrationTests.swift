@@ -604,6 +604,24 @@ final class RESTAPIIntegrationTests: XCTestCase {
             expectation.fulfill()
         }
 
+        wait(for: [expectation], timeout: 20.0)
+    }
+
+    func test18_create_webhook() {
+        let expectation = XCTestExpectation(description: "test18_create_webhook")
+
+        let random = (0...1000).randomElement()!
+        let url = URL(string: "https://google.com/\(random)")!
+        uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "sss1") { webhook, error in
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertEqual(url.absoluteString, webhook!.targetUrl)
+
+            expectation.fulfill()
+        }
 
         wait(for: [expectation], timeout: 20.0)
     }
