@@ -114,6 +114,11 @@ extension RequestManager {
                 return
             }
 
+            if data.count == 0, true is T {
+                completion(.success(true as! T))
+                return
+            }
+
             let responseData: T
             do {
                 try self.validate(response: response, data: data)
