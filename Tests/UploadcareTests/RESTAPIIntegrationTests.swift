@@ -625,6 +625,34 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         wait(for: [expectation], timeout: 20.0)
     }
+
+    func test19_update_webhook() {
+        let expectation = XCTestExpectation(description: "test19_update_webhook")
+
+        let random = (0...1000).randomElement()!
+        let url = URL(string: "https://apple.com/\(random)")!
+
+        uploadcare.getListOfWebhooks { webhooks, error in
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            let webhook = webhooks!.first!
+
+            self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url, isActive: true, signingSecret: "sss2") { webhook, error in
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
+                }
+
+                XCTAssertEqual(url.absoluteString, webhook!.targetUrl)
+                expectation.fulfill()
+            }
+        }
+
+        wait(for: [expectation], timeout: 20.0)
+    }
 }
 
 #endif

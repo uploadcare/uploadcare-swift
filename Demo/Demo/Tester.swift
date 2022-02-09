@@ -66,9 +66,6 @@ class Tester {
 		//        queue.async { [unowned self] in
 		//            self.testFileGroupInfo()
 		//        }
-//				queue.async {
-//		            self.testUpdateWebhook()
-//		        }
 		//		queue.async {
 		//            self.testDeleteWebhook()
 		//        }
@@ -117,41 +114,6 @@ class Tester {
 			}
 			print(group ?? "")
 		}
-		semaphore.wait()
-	}
-	
-	func testUpdateWebhook() {
-		print("<------ testUpdateWebhook ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		let random = (0...1000).randomElement()!
-		let url = URL(string: "https://apple.com/\(random)")!
-		
-		uploadcare.getListOfWebhooks { (value, error) in
-			if let error = error {
-				print(error)
-				semaphore.signal()
-				return
-			}
-			
-			guard let webhook = value?.first else {
-				semaphore.signal()
-				return
-			}
-			
-			print(webhook)
-			self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url, isActive: true, signingSecret: "sss2") { (value, error) in
-				defer { semaphore.signal() }
-				
-				if let error = error {
-					print(error)
-					return
-				}
-				
-				print(value ?? "")
-			}
-		}
-		
 		semaphore.wait()
 	}
 	
