@@ -1,5 +1,4 @@
 import Foundation
-import Alamofire
 
 
 /// Upload API base url
@@ -42,9 +41,6 @@ public class Uploadcare: NSObject {
 	/// Secret Key. Optional. Is used for authorization
 	internal var secretKey: String?
 	
-	/// Alamofire session manager
-	private var manager = Session()
-	
 	/// Library name
 	private var libraryName = "UploadcareSwift"
 	/// Library version
@@ -62,7 +58,7 @@ public class Uploadcare: NSObject {
 		self.secretKey = secretKey
         self.requestManager = RequestManager(publicKey: publicKey, secretKey: secretKey)
 		
-		self.uploadAPI = UploadAPI(withPublicKey: publicKey, secretKey: secretKey, manager: self.manager)
+		self.uploadAPI = UploadAPI(withPublicKey: publicKey, secretKey: secretKey)
 	}
 	
 	
@@ -77,7 +73,7 @@ public class Uploadcare: NSObject {
 internal extension Uploadcare {
 	/// Build url request for REST API
 	/// - Parameter fromURL: request url
-	func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
+    func makeUrlRequest(fromURL url: URL, method: RequestManager.HTTPMethod) -> URLRequest {
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = method.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
