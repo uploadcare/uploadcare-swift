@@ -704,9 +704,7 @@ extension Uploadcare {
         requestManager.performRequest(urlRequest) { (result: Result<Bool, Error>) in
             switch result {
             case .failure(let error): completionHandler(RESTAPIError.fromError(error))
-            case .success(let responseData):
-                DLog(responseData)
-                completionHandler(nil)
+            case .success(let responseData): completionHandler(nil)
             }
         }
 	}
@@ -722,8 +720,12 @@ extension Uploadcare {
 		store: StoringBehavior? = nil,
 		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
 	) {
-		let urlString = RESTAPIBaseUrl + "/convert/document/"
-        guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/convert/document/"
+
+        guard let url = urlComponents.url else {
             assertionFailure("Incorrect url")
             return
         }
@@ -737,30 +739,12 @@ extension Uploadcare {
         
 		urlRequest.httpBody = try? JSONEncoder().encode(requestData)
         signRequest(&urlRequest)
-        
-        manager.request(urlRequest)
-            .validate(statusCode: 200..<300)
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-					let decodedData = try? JSONDecoder().decode(ConvertDocumentsResponse.self, from: data)
-                    
-                    guard let responseData = decodedData else {
-						DLog(data.toString() ?? "")
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    
-                    completionHandler(responseData, nil)
-                case .failure(_):
-                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-						DLog(response.data?.toString() ?? "no data")
-						DLog(response.response?.statusCode ?? "no code")
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    completionHandler(nil, decodedData)
-                }
+
+        requestManager.performRequest(urlRequest) { (result: Result<ConvertDocumentsResponse, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
         }
 	}
 	
@@ -785,37 +769,23 @@ extension Uploadcare {
 	///   - token: Job token
 	///   - completionHandler: completion handler
 	public func documentConversionJobStatus(token: Int, _ completionHandler: @escaping (ConvertDocumentJobStatus?, RESTAPIError?) -> Void) {
-		let urlString = RESTAPIBaseUrl + "/convert/document/status/\(token)/"
-        guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/convert/document/status/\(token)/"
+
+        guard let url = urlComponents.url else {
             assertionFailure("Incorrect url")
             return
         }
         var urlRequest = makeUrlRequest(fromURL: url, method: .get)
         signRequest(&urlRequest)
-        
-        manager.request(urlRequest)
-            .validate(statusCode: 200..<300)
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-					let decodedData = try? JSONDecoder().decode(ConvertDocumentJobStatus.self, from: data)
-                    
-                    guard let responseData = decodedData else {
-						DLog(data.toString() ?? "")
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    
-                    completionHandler(responseData, nil)
-                case .failure(_):
-                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-						DLog(response.data?.toString() ?? "no data")
-						DLog(response.response?.statusCode ?? "no code")
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    completionHandler(nil, decodedData)
-                }
+
+        requestManager.performRequest(urlRequest) { (result: Result<ConvertDocumentJobStatus, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
         }
 	}
 	

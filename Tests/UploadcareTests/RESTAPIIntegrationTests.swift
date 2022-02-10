@@ -692,28 +692,20 @@ final class RESTAPIIntegrationTests: XCTestCase {
                     let job = response!.result.first!
 
                     // check status
-                    self.timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { (timer) in
-                        self.uploadcare.documentConversionJobStatus(token: job.token) { (status, error) in
-                            if let error = error {
-                                XCTFail(error.detail)
-                                expectation.fulfill()
-                                return
-                            }
+                    self.uploadcare.documentConversionJobStatus(token: job.token) { (status, error) in
+                        if let error = error {
+                            XCTFail(error.detail)
+                            expectation.fulfill()
+                            return
+                        }
 
-                            DLog(status!.statusString)
-                            switch status!.status {
-                            case .finished, .failed(_):
-                                self.timer?.invalidate()
+                        XCTAssertFalse(status!.statusString.isEmpty)
 
-                                // cleanup
-                                self.uploadcare.deleteFile(withUUID: job.uuid) { _, _ in
-                                    expectation.fulfill()
-                                }
-                            default: break
-                            }
+                        // cleanup
+                        self.uploadcare.deleteFile(withUUID: job.uuid) { _, _ in
+                            expectation.fulfill()
                         }
                     }
-                    self.timer?.fire()
                 }
             }
         }
