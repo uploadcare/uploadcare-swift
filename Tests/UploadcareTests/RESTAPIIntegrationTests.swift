@@ -712,6 +712,91 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         wait(for: [expectation], timeout: 60.0)
     }
+
+    func test20_video_conversion_and_status() {
+        let expectation = XCTestExpectation(description: "test19_document_conversion_and_status")
+
+        let query = PaginationQuery()
+            .stored(true)
+            .ordering(.sizeDESC)
+            .limit(50)
+
+        uploadcare.listOfFiles(withQuery: query) { list, error in
+            if let error = error {
+                XCTFail(error.detail)
+                expectation.fulfill()
+                return
+            }
+
+            let videoFile = list!.results.first(where: { $0.mimeType == "video/mp4" })!
+
+            let convertSettings = VideoConversionJobSettings(forFile: videoFile)
+                .format(.webm)
+                .size(VideoSize(width: 640, height: 480))
+                .resizeMode(.addPadding)
+                .quality(.lightest)
+                .cut( VideoCut(startTime: "0:0:5.000", length: "15") )
+
+            self.uploadcare.convertVideosWithSettings([convertSettings]) { response, error in
+                if let error = error {
+                    XCTFail(error.detail)
+                    expectation.fulfill()
+                    return
+                }
+
+                XCTAssertTrue(response!.problems.isEmpty)
+
+                let job = response!.result.first!
+
+                func check() {
+                    self.uploadcare.videoConversionJobStatus(token: job.token) { statusResponse, error in
+                        if let error = error {
+                            XCTFail(error.detail)
+                            expectation.fulfill()
+                            return
+                        }
+
+                        XCTAssertFalse(statusResponse!.statusString.isEmpty)
+
+                        DLog(statusResponse!.statusString)
+
+                        switch statusResponse!.status {
+                        case .finished, .failed(_):
+                            // cleanup
+                            self.uploadcare.groupInfo(withUUID: statusResponse!.result!.thumbnailsGroupUUID) { group, error in
+                                if let error = error {
+                                    XCTFail(error.detail)
+                                    expectation.fulfill()
+                                    return
+                                }
+
+                                var ids = group!.files!.map { $0.uuid }
+                                ids.append(job.uuid)
+
+                                self.uploadcare.deleteFiles(withUUIDs: ids) { _, error in
+                                    if let error = error {
+                                        XCTFail(error.detail)
+                                        expectation.fulfill()
+                                        return
+                                    }
+
+                                    expectation.fulfill()
+                                }
+                            }
+                        default:
+                            delay(2.0) {
+                                check()
+                            }
+                        }
+                    }
+                }
+
+                check()
+            }
+        }
+
+        wait(for: [expectation], timeout: 60.0)
+    }
 }
 
 #endif

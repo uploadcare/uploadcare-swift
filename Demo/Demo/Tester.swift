@@ -65,11 +65,7 @@ class Tester {
 		//        }
 		//        queue.async { [unowned self] in
 		//            self.testFileGroupInfo()
-		//        }
-		//		queue.async {
-		//            self.testVideoConversionStatus()
-		//        }
-		
+		//        }		
 	}
 	
 	func testCreateFileGroups() {
@@ -104,62 +100,6 @@ class Tester {
 				return
 			}
 			print(group ?? "")
-		}
-		semaphore.wait()
-	}
-
-	func testVideoConversionStatus() {
-		print("<------ testVideoConversionStatus ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.fileInfo(withUUID: "8968032a-6d52-4d68-8af7-154552412f93") { (file, error) in
-			guard let file = file else {
-				print(error ?? "fileInfo error")
-				semaphore.signal()
-				return
-			}
-			
-			print(file)
-			
-			let convertSettings = VideoConversionJobSettings(forFile: file)
-				.format(.webm)
-				.size(VideoSize(width: 640, height: 480))
-				.resizeMode(.addPadding)
-				.quality(.lightest)
-				.cut( VideoCut(startTime: "0:0:5.000", length: "15") )
-				.thumbs(15)
-			
-			self.uploadcare.convertVideosWithSettings([convertSettings]) { (response, error) in
-				guard let response = response else {
-					print(error ?? "error")
-					semaphore.signal()
-					return
-				}
-				
-				guard response.problems.isEmpty, let job = response.result.first else {
-					print(response)
-					semaphore.signal()
-					return
-				}
-				
-				let timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { (timer) in
-					self.uploadcare.videoConversionJobStatus(token: job.token) { (status, error) in
-						guard let status = status else {
-							print(error ?? "error")
-							return
-						}
-						
-						print(status)
-						switch status.status {
-						case .finished, .failed(_):
-							timer.invalidate()
-							semaphore.signal()
-						default: break
-						}
-					}
-				}
-				timer.fire()
-			}
 		}
 		semaphore.wait()
 	}
