@@ -11,6 +11,7 @@ import XCTest
 
 final class RESTAPIIntegrationTests: XCTestCase {
     let uploadcare = Uploadcare(withPublicKey: "34067d5ea21379bebb1f", secretKey: "a7171736eb2800733bc0")
+    var timer: Timer?
 
     func test1_listOfFiles_simple_authScheme() {
         let expectation = XCTestExpectation(description: "test1_listOfFiles_simple_authScheme")
