@@ -20,7 +20,7 @@ final class uploadcare_swiftTests: XCTestCase {
 		
 		let urlString = "https://uploadcare.com"
 		let url = URL(string: urlString)!
-		let request = uploadcare.makeUrlRequest(fromURL: url, method: HTTPMethod.put)
+        let request = uploadcare.makeUrlRequest(fromURL: url, method: RequestManager.HTTPMethod.put)
 		
 		XCTAssertEqual(request.httpMethod, "PUT")
 	}
