@@ -815,8 +815,12 @@ extension Uploadcare {
 		store: StoringBehavior? = nil,
 		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
 	) {
-		let urlString = RESTAPIBaseUrl + "/convert/video/"
-        guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/convert/video/"
+
+        guard let url = urlComponents.url else {
             assertionFailure("Incorrect url")
             return
         }
@@ -830,30 +834,12 @@ extension Uploadcare {
         
 		urlRequest.httpBody = try? JSONEncoder().encode(requestData)
         signRequest(&urlRequest)
-        
-        manager.request(urlRequest)
-            .validate(statusCode: 200..<300)
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-					let decodedData = try? JSONDecoder().decode(ConvertDocumentsResponse.self, from: data)
-                    
-                    guard let responseData = decodedData else {
-						DLog(data.toString() ?? "")
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    
-                    completionHandler(responseData, nil)
-                case .failure(_):
-                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-						DLog(response.data?.toString() ?? "no data")
-						DLog(response.response?.statusCode ?? "no code")
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    completionHandler(nil, decodedData)
-                }
+
+        requestManager.performRequest(urlRequest) { (result: Result<ConvertDocumentsResponse, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
         }
 	}
 	
@@ -862,37 +848,23 @@ extension Uploadcare {
 	///   - token: Job token
 	///   - completionHandler: completion handler
 	public func videoConversionJobStatus(token: Int, _ completionHandler: @escaping (ConvertVideoJobStatus?, RESTAPIError?) -> Void) {
-		let urlString = RESTAPIBaseUrl + "/convert/video/status/\(token)/"
-        guard let url = URL(string: urlString) else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = RESTAPIHost
+        urlComponents.path = "/convert/video/status/\(token)/"
+
+        guard let url = urlComponents.url else {
             assertionFailure("Incorrect url")
             return
         }
         var urlRequest = makeUrlRequest(fromURL: url, method: .get)
         signRequest(&urlRequest)
-        
-        manager.request(urlRequest)
-            .validate(statusCode: 200..<300)
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-					let decodedData = try? JSONDecoder().decode(ConvertVideoJobStatus.self, from: data)
-                    
-                    guard let responseData = decodedData else {
-						DLog(data.toString() ?? "")
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    
-                    completionHandler(responseData, nil)
-                case .failure(_):
-                    guard let data = response.data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) else {
-						DLog(response.data?.toString() ?? "no data")
-						DLog(response.response?.statusCode ?? "no code")
-                        completionHandler(nil, RESTAPIError.defaultError())
-                        return
-                    }
-                    completionHandler(nil, decodedData)
-                }
+
+        requestManager.performRequest(urlRequest) { (result: Result<ConvertVideoJobStatus, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
         }
 	}
 }
