@@ -13,7 +13,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
     let uploadcare = Uploadcare(withPublicKey: "34067d5ea21379bebb1f", secretKey: "a7171736eb2800733bc0")
     var timer: Timer?
 
-    func test1_listOfFiles_simple_authScheme() {
+    func test01_listOfFiles_simple_authScheme() {
         let expectation = XCTestExpectation(description: "test1_listOfFiles_simple_authScheme")
         uploadcare.authScheme = .simple
 
@@ -38,7 +38,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 15.0)
     }
     
-    func test2_listOfFiles_signed_authScheme() {
+    func test02_listOfFiles_signed_authScheme() {
         let expectation = XCTestExpectation(description: "test2_listOfFiles_signed_authScheme")
         uploadcare.authScheme = .signed
 
@@ -63,7 +63,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 15.0)
     }
 
-    func test3_listOfFiles_pagination() {
+    func test03_listOfFiles_pagination() {
         let expectation = XCTestExpectation(description: "test3_listOfFiles_pagination")
         uploadcare.authScheme = .signed
 
@@ -119,7 +119,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 20.0)
     }
 
-    func test4_fileInfo_with_UUID() {
+    func test04_fileInfo_with_UUID() {
         let expectation = XCTestExpectation(description: "test4_fileInfo_with_UUID")
 
         // get any file from list of files
@@ -152,7 +152,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 15.0)
     }
 
-    func test5_delete_file() {
+    func test05_delete_file() {
         let expectation = XCTestExpectation(description: "test5_delete_file")
 
         let url = URL(string: "https://source.unsplash.com/random")!
@@ -172,25 +172,22 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             XCTAssertNotNil(resultDictionary)
 
-            for file in resultDictionary! {
-                let uuid = file.value
-
-                self.uploadcare.deleteFile(withUUID: uuid) { file, error in
-                    if let error = error {
-                        XCTFail(error.detail)
-                        return
-                    }
-
-                    XCTAssertEqual(uuid, file?.uuid)
-                    expectation.fulfill()
+            let uuid = resultDictionary!.values.first!
+            self.uploadcare.deleteFile(withUUID: uuid) { file, error in
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
                 }
+
+                XCTAssertEqual(uuid, file?.uuid)
+                expectation.fulfill()
             }
         }
 
         wait(for: [expectation], timeout: 15.0)
     }
 
-    func test6_batch_delete_files() {
+    func test06_batch_delete_files() {
         let expectation = XCTestExpectation(description: "test6_batch_delete_files")
 
         let url = URL(string: "https://source.unsplash.com/random")!
@@ -210,25 +207,23 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             XCTAssertNotNil(resultDictionary)
 
-            for file in resultDictionary! {
-                let uuid = file.value
-                self.uploadcare.deleteFiles(withUUIDs: [uuid, "shouldBeInProblems"]) { (response, error) in
-                    if let error = error {
-                        XCTFail(error.detail)
-                        return
-                    }
-
-                    XCTAssertEqual(uuid, response?.result.first?.uuid)
-                    XCTAssertNotNil(response?.problems["shouldBeInProblems"])
-                    expectation.fulfill()
+            let uuid = resultDictionary!.values.first!
+            self.uploadcare.deleteFiles(withUUIDs: [uuid, "shouldBeInProblems"]) { (response, error) in
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
                 }
+
+                XCTAssertEqual(uuid, response?.result.first?.uuid)
+                XCTAssertNotNil(response?.problems["shouldBeInProblems"])
+                expectation.fulfill()
             }
         }
 
         wait(for: [expectation], timeout: 20.0)
     }
 
-    func test7_store_file() {
+    func test07_store_file() {
         let expectation = XCTestExpectation(description: "test7_store_file")
 
         let url = URL(string: "https://source.unsplash.com/random")!
@@ -248,21 +243,19 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             XCTAssertNotNil(resultDictionary)
 
-            for file in resultDictionary! {
-                let uuid = file.value
-                self.uploadcare.storeFile(withUUID: uuid) { file, error in
-                    if let error = error {
-                        XCTFail(error.detail)
-                        return
-                    }
+            let uuid = resultDictionary!.values.first!
+            self.uploadcare.storeFile(withUUID: uuid) { file, error in
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
+                }
 
-                    XCTAssertNotNil(file)
-                    XCTAssertEqual(uuid, file!.uuid)
+                XCTAssertNotNil(file)
+                XCTAssertEqual(uuid, file!.uuid)
 
-                    // cleanup
-                    self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
-                        expectation.fulfill()
-                    }
+                // cleanup
+                self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
+                    expectation.fulfill()
                 }
             }
         }
@@ -270,7 +263,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 20.0)
     }
 
-    func test8_batch_store_files() {
+    func test08_batch_store_files() {
         let expectation = XCTestExpectation(description: "test8_batch_store_files")
 
         let url = URL(string: "https://source.unsplash.com/random")!
@@ -290,20 +283,18 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             XCTAssertNotNil(resultDictionary)
 
-            for file in resultDictionary! {
-                let uuid = file.value
-                self.uploadcare.storeFiles(withUUIDs: [uuid]) { response, error in
-                    if let error = error {
-                        XCTFail(error.detail)
-                        return
-                    }
+            let uuid = resultDictionary!.values.first!
+            self.uploadcare.storeFiles(withUUIDs: [uuid]) { response, error in
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
+                }
 
-                    XCTAssertEqual(uuid, response?.result.first?.uuid)
+                XCTAssertEqual(uuid, response?.result.first?.uuid)
 
-                    // cleanup
-                    self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
-                        expectation.fulfill()
-                    }
+                // cleanup
+                self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
+                    expectation.fulfill()
                 }
             }
         }
@@ -311,7 +302,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 20.0)
     }
 
-    func test9_list_of_groups() {
+    func test09_list_of_groups() {
         let expectation = XCTestExpectation(description: "test9_list_of_groups")
 
         let query = GroupsListQuery()
@@ -484,8 +475,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             XCTAssertNotNil(resultDictionary)
 
-            for file in resultDictionary! {
-                let uuid = file.value
+            let uuid = resultDictionary!.values.first!
+            delay(5) {
                 self.uploadcare.copyFileToLocalStorage(source: uuid) { response, error in
                     if let error = error {
                         XCTFail(error.detail)
@@ -502,7 +493,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
             }
         }
 
-        wait(for: [expectation], timeout: 20.0)
+        wait(for: [expectation], timeout: 25.0)
     }
 
     func test14_copy_file_to_remote_storage() {
@@ -524,30 +515,14 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             XCTAssertNotNil(resultDictionary)
 
-            for file in resultDictionary! {
-                let uuid = file.value
-                self.uploadcare.copyFileToLocalStorage(source: uuid) { response, error in
-                    if let error = error {
-                        XCTFail(error.detail)
-                        return
-                    }
+            let uuid = resultDictionary!.values.first!
+            self.uploadcare.copyFileToRemoteStorage(source: uuid, target: "one_more_project", pattern: .uuid) { (response, error) in
+                XCTAssertNotNil(error)
+                XCTAssertFalse(error!.detail == RESTAPIError.defaultError().detail)
 
-                    XCTAssertEqual("file", response!.type)
-
-                    // cleanup
-                    self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
-                        expectation.fulfill()
-                    }
-                }
-
-                self.uploadcare.copyFileToRemoteStorage(source: uuid, target: "one_more_project", pattern: .uuid) { (response, error) in
-                    XCTAssertNotNil(error)
-                    XCTAssertFalse(error!.detail == RESTAPIError.defaultError().detail)
-
-                    // cleanup
-                    self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
-                        expectation.fulfill()
-                    }
+                // cleanup
+                self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
+                    expectation.fulfill()
                 }
             }
         }
@@ -662,13 +637,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
                 return
             }
 
-            var uuid = ""
-            for file in resultDictionary! {
-                uuid = file.value
-                break
-            }
-
             // fileinfo
+            let uuid = resultDictionary!.values.first!
             self.uploadcare.fileInfo(withUUID: uuid) { file, error in
                 if let error = error {
                     XCTFail(error.detail)
