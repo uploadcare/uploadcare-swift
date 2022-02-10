@@ -641,6 +641,84 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         wait(for: [expectation], timeout: 20.0)
     }
+
+    func test19_document_conversion_and_status() {
+        let expectation = XCTestExpectation(description: "test19_document_conversion_and_status")
+
+        let url = URL(string: "https://source.unsplash.com/random")!
+        let data = try! Data(contentsOf: url)
+
+        DLog("size of file: \(sizeString(ofData: data))")
+
+        // upload random image
+        uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+            DLog("upload progress: \(progress * 100)%")
+        }) { (resultDictionary, error) in
+
+            if let error = error {
+                XCTFail(error.detail)
+                expectation.fulfill()
+                return
+            }
+
+            var uuid = ""
+            for file in resultDictionary! {
+                uuid = file.value
+                break
+            }
+
+            // fileinfo
+            self.uploadcare.fileInfo(withUUID: uuid) { file, error in
+                if let error = error {
+                    XCTFail(error.detail)
+                    expectation.fulfill()
+                    return
+                }
+
+                let convertSettings = DocumentConversionJobSettings(forFile: file!)
+                    .format(.png)
+
+                self.uploadcare.convertDocumentsWithSettings([convertSettings]) { response, error in
+                    if let error = error {
+                        XCTFail(error.detail)
+                        expectation.fulfill()
+                        return
+                    }
+
+                    XCTAssertTrue(response!.problems.isEmpty)
+                    XCTAssertNotNil(response)
+
+                    let job = response!.result.first!
+
+                    // check status
+                    self.timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { (timer) in
+                        self.uploadcare.documentConversionJobStatus(token: job.token) { (status, error) in
+                            if let error = error {
+                                XCTFail(error.detail)
+                                expectation.fulfill()
+                                return
+                            }
+
+                            DLog(status!.statusString)
+                            switch status!.status {
+                            case .finished, .failed(_):
+                                self.timer?.invalidate()
+
+                                // cleanup
+                                self.uploadcare.deleteFile(withUUID: job.uuid) { _, _ in
+                                    expectation.fulfill()
+                                }
+                            default: break
+                            }
+                        }
+                    }
+                    self.timer?.fire()
+                }
+            }
+        }
+
+        wait(for: [expectation], timeout: 60.0)
+    }
 }
 
 #endif

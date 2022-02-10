@@ -67,12 +67,6 @@ class Tester {
 		//            self.testFileGroupInfo()
 		//        }
 		//		queue.async {
-		//            self.testDocumentConversion()
-		//        }
-//		queue.async {
-//			self.testDocumentConversionStatus()
-//		}
-		//		queue.async {
 		//            self.testVideoConversionStatus()
 		//        }
 		
@@ -113,84 +107,7 @@ class Tester {
 		}
 		semaphore.wait()
 	}
-	
-	func testDocumentConversion() {
-		print("<------ testDocumentConversion ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.fileInfo(withUUID: "b40e1f1a-46e1-471e-8a57-cb863719e8b0") { (file, error) in
-			guard let file = file else {
-				print(error ?? "fileInfo error")
-				semaphore.signal()
-				return
-			}
-			
-			let convertSettings = DocumentConversionJobSettings(forFile: file)
-				.format(.odt)
-			
-			self.uploadcare.convertDocumentsWithSettings([convertSettings]) { (response, error) in
-				defer { semaphore.signal() }
-				
-				guard let response = response else {
-					print(error ?? "error")
-					return
-				}
-				
-				print(response)
-			}
-		}
-		semaphore.wait()
-	}
-	
-	func testDocumentConversionStatus() {
-		print("<------ testDocumentConversionStatus ------>")
-		let semaphore = DispatchSemaphore(value: 0)
-		
-		uploadcare.fileInfo(withUUID: "b40e1f1a-46e1-471e-8a57-cb863719e8b0") { (file, error) in
-			guard let file = file else {
-				print(error ?? "fileInfo error")
-				semaphore.signal()
-				return
-			}
-			
-			let convertSettings = DocumentConversionJobSettings(forFile: file)
-				.format(.odt)
-			
-			self.uploadcare.convertDocumentsWithSettings([convertSettings]) { (response, error) in
-				guard let response = response else {
-					print(error ?? "error")
-					semaphore.signal()
-					return
-				}
-				
-				guard response.problems.isEmpty, let job = response.result.first else {
-					print(response)
-					semaphore.signal()
-					return
-				}
-				
-				let timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { (timer) in
-					self.uploadcare.documentConversionJobStatus(token: job.token) { (status, error) in
-						guard let status = status else {
-							print(error ?? "error")
-							return
-						}
-						
-						print(status)
-						switch status.status {
-						case .finished, .failed(_):
-							timer.invalidate()
-							semaphore.signal()
-						default: break
-						}
-					}
-				}
-				timer.fire()
-			}
-		}
-		semaphore.wait()
-	}
-	
+
 	func testVideoConversionStatus() {
 		print("<------ testVideoConversionStatus ------>")
 		let semaphore = DispatchSemaphore(value: 0)
