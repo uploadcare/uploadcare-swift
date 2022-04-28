@@ -48,7 +48,7 @@ filesList.get(withQuery: query) { list, error in
         return
     }
 			
-    print(list ?? "")
+    print(list as Any)
 }
 ```
 
@@ -63,7 +63,7 @@ filesList.nextPage { list, error in
         print(error)
         return
     }	
-    print(list ?? "")
+    print(list as Any)
 }
 ```
 
@@ -78,7 +78,7 @@ filesList.previousPage { list, error in
         print(error)
         return
     }	
-    print(list ?? "")
+    print(list as Any)
 }
 ```
 
@@ -90,7 +90,7 @@ uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { file, er
         print(error)
         return
     }		
-    print(file ?? "")
+    print(file as Any)
 }
 ```
 
@@ -104,7 +104,7 @@ uploadcare.storeFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { file, e
         print(error)
         return
     }
-    print(file ?? "")
+    print(file as Any)
 }
 ```
 
@@ -117,7 +117,7 @@ uploadcare.storeFiles(withUUIDs: uuids) { response, error in
         print(error)
         return
     }
-    print(response ?? "")
+    print(response as Any)
 }
 ```
 
@@ -131,7 +131,7 @@ uploadcare.deleteFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { file, 
         print(error)
         return
     }			
-    print(file ?? "")
+    print(file as Any)
 }
 ```
 
@@ -144,7 +144,7 @@ uploadcare.deleteFiles(withUUIDs: uuids) { response, error in
         print(error)
         return
     }
-    print(response ?? "")
+    print(response as Any)
 }
 ```
 
@@ -156,7 +156,7 @@ uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9"
         print(error)
         return
     }
-    print(response ?? "")
+    print(response as Any)
 }
 ```
 
@@ -169,7 +169,7 @@ uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", m
         print(error)
         return
     }
-    print(response ?? "")
+    print(response as Any)
 }
 ```
 
@@ -185,7 +185,7 @@ uploadcare.listOfGroups(withQuery: query) { list, error in
         print(error)
         return
     }
-    print(list ?? "")
+    print(list as Any)
 }
 
 // Using a GroupsList object
@@ -196,7 +196,7 @@ groupsList.get(withQuery: query) { list, error in
         print(error)
         return
     }
-    print(list ?? "")
+    print(list as Any)
 }
 
 // Get the next page
@@ -205,14 +205,15 @@ groupsList.nextPage { list, error in
         print(error)
         return
     }
-}		
+}
+
 // Get the previous page
 groupsList.previousPage { list, error in			
     if let error = error {
         print(error)
         return
     }
-    print(list ?? "")
+    print(list as Any)
 }
 ```
 
@@ -224,7 +225,7 @@ uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { group
         print(error)
         return
     }
-    print(group ?? "")
+    print(group as Any)
 }
 ```
 
@@ -248,7 +249,7 @@ uploadcare.getProjectInfo { project, error in
         print(error)
         return
     }
-    print(project ?? "")
+    print(project as Any)
 }
 ```
 
@@ -268,7 +269,7 @@ uploadcare.getAuthenticatedUrlFromUrl(url) { value, error in
     }
 
     // Value is https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
-    print(value)
+    print(value as Any)
 })
 ```
 
@@ -281,7 +282,7 @@ uploadcare.getListOfWebhooks { value, error in
         return
     }
 			
-    print(value)
+    print(value as Any)
 }
 ```
 
@@ -297,7 +298,7 @@ uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSig
         return
     }
 
-    print(value)
+    print(value as Any)
 }
 ```
 
@@ -313,7 +314,7 @@ uploadcare.updateWebhook(id: "webhookId", targetUrl: url, isActive: true, signin
         return
     }
 				
-    print(value)
+    print(value as Any)
 }
 ```
 
@@ -346,7 +347,7 @@ uploadcare.convertDocumentsWithSettings([task1, task2]) { response, error in
         return
     }
     
-    print(response)   
+    print(response as Any)   
 }
 ```
 
@@ -359,7 +360,7 @@ uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { respo
         return
     }
     
-    print(response)   
+    print(response as Any)   
 }
 ```
 
@@ -372,7 +373,7 @@ uploadcare.documentConversionJobStatus(token: 123456) { job, error in
         return
     }
 					
-    print(job)
+    print(job as Any)
     
     switch job.status {
     case .failed(let conversionError):
@@ -405,7 +406,7 @@ uploadcare.convertVideosWithSettings([task1, task2]) { response, error in
         return
     }
     
-    print(response)   
+    print(response as Any)   
 }
 ```
 
@@ -418,7 +419,7 @@ uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { response, error in
         return
     }
     
-    print(response)   
+    print(response as Any)   
 }
 ```
 
@@ -431,7 +432,7 @@ uploadcare.videoConversionJobStatus(token: 123456) { job, error in
         return
     }
 					
-    print(job)
+    print(job as Any)
     
     switch job.status {
     case .failed(let conversionError):
