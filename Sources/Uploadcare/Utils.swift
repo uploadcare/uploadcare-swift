@@ -29,7 +29,7 @@ func DLog(_ messages: Any..., fullPath: String = #file, line: Int = #line, funct
 internal func GMTDate() -> String {
 	let date = Date()
 	let formatter = DateFormatter()
-    formatter.locale = Locale(identifier: "en_US")
+	formatter.locale = Locale(identifier: "en_US")
 	formatter.timeZone = TimeZone(identifier: "GMT")
 	formatter.dateFormat = "E, dd MMM yyyy HH:mm:ss"
 	return formatter.string(from: date) + " GMT"
