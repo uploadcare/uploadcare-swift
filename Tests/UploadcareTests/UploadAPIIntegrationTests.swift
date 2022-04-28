@@ -9,39 +9,10 @@
 import XCTest
 @testable import Uploadcare
 
-func DLog(
-	_ messages: Any...,
-	fullPath: String = #file,
-	line: Int = #line,
-	functionName: String = #function
-) {
-	let file = URL(fileURLWithPath: fullPath)
-	for message in messages {
-		#if DEBUG
-		let string = "\(file.pathComponents.last!):\(line) -> \(functionName): \(message)"
-		print(string)
-		#endif
-	}
-}
-
-/// Count size of Data (in mb)
-/// - Parameter data: data
-func sizeString(ofData data: Data) -> String {
-	let bcf = ByteCountFormatter()
-	bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
-	bcf.countStyle = .file
-	return bcf.string(fromByteCount: Int64(data.count))
-}
-
-func delay(_ delay: Double, closure: @escaping ()->()) {
-	DispatchQueue.main.asyncAfter(
-		deadline: DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure)
-}
-
-final class IntegrationTests: XCTestCase {
+final class UploadAPIIntegrationTests: XCTestCase {
 	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
 
-	func test1_UploadFileFromURL_and_UploadStatus() {
+	func test01_UploadFileFromURL_and_UploadStatus() {
 		let expectation = XCTestExpectation(description: "test1UploadFileFromURL")
 
 		// upload from url
@@ -82,7 +53,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func test2_DirectUpload() {
+	func test02_DirectUpload() {
 		let expectation = XCTestExpectation(description: "test2DirectUpload")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
@@ -113,7 +84,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 20.0)
 	}
 
-	func test3_DirectUploadInForeground() {
+	func test03_DirectUploadInForeground() {
 		let expectation = XCTestExpectation(description: "test3DirectUploadInForeground")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
@@ -145,7 +116,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func test4_DirectUploadInForegroundCancel() {
+	func test04_DirectUploadInForegroundCancel() {
 		let expectation = XCTestExpectation(description: "test4DirectUploadInForegroundCancel")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
@@ -172,7 +143,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func test5_UploadFileInfo() {
+	func test05_UploadFileInfo() {
 		let expectation = XCTestExpectation(description: "test5_UploadFileInfo")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
@@ -210,7 +181,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func test6_MainUpload_Cancel() {
+	func test06_MainUpload_Cancel() {
 		let url = URL(string: "https://source.unsplash.com/random")!
 		let data = try! Data(contentsOf: url)
 
@@ -231,7 +202,7 @@ final class IntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 10.0)
 	}
 
-	func test7_MainUpload_PauseResume() {
+	func test07_MainUpload_PauseResume() {
 		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
 		let fileForUploading = uploadcare.file(withContentsOf: url)!
 

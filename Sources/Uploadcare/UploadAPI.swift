@@ -30,7 +30,7 @@ public class UploadAPI: NSObject {
 	internal var signature: UploadSignature?
 	
 	/// Alamofire session manager
-	private var manager: Session
+	private var manager = Session()
 	
 	/// Upload queue for multipart uploading
 	private var uploadQueue = DispatchQueue(label: "com.uploadcare.upload", qos: .utility, attributes: .concurrent)
@@ -41,10 +41,9 @@ public class UploadAPI: NSObject {
 	
 	/// Initialization
 	/// - Parameter publicKey: Public Key.  It is required when using Upload API.
-	public init(withPublicKey publicKey: String, secretKey: String? = nil, manager: Session) {
+	public init(withPublicKey publicKey: String, secretKey: String? = nil) {
 		self.publicKey = publicKey
 		self.secretKey = secretKey
-		self.manager = manager
 		
 		super.init()
 		
