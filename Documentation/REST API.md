@@ -42,13 +42,13 @@ let query = PaginationQuery()
 let filesList = uploadcare.list()
 
 // Get file list
-filesList.get(withQuery: query) { (list, error) in
+filesList.get(withQuery: query) { list, error in
     if let error = error {
         print(error)
         return
     }
 			
-    print(list ?? "")
+    print(list as Any)
 }
 ```
 
@@ -58,12 +58,12 @@ Get next page:
 // Check if the next page is available
 guard filesList.next != nil else { return }
 // Get the next page
-filesList.nextPage { (list, error) in
+filesList.nextPage { list, error in
     if let error = error {
         print(error)
         return
     }	
-    print(list ?? "")
+    print(list as Any)
 }
 ```
 
@@ -73,24 +73,24 @@ Get previous page:
 // Check if the previous page is available
 guard filesList.previous != nil else { return }
 // Get the previous page
-filesList.previousPage { (list, error) in
+filesList.previousPage { list, error in
     if let error = error {
         print(error)
         return
     }	
-    print(list ?? "")
+    print(list as Any)
 }
 ```
 
 ## File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
+uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { file, error in
     if let error = error {
         print(error)
         return
     }		
-    print(file ?? "")
+    print(file as Any)
 }
 ```
 
@@ -99,12 +99,12 @@ uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, e
 Store an individual file:
 
 ```swift
-uploadcare.storeFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
+uploadcare.storeFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { file, error in
     if let error = error {
         print(error)
         return
     }
-    print(file ?? "")
+    print(file as Any)
 }
 ```
 
@@ -112,12 +112,12 @@ Batch file storing:
 
 ```swift
 let uuids = ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "1bac376c-aa7e-4356-861b-dd2657b5bfd2"]
-uploadcare.storeFiles(withUUIDs: uuids) { (response, error) in
+uploadcare.storeFiles(withUUIDs: uuids) { response, error in
     if let error = error {
         print(error)
         return
     }
-    print(response ?? "")
+    print(response as Any)
 }
 ```
 
@@ -126,12 +126,12 @@ uploadcare.storeFiles(withUUIDs: uuids) { (response, error) in
 Delete an individual file:
 
 ```swift
-uploadcare.deleteFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { (file, error) in
+uploadcare.deleteFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { file, error in
     if let error = error {
         print(error)
         return
     }			
-    print(file ?? "")
+    print(file as Any)
 }
 ```
 
@@ -139,24 +139,24 @@ Batch file delete:
 
 ```swift
 let uuids = ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "1bac376c-aa7e-4356-861b-dd2657b5bfd2"]
-uploadcare.deleteFiles(withUUIDs: uuids) { (response, error) in
+uploadcare.deleteFiles(withUUIDs: uuids) { response, error in
     if let error = error {
         print(error)
         return
     }
-    print(response ?? "")
+    print(response as Any)
 }
 ```
 
 ## Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFileLocal?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { (response, error) in
+uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { response, error in
     if let error = error {
         print(error)
         return
     }
-    print(response ?? "")
+    print(response as Any)
 }
 ```
 
@@ -164,12 +164,12 @@ uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9"
 
 ```swift
 let source = "99c48392-46ab-4877-a6e1-e2557b011176"
-uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", makePublic: true, pattern: .uuid) { (response, error) in
+uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", makePublic: true, pattern: .uuid) { response, error in
     if let error = error {
         print(error)
         return
     }
-    print(response ?? "")
+    print(response as Any)
 }
 ```
 
@@ -180,58 +180,59 @@ let query = GroupsListQuery()
     .limit(100)
     .ordering(.datetimeCreatedDESC)
 
-uploadcare.listOfGroups(withQuery: query) { (list, error) in
+uploadcare.listOfGroups(withQuery: query) { list, error in
     if let error = error {
         print(error)
         return
     }
-    print(list ?? "")
+    print(list as Any)
 }
 
 // Using a GroupsList object
 let groupsList = uploadcare.listOfGroups()
 
-groupsList.get(withQuery: query) { (list, error) in
+groupsList.get(withQuery: query) { list, error in
     if let error = error {
         print(error)
         return
     }
-    print(list ?? "")
+    print(list as Any)
 }
 
 // Get the next page
-groupsList.nextPage { (list, error) in
+groupsList.nextPage { list, error in
     if let error = error {
         print(error)
         return
     }
-}		
+}
+
 // Get the previous page
-groupsList.previousPage { (list, error) in			
+groupsList.previousPage { list, error in			
     if let error = error {
         print(error)
         return
     }
-    print(list ?? "")
+    print(list as Any)
 }
 ```
 
 ## Group info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (group, error) in
+uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { group, error in
     if let error = error {
         print(error)
         return
     }
-    print(group ?? "")
+    print(group as Any)
 }
 ```
 
 ## Store group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (error) in
+uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { error in
     if let error = error {
         print(error)
         return
@@ -243,12 +244,12 @@ uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { (err
 ## Project info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/projectInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.getProjectInfo { (project, error) in
+uploadcare.getProjectInfo { project, error in
     if let error = error {
         print(error)
         return
     }
-    print(project ?? "")
+    print(project as Any)
 }
 ```
 
@@ -261,27 +262,27 @@ Example: https://yourdomain.com/{UUID}/ — backend redirects to https://cdn.you
 
 ```swift
 let url = URL(string: "https://yourdomain.com/FILE_UUID/")!
-uploadcare.getAuthenticatedUrlFromUrl(url, { (value, error) in
+uploadcare.getAuthenticatedUrlFromUrl(url) { value, error in
     if let error = error {
         print(error)
         return
     }
 
     // Value is https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
-    print(value)
+    print(value as Any)
 })
 ```
 
 ## List of webhooks ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhooksList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.getListOfWebhooks { (value, error) in
+uploadcare.getListOfWebhooks { value, error in
     if let error = error {
         print(error)
         return
     }
 			
-    print(value)
+    print(value as Any)
 }
 ```
 
@@ -291,13 +292,13 @@ Create and subscribe to a webhook. You can use webhooks to receive notifications
 
 ```swift
 let url = URL(string: "https://yourwebhook.com")!
-uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSigningSecret") { (value, error) in
+uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSigningSecret") { value, error in
     if let error = error {
         print(error)
         return
     }
 
-    print(value)
+    print(value as Any)
 }
 ```
 
@@ -307,13 +308,13 @@ Update webhook attributes.
 
 ```swift
 let url = URL(string: "https://yourwebhook.com")!
-uploadcare.updateWebhook(id: "webhookId", targetUrl: url, isActive: true, signingSecret: "someNewSigningSecret") { (value, error) in
+uploadcare.updateWebhook(id: "webhookId", targetUrl: url, isActive: true, signingSecret: "someNewSigningSecret") { value, error in
     if let error = error {
         print(error)
         return
     }
 				
-    print(value)
+    print(value as Any)
 }
 ```
 
@@ -323,7 +324,7 @@ Unsubscribe and delete a webhook.
 
 ```swift
 let url = URL(string: "https://yourwebhook.com")!
-uploadcare.deleteWebhook(forTargetUrl: url) { (error) in
+uploadcare.deleteWebhook(forTargetUrl: url) { error in
     if let error = error {
         print(error)
     }				
@@ -340,39 +341,39 @@ let task1 = DocumentConversionJobSettings(forFile: file1)
 let task2 = DocumentConversionJobSettings(forFile: file2)
     .format(.pdf)
 
-uploadcare.convertDocumentsWithSettings([task1, task2]) { (response, error) in
+uploadcare.convertDocumentsWithSettings([task1, task2]) { response, error in
     if let error = error {
         print(error)
         return
     }
     
-    print(response)   
+    print(response as Any)   
 }
 ```
 
 Alternatively, you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
 
 ```swift
-uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { (response, error) in
+uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { response, error in
     if let error = error {
         print(error)
         return
     }
     
-    print(response)   
+    print(response as Any)   
 }
 ```
 
 ## Document conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Conversion/paths/~1convert~1document~1status~1{token}~1/get?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.documentConversionJobStatus(token: 123456) { (job, error) in
+uploadcare.documentConversionJobStatus(token: 123456) { job, error in
     if let error = error {
         print(error)
         return
     }
 					
-    print(job)
+    print(job as Any)
     
     switch job.status {
     case .failed(let conversionError):
@@ -399,39 +400,39 @@ let task2 = VideoConversionJobSettings(forFile: file2)
     .format(.mp4)
     .quality(.lightest)
 
-uploadcare.convertVideosWithSettings([task1, task2]) { (response, error) in
+uploadcare.convertVideosWithSettings([task1, task2]) { response, error in
     if let error = error {
         print(error)
         return
     }
     
-    print(response)   
+    print(response as Any)   
 }
 ```
 
 Alternatively, you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/video_encoding/#process-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
 
 ```swift
-uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { (response, error) in
+uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { response, error in
     if let error = error {
         print(error)
         return
     }
     
-    print(response)   
+    print(response as Any)   
 }
 ```
 
 ## Video conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/videoConvertStatus?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.videoConversionJobStatus(token: 123456) { (job, error) in
+uploadcare.videoConversionJobStatus(token: 123456) { job, error in
     if let error = error {
         print(error)
         return
     }
 					
-    print(job)
+    print(job as Any)
     
     switch job.status {
     case .failed(let conversionError):

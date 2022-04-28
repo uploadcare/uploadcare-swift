@@ -26,21 +26,15 @@ Uploadcare provides simple method that will handle file upload. It will decide i
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
 guard let data = try? Data(contentsOf: url) else { return }
 
-uploadcare.uploadFile(data, withName: filename, store: .doNotStore, , { (progress) in
+let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore) { progress in
     print("progress: \(progress)")
-}, { file, error in
+} _: { file, error in
     if let error = error {
         print(error)
         return
     }
-
-    guard let file = file else {
-        print("error: no file")
-        return
-    }
-
-    print(file)
-})
+    print(file as Any)
+}
 
 // You can cancel uploading if needed
 task.cancel()
@@ -64,23 +58,23 @@ let data = try? Data(contentsOf: url) else { return }
 let fileForUploading1 = uploadcare.uploadAPI.file(fromData: data)
 let fileForUploading2 = uploadcare.uploadAPI.file(withContentsOf: url)
 
-// Handle error or result
-fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (result, error) in
+fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { result, error in
+    // Handle error or result
 }
 
 // Completion block is optional
 fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
 
 // Or you can just upload data and provide a filename
-let task = uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .store, expire: nil, { (progress) in
+let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store) { progress in
     print("upload progress: \(progress * 100)%")
-}) { (resultDictionary, error) in
+} _: { resultDictionary, error in
     if let error = error {
         print(error)
         return
     }
 
-    guard let files = result else { return }			
+    guard let files = resultDictionary else { return }
     for file in files {
         print("uploaded file name: \(file.key) | file id: \(file.value)")
     }
@@ -101,21 +95,17 @@ You can use this upload method and it'll run all 3 steps for you:
 
 ```swift
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
-let fileForUploading = uploadcare.uploadAPI.file(withContentsOf: url)
+let data = try! Data(contentsOf: url)
 
-// Upload without any callbacks
-fileForUploading?.upload(withName: "Mona_Lisa_big.jpg")
-
-// Upload with getting data about progress
-let task = fileForUploading.multipartUpload(withName: "Mona_Lisa_big.jpg", store: .store, { (progress) in
+let task = uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .store) { progress in
     print("progress: \(progress)")
-}, { (file, error) in
+} _: { file, error in
     if let error = error {
         print(error)
         return
     }
-    print(file ?? "")
-})
+    print(file as Any)
+}
 
 // You can cancel uploading if needed
 task?.cancel()
@@ -134,23 +124,23 @@ guard let url = URL(string: "https://source.unsplash.com/random") else { return 
 
 // Set parameters by accessing properties
 let task1 = UploadFromURLTask(sourceUrl: url)
-task.checkURLDuplicates = true
-task.saveURLDuplicates = true
-task.store = .store
+task1.checkURLDuplicates = true
+task1.saveURLDuplicates = true
+task1.store = .store
 
 // Or set parameters using chaining
 let task2 = UploadFromURLTask(sourceUrl: url)
     .checkURLDuplicates(true)
     .saveURLDuplicates(true)
     .store(.store)
-    
+
 // Upload
-uploadcare.uploadAPI.upload(task: task1) { [unowned self] (result, error) in
+uploadcare.uploadAPI.upload(task: task1) { result, error in
     if let error = error {
         print(error)
         return
     }
-    print(result)
+    print(result as Any)
 }
 ```
 
@@ -159,24 +149,24 @@ uploadcare.uploadAPI.upload(task: task1) { [unowned self] (result, error) in
 Use a token recieved with Upload files from the URLs method:
 
 ```swift
-uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { (status, error) in
+uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { status, error in
     if let error = error {
         print(error)
         return
     }
-    print(status)
+    print(status as Any)
 }
 ```
 
 ## File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { (file, error) in
+uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { file, error in
     if let error = error {
         print(error)
         return
     }
-    print(info)
+    print(info as Any)
 }
 ```
 
@@ -188,12 +178,12 @@ Uploadcare library provides 2 methods to create a group:
 
 ```swift
 let files: [UploadedFile] = [file1,file2]
-self.uploadcare.uploadAPI.createFilesGroup(files: files) { (response, error) in
+uploadcare.uploadAPI.createFilesGroup(files: files) { response, error in
     if let error = error {
         print(error)
         return
     }
-    print(response)
+    print(response as Any)
 }
 ```
 
@@ -201,24 +191,24 @@ self.uploadcare.uploadAPI.createFilesGroup(files: files) { (response, error) in
 
 ```swift
 let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
-self.uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { (response, error) in
+uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { response, error in
     if let error = error {
         print(error)
         return
     }
-    print(response)
+    print(response as Any)
 }
 ```
 
 ## Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { (group, error) in
+uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { group, error in
     if let error = error {
         print(error)
         return
     }
-    print(group)
+    print(group as Any)
 }
 ```
 
