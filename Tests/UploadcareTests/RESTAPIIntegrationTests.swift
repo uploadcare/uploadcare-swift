@@ -10,7 +10,7 @@ import XCTest
 @testable import Uploadcare
 
 final class RESTAPIIntegrationTests: XCTestCase {
-    let uploadcare = Uploadcare(withPublicKey: "34067d5ea21379bebb1f", secretKey: "a7171736eb2800733bc0")
+    let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
     var timer: Timer?
 
     func test01_listOfFiles_simple_authScheme() {
@@ -23,7 +23,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
             .limit(5)
         
         let filesList = uploadcare.listOfFiles()
-        filesList.get(withQuery: query) { (list, error) in
+        filesList.get(withQuery: query) { list, error in
             defer { expectation.fulfill() }
 
             if let error = error {
@@ -76,7 +76,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         DispatchQueue.global(qos: .utility).async {
             let semaphore = DispatchSemaphore(value: 0)
-            filesList.get(withQuery: query) { (list, error) in
+            filesList.get(withQuery: query) { list, error in
                 if let error = error {
                     XCTFail(error.detail)
                     return
@@ -89,7 +89,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
             semaphore.wait()
 
             // get next page
-            filesList.nextPage { (list, error) in
+            filesList.nextPage { list, error in
                 if let error = error {
                     XCTFail(error.detail)
                     return
@@ -136,7 +136,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             // get file info by file UUID
             let uuid = list!.results.first!.uuid
-            self.uploadcare.fileInfo(withUUID: uuid) { (file, error) in
+            self.uploadcare.fileInfo(withUUID: uuid) { file, error in
                 defer { expectation.fulfill() }
 
                 if let error = error {
