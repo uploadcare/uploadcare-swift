@@ -86,15 +86,15 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_S
 
 Check the [Upload API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/Upload%20API.md) to see all available methods.
 
-Example of direct uploads:
+Example of uploads:
 
 ```swift
 guard let url = URL(string: "https://source.unsplash.com/random") else { return }
 guard let data = try? Data(contentsOf: url) else { return }
 
 // You can create UploadedFile object to operate with it
-let fileForUploading1 = uploadcare.uploadAPI.file(fromData: data)
-let fileForUploading2 = uploadcare.uploadAPI.file(withContentsOf: url)
+let fileForUploading1 = uploadcare.file(fromData: data)
+let fileForUploading2 = uploadcare.file(withContentsOf: url)
 
 // Handle error or result
 fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (result, error) in
@@ -104,17 +104,16 @@ fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (res
 fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
 
 // Or you can just upload data and provide a filename
-let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .store { (progress) in
+let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .store) { progress in
     print("upload progress: \(progress * 100)%")
-}) { (file, error) in
+} _: { file, error in
     if let error = error {
-        print(error.detail)
-        return
+	print(error.detail)
+	return
     }
-    
+
     print(file ?? "Error: no file")
 }
-
 // You can cancel uploading if needed
 task.cancel()
 
