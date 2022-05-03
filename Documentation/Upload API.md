@@ -20,7 +20,7 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY")
 ```
 
 ## File upload ##
-Uploadcare provides simple method that will handle file upload. It will decide internally best way to upload file (direct upload or multipart upload)
+Uploadcare provides a simple method that will handle file upload. It decides internally the best way to upload a file (to use direct or multipart upload).
 
 ```swift
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
