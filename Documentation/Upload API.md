@@ -51,21 +51,9 @@ task.cancel()
 Direct uploads work with background URLSession, so uploading will continue if the app goes to the background state. It support files smaller than 100MB only
 
 ```swift
-guard let url = URL(string: "https://source.unsplash.com/random") else { return }
-let data = try? Data(contentsOf: url) else { return }
-
-// You can create UploadedFile object to operate with it
-let fileForUploading1 = uploadcare.uploadAPI.file(fromData: data)
-let fileForUploading2 = uploadcare.uploadAPI.file(withContentsOf: url)
-
-fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { result, error in
-    // Handle error or result
-}
-
-// Completion block is optional
-fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
-
-// Or you can just upload data and provide a filename
+guard let url = URL(string: "https://source.unsplash.com/random"),
+      let data = try? Data(contentsOf: url) else { return }
+      
 let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store) { progress in
     print("upload progress: \(progress * 100)%")
 } _: { resultDictionary, error in
@@ -108,13 +96,13 @@ let task = uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.j
 }
 
 // You can cancel uploading if needed
-task?.cancel()
+task.cancel()
 
 // You can pause uploading
-task?.pause()
+task.pause()
 
 // To resume uploading
-task?.resume()
+task.resume()
 ```
 
 ## Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
@@ -141,6 +129,9 @@ uploadcare.uploadAPI.upload(task: task1) { result, error in
         return
     }
     print(result as Any)
+    
+    // Upload token that you can use to check status
+    let token = result?.token
 }
 ```
 
@@ -166,7 +157,7 @@ uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { file, error in
         print(error)
         return
     }
-    print(info as Any)
+    print(file as Any)
 }
 ```
 
