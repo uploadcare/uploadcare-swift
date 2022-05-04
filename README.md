@@ -130,22 +130,25 @@ Refer to the [REST API documentation](https://github.com/uploadcare/uploadcare-s
 Example of getting list of files:
 
 ```swift
-// Make a query object
-let query = PaginationQuery()
-    .stored(true)
-    .ordering(.sizeDESC)
-    .limit(5)
 // Make a list of files object
-let filesList = uploadcare.list()
+lazy var filesList = uploadcare.listOfFiles()
 
-// Get file list
-filesList.get(withQuery: query) { (list, error) in
-    if let error = error {
-        print(error)
-        return
+func someFilesListMethod() {
+    // Make a query object
+    let query = PaginationQuery()
+        .stored(true)
+        .ordering(.sizeDESC)
+        .limit(5)
+
+    // Get file list
+    filesList.get(withQuery: query) { list, error in
+        if let error = error {
+            print(error)
+            return
+        }
+
+        print(list ?? "")
     }
-			
-    print(list ?? "")
 }
 ```
 
