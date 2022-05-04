@@ -33,22 +33,25 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_S
 ## List of files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/filesList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
 
 ```swift
-// Make a query object
-let query = PaginationQuery()
-    .stored(true)
-    .ordering(.sizeDESC)
-    .limit(5)
 // Make a list of files object
-let filesList = uploadcare.list()
+lazy var filesList = uploadcare.listOfFiles()
 
-// Get file list
-filesList.get(withQuery: query) { list, error in
-    if let error = error {
-        print(error)
-        return
+func someFilesListMethod() {
+    // Make a query object
+    let query = PaginationQuery()
+        .stored(true)
+        .ordering(.sizeDESC)
+        .limit(5)
+
+    // Get file list
+    filesList.get(withQuery: query) { list, error in
+        if let error = error {
+            print(error)
+            return
+        }
+
+        print(list ?? "")
     }
-			
-    print(list as Any)
 }
 ```
 
@@ -270,7 +273,7 @@ uploadcare.getAuthenticatedUrlFromUrl(url) { value, error in
 
     // Value is https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
     print(value as Any)
-})
+}
 ```
 
 ## List of webhooks ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhooksList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
@@ -308,12 +311,13 @@ Update webhook attributes.
 
 ```swift
 let url = URL(string: "https://yourwebhook.com")!
-uploadcare.updateWebhook(id: "webhookId", targetUrl: url, isActive: true, signingSecret: "someNewSigningSecret") { value, error in
+let webhookId = 100
+uploadcare.updateWebhook(id: webhookId, targetUrl: url, isActive: true, signingSecret: "someNewSigningSecret") { value, error in
     if let error = error {
         print(error)
         return
     }
-				
+
     print(value as Any)
 }
 ```
@@ -375,7 +379,7 @@ uploadcare.documentConversionJobStatus(token: 123456) { job, error in
 					
     print(job as Any)
     
-    switch job.status {
+    switch job?.status {
     case .failed(let conversionError):
         print(conversionError)
     default: break
@@ -434,7 +438,7 @@ uploadcare.videoConversionJobStatus(token: 123456) { job, error in
 					
     print(job as Any)
     
-    switch job.status {
+    switch job?.status {
     case .failed(let conversionError):
         print(conversionError)
     default: break
