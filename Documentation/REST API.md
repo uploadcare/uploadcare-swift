@@ -30,7 +30,7 @@ REST API requires both public and secret keys:
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
 ```
 
-## List of files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/filesList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## List of files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/filesList)) ##
 
 ```swift
 // Make a list of files object
@@ -85,7 +85,7 @@ filesList.previousPage { list, error in
 }
 ```
 
-## File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo)) ##
 
 ```swift
 uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { file, error in
@@ -97,7 +97,7 @@ uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { file, er
 }
 ```
 
-## Store files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/storeFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Store files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/storeFile)) ##
 
 Store an individual file:
 
@@ -124,7 +124,7 @@ uploadcare.storeFiles(withUUIDs: uuids) { response, error in
 }
 ```
 
-## Delete files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/deleteFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Delete files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/deleteFile)) ##
 
 Delete an individual file:
 
@@ -151,7 +151,7 @@ uploadcare.deleteFiles(withUUIDs: uuids) { response, error in
 }
 ```
 
-## Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFileLocal?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFileLocal)) ##
 
 ```swift
 uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { response, error in
@@ -163,7 +163,7 @@ uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9"
 }
 ```
 
-## Copy file to remote storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFile?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Copy file to remote storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFile)) ##
 
 ```swift
 let source = "99c48392-46ab-4877-a6e1-e2557b011176"
@@ -176,7 +176,7 @@ uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", m
 }
 ```
 
-## List of groups ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupsList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## List of groups ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupsList)) ##
 
 ```swift
 let query = GroupsListQuery()
@@ -220,7 +220,7 @@ groupsList.previousPage { list, error in
 }
 ```
 
-## Group info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Group info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupInfo)) ##
 
 ```swift
 uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { group, error in
@@ -232,7 +232,7 @@ uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { group
 }
 ```
 
-## Store group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Store group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put)) ##
 
 ```swift
 uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { error in
@@ -244,7 +244,7 @@ uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { erro
 }
 ```
 
-## Project info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/projectInfo?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Project info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/projectInfo)) ##
 
 ```swift
 uploadcare.getProjectInfo { project, error in
@@ -256,7 +256,7 @@ uploadcare.getProjectInfo { project, error in
 }
 ```
 
-## Secure delivery ([API Reference](https://uploadcare.com/docs/delivery/file_api/#authenticated-urls?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Secure delivery ([API Reference](https://uploadcare.com/docs/delivery/file_api/#authenticated-urls)) ##
 
 This method allows you to get an authenticated URL from your backend by using redirect.
 To answer a request to that URL, your backend should generate an authenticated URL to your file and perform REDIRECT to a generated URL. A redirected URL will be caught and returned in the completion handler of that method.
@@ -276,7 +276,7 @@ uploadcare.getAuthenticatedUrlFromUrl(url) { value, error in
 }
 ```
 
-## List of webhooks ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhooksList?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## List of webhooks ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhooksList)) ##
 
 ```swift
 uploadcare.getListOfWebhooks { value, error in
@@ -289,7 +289,7 @@ uploadcare.getListOfWebhooks { value, error in
 }
 ```
 
-## Create webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhookCreate?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Create webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhookCreate)) ##
 
 Create and subscribe to a webhook. You can use webhooks to receive notifications about your uploads. For instance, once a file gets uploaded to your project, we can notify you by sending a message to a target URL.
 
@@ -305,7 +305,7 @@ uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSig
 }
 ```
 
-## Update webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/updateWebhook?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Update webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/updateWebhook)) ##
 
 Update webhook attributes.
 
@@ -322,7 +322,7 @@ uploadcare.updateWebhook(id: webhookId, targetUrl: url, isActive: true, signingS
 }
 ```
 
-## Delete webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhookUnsubscribe?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Delete webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhookUnsubscribe)) ##
 
 Unsubscribe and delete a webhook.
 
@@ -335,7 +335,7 @@ uploadcare.deleteWebhook(forTargetUrl: url) { error in
 }
 ```
 
-## Convert document ([API Reference](https://uploadcare.com/docs/transformations/document_conversion/#convert?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Convert document ([API Reference](https://uploadcare.com/docs/transformations/document_conversion/#convert)) ##
 
 You can convert multiple files with one request:
 
@@ -355,7 +355,7 @@ uploadcare.convertDocumentsWithSettings([task1, task2]) { response, error in
 }
 ```
 
-Alternatively, you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
+Alternatively, you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting))):
 
 ```swift
 uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { response, error in
@@ -368,7 +368,7 @@ uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { respo
 }
 ```
 
-## Document conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Conversion/paths/~1convert~1document~1status~1{token}~1/get?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Document conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Conversion/paths/~1convert~1document~1status~1{token}~1/get)) ##
 
 ```swift
 uploadcare.documentConversionJobStatus(token: 123456) { job, error in
@@ -387,7 +387,7 @@ uploadcare.documentConversionJobStatus(token: 123456) { job, error in
 }
 ```
 
-## Convert video ([API Reference](https://uploadcare.com/docs/transformations/video_encoding/#video-encoding?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Convert video ([API Reference](https://uploadcare.com/docs/transformations/video_encoding/#video-encoding)) ##
 
 You can convert multiple video files with one request:
 
@@ -414,7 +414,7 @@ uploadcare.convertVideosWithSettings([task1, task2]) { response, error in
 }
 ```
 
-Alternatively, you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/video_encoding/#process-url-formatting?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift))):
+Alternatively, you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/video_encoding/#process-url-formatting))):
 
 ```swift
 uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { response, error in
@@ -427,7 +427,7 @@ uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { response, error in
 }
 ```
 
-## Video conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/videoConvertStatus?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Video conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/videoConvertStatus)) ##
 
 ```swift
 uploadcare.videoConversionJobStatus(token: 123456) { job, error in

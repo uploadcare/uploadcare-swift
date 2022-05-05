@@ -46,7 +46,7 @@ task.cancel()
 (task as? UploadTaskResumable)?.resume()
 ```
 
-## Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload/)) ##
 
 Direct uploads work with background URLSession, so uploading will continue if the app goes to the background state. It support files smaller than 100MB only
 
@@ -72,7 +72,7 @@ let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": da
 task.cancel()
 ```
 
-## Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart/)) ##
 
 Multipart Uploads are useful when you are dealing with files larger than 100MB or you explicitly want to accelerate uploads. Each Multipart Upload contains 3 steps:
 1. Start transaction
@@ -105,7 +105,7 @@ task.pause()
 task.resume()
 ```
 
-## Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/)) ##
 
 ```swift
 guard let url = URL(string: "https://source.unsplash.com/random") else { return }
@@ -135,7 +135,7 @@ uploadcare.uploadAPI.upload(task: task1) { result, error in
 }
 ```
 
-## Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus/)) ##
 
 Use a token recieved with Upload files from the URLs method:
 
@@ -149,7 +149,7 @@ uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { status, error in
 }
 ```
 
-## File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo/)) ##
 
 ```swift
 uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { file, error in
@@ -161,7 +161,7 @@ uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { file, error in
 }
 ```
 
-## Create file group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Create file group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/)) ##
 
 Uploadcare library provides 2 methods to create a group:
 
@@ -191,7 +191,7 @@ uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { response, error in
 }
 ```
 
-## Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo/)) ##
 
 ```swift
 uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { group, error in
@@ -203,7 +203,7 @@ uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { group, error in
 }
 ```
 
-## Secure uploads ([API Reference](https://uploadcare.com/docs/api_reference/upload/signed_uploads/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift)) ##
+## Secure uploads ([API Reference](https://uploadcare.com/docs/api_reference/upload/signed_uploads/)) ##
 
 Signing requests works by default if a Secret key is provided during SDK initialization. SDK generates a signature internally, and this signature stays valid for 30 minutes. New signatures are generated automatically when older ones expire.
 
