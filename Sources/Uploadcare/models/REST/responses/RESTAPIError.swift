@@ -8,17 +8,16 @@
 
 import Foundation
 
-
 public struct RESTAPIError: Codable {
-	
+
 	/// Error message
 	public var detail: String
-	
+
 	enum CodingKeys: String, CodingKey {
 		case detail
 	}
-	
 
+	// MARK: - Init
 	init(detail: String) {
 		self.detail = detail
 	}
@@ -28,20 +27,20 @@ public struct RESTAPIError: Codable {
 		let detail = try container.decodeIfPresent(String.self, forKey: .detail) ?? ""
 		self.init(detail: detail)
 	}
-	
+
 	/// Default error
 	static func defaultError() -> RESTAPIError {
 		return RESTAPIError(detail: "Unknown error")
 	}
-    
-    /// Cast from Error
-    /// - Parameter error: Error
-    static func fromError(_ error: Error) -> RESTAPIError {
-        if case let RequestManagerError.invalidRESTAPIResponse(requestError) = error {
-            return requestError
-        }
-        return defaultError()
-    }
+
+	/// Cast from Error
+	/// - Parameter error: Error
+	static func fromError(_ error: Error) -> RESTAPIError {
+		if case let RequestManagerError.invalidRESTAPIResponse(requestError) = error {
+			return requestError
+		}
+		return defaultError()
+	}
 }
 
 // MARK: - CustomDebugStringConvertible
