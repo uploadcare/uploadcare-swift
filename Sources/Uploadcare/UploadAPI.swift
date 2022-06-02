@@ -157,7 +157,6 @@ extension UploadAPI {
 		components.scheme = "https"
 		components.host = uploadAPIHost
 		components.path = "/info"
-
 		components.queryItems = [
 			URLQueryItem(name: "pub_key", value: publicKey),
 			URLQueryItem(name: "file_id", value: fileId)
@@ -248,32 +247,27 @@ extension UploadAPI {
 		forToken token: String,
 		_ completionHandler: @escaping (UploadFromURLStatus?, UploadError?) -> Void
 	) {
-		let urlString = uploadAPIBaseUrl + "/from_url/status/?token=\(token)"
-		guard let url = URL(string: urlString) else {
-			assertionFailure("Incorrect url")
-			return
-		}
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = uploadAPIHost
+        components.path = "/from_url/status/"
+        components.queryItems = [
+            URLQueryItem(name: "token", value: token)
+        ]
+
+        guard let url = components.url else {
+            assertionFailure("Incorrect url")
+            return
+        }
+
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
 
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(UploadFromURLStatus.self, from: data)
-
-					guard let responseData = decodedData else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-
-					completionHandler(responseData, nil)
-					break
-				case .failure(_):
-					let error = self.makeUploadError(fromResponse: response)
-					completionHandler(nil, error)
-				}
-		}
+        requestManager.performRequest(urlRequest) { (result: Result<UploadFromURLStatus, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 }
 
