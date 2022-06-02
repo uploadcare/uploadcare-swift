@@ -255,10 +255,6 @@ final class UploadAPIIntegrationTests: XCTestCase {
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
 		}) { (resultDictionary, error) in
-			defer {
-				expectation.fulfill()
-			}
-
 			if let error = error {
 				XCTFail(error.detail)
 				return
@@ -267,6 +263,8 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			XCTAssertNotNil(resultDictionary)
 
 			let fileID = resultDictionary!.first!.value
+
+			DLog("uploaded file with fileID: \(fileID)")
 
 			self.uploadcare.uploadAPI.fileInfo(withFileId: fileID) { file, error in
 				if let error = error {

@@ -153,7 +153,20 @@ extension UploadAPI {
 		withFileId fileId: String,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) {
-		let url = urlWithPath("/info?pub_key=\(self.publicKey)&file_id=\(fileId)")
+		var components = URLComponents()
+		components.scheme = "https"
+		components.host = uploadAPIHost
+		components.path = "/info"
+
+		components.queryItems = [
+			URLQueryItem(name: "pub_key", value: publicKey),
+			URLQueryItem(name: "file_id", value: fileId)
+		]
+
+		guard let url = components.url else {
+			assertionFailure("Incorrect url")
+			return
+		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
 
 		requestManager.performRequest(urlRequest) { (result: Result<UploadedFile, Error>) in
