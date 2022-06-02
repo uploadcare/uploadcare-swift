@@ -122,7 +122,12 @@ extension RequestManager {
 
 			let responseData: T
 			do {
-				try self.validate(response: response, data: data)
+                if request.url?.host == RESTAPIHost {
+                    try self.validateRESTAPIResponse(response: response, data: data)
+                }
+                if request.url?.host == uploadAPIHost {
+                    try self.validateUploadAPIResponse(response: response, data: data)
+                }
 				responseData = try JSONDecoder().decode(T.self, from: data)
 			} catch let error {
 				completion(.failure(error))
@@ -135,14 +140,33 @@ extension RequestManager {
 		return task
 	}
     
-	func validate(response: URLResponse, data: Data?) throws {
+	func validateRESTAPIResponse(response: URLResponse, data: Data?) throws {
 		guard let httpResponse = response as? HTTPURLResponse else { return }
 		if !(200..<300).contains(httpResponse.statusCode) {
-			var apiError = RESTAPIError.defaultError()
-			if let data = data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) {
-				apiError = decodedData
+			#if DEBUG
+			if let data = data {
+				DLog(data.toString() ?? "")
 			}
-			throw RequestManagerError.invalidRESTAPIResponse(error: apiError)
+			#endif
+
+			if let data = data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) {
+                throw RequestManagerError.invalidRESTAPIResponse(error: decodedData)
+			}
+
+            throw RequestManagerError.invalidRESTAPIResponse(error: RESTAPIError.defaultError())
 		}
 	}
+
+    func validateUploadAPIResponse(response: URLResponse, data: Data?) throws {
+        guard let httpResponse = response as? HTTPURLResponse else { return }
+        if !(200..<300).contains(httpResponse.statusCode) {
+
+            if let detail = data?.toString() {
+                throw RequestManagerError.invalidUploadAPIResponse(error: UploadError(status: httpResponse.statusCode, detail: detail))
+            }
+
+            let error = UploadError.defaultError(withStatus: httpResponse.statusCode)
+            throw RequestManagerError.invalidUploadAPIResponse(error: error)
+        }
+    }
 }
