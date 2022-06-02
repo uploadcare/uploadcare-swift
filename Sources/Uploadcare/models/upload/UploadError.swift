@@ -22,6 +22,11 @@ public struct UploadError {
 		return UploadError(status: 0, detail: "Unknown error")
 	}
 
+    /// Default error with status code
+    public static func defaultError(withStatus status: Int) -> UploadError {
+        return UploadError(status: status, detail: "Unknown error")
+    }
+
     /// Cast from Error
     /// - Parameter error: Error
     static func fromError(_ error: Error) -> UploadError {
