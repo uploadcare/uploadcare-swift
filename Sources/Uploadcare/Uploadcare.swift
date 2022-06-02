@@ -59,7 +59,7 @@ public class Uploadcare: NSObject {
 		self.secretKey = secretKey
 		self.requestManager = RequestManager(publicKey: publicKey, secretKey: secretKey)
 		
-		self.uploadAPI = UploadAPI(withPublicKey: publicKey, secretKey: secretKey)
+        self.uploadAPI = UploadAPI(withPublicKey: publicKey, secretKey: secretKey, requestManager: self.requestManager)
 	}
 	
 	
