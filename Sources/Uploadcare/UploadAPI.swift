@@ -869,7 +869,7 @@ extension UploadAPI: URLSessionTaskDelegate {
 		// run progress callback
 		if let backgroundTask = backgroundTasks[task.taskIdentifier] {
 			var progress: Double = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
-			progress = Double(round(100*progress)/100)
+			progress = Double(round(100 * progress) / 100)
 			backgroundTask.progressCallback?(progress)
 		}
 	}
