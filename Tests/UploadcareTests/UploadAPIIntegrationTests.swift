@@ -267,13 +267,13 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			DLog("uploaded file with fileID: \(fileID)")
 
 			self.uploadcare.uploadAPI.fileInfo(withFileId: fileID) { file, error in
+				defer { expectation.fulfill() }
 				if let error = error {
 					XCTFail(error.detail)
 					return
 				}
 
 				XCTAssertNotNil(file)
-				expectation.fulfill()
 			}
 		}
 
