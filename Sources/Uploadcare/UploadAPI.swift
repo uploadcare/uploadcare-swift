@@ -37,16 +37,38 @@ public class UploadAPI: NSObject {
 	
 	/// Running background tasks where key is URLSessionTask.taskIdentifier
 	private var backgroundTasks = [Int: BackgroundUploadTask]()
+
+	/// Performs network requests
+	private let requestManager: RequestManager
 	
 	
 	/// Initialization
 	/// - Parameter publicKey: Public Key.  It is required when using Upload API.
+	/// - Parameter secretKey: Secret Key
 	public init(withPublicKey publicKey: String, secretKey: String? = nil) {
 		self.publicKey = publicKey
 		self.secretKey = secretKey
-		
+
+		self.requestManager = RequestManager(publicKey: publicKey, secretKey: secretKey)
+
 		super.init()
-		
+
+		BackgroundSessionManager.instance.sessionDelegate = self
+	}
+
+	/// Init with request manager
+	/// - Parameters:
+	///   - publicKey: Public Key.  It is required when using Upload API.
+	///   - secretKey: Secret Key
+	///   - requestManager: requests manager
+	internal init(withPublicKey publicKey: String, secretKey: String? = nil, requestManager: RequestManager? = nil) {
+		self.publicKey = publicKey
+		self.secretKey = secretKey
+
+		self.requestManager = requestManager ?? RequestManager(publicKey: publicKey, secretKey: secretKey)
+
+		super.init()
+
 		BackgroundSessionManager.instance.sessionDelegate = self
 	}
 }
@@ -103,6 +125,21 @@ private extension UploadAPI {
 		
 		return self.signature
 	}
+
+	/// Make URL with path
+	/// - Parameter path: path string
+	/// - Returns: URL
+	func urlWithPath(_ path: String) -> URL {
+		var urlComponents = URLComponents()
+		urlComponents.scheme = "https"
+		urlComponents.host = uploadAPIHost
+		urlComponents.path = path
+		
+		guard let url = urlComponents.url else {
+			fatalError("incorrect url")
+		}
+		return url
+	}
 }
 
 
@@ -116,30 +153,14 @@ extension UploadAPI {
 		withFileId fileId: String,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) {
-		let urlString = uploadAPIBaseUrl + "/info?pub_key=\(self.publicKey)&file_id=\(fileId)"
-		guard let url = URL(string: urlString) else {
-			assertionFailure("Incorrect url")
-			return
-		}
+		let url = urlWithPath("/info?pub_key=\(self.publicKey)&file_id=\(fileId)")
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
-		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(UploadedFile.self, from: data)
-		
-					guard let fileInfo = decodedData else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
 
-					completionHandler(fileInfo, nil)
-				case .failure(_):
-					let error = self.makeUploadError(fromResponse: response)
-					completionHandler(nil, error)
-				}
+		requestManager.performRequest(urlRequest) { (result: Result<UploadedFile, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+			case .success(let responseData): completionHandler(responseData, nil)
+			}
 		}
 	}
 }
