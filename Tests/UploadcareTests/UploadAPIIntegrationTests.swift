@@ -243,45 +243,44 @@ final class UploadAPIIntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 120.0)
 	}
 
-    func test08_fileInfo() {
-        let expectation = XCTestExpectation(description: "test08_fileInfo")
+	func test08_fileInfo() {
+		let expectation = XCTestExpectation(description: "test08_fileInfo")
 
-        let url = URL(string: "https://source.unsplash.com/random")!
-        let data = try! Data(contentsOf: url)
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
 
-        DLog("size of file: \(sizeString(ofData: data))")
+		DLog("size of file: \(sizeString(ofData: data))")
 
 
-        uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
-            DLog("upload progress: \(progress * 100)%")
-        }) { (resultDictionary, error) in
-            defer {
-                expectation.fulfill()
-            }
+		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+			DLog("upload progress: \(progress * 100)%")
+		}) { (resultDictionary, error) in
+			defer {
+				expectation.fulfill()
+			}
 
-            if let error = error {
-                XCTFail(error.detail)
-                return
-            }
+			if let error = error {
+				XCTFail(error.detail)
+				return
+			}
 
-            XCTAssertNotNil(resultDictionary)
+			XCTAssertNotNil(resultDictionary)
 
-            let fileID = resultDictionary!.first!.value
+			let fileID = resultDictionary!.first!.value
 
-            self.uploadcare.uploadAPI.fileInfo(withFileId: fileID) { file, error in
-                if let error = error {
-                    XCTFail(error.detail)
-                    return
-                }
+			self.uploadcare.uploadAPI.fileInfo(withFileId: fileID) { file, error in
+				if let error = error {
+					XCTFail(error.detail)
+					return
+				}
 
-                XCTAssertNotNil(file)
-                expectation.fulfill()
-            }
-        }
+				XCTAssertNotNil(file)
+				expectation.fulfill()
+			}
+		}
 
-        wait(for: [expectation], timeout: 10.0)
-    }
-
+		wait(for: [expectation], timeout: 10.0)
+	}
 }
 
 #endif
