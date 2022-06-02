@@ -13,7 +13,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
 
 	func test01_UploadFileFromURL_and_UploadStatus() {
-		let expectation = XCTestExpectation(description: "test1UploadFileFromURL")
+		let expectation = XCTestExpectation(description: "test01_UploadFileFromURL_and_UploadStatus")
 
 		// upload from url
 		let url = URL(string: "https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_60fps_normal.mp4")!
@@ -23,14 +23,14 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			.filename("file_from_url")
 			.store(.store)
 
-		uploadcare.uploadAPI.upload(task: task) { [unowned self] (result, error) in
+		uploadcare.uploadAPI.upload(task: task) { [unowned self] result, error in
 			if let error = error {
 				XCTFail(error.detail)
 			}
 
 			XCTAssertNotNil(result)
 
-			DLog(result!)
+			DLog(result as Any)
 
 			guard let token = result?.token else {
 				XCTFail("no token")
@@ -38,12 +38,12 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			}
 
 			delay(1.0) { [unowned self] in
-				self.uploadcare.uploadAPI.uploadStatus(forToken: token) { (status, error) in
+				self.uploadcare.uploadAPI.uploadStatus(forToken: token) { status, error in
 					if let error = error {
 						XCTFail(error.detail)
 					}
 					XCTAssertNotNil(status)
-					DLog(status!)
+					DLog(status as Any)
 					expectation.fulfill()
 				}
 			}
