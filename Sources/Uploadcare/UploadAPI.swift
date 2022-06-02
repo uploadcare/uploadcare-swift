@@ -185,7 +185,6 @@ extension UploadAPI {
 			URLQueryItem(name: "source_url", value: task.sourceUrl.absoluteString),
 			URLQueryItem(name: "store", value: task.store.rawValue)
 		]
-		components.queryItems = queryItems
 
 		if let filenameVal = task.filename {
 			let name = filenameVal.isEmpty ? "noname.ext" : filenameVal
