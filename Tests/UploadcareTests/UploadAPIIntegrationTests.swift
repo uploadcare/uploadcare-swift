@@ -16,12 +16,12 @@ final class UploadAPIIntegrationTests: XCTestCase {
 		let expectation = XCTestExpectation(description: "test01_UploadFileFromURL_and_UploadStatus")
 
 		// upload from url
-		let url = URL(string: "https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_60fps_normal.mp4")!
+		let url = URL(string: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png?\(UUID().uuidString)")!
 		let task = UploadFromURLTask(sourceUrl: url)
 			.checkURLDuplicates(true)
 			.saveURLDuplicates(true)
 			.filename("file_from_url")
-			.store(.store)
+			.store(.doNotStore)
 
 		uploadcare.uploadAPI.upload(task: task) { [unowned self] result, error in
 			if let error = error {
