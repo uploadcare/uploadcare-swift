@@ -46,6 +46,7 @@ public class Uploadcare: NSObject {
 	/// Library version
 	private var libraryVersion = "0.6.0"
 
+    /// Performs network requests
 	private let requestManager: RequestManager
 
 	private var redirectValues = [String: String]()

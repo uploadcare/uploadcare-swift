@@ -37,7 +37,7 @@ public struct RESTAPIError: Codable {
     /// Cast from Error
     /// - Parameter error: Error
     static func fromError(_ error: Error) -> RESTAPIError {
-        if case let RequestManagerError.invalidResponse(requestError) = error {
+        if case let RequestManagerError.invalidRESTAPIResponse(requestError) = error {
             return requestError
         }
         return defaultError()

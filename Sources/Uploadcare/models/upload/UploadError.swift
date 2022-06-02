@@ -21,6 +21,15 @@ public struct UploadError {
 	public static func defaultError() -> UploadError {
 		return UploadError(status: 0, detail: "Unknown error")
 	}
+
+    /// Cast from Error
+    /// - Parameter error: Error
+    static func fromError(_ error: Error) -> UploadError {
+        if case let RequestManagerError.invalidUploadAPIResponse(requestError) = error {
+            return requestError
+        }
+        return Self.defaultError()
+    }
 }
 
 

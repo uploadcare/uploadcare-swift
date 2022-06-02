@@ -8,7 +8,8 @@
 import Foundation
 
 internal enum RequestManagerError: Error {
-    case invalidResponse(error: RESTAPIError)
+    case invalidRESTAPIResponse(error: RESTAPIError)
+    case invalidUploadAPIResponse(error: UploadError)
     case noResponse
     case parsingError
 }
@@ -141,7 +142,7 @@ extension RequestManager {
             if let data = data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) {
                 apiError = decodedData
             }
-            throw RequestManagerError.invalidResponse(error: apiError)
+            throw RequestManagerError.invalidRESTAPIResponse(error: apiError)
         }
     }
 }
