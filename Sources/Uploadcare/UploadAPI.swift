@@ -286,9 +286,8 @@ extension UploadAPI {
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskCompletionHandler
 	) -> UploadTaskable {
-		let urlString = uploadAPIBaseUrl + "/base/"
-		let url = URL(string: urlString)
-		var urlRequest = makeUploadAPIURLRequest(fromURL: url!, method: .post)
+        let url = urlWithPath("/base/")
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
 		
 		// Making request body
 		let builder = MultipartRequestBuilder(request: urlRequest)
