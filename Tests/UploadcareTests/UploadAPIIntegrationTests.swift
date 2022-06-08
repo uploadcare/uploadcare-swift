@@ -31,8 +31,6 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 			XCTAssertNotNil(result)
 
-			DLog(result as Any)
-
 			guard let token = result?.token else {
 				XCTFail("no token")
 				return
@@ -44,7 +42,6 @@ final class UploadAPIIntegrationTests: XCTestCase {
 						XCTFail(error.detail)
 					}
 					XCTAssertNotNil(status)
-					DLog(status as Any)
 					expectation.fulfill()
 				}
 			}
@@ -298,7 +295,6 @@ final class UploadAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				return
 			}
-			DLog(file as Any)
 		}
 		wait(for: [expectation], timeout: 120.0)
 	}
