@@ -106,6 +106,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			}
 
 			XCTAssertNotNil(resultDictionary)
+			XCTAssertFalse(resultDictionary!.isEmpty)
 
 			for file in resultDictionary! {
 				DLog("uploaded file name: \(file.key) | file id: \(file.value)")
@@ -146,7 +147,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	func test05_UploadFileInfo() {
 		let expectation = XCTestExpectation(description: "test5_UploadFileInfo")
 
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/random?\(UUID().uuidString)")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -160,7 +161,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			}
 
 			XCTAssertNotNil(resultDictionary)
-			XCTAssertNotNil(resultDictionary?.first?.value)
+			XCTAssertFalse(resultDictionary!.isEmpty)
 
 			let fileId = resultDictionary!.first!.value
 			self.uploadcare.uploadAPI.fileInfo(withFileId: fileId) { (info, error) in

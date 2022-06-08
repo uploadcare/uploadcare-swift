@@ -23,12 +23,12 @@ public protocol UploadTaskResumable: UploadTaskable {
 }
 
 /// Simple class that stores upload request and allows to cancel uploading
-class BackgroundUploadTask: UploadTaskable {
+class UploadTask: UploadTaskable {
 	// MARK: - Internal properties
 	
 	/// URLSessionUploadTask task. Stored to be able to cancel uploading
 	internal let task: URLSessionUploadTask
-	
+
 	/// Completion handler
 	internal let completionHandler: TaskCompletionHandler
 	
@@ -58,22 +58,6 @@ class BackgroundUploadTask: UploadTaskable {
 		task.cancel()
 	}
 }
-
-/// Simple class that stores upload request and allows to cancel uploading
-class UploadTask: UploadTaskable {
-	/// Upload request
-	let request: Alamofire.UploadRequest
-	
-	internal init(request: UploadRequest) {
-		self.request = request
-	}
-	
-	func cancel() {
-		DLog("task cancelled")
-		request.cancel()
-	}
-}
-
 
 class MultipartUploadTask: UploadTaskResumable {
 	
