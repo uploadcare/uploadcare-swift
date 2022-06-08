@@ -54,7 +54,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	}
 
 	func test02_DirectUpload() {
-		let expectation = XCTestExpectation(description: "test2DirectUpload")
+		let expectation = XCTestExpectation(description: "test02_DirectUpload")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
 		let data = try! Data(contentsOf: url)
@@ -85,7 +85,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	}
 
 	func test03_DirectUploadInForeground() {
-		let expectation = XCTestExpectation(description: "test3DirectUploadInForeground")
+		let expectation = XCTestExpectation(description: "test03_DirectUploadInForeground")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
 		let data = try! Data(contentsOf: url)
@@ -118,7 +118,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	}
 
 	func test04_DirectUploadInForegroundCancel() {
-		let expectation = XCTestExpectation(description: "test4DirectUploadInForegroundCancel")
+		let expectation = XCTestExpectation(description: "test04_DirectUploadInForegroundCancel")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
 		let data = try! Data(contentsOf: url)
@@ -145,7 +145,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	}
 
 	func test05_UploadFileInfo() {
-		let expectation = XCTestExpectation(description: "test5_UploadFileInfo")
+		let expectation = XCTestExpectation(description: "test05_UploadFileInfo")
 
 		let url = URL(string: "https://source.unsplash.com/random?\(UUID().uuidString)")!
 		let data = try! Data(contentsOf: url)
@@ -186,7 +186,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 		let url = URL(string: "https://source.unsplash.com/random")!
 		let data = try! Data(contentsOf: url)
 
-		let expectation = XCTestExpectation(description: "test6_MainUpload_Cancel")
+		let expectation = XCTestExpectation(description: "test06_MainUpload_Cancel")
 		let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
 			DLog("upload progress: \(progress * 100)%")
 		} _: { file, error in
@@ -207,7 +207,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
 		let fileForUploading = uploadcare.file(withContentsOf: url)!
 
-		let expectation = XCTestExpectation(description: "test7_MainUpload_PauseResume")
+		let expectation = XCTestExpectation(description: "test07_MainUpload_PauseResume")
 
 		var task: UploadTaskable?
 		var didPause = false
@@ -279,6 +279,29 @@ final class UploadAPIIntegrationTests: XCTestCase {
 		}
 
 		wait(for: [expectation], timeout: 10.0)
+	}
+
+	func test09_multipartUpload() {
+		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
+		let data = try! Data(contentsOf: url)
+
+		let expectation = XCTestExpectation(description: "test09_multipartUpload")
+
+		let onProgress: (Double)->Void = { (progress) in
+			DLog("progress: \(progress)")
+		}
+
+		uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, onProgress) { file, error in
+			defer {
+				expectation.fulfill()
+			}
+			if let error = error {
+				XCTFail(error.detail)
+				return
+			}
+			DLog(file ?? "")
+		}
+		wait(for: [expectation], timeout: 120.0)
 	}
 }
 
