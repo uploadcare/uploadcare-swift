@@ -86,7 +86,7 @@ extension RequestManager {
 			let uri = (urlRequest.url?.path ?? "") + query
 
 			let signString = [
-				urlRequest.method?.rawValue ?? "GET",
+				urlRequest.httpMethod ?? "GET",
 				content.md5(),
 				urlRequest.allHTTPHeaderFields?["Content-Type"] ?? "application/json",
 				dateString,

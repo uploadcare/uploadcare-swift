@@ -175,8 +175,6 @@ final class UploadAPIIntegrationTests: XCTestCase {
 				}
 
 				XCTAssertNotNil(info)
-
-				DLog(info ?? "nil")
 			}
 		}
 

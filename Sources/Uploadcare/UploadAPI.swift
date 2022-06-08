@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Alamofire
 
 public typealias TaskCompletionHandler = ([String: String]?, UploadError?) -> Void
 public typealias TaskProgressBlock = (Double) -> Void
@@ -28,9 +27,6 @@ public class UploadAPI: NSObject {
 	
 	/// Signature
 	internal var signature: UploadSignature?
-	
-	/// Alamofire session manager
-	private var manager = Session()
 	
 	/// Upload queue for multipart uploading
 	private var uploadQueue = DispatchQueue(label: "com.uploadcare.upload", qos: .utility, attributes: .concurrent)
@@ -81,24 +77,11 @@ public class UploadAPI: NSObject {
 private extension UploadAPI {
 	/// /// Build url request for Upload API
 	/// - Parameter fromURL: request url
-	func makeUploadAPIURLRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
+	func makeUploadAPIURLRequest(fromURL url: URL, method: RequestManager.HTTPMethod) -> URLRequest {
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = method.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
 		return urlRequest
-	}
-	
-	/// Make UploadError from data response
-	/// - Parameter response: Data response
-	func makeUploadError(fromResponse response: DataResponse<Data, AFError>) -> UploadError {
-		let status: Int = response.response?.statusCode ?? 0
-		
-		var message = ""
-		if let data = response.data {
-			message = String(data: data, encoding: .utf8) ?? ""
-		}
-		
-		return UploadError(status: status, detail: message)
 	}
 	
 	/// Generate signature for signed requests
@@ -582,7 +565,7 @@ extension UploadAPI {
 				return
 			}
 			var urlRequest = URLRequest(url: url)
-			urlRequest.httpMethod = HTTPMethod.put.rawValue
+            urlRequest.httpMethod = RequestManager.HTTPMethod.put.rawValue
 			urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
 			urlRequest.httpBody = part
 
