@@ -224,7 +224,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			}
 		}
 
-		task = fileForUploading.upload(withName: "Mona_Lisa_23mb.jpg", store: .store, onProgress, { (file, error) in
+		task = fileForUploading.upload(withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, onProgress, { (file, error) in
 			defer {
 				expectation.fulfill()
 			}

@@ -620,7 +620,7 @@ extension UploadAPI {
                     self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, task: task, group: group)
                 }
             }
-            
+
             task.appendRequest(dataTask)
             dataTask.resume()
 		}
@@ -637,47 +637,22 @@ extension UploadAPI {
 		forFileUIID: String,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) {
-		let urlString = uploadAPIBaseUrl + "/multipart/complete/"
-		manager.upload(
-			multipartFormData: { (multipartFormData) in
-				if let forFileUIIDData = forFileUIID.data(using: .utf8) {
-					multipartFormData.append(forFileUIIDData, withName: "uuid")
-				}
-				if let publicKeyData = self.publicKey.data(using: .utf8) {
-					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
-				}
-		},
-			to: urlString)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(_):
-					if response.response?.statusCode == 200, let data = response.data {
-						let decodedData = try? JSONDecoder().decode(UploadedFile.self, from: data)
-						guard let resultData = decodedData else {
-							completionHandler(nil, UploadError.defaultError())
-							return
-						}
-						completionHandler(resultData, nil)
-						return
-					}
+        let url = urlWithPath("/multipart/complete/")
+        var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
 
-					// error happened
-					let status: Int = response.response?.statusCode ?? 0
-					var message = ""
-					if let data = response.data {
-						message = String(data: data, encoding: .utf8) ?? ""
-					}
-					let error = UploadError(status: status, detail: message)
-					completionHandler(nil, error)
+        // Making request body
+        let builder = MultipartRequestBuilder(request: urlRequest)
+        builder.addMultiformValue(forFileUIID, forName: "uuid")
+        builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
 
-				case .failure(let encodingError):
-					completionHandler(
-						nil,
-						UploadError(status: 0, detail: encodingError.localizedDescription)
-					)
-				}
-		}
+        urlRequest = builder.finalize()
+
+        requestManager.performRequest(urlRequest) { (result: Result<UploadedFile, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 }
 
