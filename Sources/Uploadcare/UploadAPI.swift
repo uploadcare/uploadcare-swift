@@ -722,38 +722,34 @@ extension UploadAPI {
 		groupId: String,
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
-		var urlString = uploadAPIBaseUrl + "/group/info/?pub_key=\(self.publicKey)&group_id=\(groupId)"
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = uploadAPIHost
+        urlComponents.path = "/group/info/"
+        urlComponents.queryItems = [
+            URLQueryItem(name: "pub_key", value: publicKey),
+            URLQueryItem(name: "group_id", value: groupId)
+        ]
 		
-		if let uploadSignature = self.getSignature() {
-			urlString += "&signature=\(uploadSignature.signature)"
-			urlString += "&expire=\(uploadSignature.expire)"
-		}
+        if let uploadSignature = self.getSignature() {
+            urlComponents.queryItems?.append(contentsOf: [
+                URLQueryItem(name: "signature", value: uploadSignature.signature),
+                URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
+            ])
+        }
 		
-		guard let url = URL(string: urlString) else {
+        guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
-		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(UploadedFilesGroup.self, from: data)
 
-					guard let responseData = decodedData else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-
-					completionHandler(responseData, nil)
-					break
-				case .failure(_):
-					let error = self.makeUploadError(fromResponse: response)
-					completionHandler(nil, error)
-				}
-		}
+        requestManager.performRequest(urlRequest) { (result: Result<UploadedFilesGroup, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 }
 
