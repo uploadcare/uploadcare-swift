@@ -679,17 +679,28 @@ extension UploadAPI {
 		fileIds: [String],
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
-		var urlString = uploadAPIBaseUrl + "/group/?pub_key=\(self.publicKey)"
-		for (index, fileId) in fileIds.enumerated() {
-			urlString += "&files[\(index)]=\(fileId)"
-		}
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = uploadAPIHost
+        urlComponents.path = "/group/"
+        urlComponents.queryItems = [
+            URLQueryItem(name: "pub_key", value: publicKey)
+        ]
 
-		if let uploadSignature = self.getSignature() {
-			urlString += "&signature=\(uploadSignature.signature)"
-			urlString += "&expire=\(uploadSignature.expire)"
-		}
-		
-		guard let url = URL(string: urlString) else {
+        for (index, fileId) in fileIds.enumerated() {
+            urlComponents.queryItems?.append(
+                URLQueryItem(name: "files[\(index)]", value: fileId)
+            )
+        }
+
+        if let uploadSignature = self.getSignature() {
+            urlComponents.queryItems?.append(contentsOf: [
+                URLQueryItem(name: "signature", value: uploadSignature.signature),
+                URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
+            ])
+        }
+
+        guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
