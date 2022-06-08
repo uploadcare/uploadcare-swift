@@ -11,6 +11,7 @@ import XCTest
 
 final class UploadAPIIntegrationTests: XCTestCase {
 	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
+    var newGroup: UploadedFilesGroup?
 
 	func test01_UploadFileFromURL_and_UploadStatus() {
 		let expectation = XCTestExpectation(description: "test01_UploadFileFromURL_and_UploadStatus")
@@ -299,10 +300,75 @@ final class UploadAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				return
 			}
-			DLog(file ?? "")
+			DLog(file as Any)
 		}
 		wait(for: [expectation], timeout: 120.0)
 	}
+
+    func test10_createFilesGroup_and_filesGroupInfo() {
+        let expectation = XCTestExpectation(description: "test10_createFilesGroup_and_filesGroupInfo")
+
+        let url = URL(string: "https://source.unsplash.com/random?\(UUID().uuidString)")!
+        let data = try! Data(contentsOf: url)
+
+        DLog("size of file: \(sizeString(ofData: data))")
+
+        // upload a file
+        uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { progress in
+            DLog("upload progress: \(progress * 100)%")
+        }) { resultDictionary, error in
+            if let error = error {
+                XCTFail(error.detail)
+                return
+            }
+
+            XCTAssertNotNil(resultDictionary)
+            XCTAssertFalse(resultDictionary!.isEmpty)
+
+            // file info
+            let fileId = resultDictionary!.first!.value
+            self.uploadcare.uploadAPI.fileInfo(withFileId: fileId) { info, error in
+                if let error = error {
+                    XCTFail(error.detail)
+                    return
+                }
+
+                XCTAssertNotNil(info)
+
+                self.newGroup = self.uploadcare.group(ofFiles:[info!])
+                self.newGroup!.create { response, error in
+                    if let error = error {
+                        XCTFail(error.detail)
+                        expectation.fulfill()
+                        return
+                    }
+
+                    XCTAssertNotNil(response)
+                    XCTAssertNotNil(response!.files)
+                    XCTAssertFalse(response!.files!.isEmpty)
+
+                    XCTAssertEqual(response!.filesCount, 1)
+
+                    self.uploadcare.uploadAPI.filesGroupInfo(groupId: response!.id) { group, error in
+                        defer {
+                            expectation.fulfill()
+                        }
+
+                        if let error = error {
+                            XCTFail(error.detail)
+                            return
+                        }
+
+                        XCTAssertNotNil(group)
+                        XCTAssertNotNil(group!.files)
+                        XCTAssertFalse(group!.files!.isEmpty)
+                    }
+                }
+            }
+        }
+
+        wait(for: [expectation], timeout: 120.0)
+    }
 }
 
 #endif

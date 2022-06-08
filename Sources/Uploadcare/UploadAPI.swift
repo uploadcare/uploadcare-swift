@@ -708,7 +708,6 @@ extension UploadAPI {
 					}
 
 					completionHandler(responseData, nil)
-					break
 				case .failure(_):
 					let error = self.makeUploadError(fromResponse: response)
 					completionHandler(nil, error)
