@@ -536,65 +536,29 @@ extension UploadAPI {
 		store: StoringBehavior,
 		_ completionHandler: @escaping (StartMulipartUploadResponse?, UploadError?) -> Void
 	) {
-		let urlString = uploadAPIBaseUrl + "/multipart/start/"
-		manager.upload(
-			multipartFormData: { [weak self] (multipartFormData) in
-				if let filenameData = filename.data(using: .utf8) {
-					multipartFormData.append(filenameData, withName: "filename")
-				}
+		let url = urlWithPath("/multipart/start/")
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
 
-				if let sizeData = "\(size)".data(using: .utf8) {
-					multipartFormData.append(sizeData, withName: "size")
-				}
+		// Making request body
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(filename, forName: "filename")
+		builder.addMultiformValue("\(size)", forName: "size")
+		builder.addMultiformValue(mimeType, forName: "content_type")
+		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+		builder.addMultiformValue(store.rawValue, forName: "UPLOADCARE_STORE")
 
-				if let contentTypeData = mimeType.data(using: .utf8) {
-					multipartFormData.append(contentTypeData, withName: "content_type")
-				}
+		if let uploadSignature = getSignature() {
+			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
+			builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
+		}
 
-				if let publicKeyData = self?.publicKey.data(using: .utf8) {
-					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
-				}
+		urlRequest = builder.finalize()
 
-				if let data = store.rawValue.data(using: .utf8) {
-					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
-				}
-
-				if let uploadSignature = self?.getSignature() {
-					if let signatureData = uploadSignature.signature.data(using: .utf8) {
-						multipartFormData.append(signatureData, withName: "signature")
-					}
-
-					if let expireData = String(uploadSignature.expire).data(using: .utf8) {
-						multipartFormData.append(expireData, withName: "expire")
-					}
-				}
-		},
-			to: urlString)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(_):
-					if response.response?.statusCode == 200, let data = response.data {
-						let decodedData = try? JSONDecoder().decode(StartMulipartUploadResponse.self, from: data)
-						guard let resultData = decodedData else {
-							completionHandler(nil, UploadError.defaultError())
-							return
-						}
-						completionHandler(resultData, nil)
-						return
-					}
-
-					// error happened
-					let status: Int = response.response?.statusCode ?? 0
-					var message = ""
-					if let data = response.data {
-						message = String(data: data, encoding: .utf8) ?? ""
-					}
-					let error = UploadError(status: status, detail: message)
-					completionHandler(nil, error)
-				case .failure(let encodingError):
-					completionHandler(nil, UploadError(status: 0, detail: encodingError.localizedDescription))
-				}
+		requestManager.performRequest(urlRequest) { (result: Result<StartMulipartUploadResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+			case .success(let responseData): completionHandler(responseData, nil)
+			}
 		}
 	}
 
