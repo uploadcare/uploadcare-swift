@@ -705,25 +705,13 @@ extension UploadAPI {
 			return
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
-		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(UploadedFilesGroup.self, from: data)
 
-					guard let responseData = decodedData else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-
-					completionHandler(responseData, nil)
-				case .failure(_):
-					let error = self.makeUploadError(fromResponse: response)
-					completionHandler(nil, error)
-				}
-		}
+        requestManager.performRequest(urlRequest) { (result: Result<UploadedFilesGroup, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 	
 	/// Files group info
