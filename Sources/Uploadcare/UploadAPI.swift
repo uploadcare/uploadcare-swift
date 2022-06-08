@@ -586,25 +586,43 @@ extension UploadAPI {
 			urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
 			urlRequest.httpBody = part
 
-			let request = self.manager.request(urlRequest)
-				.responseData { response in
-					if response.response?.statusCode == 200 {
-						if let message = completeMessage {
-							DLog(message)
-						}
-						onComplete?()
-						group?.leave()
-					} else {
-						if task.isCancelled {
-							group?.leave()
-							return
-						}
-						let error = self.makeUploadError(fromResponse: response)
-						DLog(error)
-						self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, task: task, group: group)
-					}
-			}
-			task.appendRequest(request)
+            let dataTask = URLSession.shared.dataTask(with: urlRequest) { [weak self] (data, response, error) in
+                guard let self = self else { return }
+
+                if let error = error {
+                    DLog(error.localizedDescription)
+                    return
+                }
+
+                guard let response = response as? HTTPURLResponse else {
+                    assertionFailure("No response")
+                    return
+                }
+
+                if response.statusCode == 200 {
+                    if let message = completeMessage {
+                        DLog(message)
+                    }
+                    onComplete?()
+                    group?.leave()
+                } else {
+                    if task.isCancelled {
+                        group?.leave()
+                        return
+                    }
+
+                    // Print error
+                    if let data = data {
+                        let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+                        DLog("Error with status \(response.statusCode): \(errorMessage)")
+                    }
+
+                    self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, task: task, group: group)
+                }
+            }
+            
+            task.appendRequest(dataTask)
+            dataTask.resume()
 		}
 
 		// using concurrent queue for parts uploading

@@ -7,8 +7,6 @@
 //
 
 import Foundation
-import Alamofire
-
 
 public protocol UploadTaskable {
 	/// Cancel upload task
@@ -62,7 +60,7 @@ class UploadTask: UploadTaskable {
 class MultipartUploadTask: UploadTaskResumable {
 	
 	/// Requests array
-	private var requests: [Alamofire.DataRequest] = []
+	private var requests: [URLSessionDataTask] = []
 	/// Is cancelled flag
 	private var _isCancelled: Bool = false
 	
@@ -74,9 +72,8 @@ class MultipartUploadTask: UploadTaskResumable {
 	
 	/// Is uploading cancelled
 	internal var isCancelled: Bool { _isCancelled }
-	
-	
-	internal func appendRequest(_ request: Alamofire.DataRequest) {
+
+	internal func appendRequest(_ request: URLSessionDataTask) {
 		listQueue.sync { [weak self] in
 			self?.requests.append(request)
 		}
@@ -95,13 +92,13 @@ class MultipartUploadTask: UploadTaskResumable {
 	}
 	
 	func pause() {
-		requests.forEach{ $0.task?.suspend() }
+		requests.forEach{ $0.suspend() }
 		queue?.suspend()
 		DLog("task paused")
 	}
 	
 	func resume() {
-		requests.forEach{ $0.task?.resume() }
+		requests.forEach{ $0.resume() }
 		queue?.resume()
 		DLog("task resumed")
 	}
