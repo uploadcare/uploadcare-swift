@@ -77,6 +77,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         DispatchQueue.global(qos: .utility).async {
             let semaphore = DispatchSemaphore(value: 0)
             filesList.get(withQuery: query) { list, error in
+                defer { semaphore.signal() }
                 if let error = error {
                     XCTFail(error.detail)
                     return
@@ -84,12 +85,13 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
                 XCTAssertNotNil(list)
                 XCTAssertFalse(list!.results.isEmpty)
-                semaphore.signal()
             }
             semaphore.wait()
 
             // get next page
             filesList.nextPage { list, error in
+                defer { semaphore.signal() }
+
                 if let error = error {
                     XCTFail(error.detail)
                     return
@@ -97,12 +99,13 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
                 XCTAssertNotNil(list)
                 XCTAssertFalse(list!.results.isEmpty)
-                semaphore.signal()
             }
             semaphore.wait()
 
             // get previous page
             filesList.previousPage { (list, error) in
+                defer { semaphore.signal() }
+
                 if let error = error {
                     XCTFail(error.detail)
                     return
@@ -110,7 +113,6 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
                 XCTAssertNotNil(list)
                 XCTAssertFalse(list!.results.isEmpty)
-                semaphore.signal()
             }
             semaphore.wait()
             expectation.fulfill()
@@ -128,6 +130,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         filesList.get(withQuery: query) { (list, error) in
             if let error = error {
                 XCTFail(error.detail)
+                expectation.fulfill()
                 return
             }
 
@@ -167,6 +170,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             if let error = error {
                 XCTFail(error.detail)
+                expectation.fulfill()
                 return
             }
 
@@ -174,13 +178,14 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             let uuid = resultDictionary!.values.first!
             self.uploadcare.deleteFile(withUUID: uuid) { file, error in
+                defer { expectation.fulfill() }
+
                 if let error = error {
                     XCTFail(error.detail)
                     return
                 }
 
                 XCTAssertEqual(uuid, file?.uuid)
-                expectation.fulfill()
             }
         }
 
@@ -202,6 +207,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             if let error = error {
                 XCTFail(error.detail)
+                expectation.fulfill()
                 return
             }
 
@@ -209,6 +215,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             let uuid = resultDictionary!.values.first!
             self.uploadcare.deleteFiles(withUUIDs: [uuid, "shouldBeInProblems"]) { (response, error) in
+                defer { expectation.fulfill() }
+
                 if let error = error {
                     XCTFail(error.detail)
                     return
@@ -216,7 +224,6 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
                 XCTAssertEqual(uuid, response?.result.first?.uuid)
                 XCTAssertNotNil(response?.problems["shouldBeInProblems"])
-                expectation.fulfill()
             }
         }
 
@@ -238,6 +245,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             if let error = error {
                 XCTFail(error.detail)
+                expectation.fulfill()
                 return
             }
 
@@ -247,6 +255,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
             self.uploadcare.storeFile(withUUID: uuid) { file, error in
                 if let error = error {
                     XCTFail(error.detail)
+                    expectation.fulfill()
                     return
                 }
 
@@ -278,6 +287,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             if let error = error {
                 XCTFail(error.detail)
+                expectation.fulfill()
                 return
             }
 
@@ -287,6 +297,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
             self.uploadcare.storeFiles(withUUIDs: [uuid]) { response, error in
                 if let error = error {
                     XCTFail(error.detail)
+                    expectation.fulfill()
                     return
                 }
 
@@ -310,6 +321,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
             .ordering(.datetimeCreatedDESC)
 
         uploadcare.listOfGroups(withQuery: query) { (list, error) in
+            defer { expectation.fulfill() }
 
             if let error = error {
                 XCTFail(error.detail)
@@ -318,8 +330,6 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             XCTAssertNotNil(list)
             XCTAssertFalse(list!.results.isEmpty)
-
-            expectation.fulfill()
         }
 
         wait(for: [expectation], timeout: 20.0)
@@ -338,6 +348,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
             let semaphore = DispatchSemaphore(value: 0)
             groupsList.get(withQuery: query) { (list, error) in
 
+                defer { semaphore.signal() }
+
                 if let error = error {
                     XCTFail(error.detail)
                     return
@@ -347,15 +359,15 @@ final class RESTAPIIntegrationTests: XCTestCase {
                 XCTAssertFalse(list!.results.isEmpty)
                 XCTAssertNotNil(list!.next)
                 XCTAssertFalse(list!.next!.isEmpty)
-
-                semaphore.signal()
             }
             semaphore.wait()
 
             // get next page
             groupsList.nextPage { (list, error) in
+                defer { semaphore.signal() }
+
                 if let error = error {
-                    print(error)
+                    XCTFail(error.detail)
                     return
                 }
 
@@ -367,15 +379,15 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
                 XCTAssertNotNil(list!.previous)
                 XCTAssertFalse(list!.previous!.isEmpty)
-
-                semaphore.signal()
             }
             semaphore.wait()
 
             // get previous page
             groupsList.previousPage { (list, error) in
+                defer { semaphore.signal() }
+
                 if let error = error {
-                    print(error)
+                    XCTFail(error.detail)
                     return
                 }
 
@@ -386,8 +398,6 @@ final class RESTAPIIntegrationTests: XCTestCase {
                 XCTAssertFalse(list!.next!.isEmpty)
 
                 XCTAssertNil(list!.previous)
-
-                semaphore.signal()
             }
             semaphore.wait()
 
@@ -407,6 +417,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         uploadcare.listOfGroups(withQuery: query) { (list, error) in
             if let error = error {
                 XCTFail(error.detail)
+                expectation.fulfill()
                 return
             }
 
@@ -414,14 +425,14 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             let uuid = list!.results.first!.id
             self.uploadcare.groupInfo(withUUID: uuid) { group, error in
+                defer { expectation.fulfill() }
+
                 if let error = error {
                     XCTFail(error.detail)
                     return
                 }
 
                 XCTAssertEqual(uuid, group!.id)
-
-                expectation.fulfill()
             }
         }
 
@@ -438,6 +449,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         uploadcare.listOfGroups(withQuery: query) { (list, error) in
             if let error = error {
                 XCTFail(error.detail)
+                expectation.fulfill()
                 return
             }
 
@@ -445,11 +457,12 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             let uuid = list!.results.first!.id
             self.uploadcare.storeGroup(withUUID: uuid) { (error) in
+                defer { expectation.fulfill() }
+
                 if let error = error {
                     XCTFail(error.detail)
                     return
                 }
-                expectation.fulfill()
             }
         }
 
@@ -470,6 +483,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             if let error = error {
                 XCTFail(error.detail)
+                expectation.fulfill()
                 return
             }
 
@@ -480,6 +494,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
                 self.uploadcare.copyFileToLocalStorage(source: uuid) { response, error in
                     if let error = error {
                         XCTFail(error.detail)
+                        expectation.fulfill()
                         return
                     }
 
@@ -510,6 +525,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             if let error = error {
                 XCTFail(error.detail)
+                expectation.fulfill()
                 return
             }
 
@@ -534,6 +550,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
         let expectation = XCTestExpectation(description: "test15_get_project_info")
 
         uploadcare.getProjectInfo { project, error in
+            defer { expectation.fulfill() }
+
             if let error = error {
                 XCTFail(error.detail)
                 return
@@ -541,8 +559,6 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
             XCTAssertFalse(project!.pubKey.isEmpty)
             XCTAssertFalse(project!.name.isEmpty)
-
-            expectation.fulfill()
         }
 
         wait(for: [expectation], timeout: 20.0)
@@ -553,14 +569,14 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
         let url = URL(string: "https://goo.gl/")!
         uploadcare.getAuthenticatedUrlFromUrl(url) { value, error in
+            defer { expectation.fulfill() }
+
             if let error = error {
                 XCTFail(error.detail)
                 return
             }
 
             XCTAssertFalse(value!.isEmpty)
-
-            expectation.fulfill()
         }
 
         wait(for: [expectation], timeout: 20.0)
@@ -570,14 +586,14 @@ final class RESTAPIIntegrationTests: XCTestCase {
         let expectation = XCTestExpectation(description: "test17_get_list_of_webhooks")
 
         uploadcare.getListOfWebhooks { webhooks, error in
+            defer { expectation.fulfill() }
+
             if let error = error {
                 XCTFail(error.detail)
                 return
             }
 
             XCTAssertFalse(webhooks!.isEmpty)
-
-            expectation.fulfill()
         }
 
         wait(for: [expectation], timeout: 20.0)
@@ -591,6 +607,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
         uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "sss1") { webhook, error in
             if let error = error {
                 XCTFail(error.detail)
+                expectation.fulfill()
                 return
             }
 
@@ -601,6 +618,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
             self.uploadcare.updateWebhook(id: webhook!.id, targetUrl: url2, isActive: true, signingSecret: "sss2") { webhook, error in
                 if let error = error {
                     XCTFail(error.detail)
+                    expectation.fulfill()
                     return
                 }
 
@@ -611,7 +629,6 @@ final class RESTAPIIntegrationTests: XCTestCase {
                     XCTAssertNil(error)
                     expectation.fulfill()
                 }
-                expectation.fulfill()
             }
         }
 
