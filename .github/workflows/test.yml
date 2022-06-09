@@ -1,4 +1,4 @@
-name: test
+name: Build and test
 
 on:
   push:
@@ -19,6 +19,9 @@ jobs:
 
     - name: Swift build for macOS
       run: swift build -c release
+      
+    - name: Swift test
+      run: UPLOADCARE_PUBLIC_KEY="${{ secrets.UPLOADCARE_PUBLIC_KEY }}" UPLOADCARE_SECRET_KEY="${{ secrets.UPLOADCARE_SECRET_KEY }}" swift test
 
   CarthageBuild:
     runs-on: macos-latest
