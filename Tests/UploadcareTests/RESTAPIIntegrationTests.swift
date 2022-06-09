@@ -10,7 +10,8 @@ import XCTest
 @testable import Uploadcare
 
 final class RESTAPIIntegrationTests: XCTestCase {
-	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
+//	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
+	let uploadcare = Uploadcare(withPublicKey: String(cString: getenv("UPLOADCARE_PUBLIC_KEY")), secretKey: String(cString: getenv("UPLOADCARE_SECRET_KEY")))
 	var timer: Timer?
 
 	func test01_listOfFiles_simple_authScheme() {
