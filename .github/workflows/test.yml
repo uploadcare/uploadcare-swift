@@ -21,7 +21,7 @@ jobs:
       run: swift build -c release
       
     - name: Swift test
-      run: UPLOADCARE_PUBLIC_KEY="${{ secrets.UPLOADCARE_PUBLIC_KEY }}" UPLOADCARE_SECRET_KEY="${{ secrets.UPLOADCARE_SECRET_KEY }}" swift test --parallel
+      run: UPLOADCARE_PUBLIC_KEY="${{ secrets.UPLOADCARE_PUBLIC_KEY }}" UPLOADCARE_SECRET_KEY="${{ secrets.UPLOADCARE_SECRET_KEY }}" swift test
 
   CarthageBuild:
     runs-on: macos-latest
