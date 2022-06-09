@@ -10,7 +10,8 @@ import XCTest
 @testable import Uploadcare
 
 final class UploadAPIIntegrationTests: XCTestCase {
-	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
+//	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
+	let uploadcare = Uploadcare(withPublicKey: String(cString: getenv("UPLOADCARE_PUBLIC_KEY")), secretKey: String(cString: getenv("UPLOADCARE_SECRET_KEY")))
 	var newGroup: UploadedFilesGroup?
 
 	func test01_UploadFileFromURL_and_UploadStatus() {
