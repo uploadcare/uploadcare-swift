@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'Uploadcare'
-  s.version          = '0.6.0'
+  s.version          = '0.7.0'
   s.summary          = 'Swift integration for Uploadcare'
 
 # This description is used to generate tags and improve search results.
@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = '11.0'
   s.watchos.deployment_target = '5.0'
 
-  s.swift_versions = ['5.1', '5.2', '5.3', '5.4', '5.5']
+  s.swift_versions = ['5.1', '5.2', '5.3', '5.4', '5.5', '5.6']
 
   s.source_files = 'Sources/Uploadcare/**/*'
   
@@ -35,5 +35,4 @@ Pod::Spec.new do |s|
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  s.dependency 'Alamofire', '~> 5.0'
 end
