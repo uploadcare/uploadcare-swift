@@ -3,17 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		245DBB4D24901B9B002FB70B /* Uploadcare_watchOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 245DBB4B24901B9B002FB70B /* Uploadcare_watchOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		24875B1D243B33EC003F3E06 /* Uploadcare_tvOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B1B243B33EB003F3E06 /* Uploadcare_tvOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		24875B37243B3518003F3E06 /* Uploadcare_macOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B35243B3518003F3E06 /* Uploadcare_macOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		24B985EF27A093320095D204 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 24B985EE27A093320095D204 /* Alamofire */; };
-		24B985F127A093390095D204 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 24B985F027A093390095D204 /* Alamofire */; };
-		24B985F327A0933D0095D204 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 24B985F227A0933D0095D204 /* Alamofire */; };
-		24B985F527A093410095D204 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 24B985F427A093410095D204 /* Alamofire */; };
 		24D69248281B40D500FE0FD3 /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D69216281B40D500FE0FD3 /* VideoInfo.swift */; };
 		24D69249281B40D500FE0FD3 /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D69216281B40D500FE0FD3 /* VideoInfo.swift */; };
 		24D6924A281B40D500FE0FD3 /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D69216281B40D500FE0FD3 /* VideoInfo.swift */; };
@@ -286,7 +282,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24B985F527A093410095D204 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,7 +289,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24B985F127A093390095D204 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,7 +296,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24B985F327A0933D0095D204 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,7 +303,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
-				24B985EF27A093320095D204 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -644,7 +636,6 @@
 			);
 			name = "Uploadcare-watchOS";
 			packageProductDependencies = (
-				24B985F427A093410095D204 /* Alamofire */,
 			);
 			productName = "Uploadcare-watchOS";
 			productReference = 245DBB4924901B9B002FB70B /* Uploadcare_watchOS.framework */;
@@ -665,7 +656,6 @@
 			);
 			name = "Uploadcare-tvOS";
 			packageProductDependencies = (
-				24B985F027A093390095D204 /* Alamofire */,
 			);
 			productName = "Uploadcare-tvOS";
 			productReference = 24875B19243B33EB003F3E06 /* Uploadcare_tvOS.framework */;
@@ -686,7 +676,6 @@
 			);
 			name = "Uploadcare-macOS";
 			packageProductDependencies = (
-				24B985F227A0933D0095D204 /* Alamofire */,
 			);
 			productName = "Uploadcare-macOS";
 			productReference = 24875B33243B3518003F3E06 /* Uploadcare_macOS.framework */;
@@ -705,7 +694,6 @@
 			);
 			name = Uploadcare;
 			packageProductDependencies = (
-				24B985EE27A093320095D204 /* Alamofire */,
 			);
 			productName = Uploadcare;
 			productReference = 2495945323B77F51006BB9BF /* Uploadcare.framework */;
@@ -722,12 +710,18 @@
 				TargetAttributes = {
 					245DBB4824901B9B002FB70B = {
 						CreatedOnToolsVersion = 11.5;
+						ProvisioningStyle = Manual;
 					};
 					24875B18243B33EB003F3E06 = {
 						CreatedOnToolsVersion = 11.4;
+						ProvisioningStyle = Manual;
 					};
 					24875B32243B3518003F3E06 = {
 						CreatedOnToolsVersion = 11.4;
+						ProvisioningStyle = Manual;
+					};
+					2495944923B77F51006BB9BF = {
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -741,7 +735,6 @@
 			);
 			mainGroup = OBJ_5;
 			packageReferences = (
-				24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			productRefGroup = OBJ_34 /* Products */;
 			projectDirPath = "";
@@ -1039,11 +1032,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Uploadcare-watchOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uploadcare.Uploadcare-watchOS";
@@ -1113,11 +1102,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Uploadcare-watchOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uploadcare.Uploadcare-watchOS";
@@ -1190,11 +1175,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Uploadcare-tvOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uploadcare.Uploadcare-tvOS";
@@ -1263,11 +1244,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Uploadcare-tvOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uploadcare.Uploadcare-tvOS";
@@ -1341,11 +1318,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Uploadcare-macOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1414,11 +1387,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Uploadcare-macOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -1448,10 +1417,7 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Uploadcare.xcodeproj/Uploadcare_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -1487,10 +1453,7 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Uploadcare.xcodeproj/Uploadcare_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -1611,8 +1574,7 @@
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "watchsimulator watchos iphonesimulator iphoneos macosx appletvsimulator appletvos";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE";
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				USE_HEADERMAP = NO;
 			};
 			name = Release;
@@ -1666,40 +1628,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		24B985EE27A093320095D204 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
-		24B985F027A093390095D204 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
-		24B985F227A0933D0095D204 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
-		24B985F427A093410095D204 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 24B985ED27A093320095D204 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = OBJ_1 /* Project object */;
 }
