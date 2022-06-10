@@ -645,7 +645,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		DLog("size of file: \(sizeString(ofData: data))")
 
 		// upload random image
-		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
+		uploadcare.uploadAPI.directUploadInForeground(files: ["file_for_conversion.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
 		}) { (resultDictionary, error) in
 
@@ -664,37 +664,42 @@ final class RESTAPIIntegrationTests: XCTestCase {
 					return
 				}
 
-				let convertSettings = DocumentConversionJobSettings(forFile: file!)
-					.format(.png)
+                delay(4) {
+                    let convertSettings = DocumentConversionJobSettings(forFile: file!)
+                        .format(.png)
 
-				self.uploadcare.convertDocumentsWithSettings([convertSettings]) { response, error in
-					if let error = error {
-						XCTFail(error.detail)
-						expectation.fulfill()
-						return
-					}
+                    self.uploadcare.convertDocumentsWithSettings([convertSettings]) { response, error in
+                        if let error = error {
+                            XCTFail(error.detail)
+                            expectation.fulfill()
+                            return
+                        }
 
-					XCTAssertTrue(response!.problems.isEmpty)
-					XCTAssertNotNil(response)
+                        XCTAssertTrue(response!.problems.isEmpty)
+                        XCTAssertNotNil(response)
 
-					let job = response!.result.first!
+                        let job = response!.result.first!
 
-					// check status
-					self.uploadcare.documentConversionJobStatus(token: job.token) { (status, error) in
-						if let error = error {
-							XCTFail(error.detail)
-							expectation.fulfill()
-							return
-						}
+                        // check status
+                        self.uploadcare.documentConversionJobStatus(token: job.token) { (status, error) in
+                            if let error = error {
+                                XCTFail(error.detail)
+                                expectation.fulfill()
+                                return
+                            }
+                            
+                            XCTAssertFalse(status!.statusString.isEmpty)
 
-						XCTAssertFalse(status!.statusString.isEmpty)
-
-						// cleanup
-						self.uploadcare.deleteFile(withUUID: job.uuid) { _, _ in
-							expectation.fulfill()
-						}
-					}
-				}
+                            // cleanup
+                            
+                            delay(4) {
+                                self.uploadcare.deleteFile(withUUID: job.uuid) { _, _ in
+                                    expectation.fulfill()
+                                }
+                            }
+                        }
+                    }
+                }
 			}
 		}
 
