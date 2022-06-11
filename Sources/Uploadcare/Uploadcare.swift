@@ -146,33 +146,46 @@ extension Uploadcare {
 		listOfFiles(withQueryString: query?.stringValue, completionHandler)
 	}
 	
-	/// Get list of files
-	/// - Parameters:
-	///   - query: query string
-	///   - completionHandler: completion handler
+    @available(*, deprecated, message: "Use the same method with Result type in the callback")
 	internal func listOfFiles(
 		withQueryString query: String?,
 		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
 	) {
-		var urlString = RESTAPIBaseUrl + "/files/"
-		if let queryValue = query {
-			urlString += "?\(queryValue)"
-		}
-		
-		guard let url = URL(string: urlString) else {
-			assertionFailure("Incorrect url")
-			return
-		}
-
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
-		requestManager.signRequest(&urlRequest)
-		requestManager.performRequest(urlRequest) { (result: Result<FilesList, Error>) in
-			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
-			}
-		}
+        listOfFiles(withQueryString: query) { result in
+            switch result {
+            case .failure(let error): completionHandler(nil, error)
+            case .success(let filesList): completionHandler(filesList, nil)
+            }
+        }
 	}
+
+    /// Get list of files
+    /// - Parameters:
+    ///   - query: query string
+    ///   - completionHandler: completion handler
+    internal func listOfFiles(
+        withQueryString query: String?,
+        _ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void
+    ) {
+        var urlString = RESTAPIBaseUrl + "/files/"
+        if let queryValue = query {
+            urlString += "?\(queryValue)"
+        }
+
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+
+        var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+        requestManager.signRequest(&urlRequest)
+        requestManager.performRequest(urlRequest) { (result: Result<FilesList, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+            case .success(let filesList): completionHandler(.success(filesList))
+            }
+        }
+    }
 	
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
 	/// - Parameters:
