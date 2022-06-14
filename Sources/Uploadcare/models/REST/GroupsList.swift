@@ -107,23 +107,6 @@ extension GroupsList {
 	/// - Parameters:
 	///   - query: query object
 	///   - completionHandler: completion hanlder
-	@available(*, deprecated, message: "Use the same method with Result type in the callback")
-	public func get(
-		withQuery query: GroupsListQuery? = nil,
-		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
-	) {
-		get(withQuery: query) { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let groupsList): completionHandler(groupsList, nil)
-			}
-		}
-	}
-
-	/// Get list of files
-	/// - Parameters:
-	///   - query: query object
-	///   - completionHandler: completion hanlder
 	public func get(
 		withQuery query: GroupsListQuery? = nil,
 		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
@@ -152,18 +135,6 @@ extension GroupsList {
 			}
 		}
 	}
-	
-	/// Get next page of files list
-	/// - Parameter completionHandler: completion handler
-	@available(*, deprecated, message: "Use the same method with Result type in the callback")
-	public func nextPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
-		nextPage { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let groupsList): completionHandler(groupsList, nil)
-			}
-		}
-	}
 
 	/// Get next page of files list
 	/// - Parameter completionHandler: completion handler
@@ -175,18 +146,6 @@ extension GroupsList {
 		}
 
 		getPage(withQueryString: query, completionHandler)
-	}
-	
-	/// Get previous page of files list
-	/// - Parameter completionHandler: completion handler
-	@available(*, deprecated, message: "Use the same method with Result type in the callback")
-	public func previousPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
-		previousPage { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let groupsList): completionHandler(groupsList, nil)
-			}
-		}
 	}
 
 	/// Get previous page of files list
@@ -230,6 +189,50 @@ private extension GroupsList {
 				self.perPage = groupsList.perPage
 				self.results = groupsList.results
 				completionHandler(.success(groupsList))
+			}
+		}
+	}
+}
+
+// MARK: - Deprecated methods
+extension GroupsList {
+	/// Get list of files
+	/// - Parameters:
+	///   - query: query object
+	///   - completionHandler: completion hanlder
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func get(
+		withQuery query: GroupsListQuery? = nil,
+		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+	) {
+		get(withQuery: query) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let groupsList): completionHandler(groupsList, nil)
+			}
+		}
+	}
+
+	/// Get next page of files list
+	/// - Parameter completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func nextPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
+		nextPage { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let groupsList): completionHandler(groupsList, nil)
+			}
+		}
+	}
+
+	/// Get previous page of files list
+	/// - Parameter completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func previousPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
+		previousPage { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let groupsList): completionHandler(groupsList, nil)
 			}
 		}
 	}
