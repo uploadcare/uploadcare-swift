@@ -176,23 +176,20 @@ private extension GroupsList {
 			return
 		}
 		
-		api.listOfGroups(withQueryString: query) { [weak self] (list, error) in
-			if let error = error {
+		api.listOfGroups(withQueryString: query) { [weak self] result in
+			guard let self = self else { return }
+
+			switch result {
+			case .failure(let error):
 				completionHandler(nil, error)
-				return
+			case .success(let groupsList):
+				self.next = groupsList.next
+				self.previous = groupsList.previous
+				self.total = groupsList.total
+				self.perPage = groupsList.perPage
+				self.results = groupsList.results
+				completionHandler(groupsList, nil)
 			}
-			
-			guard let self = self, let list = list else {
-				completionHandler(nil, RESTAPIError.defaultError())
-				return
-			}
-			
-			self.next = list.next
-			self.previous = list.previous
-			self.total = list.total
-			self.perPage = list.perPage
-			self.results = list.results
-			completionHandler(list, nil)
 		}
 	}
 }

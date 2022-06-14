@@ -380,14 +380,31 @@ extension Uploadcare {
 			}
 		}
 	}
-	
+
+	/// Get list of groups
+	/// - Parameters:
+	///   - query: query object
+	///   - completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func listOfGroups(
+		withQuery query: GroupsListQuery?,
+		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+	) {
+		listOfGroups(withQuery: query) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let groupsList): completionHandler(groupsList, nil)
+			}
+		}
+	}
+
 	/// Get list of groups
 	/// - Parameters:
 	///   - query: query object
 	///   - completionHandler: completion handler
 	public func listOfGroups(
 		withQuery query: GroupsListQuery?,
-		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
 	) {
 		var queryString: String?
 		if let queryValue = query {
@@ -402,7 +419,7 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	internal func listOfGroups(
 		withQueryString query: String?,
-		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
 	) {
 		var urlString = RESTAPIBaseUrl + "/groups/"
 		if let queryValue = query {
@@ -418,8 +435,8 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<GroupsList, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let groupsList): completionHandler(.success(groupsList))
 			}
 		}
 	}

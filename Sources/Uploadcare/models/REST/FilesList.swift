@@ -114,23 +114,20 @@ extension FilesList {
 			return
 		}
 		
-		api.listOfFiles(withQuery: query) { [weak self] (list, error) in
-			if let error = error {
+		api.listOfFiles(withQuery: query) { [weak self] result in
+			guard let self = self else { return }
+
+			switch result {
+			case .failure(let error):
 				completionHandler(nil, error)
-				return
+			case .success(let list):
+				self.next = list.next
+				self.previous = list.previous
+				self.total = list.total
+				self.perPage = list.perPage
+				self.results = list.results
+				completionHandler(list, nil)
 			}
-			
-			guard let self = self, let list = list else {
-				completionHandler(nil, RESTAPIError.defaultError())
-				return
-			}
-			
-			self.next = list.next
-			self.previous = list.previous
-			self.total = list.total
-			self.perPage = list.perPage
-			self.results = list.results
-			completionHandler(list, nil)
 		}
 	}
 	
@@ -175,23 +172,20 @@ private extension FilesList {
 			return
 		}
 		
-		api.listOfFiles(withQueryString: query) { [weak self] (list, error) in
-			if let error = error {
+		api.listOfFiles(withQueryString: query) { [weak self] result in
+			guard let self = self else { return }
+
+			switch result {
+			case .failure(let error):
 				completionHandler(nil, error)
-				return
+			case .success(let list):
+				self.next = list.next
+				self.previous = list.previous
+				self.total = list.total
+				self.perPage = list.perPage
+				self.results = list.results
+				completionHandler(list, nil)
 			}
-			
-			guard let self = self, let list = list else {
-				completionHandler(nil, RESTAPIError.defaultError())
-				return
-			}
-			
-			self.next = list.next
-			self.previous = list.previous
-			self.total = list.total
-			self.perPage = list.perPage
-			self.results = list.results
-			completionHandler(list, nil)
 		}
 	}
 }
