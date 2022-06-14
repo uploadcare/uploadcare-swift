@@ -9,7 +9,6 @@
 import Foundation
 
 public struct RESTAPIError: Error, Codable {
-
 	/// Error message
 	public var detail: String
 
