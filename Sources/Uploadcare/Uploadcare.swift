@@ -142,21 +142,22 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - query: query object
 	///   - completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
 	public func listOfFiles(withQuery query: PaginationQuery?, _ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
-		listOfFiles(withQueryString: query?.stringValue, completionHandler)
+		listOfFiles(withQueryString: query?.stringValue) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let filesList): completionHandler(filesList, nil)
+			}
+		}
 	}
-	
-    @available(*, deprecated, message: "Use the same method with Result type in the callback")
-	internal func listOfFiles(
-		withQueryString query: String?,
-		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
-	) {
-        listOfFiles(withQueryString: query) { result in
-            switch result {
-            case .failure(let error): completionHandler(nil, error)
-            case .success(let filesList): completionHandler(filesList, nil)
-            }
-        }
+
+	/// Get list of files
+	/// - Parameters:
+	///   - query: query object
+	///   - completionHandler: completion handler
+	public func listOfFiles(withQuery query: PaginationQuery?, _ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
+		listOfFiles(withQueryString: query?.stringValue, completionHandler)
 	}
 
     /// Get list of files
@@ -191,9 +192,26 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuid: FILE UUID
 	///   - completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
 	public func fileInfo(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
+	) {
+		fileInfo(withUUID: uuid) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let file): completionHandler(file, nil)
+			}
+		}
+	}
+
+	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
+	/// - Parameters:
+	///   - uuid: FILE UUID
+	///   - completionHandler: completion handler
+	public func fileInfo(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/\(uuid)/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
@@ -201,8 +219,8 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let file): completionHandler(.success(file))
 			}
 		}
 	}
@@ -211,18 +229,35 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuid: file UUID
 	///   - completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
 	public func deleteFile(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
 	) {
+		deleteFile(withUUID: uuid) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let file): completionHandler(file, nil)
+			}
+		}
+	}
+
+	/// Delete file. Beside deleting in a multi-file mode, you can remove individual files.
+	/// - Parameters:
+	///   - uuid: file UUID
+	///   - completionHandler: completion handler
+	public func deleteFile(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
+	) {
 		let url = urlWithPath("/files/\(uuid)/storage/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
 		signRequest(&urlRequest)
-		
+
 		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let file): completionHandler(.success(file))
 			}
 		}
 	}
@@ -231,13 +266,30 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuids: List of files UUIDs to store.
 	///   - completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
 	public func deleteFiles(
 		withUUIDs uuids: [String],
 		_ completionHandler: @escaping (BatchFilesOperationResponse?, RESTAPIError?) -> Void
 	) {
+		deleteFiles(withUUIDs: uuids) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let response): completionHandler(response, nil)
+			}
+		}
+	}
+
+	/// Batch file delete. Used to delete multiple files in one go. Up to 100 files are supported per request.
+	/// - Parameters:
+	///   - uuids: List of files UUIDs to store.
+	///   - completionHandler: completion handler
+	public func deleteFiles(
+		withUUIDs uuids: [String],
+		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
+	) {
 		let url = urlWithPath("/files/storage/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
-		
+
 		if let body = try? JSONEncoder().encode(uuids) {
 			urlRequest.httpBody = body
 		}
@@ -245,8 +297,8 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<BatchFilesOperationResponse, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
 			}
 		}
 	}
@@ -255,9 +307,26 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuid: file UUID
 	///   - completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
 	public func storeFile(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
+	) {
+		storeFile(withUUID: uuid) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let file): completionHandler(file, nil)
+			}
+		}
+	}
+
+	/// Store a single file by UUID.
+	/// - Parameters:
+	///   - uuid: file UUID
+	///   - completionHandler: completion handler
+	public func storeFile(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/\(uuid)/storage/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
@@ -265,8 +334,8 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let file): completionHandler(.success(file))
 			}
 		}
 	}
@@ -275,9 +344,26 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuids: List of files UUIDs to store.
 	///   - completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
 	public func storeFiles(
 		withUUIDs uuids: [String],
 		_ completionHandler: @escaping (BatchFilesOperationResponse?, RESTAPIError?) -> Void
+	) {
+		storeFiles(withUUIDs: uuids) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let response): completionHandler(response, nil)
+			}
+		}
+	}
+
+	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
+	/// - Parameters:
+	///   - uuids: List of files UUIDs to store.
+	///   - completionHandler: completion handler
+	public func storeFiles(
+		withUUIDs uuids: [String],
+		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/storage/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
@@ -289,8 +375,8 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<BatchFilesOperationResponse, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
 			}
 		}
 	}
