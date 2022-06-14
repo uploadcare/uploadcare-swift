@@ -10,6 +10,9 @@ import Foundation
 
 class BackgroundSessionManager: NSObject {
 	static let instance = BackgroundSessionManager()
+
+    /// Running background tasks where key is URLSessionTask.taskIdentifier
+	var backgroundTasks = [Int: UploadTask]()
 	
 	lazy var session: URLSession = {
 		let bundle = Bundle.main.bundleIdentifier ?? ""

@@ -12,14 +12,28 @@ import Foundation
 public struct UploadError {
 	/// Usually backend network respon se status
 	public var status: Int
-	
+
 	/// Error message
 	public var detail: String
-	
-	
+
+
 	/// Default error
 	public static func defaultError() -> UploadError {
 		return UploadError(status: 0, detail: "Unknown error")
+	}
+
+	/// Default error with status code
+	public static func defaultError(withStatus status: Int) -> UploadError {
+		return UploadError(status: status, detail: "Unknown error")
+	}
+
+	/// Cast from Error
+	/// - Parameter error: Error
+	static func fromError(_ error: Error) -> UploadError {
+		if case let RequestManagerError.invalidUploadAPIResponse(requestError) = error {
+			return requestError
+		}
+		return Self.defaultError()
 	}
 }
 
