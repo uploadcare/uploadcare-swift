@@ -1133,36 +1133,29 @@ extension Uploadcare {
 					return
 				}
 
-				self?.fileInfo(withUUID: fileUUID, { file, error in
-					if let error = error {
-						let uploadError = UploadError(status: 0, detail: error.detail)
-						completionHandler(nil, uploadError)
-						return
+				self?.fileInfo(withUUID: fileUUID, { result in
+					switch result {
+					case .failure(let error):
+						completionHandler(nil, UploadError(status: 0, detail: error.detail))
+					case .success(let file):
+						let uploadedFile = UploadedFile(
+							size: file.size,
+							total: file.size,
+							uuid: file.uuid,
+							fileId: file.uuid,
+							originalFilename: file.originalFilename,
+							filename: file.originalFilename,
+							mimeType: file.mimeType,
+							isImage: file.isImage,
+							isStored: store != .doNotStore,
+							isReady: file.isReady,
+							imageInfo: file.imageInfo,
+							videoInfo: file.videoInfo,
+							s3Bucket: nil
+						)
+
+						completionHandler(uploadedFile, nil)
 					}
-
-					guard let file = file else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-
-					let uploadedFile = UploadedFile(
-						size: file.size,
-						total: file.size,
-						uuid: file.uuid,
-						fileId: file.uuid,
-						originalFilename: file.originalFilename,
-						filename: file.originalFilename,
-						mimeType: file.mimeType,
-						isImage: file.isImage,
-						isStored: store != .doNotStore,
-						isReady: file.isReady,
-						imageInfo: file.imageInfo,
-						videoInfo: file.videoInfo,
-						s3Bucket: nil
-					)
-
-					completionHandler(uploadedFile, nil)
-					return
 				})
 			}
 		}
