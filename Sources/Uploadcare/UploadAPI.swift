@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Alamofire
 
 public typealias TaskCompletionHandler = ([String: String]?, UploadError?) -> Void
 public typealias TaskProgressBlock = (Double) -> Void
@@ -29,24 +28,46 @@ public class UploadAPI: NSObject {
 	/// Signature
 	internal var signature: UploadSignature?
 	
-	/// Alamofire session manager
-	private var manager = Session()
-	
 	/// Upload queue for multipart uploading
 	private var uploadQueue = DispatchQueue(label: "com.uploadcare.upload", qos: .utility, attributes: .concurrent)
 	
-	/// Running background tasks where key is URLSessionTask.taskIdentifier
-	private var backgroundTasks = [Int: BackgroundUploadTask]()
+	/// Performs network requests
+	private let requestManager: RequestManager
+
+    /// URL session
+	private lazy var foregroundUploadURLSession: URLSession = {
+		let config = URLSessionConfiguration.default
+		return URLSession(configuration: config, delegate: self, delegateQueue: nil)
+	}()
 	
 	
 	/// Initialization
 	/// - Parameter publicKey: Public Key.  It is required when using Upload API.
+	/// - Parameter secretKey: Secret Key
 	public init(withPublicKey publicKey: String, secretKey: String? = nil) {
 		self.publicKey = publicKey
 		self.secretKey = secretKey
-		
+
+		self.requestManager = RequestManager(publicKey: publicKey, secretKey: secretKey)
+
 		super.init()
-		
+
+		BackgroundSessionManager.instance.sessionDelegate = self
+	}
+
+	/// Init with request manager
+	/// - Parameters:
+	///   - publicKey: Public Key.  It is required when using Upload API.
+	///   - secretKey: Secret Key
+	///   - requestManager: requests manager
+	internal init(withPublicKey publicKey: String, secretKey: String? = nil, requestManager: RequestManager? = nil) {
+		self.publicKey = publicKey
+		self.secretKey = secretKey
+
+		self.requestManager = requestManager ?? RequestManager(publicKey: publicKey, secretKey: secretKey)
+
+		super.init()
+
 		BackgroundSessionManager.instance.sessionDelegate = self
 	}
 }
@@ -56,24 +77,11 @@ public class UploadAPI: NSObject {
 private extension UploadAPI {
 	/// /// Build url request for Upload API
 	/// - Parameter fromURL: request url
-	func makeUploadAPIURLRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
+	func makeUploadAPIURLRequest(fromURL url: URL, method: RequestManager.HTTPMethod) -> URLRequest {
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = method.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
 		return urlRequest
-	}
-	
-	/// Make UploadError from data response
-	/// - Parameter response: Data response
-	func makeUploadError(fromResponse response: DataResponse<Data, AFError>) -> UploadError {
-		let status: Int = response.response?.statusCode ?? 0
-		
-		var message = ""
-		if let data = response.data {
-			message = String(data: data, encoding: .utf8) ?? ""
-		}
-		
-		return UploadError(status: status, detail: message)
 	}
 	
 	/// Generate signature for signed requests
@@ -103,6 +111,21 @@ private extension UploadAPI {
 		
 		return self.signature
 	}
+
+	/// Make URL with path
+	/// - Parameter path: path string
+	/// - Returns: URL
+	func urlWithPath(_ path: String) -> URL {
+		var urlComponents = URLComponents()
+		urlComponents.scheme = "https"
+		urlComponents.host = uploadAPIHost
+		urlComponents.path = path
+		
+		guard let url = urlComponents.url else {
+			fatalError("incorrect url")
+		}
+		return url
+	}
 }
 
 
@@ -116,30 +139,26 @@ extension UploadAPI {
 		withFileId fileId: String,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) {
-		let urlString = uploadAPIBaseUrl + "/info?pub_key=\(self.publicKey)&file_id=\(fileId)"
-		guard let url = URL(string: urlString) else {
+		var components = URLComponents()
+		components.scheme = "https"
+		components.host = uploadAPIHost
+		components.path = "/info"
+		components.queryItems = [
+			URLQueryItem(name: "pub_key", value: publicKey),
+			URLQueryItem(name: "file_id", value: fileId)
+		]
+
+		guard let url = components.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
-		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(UploadedFile.self, from: data)
-		
-					guard let fileInfo = decodedData else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
 
-					completionHandler(fileInfo, nil)
-				case .failure(_):
-					let error = self.makeUploadError(fromResponse: response)
-					completionHandler(nil, error)
-				}
+		requestManager.performRequest(urlRequest) { (result: Result<UploadedFile, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+			case .success(let responseData): completionHandler(responseData, nil)
+			}
 		}
 	}
 }
@@ -164,7 +183,6 @@ extension UploadAPI {
 			URLQueryItem(name: "source_url", value: task.sourceUrl.absoluteString),
 			URLQueryItem(name: "store", value: task.store.rawValue)
 		]
-		components.queryItems = queryItems
 
 		if let filenameVal = task.filename {
 			let name = filenameVal.isEmpty ? "noname.ext" : filenameVal
@@ -199,24 +217,11 @@ extension UploadAPI {
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
 
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(UploadFromURLResponse.self, from: data)
-
-					guard let responseData = decodedData else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-
-					completionHandler(responseData, nil)
-					break
-				case .failure(_):
-					let error = self.makeUploadError(fromResponse: response)
-					completionHandler(nil, error)
-				}
+		requestManager.performRequest(urlRequest) { (result: Result<UploadFromURLResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+			case .success(let responseData): completionHandler(responseData, nil)
+			}
 		}
 	}
 
@@ -228,37 +233,36 @@ extension UploadAPI {
 		forToken token: String,
 		_ completionHandler: @escaping (UploadFromURLStatus?, UploadError?) -> Void
 	) {
-		let urlString = uploadAPIBaseUrl + "/from_url/status/?token=\(token)"
-		guard let url = URL(string: urlString) else {
-			assertionFailure("Incorrect url")
-			return
-		}
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = uploadAPIHost
+        components.path = "/from_url/status/"
+        components.queryItems = [
+            URLQueryItem(name: "token", value: token)
+        ]
+
+        guard let url = components.url else {
+            assertionFailure("Incorrect url")
+            return
+        }
+
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
 
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(UploadFromURLStatus.self, from: data)
-
-					guard let responseData = decodedData else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-
-					completionHandler(responseData, nil)
-					break
-				case .failure(_):
-					let error = self.makeUploadError(fromResponse: response)
-					completionHandler(nil, error)
-				}
-		}
+        requestManager.performRequest(urlRequest) { (result: Result<UploadFromURLStatus, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 }
 
 // MARK: - Direct upload
 extension UploadAPI {
+	enum DirectUploadType {
+		case foreground, background
+	}
+
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
 	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed
 	/// - Parameters:
@@ -272,48 +276,87 @@ extension UploadAPI {
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskCompletionHandler
 	) -> UploadTaskable {
-		let urlString = uploadAPIBaseUrl + "/base/"
-		let url = URL(string: urlString)
-		var urlRequest = makeUploadAPIURLRequest(fromURL: url!, method: .post)
-		
-		// Making request body
-		let builder = MultipartRequestBuilder(request: urlRequest)
-		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
-		
-		if let storeVal = store {
-			builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
-		}
-		
-		if let uploadSignature = getSignature() {
-			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
-			builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
-		}
-		
-		for file in files {
-			let fileName = file.key.isEmpty ? "noname.ext" : file.key
-			builder.addMultiformData(file.value, forName: fileName)
-		}
-		
-		urlRequest = builder.finalize()
-		
-		// writing data to temp file
-		let tempDir = FileManager.default.temporaryDirectory
-		let localURL = tempDir.appendingPathComponent(UUID().uuidString)
-		
-		if let data = urlRequest.httpBody {
-			try? data.write(to: localURL)
-		}
-		let backgroundTask = BackgroundSessionManager.instance.session.uploadTask(with: urlRequest, fromFile: localURL)
-		backgroundTask.earliestBeginDate = Date()
-		backgroundTask.countOfBytesClientExpectsToSend = Int64(urlRequest.httpBody?.count ?? 0)
-		
-		let backgroundUploadTask = BackgroundUploadTask(task: backgroundTask, completionHandler: completionHandler, progressCallback: onProgress)
-		backgroundUploadTask.localDataUrl = localURL
-		backgroundTasks[backgroundTask.taskIdentifier] = backgroundUploadTask
-		
-		backgroundTask.resume()
-		return backgroundUploadTask
+		return directUpload(files: files, uploadType: .background, onProgress, completionHandler)
 	}
+
+    @discardableResult
+    private func directUpload(
+        files: [String: Data],
+        uploadType: DirectUploadType,
+        store: StoringBehavior? = nil,
+        _ onProgress: TaskProgressBlock? = nil,
+        _ completionHandler: @escaping TaskCompletionHandler
+    ) -> UploadTaskable {
+        let url = urlWithPath("/base/")
+        var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+        // Making request body
+        let builder = MultipartRequestBuilder(request: urlRequest)
+        builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+
+        if let storeVal = store {
+            builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
+        }
+
+        if let uploadSignature = getSignature() {
+            builder.addMultiformValue(uploadSignature.signature, forName: "signature")
+            builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
+        }
+
+        for file in files {
+            let fileName = file.key.isEmpty ? "noname.ext" : file.key
+            builder.addMultiformData(file.value, forName: fileName)
+        }
+
+        urlRequest = builder.finalize()
+
+        // writing data to temp file
+        let tempDir = FileManager.default.temporaryDirectory
+        let localURL = tempDir.appendingPathComponent(UUID().uuidString)
+
+        if let data = urlRequest.httpBody {
+            try? data.write(to: localURL)
+        }
+
+        let uploadTask: URLSessionUploadTask
+
+        switch uploadType {
+        case .foreground:
+            uploadTask = foregroundUploadURLSession.uploadTask(with: urlRequest, fromFile: localURL) { data, response, error in
+                if (response as? HTTPURLResponse)?.statusCode == 200, let data = data {
+                    let decodedData = try? JSONDecoder().decode([String:String].self, from: data)
+                    guard let resultData = decodedData else {
+                        completionHandler(nil, UploadError.defaultError())
+                        return
+                    }
+                    completionHandler(resultData, nil)
+                    return
+                }
+
+                // error happened
+                let status: Int = (response as? HTTPURLResponse)?.statusCode ?? 0
+                let defaultErrorMessage = "Error happened or upload was cancelled"
+                var message = defaultErrorMessage
+                if let data = data {
+                    message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
+                }
+                let error = UploadError(status: status, detail: message)
+                completionHandler(nil, error)
+            }
+        case .background:
+            uploadTask = BackgroundSessionManager.instance.session.uploadTask(with: urlRequest, fromFile: localURL)
+        }
+
+        uploadTask.earliestBeginDate = Date()
+        uploadTask.countOfBytesClientExpectsToSend = Int64(urlRequest.httpBody?.count ?? 0)
+
+		let backgroundUploadTask = UploadTask(task: uploadTask, completionHandler: completionHandler, progressCallback: onProgress)
+        backgroundUploadTask.localDataUrl = localURL
+        BackgroundSessionManager.instance.backgroundTasks[uploadTask.taskIdentifier] = backgroundUploadTask
+
+        uploadTask.resume()
+        return backgroundUploadTask
+    }
 
 	@available(*, deprecated, renamed: "directUpload")
 	@discardableResult
@@ -338,59 +381,7 @@ extension UploadAPI {
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping ([String: String]?, UploadError?) -> Void
 	) -> UploadTaskable {
-		let urlString = uploadAPIBaseUrl + "/base/"
-		let request = manager.upload(
-			multipartFormData: { [weak self] (multipartFormData) in
-				if let publicKeyData = self?.publicKey.data(using: .utf8) {
-					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
-				}
-				
-				for file in files {
-					let fileName = file.key.isEmpty ? "noname.ext" : file.key
-					multipartFormData.append(file.value, withName: fileName, fileName: fileName, mimeType: detectMimeType(for: file.value))
-				}
-				
-				if let storeVal = store, let data = storeVal.rawValue.data(using: .utf8) {
-					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
-				}
-				
-				if let uploadSignature = self?.getSignature() {
-					if let signatureData = uploadSignature.signature.data(using: .utf8) {
-						multipartFormData.append(signatureData, withName: "signature")
-					}
-					
-					if let expireData = String(uploadSignature.expire).data(using: .utf8) {
-						multipartFormData.append(expireData, withName: "expire")
-					}
-				}
-		},
-			to: urlString)
-			.uploadProgress(closure: { (progress) in
-				onProgress?(progress.fractionCompleted)
-			})
-			.responseData { (response) in
-				if response.response?.statusCode == 200, let data = response.data {
-					let decodedData = try? JSONDecoder().decode([String:String].self, from: data)
-					guard let resultData = decodedData else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-					completionHandler(resultData, nil)
-					return
-				}
-				
-				// error happened
-				let status: Int = response.response?.statusCode ?? 0
-				let defaultErrorMessage = "Error happened or upload was cancelled"
-				var message = defaultErrorMessage
-				if let data = response.data {
-					message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
-				}
-				let error = UploadError(status: status, detail: message)
-				completionHandler(nil, error)
-		}
-		
-		return UploadTask(request: request)
+        return directUpload(files: files, uploadType: .foreground, onProgress, completionHandler)
 	}
 }
 
@@ -528,65 +519,29 @@ extension UploadAPI {
 		store: StoringBehavior,
 		_ completionHandler: @escaping (StartMulipartUploadResponse?, UploadError?) -> Void
 	) {
-		let urlString = uploadAPIBaseUrl + "/multipart/start/"
-		manager.upload(
-			multipartFormData: { [weak self] (multipartFormData) in
-				if let filenameData = filename.data(using: .utf8) {
-					multipartFormData.append(filenameData, withName: "filename")
-				}
+		let url = urlWithPath("/multipart/start/")
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
 
-				if let sizeData = "\(size)".data(using: .utf8) {
-					multipartFormData.append(sizeData, withName: "size")
-				}
+		// Making request body
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(filename, forName: "filename")
+		builder.addMultiformValue("\(size)", forName: "size")
+		builder.addMultiformValue(mimeType, forName: "content_type")
+		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+		builder.addMultiformValue(store.rawValue, forName: "UPLOADCARE_STORE")
 
-				if let contentTypeData = mimeType.data(using: .utf8) {
-					multipartFormData.append(contentTypeData, withName: "content_type")
-				}
+		if let uploadSignature = getSignature() {
+			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
+			builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
+		}
 
-				if let publicKeyData = self?.publicKey.data(using: .utf8) {
-					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
-				}
+		urlRequest = builder.finalize()
 
-				if let data = store.rawValue.data(using: .utf8) {
-					multipartFormData.append(data, withName: "UPLOADCARE_STORE")
-				}
-
-				if let uploadSignature = self?.getSignature() {
-					if let signatureData = uploadSignature.signature.data(using: .utf8) {
-						multipartFormData.append(signatureData, withName: "signature")
-					}
-
-					if let expireData = String(uploadSignature.expire).data(using: .utf8) {
-						multipartFormData.append(expireData, withName: "expire")
-					}
-				}
-		},
-			to: urlString)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(_):
-					if response.response?.statusCode == 200, let data = response.data {
-						let decodedData = try? JSONDecoder().decode(StartMulipartUploadResponse.self, from: data)
-						guard let resultData = decodedData else {
-							completionHandler(nil, UploadError.defaultError())
-							return
-						}
-						completionHandler(resultData, nil)
-						return
-					}
-
-					// error happened
-					let status: Int = response.response?.statusCode ?? 0
-					var message = ""
-					if let data = response.data {
-						message = String(data: data, encoding: .utf8) ?? ""
-					}
-					let error = UploadError(status: status, detail: message)
-					completionHandler(nil, error)
-				case .failure(let encodingError):
-					completionHandler(nil, UploadError(status: 0, detail: encodingError.localizedDescription))
-				}
+		requestManager.performRequest(urlRequest) { (result: Result<StartMulipartUploadResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+			case .success(let responseData): completionHandler(responseData, nil)
+			}
 		}
 	}
 
@@ -610,29 +565,47 @@ extension UploadAPI {
 				return
 			}
 			var urlRequest = URLRequest(url: url)
-			urlRequest.httpMethod = HTTPMethod.put.rawValue
+            urlRequest.httpMethod = RequestManager.HTTPMethod.put.rawValue
 			urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
 			urlRequest.httpBody = part
 
-			let request = self.manager.request(urlRequest)
-				.responseData { response in
-					if response.response?.statusCode == 200 {
-						if let message = completeMessage {
-							DLog(message)
-						}
-						onComplete?()
-						group?.leave()
-					} else {
-						if task.isCancelled {
-							group?.leave()
-							return
-						}
-						let error = self.makeUploadError(fromResponse: response)
-						DLog(error)
-						self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, task: task, group: group)
-					}
-			}
-			task.appendRequest(request)
+            let dataTask = URLSession.shared.dataTask(with: urlRequest) { [weak self] (data, response, error) in
+                guard let self = self else { return }
+
+                if let error = error {
+                    DLog(error.localizedDescription)
+                    return
+                }
+
+                guard let response = response as? HTTPURLResponse else {
+                    assertionFailure("No response")
+                    return
+                }
+
+                if response.statusCode == 200 {
+                    if let message = completeMessage {
+                        DLog(message)
+                    }
+                    onComplete?()
+                    group?.leave()
+                } else {
+                    if task.isCancelled {
+                        group?.leave()
+                        return
+                    }
+
+                    // Print error
+                    if let data = data {
+                        let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+                        DLog("Error with status \(response.statusCode): \(errorMessage)")
+                    }
+
+                    self.uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, task: task, group: group)
+                }
+            }
+
+            task.appendRequest(dataTask)
+            dataTask.resume()
 		}
 
 		// using concurrent queue for parts uploading
@@ -647,47 +620,22 @@ extension UploadAPI {
 		forFileUIID: String,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
 	) {
-		let urlString = uploadAPIBaseUrl + "/multipart/complete/"
-		manager.upload(
-			multipartFormData: { (multipartFormData) in
-				if let forFileUIIDData = forFileUIID.data(using: .utf8) {
-					multipartFormData.append(forFileUIIDData, withName: "uuid")
-				}
-				if let publicKeyData = self.publicKey.data(using: .utf8) {
-					multipartFormData.append(publicKeyData, withName: "UPLOADCARE_PUB_KEY")
-				}
-		},
-			to: urlString)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(_):
-					if response.response?.statusCode == 200, let data = response.data {
-						let decodedData = try? JSONDecoder().decode(UploadedFile.self, from: data)
-						guard let resultData = decodedData else {
-							completionHandler(nil, UploadError.defaultError())
-							return
-						}
-						completionHandler(resultData, nil)
-						return
-					}
+        let url = urlWithPath("/multipart/complete/")
+        var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
 
-					// error happened
-					let status: Int = response.response?.statusCode ?? 0
-					var message = ""
-					if let data = response.data {
-						message = String(data: data, encoding: .utf8) ?? ""
-					}
-					let error = UploadError(status: status, detail: message)
-					completionHandler(nil, error)
+        // Making request body
+        let builder = MultipartRequestBuilder(request: urlRequest)
+        builder.addMultiformValue(forFileUIID, forName: "uuid")
+        builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
 
-				case .failure(let encodingError):
-					completionHandler(
-						nil,
-						UploadError(status: 0, detail: encodingError.localizedDescription)
-					)
-				}
-		}
+        urlRequest = builder.finalize()
+
+        requestManager.performRequest(urlRequest) { (result: Result<UploadedFile, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 }
 
@@ -714,41 +662,39 @@ extension UploadAPI {
 		fileIds: [String],
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
-		var urlString = uploadAPIBaseUrl + "/group/?pub_key=\(self.publicKey)"
-		for (index, fileId) in fileIds.enumerated() {
-			urlString += "&files[\(index)]=\(fileId)"
-		}
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = uploadAPIHost
+        urlComponents.path = "/group/"
+        urlComponents.queryItems = [
+            URLQueryItem(name: "pub_key", value: publicKey)
+        ]
 
-		if let uploadSignature = self.getSignature() {
-			urlString += "&signature=\(uploadSignature.signature)"
-			urlString += "&expire=\(uploadSignature.expire)"
-		}
-		
-		guard let url = URL(string: urlString) else {
+        for (index, fileId) in fileIds.enumerated() {
+            urlComponents.queryItems?.append(
+                URLQueryItem(name: "files[\(index)]", value: fileId)
+            )
+        }
+
+        if let uploadSignature = self.getSignature() {
+            urlComponents.queryItems?.append(contentsOf: [
+                URLQueryItem(name: "signature", value: uploadSignature.signature),
+                URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
+            ])
+        }
+
+        guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
-		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(UploadedFilesGroup.self, from: data)
 
-					guard let responseData = decodedData else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-
-					completionHandler(responseData, nil)
-					break
-				case .failure(_):
-					let error = self.makeUploadError(fromResponse: response)
-					completionHandler(nil, error)
-				}
-		}
+        requestManager.performRequest(urlRequest) { (result: Result<UploadedFilesGroup, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 	
 	/// Files group info
@@ -759,72 +705,70 @@ extension UploadAPI {
 		groupId: String,
 		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
 	) {
-		var urlString = uploadAPIBaseUrl + "/group/info/?pub_key=\(self.publicKey)&group_id=\(groupId)"
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = uploadAPIHost
+        urlComponents.path = "/group/info/"
+        urlComponents.queryItems = [
+            URLQueryItem(name: "pub_key", value: publicKey),
+            URLQueryItem(name: "group_id", value: groupId)
+        ]
 		
-		if let uploadSignature = self.getSignature() {
-			urlString += "&signature=\(uploadSignature.signature)"
-			urlString += "&expire=\(uploadSignature.expire)"
-		}
+        if let uploadSignature = self.getSignature() {
+            urlComponents.queryItems?.append(contentsOf: [
+                URLQueryItem(name: "signature", value: uploadSignature.signature),
+                URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
+            ])
+        }
 		
-		guard let url = URL(string: urlString) else {
+        guard let url = urlComponents.url else {
 			assertionFailure("Incorrect url")
 			return
 		}
 		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
-		
-		manager.request(urlRequest)
-			.validate(statusCode: 200..<300)
-			.responseData { response in
-				switch response.result {
-				case .success(let data):
-					let decodedData = try? JSONDecoder().decode(UploadedFilesGroup.self, from: data)
 
-					guard let responseData = decodedData else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-
-					completionHandler(responseData, nil)
-					break
-				case .failure(_):
-					let error = self.makeUploadError(fromResponse: response)
-					completionHandler(nil, error)
-				}
-		}
+        requestManager.performRequest(urlRequest) { (result: Result<UploadedFilesGroup, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
+            case .success(let responseData): completionHandler(responseData, nil)
+            }
+        }
 	}
 }
 
 // MARK: - URLSessionTaskDelegate
 extension UploadAPI: URLSessionDataDelegate {
 	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+        completionHandler(.allow)
+
 		// without adding this method background task will not trigger urlSession(_:dataTask:didReceive:completionHandler:)
-		if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
-			guard let backgroundTask = backgroundTasks[dataTask.taskIdentifier] else { return }
-
-			// remove task
-			defer {
-				backgroundTask.clear()
-				backgroundTasks.removeValue(forKey: dataTask.taskIdentifier)
-			}
-
-			let statusCode: Int = (dataTask.response as? HTTPURLResponse)?.statusCode ?? 0
-
-			if statusCode == 200 {
-				backgroundTask.completionHandler([String:String](), nil)
-			}
-		}
+//		if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+//			guard let backgroundTask = BackgroundSessionManager.instance.backgroundTasks[dataTask.taskIdentifier] else { return }
+//
+//			// remove task
+//			defer {
+//				backgroundTask.clear()
+//				BackgroundSessionManager.instance.backgroundTasks.removeValue(forKey: dataTask.taskIdentifier)
+//			}
+//
+//			let statusCode: Int = (dataTask.response as? HTTPURLResponse)?.statusCode ?? 0
+//
+//			if statusCode == 200 {
+//				backgroundTask.completionHandler([String:String](), nil)
+//			}
+//		}
 	}
 }
 
 // MARK: - URLSessionTaskDelegate
 extension UploadAPI: URLSessionTaskDelegate {
 	public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-		guard let backgroundTask = backgroundTasks[task.taskIdentifier] else { return }
+		guard let backgroundTask = BackgroundSessionManager.instance.backgroundTasks[task.taskIdentifier] else { return }
 		
 		// remove task
 		defer {
 			backgroundTask.clear()
-			backgroundTasks.removeValue(forKey: task.taskIdentifier)
+			BackgroundSessionManager.instance.backgroundTasks.removeValue(forKey: task.taskIdentifier)
 		}
 		
 		let statusCode: Int = (task.response as? HTTPURLResponse)?.statusCode ?? 0
@@ -853,15 +797,15 @@ extension UploadAPI: URLSessionTaskDelegate {
 	
 	public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
 		// run progress callback
-		if let backgroundTask = backgroundTasks[task.taskIdentifier] {
+		if let backgroundTask = BackgroundSessionManager.instance.backgroundTasks[task.taskIdentifier] {
 			var progress: Double = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
-			progress = Double(round(100*progress)/100)
+			progress = Double(round(100 * progress) / 100)
 			backgroundTask.progressCallback?(progress)
 		}
 	}
 	
 	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-		if let backgroundTask = backgroundTasks[dataTask.taskIdentifier] {
+		if let backgroundTask = BackgroundSessionManager.instance.backgroundTasks[dataTask.taskIdentifier] {
 			backgroundTask.dataBuffer.append(data)
 		}
 	}

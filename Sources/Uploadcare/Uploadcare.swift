@@ -46,6 +46,7 @@ public class Uploadcare: NSObject {
 	/// Library version
 	private var libraryVersion = "0.6.0"
 
+	/// Performs network requests
 	private let requestManager: RequestManager
 
 	private var redirectValues = [String: String]()
@@ -57,8 +58,8 @@ public class Uploadcare: NSObject {
 		self.publicKey = publicKey
 		self.secretKey = secretKey
 		self.requestManager = RequestManager(publicKey: publicKey, secretKey: secretKey)
-		
-		self.uploadAPI = UploadAPI(withPublicKey: publicKey, secretKey: secretKey)
+
+		self.uploadAPI = UploadAPI(withPublicKey: publicKey, secretKey: secretKey, requestManager: self.requestManager)
 	}
 	
 	
@@ -104,9 +105,9 @@ internal extension Uploadcare {
 				query = "/?" + q
 			}
 			let uri = (urlRequest.url?.path ?? "") + query
-			
+
 			let signString = [
-				urlRequest.method?.rawValue ?? "GET",
+				urlRequest.httpMethod ?? "GET",
 				content.md5(),
 				urlRequest.allHTTPHeaderFields?["Content-Type"] ?? "application/json",
 				dateString,
