@@ -107,10 +107,10 @@ extension FilesList {
 	///   - completionHandler: completion hanlder
 	public func get(
 		withQuery query: PaginationQuery? = nil,
-		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void
 	) {
 		guard let api = RESTAPI else {
-			completionHandler(nil, RESTAPIError.defaultError())
+			completionHandler(.failure(RESTAPIError.defaultError()))
 			return
 		}
 		
@@ -119,50 +119,40 @@ extension FilesList {
 
 			switch result {
 			case .failure(let error):
-				completionHandler(nil, error)
+				completionHandler(.failure(error))
 			case .success(let list):
 				self.next = list.next
 				self.previous = list.previous
 				self.total = list.total
 				self.perPage = list.perPage
 				self.results = list.results
-				completionHandler(list, nil)
+				completionHandler(.success(list))
 			}
 		}
 	}
 	
 	/// Get next page of files list
 	/// - Parameter completionHandler: completion handler
-	public func nextPage(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
+	public func nextPage(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		guard let next = next, let query = URL(string: next)?.query else {
 			self.results = []
-			completionHandler(self, nil)
+			completionHandler(.success(self))
 			return
 		}
 		
-		getPage(withQueryString: query) { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let list): completionHandler(list, nil)
-			}
-		}
+		getPage(withQueryString: query, completionHandler)
 	}
 	
 	/// Get previous page of files list
 	/// - Parameter completionHandler: completion handler
-	public func previousPage(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
+	public func previousPage(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		guard let previous = previous, let query = URL(string: previous)?.query else {
 			self.results = []
-			completionHandler(self, nil)
+			completionHandler(.success(self))
 			return
 		}
 		
-		getPage(withQueryString: query) { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let list): completionHandler(list, nil)
-			}
-		}
+		getPage(withQueryString: query, completionHandler)
 	}
 }
 
@@ -195,6 +185,76 @@ private extension FilesList {
 				self.perPage = list.perPage
 				self.results = list.results
 				completionHandler(.success(list))
+			}
+		}
+	}
+}
+
+// MARK: - Deprecated methods
+extension FilesList {
+	/// Get list of files
+	/// - Parameters:
+	///   - query: query object
+	///   - completionHandler: completion hanlder
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func get(
+		withQuery query: PaginationQuery? = nil,
+		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
+	) {
+		guard let api = RESTAPI else {
+			completionHandler(nil, RESTAPIError.defaultError())
+			return
+		}
+
+		api.listOfFiles(withQuery: query) { [weak self] result in
+			guard let self = self else { return }
+
+			switch result {
+			case .failure(let error):
+				completionHandler(nil, error)
+			case .success(let list):
+				self.next = list.next
+				self.previous = list.previous
+				self.total = list.total
+				self.perPage = list.perPage
+				self.results = list.results
+				completionHandler(list, nil)
+			}
+		}
+	}
+
+	/// Get next page of files list
+	/// - Parameter completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func nextPage(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
+		guard let next = next, let query = URL(string: next)?.query else {
+			self.results = []
+			completionHandler(self, nil)
+			return
+		}
+
+		getPage(withQueryString: query) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let list): completionHandler(list, nil)
+			}
+		}
+	}
+
+	/// Get previous page of files list
+	/// - Parameter completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func previousPage(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
+		guard let previous = previous, let query = URL(string: previous)?.query else {
+			self.results = []
+			completionHandler(self, nil)
+			return
+		}
+
+		getPage(withQueryString: query) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let list): completionHandler(list, nil)
 			}
 		}
 	}
