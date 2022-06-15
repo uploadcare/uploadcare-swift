@@ -612,15 +612,10 @@ extension UploadAPI {
 	///   - completionHandler: callback
 	public func createFilesGroup(
 		files: [UploadedFile],
-		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
+		_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void
 	) {
 		let fileIds: [String] = files.map { $0.fileId }
-		createFilesGroup(fileIds: fileIds) { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let filesGroup): completionHandler(filesGroup, nil)
-			}
-		}
+		createFilesGroup(fileIds: fileIds, completionHandler)
 	}
 
 	/// Create files group from a set of files UUIDs.

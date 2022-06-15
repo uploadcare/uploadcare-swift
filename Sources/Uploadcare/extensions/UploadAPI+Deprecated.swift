@@ -146,4 +146,21 @@ extension UploadAPI {
 			}
 		}
 	}
+
+	/// Create files group from a set of files
+	/// - Parameters:
+	///   - files: files array
+	///   - completionHandler: callback
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func createFilesGroup(
+		files: [UploadedFile],
+		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
+	) {
+		createFilesGroup(files: files) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let filesGroup): completionHandler(filesGroup, nil)
+			}
+		}
+	}
 }
