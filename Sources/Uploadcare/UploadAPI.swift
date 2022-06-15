@@ -391,7 +391,7 @@ extension UploadAPI {
 		withName name: String,
 		store: StoringBehavior? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
-		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
 	) -> UploadTaskResumable {
 		let totalSize = data.count
 		let fileMimeType = detectMimeType(for: data)
@@ -410,7 +410,7 @@ extension UploadAPI {
 
 				switch result {
 				case .failure(let error):
-					completionHandler(nil, error)
+					completionHandler(.failure(error))
 				case .success(let response):
 					// Uploading individual file parts
 					var offset = 0
@@ -425,7 +425,7 @@ extension UploadAPI {
 						// data chunk
 						let range = NSRange(location: offset, length: currentChunkSize)
 						guard let dataRange = Range(range) else {
-							completionHandler(nil, UploadError.defaultError())
+							completionHandler(.failure(UploadError.defaultError()))
 							return
 						}
 						let chunk = data.subdata(in: dataRange)
@@ -457,18 +457,11 @@ extension UploadAPI {
 					// Completing a multipart upload
 					uploadGroup.notify(queue: self.uploadQueue) {
 						guard task.isCancelled == false else {
-							completionHandler(nil, UploadError(status: 0, detail: "Upload cancelled"))
+							completionHandler(.failure(UploadError(status: 0, detail: "Upload cancelled")))
 							return
 						}
 						task.complete()
-						self.completeMultipartUpload(forFileUIID: response.uuid) { result in
-							switch result {
-							case .failure(let error):
-								completionHandler(nil, error)
-							case .success(let file):
-								completionHandler(file, nil)
-							}
-						}
+						self.completeMultipartUpload(forFileUIID: response.uuid, completionHandler)
 					}
 				}
 		}

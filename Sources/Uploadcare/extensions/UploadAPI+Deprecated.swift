@@ -92,4 +92,29 @@ extension UploadAPI {
 	) -> UploadTaskable {
 		return directUpload(files: files, store: store, onProgress, completionHandler)
 	}
+
+	/// Multipart file uploading
+	/// - Parameters:
+	///   - data: File data
+	///   - name: File name
+	///   - store: Sets the file storing behavior
+	///   - onProgress: A callback that will be used to report upload progress
+	///   - completionHandler: Completion handler
+	/// - Returns: Upload task. You can use that task to pause, resume or cancel uploading.
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	@discardableResult
+	public func multipartUpload(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) -> UploadTaskResumable {
+		return multipartUpload(data, withName: name, store: store, onProgress) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let file): completionHandler(file, nil)
+			}
+		}
+	}
 }
