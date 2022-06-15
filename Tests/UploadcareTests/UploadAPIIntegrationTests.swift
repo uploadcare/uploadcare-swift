@@ -53,7 +53,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			}
 		}
 
-		wait(for: [expectation], timeout: 10.0)
+		wait(for: [expectation], timeout: 20.0)
 	}
 
 	func test02_DirectUpload() {
@@ -314,38 +314,35 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 				// file info
 				let fileId = resultDictionary.first!.value
-				self.uploadcare.uploadAPI.fileInfo(withFileId: fileId) { info, error in
-					if let error = error {
+				self.uploadcare.uploadAPI.fileInfo(withFileId: fileId) { result in
+					switch result {
+					case .failure(let error):
 						XCTFail(error.detail)
 						expectation.fulfill()
-						return
-					}
-
-					XCTAssertNotNil(info)
-
-					self.newGroup = self.uploadcare.group(ofFiles:[info!])
-					self.newGroup!.create { response, error in
-						if let error = error {
-							XCTFail(error.detail)
-							expectation.fulfill()
-							return
-						}
-
-						XCTAssertNotNil(response)
-						XCTAssertNotNil(response!.files)
-						XCTAssertFalse(response!.files!.isEmpty)
-
-						XCTAssertEqual(response!.filesCount, 1)
-
-						self.uploadcare.uploadAPI.filesGroupInfo(groupId: response!.id) { result in
-							defer { expectation.fulfill() }
-
+					case .success(let info):
+						self.newGroup = self.uploadcare.group(ofFiles:[info])
+						self.newGroup!.create { result in
 							switch result {
 							case .failure(let error):
 								XCTFail(error.detail)
-							case .success(let group):
-								XCTAssertNotNil(group.files)
-								XCTAssertFalse(group.files!.isEmpty)
+								expectation.fulfill()
+							case .success(let response):
+								XCTAssertNotNil(response.files)
+								XCTAssertFalse(response.files!.isEmpty)
+
+								XCTAssertEqual(response.filesCount, 1)
+
+								self.uploadcare.uploadAPI.filesGroupInfo(groupId: response.id) { result in
+									defer { expectation.fulfill() }
+
+									switch result {
+									case .failure(let error):
+										XCTFail(error.detail)
+									case .success(let group):
+										XCTAssertNotNil(group.files)
+										XCTAssertFalse(group.files!.isEmpty)
+									}
+								}
 							}
 						}
 					}
