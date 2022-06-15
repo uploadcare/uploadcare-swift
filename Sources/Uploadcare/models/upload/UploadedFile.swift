@@ -186,34 +186,30 @@ public class UploadedFile: Codable {
 
 		return restAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { progress in
 			onProgress?(progress)
-		}, { [weak self] file, error in
-			if let error = error {
+		}, { [weak self] result in
+			switch result {
+			case .failure(let error):
 				completionHandler?(nil, error)
 				return
+			case .success(let uploadedFile):
+				defer { completionHandler?(uploadedFile, nil) }
+
+				guard let self = self else { return }
+
+				self.size = uploadedFile.size
+				self.total = uploadedFile.total
+				self.uuid = uploadedFile.uuid
+				self.fileId = uploadedFile.fileId
+				self.originalFilename = uploadedFile.originalFilename
+				self.filename = uploadedFile.filename
+				self.mimeType = uploadedFile.mimeType
+				self.isImage = uploadedFile.isImage
+				self.isStored = uploadedFile.isStored
+				self.isReady = uploadedFile.isReady
+				self.imageInfo = uploadedFile.imageInfo
+				self.videoInfo = uploadedFile.videoInfo
+				self.s3Bucket = uploadedFile.s3Bucket
 			}
-
-			guard let uploadedFile = file else {
-				completionHandler?(nil, UploadError.defaultError())
-				return
-			}
-
-			defer { completionHandler?(file, nil) }
-
-			guard let self = self else { return }
-
-			self.size = uploadedFile.size
-			self.total = uploadedFile.total
-			self.uuid = uploadedFile.uuid
-			self.fileId = uploadedFile.fileId
-			self.originalFilename = uploadedFile.originalFilename
-			self.filename = uploadedFile.filename
-			self.mimeType = uploadedFile.mimeType
-			self.isImage = uploadedFile.isImage
-			self.isStored = uploadedFile.isStored
-			self.isReady = uploadedFile.isReady
-			self.imageInfo = uploadedFile.imageInfo
-			self.videoInfo = uploadedFile.videoInfo
-			self.s3Bucket = uploadedFile.s3Bucket
 		})
 	}
 }
