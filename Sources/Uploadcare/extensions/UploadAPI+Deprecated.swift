@@ -117,4 +117,33 @@ extension UploadAPI {
 			}
 		}
 	}
+
+	// deprecated on Sep 2021
+	@available(*, deprecated, renamed: "directUpload")
+	public func upload(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) -> UploadTaskResumable {
+		return multipartUpload(data, withName: name, store: store, onProgress, completionHandler)
+	}
+
+	/// Create files group from a set of files UUIDs.
+	/// - Parameters:
+	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
+	///   - completionHandler: callback
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func createFilesGroup(
+		fileIds: [String],
+		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
+	) {
+		createFilesGroup(fileIds: fileIds) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let filesGroup): completionHandler(filesGroup, nil)
+			}
+		}
+	}
 }
