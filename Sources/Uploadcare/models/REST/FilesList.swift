@@ -140,7 +140,12 @@ extension FilesList {
 			return
 		}
 		
-		getPage(withQueryString: query, completionHandler)
+		getPage(withQueryString: query) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let list): completionHandler(list, nil)
+			}
+		}
 	}
 	
 	/// Get previous page of files list
@@ -152,7 +157,12 @@ extension FilesList {
 			return
 		}
 		
-		getPage(withQueryString: query, completionHandler)
+		getPage(withQueryString: query) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let list): completionHandler(list, nil)
+			}
+		}
 	}
 }
 
@@ -165,10 +175,10 @@ private extension FilesList {
 	///   - completionHandler: completion handler
 	func getPage(
 		withQueryString query: String,
-		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void
 	) {
 		guard let api = RESTAPI else {
-			completionHandler(nil, RESTAPIError.defaultError())
+			completionHandler(.failure(RESTAPIError.defaultError()))
 			return
 		}
 		
@@ -177,14 +187,14 @@ private extension FilesList {
 
 			switch result {
 			case .failure(let error):
-				completionHandler(nil, error)
+				completionHandler(.failure(error))
 			case .success(let list):
 				self.next = list.next
 				self.previous = list.previous
 				self.total = list.total
 				self.perPage = list.perPage
 				self.results = list.results
-				completionHandler(list, nil)
+				completionHandler(.success(list))
 			}
 		}
 	}
