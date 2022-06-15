@@ -163,4 +163,21 @@ extension UploadAPI {
 			}
 		}
 	}
+
+	/// Files group info
+	/// - Parameters:
+	///   - groupId: Group ID. Group IDs look like UUID~N.
+	///   - completionHandler: callback
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func filesGroupInfo(
+		groupId: String,
+		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
+	) {
+		filesGroupInfo(groupId: groupId) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let filesGroup): completionHandler(filesGroup, nil)
+			}
+		}
+	}
 }

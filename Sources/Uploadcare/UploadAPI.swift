@@ -667,7 +667,7 @@ extension UploadAPI {
 	///   - completionHandler: callback
 	public func filesGroupInfo(
 		groupId: String,
-		_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?) -> Void
+		_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void
 	) {
         var urlComponents = URLComponents()
         urlComponents.scheme = "https"
@@ -693,8 +693,8 @@ extension UploadAPI {
 
         requestManager.performRequest(urlRequest) { (result: Result<UploadedFilesGroup, Error>) in
             switch result {
-            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
-            case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(UploadError.fromError(error)))
+			case .success(let filesGroup): completionHandler(.success(filesGroup))
             }
         }
 	}
