@@ -136,23 +136,6 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - fileId: File ID
 	///   - completionHandler: completion handler
-	@available(*, deprecated, message: "Use the same method with Result type in the callback")
-	public func fileInfo(
-		withFileId fileId: String,
-		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
-	) {
-		fileInfo(withFileId: fileId) { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let file): completionHandler(file, nil)
-			}
-		}
-	}
-
-	/// File info
-	/// - Parameters:
-	///   - fileId: File ID
-	///   - completionHandler: completion handler
 	public func fileInfo(
 		withFileId fileId: String,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
@@ -183,23 +166,6 @@ extension UploadAPI {
 
 // MARK: - Upload from URL
 extension UploadAPI {
-	/// Upload file from url
-	/// - Parameters:
-	///   - task: upload settings
-	///   - completionHandler: callback
-	@available(*, deprecated, message: "Use the same method with Result type in the callback")
-	public func upload(
-		task: UploadFromURLTask,
-		_ completionHandler: @escaping (UploadFromURLResponse?, UploadError?) -> Void
-	) {
-		upload(task: task) { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let responseData): completionHandler(responseData, nil)
-			}
-		}
-	}
-
 	/// Upload file from url
 	/// - Parameters:
 	///   - task: upload settings
@@ -264,23 +230,6 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - token: token recieved from upload method
 	///   - completionHandler: callback
-	@available(*, deprecated, message: "Use the same method with Result type in the callback")
-	public func uploadStatus(
-		forToken token: String,
-		_ completionHandler: @escaping (UploadFromURLStatus?, UploadError?) -> Void
-	) {
-		uploadStatus(forToken: token) { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let status): completionHandler(status, nil)
-			}
-		}
-	}
-
-	/// Get status for file upload from URL
-	/// - Parameters:
-	///   - token: token recieved from upload method
-	///   - completionHandler: callback
 	public func uploadStatus(
 		forToken token: String,
 		_ completionHandler: @escaping (Result<UploadFromURLStatus, UploadError>) -> Void
@@ -321,28 +270,6 @@ extension UploadAPI {
 	///   - files: Files dictionary where key is filename, value file in Data format
 	///   - store: Sets the file storing behavior
 	///   - completionHandler: callback
-	@available(*, deprecated, message: "Use the same method with TaskResultCompletionHandler callback")
-	@discardableResult
-	public func directUpload(
-		files: [String: Data],
-		store: StoringBehavior? = nil,
-		_ onProgress: TaskProgressBlock? = nil,
-		_ completionHandler: @escaping TaskCompletionHandler
-	) -> UploadTaskable {
-		return directUpload(files: files, uploadType: .background, onProgress) { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let response): completionHandler(response, nil)
-			}
-		}
-	}
-
-	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
-	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed
-	/// - Parameters:
-	///   - files: Files dictionary where key is filename, value file in Data format
-	///   - store: Sets the file storing behavior
-	///   - completionHandler: callback
 	@discardableResult
 	public func directUpload(
 		files: [String: Data],
@@ -354,7 +281,7 @@ extension UploadAPI {
 	}
 
     @discardableResult
-    private func directUpload(
+    internal func directUpload(
         files: [String: Data],
         uploadType: DirectUploadType,
         store: StoringBehavior? = nil,
@@ -431,17 +358,6 @@ extension UploadAPI {
         uploadTask.resume()
         return backgroundUploadTask
     }
-
-	@available(*, deprecated, renamed: "directUpload")
-	@discardableResult
-	public func upload(
-		files: [String: Data],
-		store: StoringBehavior? = nil,
-		_ onProgress: TaskProgressBlock? = nil,
-		_ completionHandler: @escaping TaskCompletionHandler
-	) -> UploadTaskable {
-		return directUpload(files: files, store: store, onProgress, completionHandler)
-	}
 	
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
 	/// - Parameters:
@@ -449,11 +365,11 @@ extension UploadAPI {
 	///   - store: Sets the file storing behavior
 	///   - completionHandler: callback
 	@discardableResult
-	func directUploadInForeground(
+	internal func directUploadInForeground(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
-		_ completionHandler: @escaping (Result<[String: String], UploadError>) -> Void
+		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
 		return directUpload(files: files, uploadType: .foreground, onProgress, completionHandler)
 	}
