@@ -374,4 +374,29 @@ extension Uploadcare {
 			}
 		}
 	}
+
+	/// Upload file. This method will decide internally which upload will be used (direct or multipart)
+	/// - Parameters:
+	///   - data: File data
+	///   - name: File name
+	///   - store: Sets the file storing behavior
+	///   - onProgress: A callback that will be used to report upload progress
+	///   - completionHandler: Completion handler
+	/// - Returns: Upload task. Confirms to UploadTaskable protocol in anycase. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	@discardableResult
+	public func uploadFile(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		_ onProgress: ((Double) -> Void)? = nil,
+		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) -> UploadTaskable {
+		return uploadFile(data, withName: name, store: store, onProgress) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let file): completionHandler(file, nil)
+			}
+		}
+	}
 }

@@ -757,48 +757,48 @@ extension Uploadcare {
 		withName name: String,
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
-		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
 	) -> UploadTaskable {
 		let filename = name.isEmpty ? "noname.ext" : name
 
 		// using direct upload if file is small
 		if data.count < UploadAPI.multipartMinFileSize {
 			let files = [filename: data]
-			return uploadAPI.directUpload(files: files, store: store, onProgress) { [weak self] response, error in
-				if let error = error {
-					completionHandler(nil, error)
-					return
-				}
-
-				guard let response = response, let fileUUID = response[filename] else {
-					completionHandler(nil, UploadError.defaultError())
-					return
-				}
-
-				self?.fileInfo(withUUID: fileUUID, { result in
-					switch result {
-					case .failure(let error):
-						completionHandler(nil, UploadError(status: 0, detail: error.detail))
-					case .success(let file):
-						let uploadedFile = UploadedFile(
-							size: file.size,
-							total: file.size,
-							uuid: file.uuid,
-							fileId: file.uuid,
-							originalFilename: file.originalFilename,
-							filename: file.originalFilename,
-							mimeType: file.mimeType,
-							isImage: file.isImage,
-							isStored: store != .doNotStore,
-							isReady: file.isReady,
-							imageInfo: file.imageInfo,
-							videoInfo: file.videoInfo,
-							s3Bucket: nil
-						)
-
-						completionHandler(uploadedFile, nil)
+			return uploadAPI.directUpload(files: files, store: store, onProgress) { [weak self] result in
+				switch result {
+				case .failure(let error):
+					completionHandler(.failure(error))
+				case .success(let response):
+					guard let fileUUID = response[filename] else {
+						completionHandler(.failure(UploadError.defaultError()))
+						return
 					}
-				})
+
+					self?.fileInfo(withUUID: fileUUID, { result in
+						switch result {
+						case .failure(let error):
+							completionHandler(.failure(UploadError(status: 0, detail: error.detail)))
+						case .success(let file):
+							let uploadedFile = UploadedFile(
+								size: file.size,
+								total: file.size,
+								uuid: file.uuid,
+								fileId: file.uuid,
+								originalFilename: file.originalFilename,
+								filename: file.originalFilename,
+								mimeType: file.mimeType,
+								isImage: file.isImage,
+								isStored: store != .doNotStore,
+								isReady: file.isReady,
+								imageInfo: file.imageInfo,
+								videoInfo: file.videoInfo,
+								s3Bucket: nil
+							)
+
+							completionHandler(.success(uploadedFile))
+						}
+					})
+				}
 			}
 		}
 
