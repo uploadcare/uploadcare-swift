@@ -167,26 +167,24 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
+		}) { result in
 
-			if let error = error {
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
-				return
-			}
+			case .success(let resultDictionary):
+				let uuid = resultDictionary.values.first!
+				self.uploadcare.deleteFile(withUUID: uuid) { file, error in
+					defer { expectation.fulfill() }
 
-			XCTAssertNotNil(resultDictionary)
+					if let error = error {
+						XCTFail(error.detail)
+						return
+					}
 
-			let uuid = resultDictionary!.values.first!
-			self.uploadcare.deleteFile(withUUID: uuid) { file, error in
-				defer { expectation.fulfill() }
-
-				if let error = error {
-					XCTFail(error.detail)
-					return
+					XCTAssertEqual(uuid, file?.uuid)
 				}
-
-				XCTAssertEqual(uuid, file?.uuid)
 			}
 		}
 
@@ -204,27 +202,24 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
-
-			if let error = error {
+		}) { result in
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
-				return
-			}
+			case .success(let resultDictionary):
+				let uuid = resultDictionary.values.first!
+				self.uploadcare.deleteFiles(withUUIDs: [uuid, "shouldBeInProblems"]) { (response, error) in
+					defer { expectation.fulfill() }
 
-			XCTAssertNotNil(resultDictionary)
+					if let error = error {
+						XCTFail(error.detail)
+						return
+					}
 
-			let uuid = resultDictionary!.values.first!
-			self.uploadcare.deleteFiles(withUUIDs: [uuid, "shouldBeInProblems"]) { (response, error) in
-				defer { expectation.fulfill() }
-
-				if let error = error {
-					XCTFail(error.detail)
-					return
+					XCTAssertEqual(uuid, response?.result.first?.uuid)
+					XCTAssertNotNil(response?.problems["shouldBeInProblems"])
 				}
-
-				XCTAssertEqual(uuid, response?.result.first?.uuid)
-				XCTAssertNotNil(response?.problems["shouldBeInProblems"])
 			}
 		}
 
@@ -242,30 +237,27 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
-
-			if let error = error {
+		}) { result in
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
-				return
-			}
+			case .success(let resultDictionary):
+				let uuid = resultDictionary.values.first!
+				self.uploadcare.storeFile(withUUID: uuid) { file, error in
+					if let error = error {
+						XCTFail(error.detail)
+						expectation.fulfill()
+						return
+					}
 
-			XCTAssertNotNil(resultDictionary)
+					XCTAssertNotNil(file)
+					XCTAssertEqual(uuid, file!.uuid)
 
-			let uuid = resultDictionary!.values.first!
-			self.uploadcare.storeFile(withUUID: uuid) { file, error in
-				if let error = error {
-					XCTFail(error.detail)
-					expectation.fulfill()
-					return
-				}
-
-				XCTAssertNotNil(file)
-				XCTAssertEqual(uuid, file!.uuid)
-
-				// cleanup
-				self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
-					expectation.fulfill()
+					// cleanup
+					self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
+						expectation.fulfill()
+					}
 				}
 			}
 		}
@@ -284,29 +276,26 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
-
-			if let error = error {
+		}) { result in
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
-				return
-			}
+			case .success(let resultDictionary):
+				let uuid = resultDictionary.values.first!
+				self.uploadcare.storeFiles(withUUIDs: [uuid]) { response, error in
+					if let error = error {
+						XCTFail(error.detail)
+						expectation.fulfill()
+						return
+					}
 
-			XCTAssertNotNil(resultDictionary)
+					XCTAssertEqual(uuid, response?.result.first?.uuid)
 
-			let uuid = resultDictionary!.values.first!
-			self.uploadcare.storeFiles(withUUIDs: [uuid]) { response, error in
-				if let error = error {
-					XCTFail(error.detail)
-					expectation.fulfill()
-					return
-				}
-
-				XCTAssertEqual(uuid, response?.result.first?.uuid)
-
-				// cleanup
-				self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
-					expectation.fulfill()
+					// cleanup
+					self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
+						expectation.fulfill()
+					}
 				}
 			}
 		}
@@ -480,30 +469,27 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
-
-			if let error = error {
+		}) { result in
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
-				return
-			}
+			case .success(let resultDictionary):
+				let uuid = resultDictionary.values.first!
+				delay(5) {
+					self.uploadcare.copyFileToLocalStorage(source: uuid) { response, error in
+						if let error = error {
+							XCTFail(error.detail)
+							expectation.fulfill()
+							return
+						}
 
-			XCTAssertNotNil(resultDictionary)
+						XCTAssertEqual("file", response!.type)
 
-			let uuid = resultDictionary!.values.first!
-			delay(5) {
-				self.uploadcare.copyFileToLocalStorage(source: uuid) { response, error in
-					if let error = error {
-						XCTFail(error.detail)
-						expectation.fulfill()
-						return
-					}
-
-					XCTAssertEqual("file", response!.type)
-
-					// cleanup
-					self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
-						expectation.fulfill()
+						// cleanup
+						self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
+							expectation.fulfill()
+						}
 					}
 				}
 			}
@@ -522,24 +508,21 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
-
-			if let error = error {
+		}) { result in
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
-				return
-			}
+			case .success(let resultDictionary):
+				let uuid = resultDictionary.values.first!
+				self.uploadcare.copyFileToRemoteStorage(source: uuid, target: "one_more_project", pattern: .uuid) { (response, error) in
+					XCTAssertNotNil(error)
+					XCTAssertFalse(error!.detail == RESTAPIError.defaultError().detail)
 
-			XCTAssertNotNil(resultDictionary)
-
-			let uuid = resultDictionary!.values.first!
-			self.uploadcare.copyFileToRemoteStorage(source: uuid, target: "one_more_project", pattern: .uuid) { (response, error) in
-				XCTAssertNotNil(error)
-				XCTAssertFalse(error!.detail == RESTAPIError.defaultError().detail)
-
-				// cleanup
-				self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
-					expectation.fulfill()
+					// cleanup
+					self.uploadcare.deleteFile(withUUID: uuid) { _, _ in
+						expectation.fulfill()
+					}
 				}
 			}
 		}
@@ -647,60 +630,61 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		// upload random image
 		uploadcare.uploadAPI.directUploadInForeground(files: ["file_for_conversion.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
-
-			if let error = error {
+		}) { result in
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
-				return
-			}
+			case .success(let resultDictionary):
+				// fileinfo
+				let uuid = resultDictionary.values.first!
+				self.uploadcare.fileInfo(withUUID: uuid) { file, error in
+					if let error = error {
+						XCTFail(error.detail)
+						expectation.fulfill()
+						return
+					}
 
-			// fileinfo
-			let uuid = resultDictionary!.values.first!
-			self.uploadcare.fileInfo(withUUID: uuid) { file, error in
-				if let error = error {
-					XCTFail(error.detail)
-					expectation.fulfill()
-					return
+					delay(4) {
+						let convertSettings = DocumentConversionJobSettings(forFile: file!)
+							.format(.png)
+
+						self.uploadcare.convertDocumentsWithSettings([convertSettings]) { response, error in
+							if let error = error {
+								XCTFail(error.detail)
+								expectation.fulfill()
+								return
+							}
+
+							XCTAssertTrue(response!.problems.isEmpty)
+							XCTAssertNotNil(response)
+
+							let job = response!.result.first!
+
+							// check status
+							self.uploadcare.documentConversionJobStatus(token: job.token) { (status, error) in
+								if let error = error {
+									XCTFail(error.detail)
+									expectation.fulfill()
+									return
+								}
+
+								XCTAssertFalse(status!.statusString.isEmpty)
+
+								// cleanup
+
+								delay(4) {
+									self.uploadcare.deleteFile(withUUID: job.uuid) { _, _ in
+										expectation.fulfill()
+									}
+								}
+							}
+						}
+					}
 				}
-
-                delay(4) {
-                    let convertSettings = DocumentConversionJobSettings(forFile: file!)
-                        .format(.png)
-
-                    self.uploadcare.convertDocumentsWithSettings([convertSettings]) { response, error in
-                        if let error = error {
-                            XCTFail(error.detail)
-                            expectation.fulfill()
-                            return
-                        }
-
-                        XCTAssertTrue(response!.problems.isEmpty)
-                        XCTAssertNotNil(response)
-
-                        let job = response!.result.first!
-
-                        // check status
-                        self.uploadcare.documentConversionJobStatus(token: job.token) { (status, error) in
-                            if let error = error {
-                                XCTFail(error.detail)
-                                expectation.fulfill()
-                                return
-                            }
-                            
-                            XCTAssertFalse(status!.statusString.isEmpty)
-
-                            // cleanup
-                            
-                            delay(4) {
-                                self.uploadcare.deleteFile(withUUID: job.uuid) { _, _ in
-                                    expectation.fulfill()
-                                }
-                            }
-                        }
-                    }
-                }
 			}
+
+
 		}
 
 		wait(for: [expectation], timeout: 60.0)

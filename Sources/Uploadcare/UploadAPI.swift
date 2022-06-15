@@ -9,6 +9,7 @@
 import Foundation
 
 public typealias TaskCompletionHandler = ([String: String]?, UploadError?) -> Void
+public typealias TaskResultCompletionHandler = (Result<[String: String], UploadError>) -> Void
 public typealias TaskProgressBlock = (Double) -> Void
 
 public class UploadAPI: NSObject {
@@ -135,9 +136,26 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - fileId: File ID
 	///   - completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
 	public func fileInfo(
 		withFileId fileId: String,
 		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+	) {
+		fileInfo(withFileId: fileId) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let file): completionHandler(file, nil)
+			}
+		}
+	}
+
+	/// File info
+	/// - Parameters:
+	///   - fileId: File ID
+	///   - completionHandler: completion handler
+	public func fileInfo(
+		withFileId fileId: String,
+		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
 	) {
 		var components = URLComponents()
 		components.scheme = "https"
@@ -156,8 +174,8 @@ extension UploadAPI {
 
 		requestManager.performRequest(urlRequest) { (result: Result<UploadedFile, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, UploadError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(UploadError.fromError(error)))
+			case .success(let file): completionHandler(.success(file))
 			}
 		}
 	}
@@ -165,13 +183,30 @@ extension UploadAPI {
 
 // MARK: - Upload from URL
 extension UploadAPI {
-	/// Direct upload from url
+	/// Upload file from url
+	/// - Parameters:
+	///   - task: upload settings
+	///   - completionHandler: callback
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func upload(
+		task: UploadFromURLTask,
+		_ completionHandler: @escaping (UploadFromURLResponse?, UploadError?) -> Void
+	) {
+		upload(task: task) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let responseData): completionHandler(responseData, nil)
+			}
+		}
+	}
+
+	/// Upload file from url
 	/// - Parameters:
 	///   - task: upload settings
 	///   - completionHandler: callback
 	public func upload(
 		task: UploadFromURLTask,
-		_ completionHandler: @escaping (UploadFromURLResponse?, UploadError?) -> Void
+		_ completionHandler: @escaping (Result<UploadFromURLResponse, UploadError>) -> Void
 	) {
 		var components = URLComponents()
 		components.scheme = "https"
@@ -219,8 +254,25 @@ extension UploadAPI {
 
 		requestManager.performRequest(urlRequest) { (result: Result<UploadFromURLResponse, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, UploadError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(UploadError.fromError(error)))
+			case .success(let responseData): completionHandler(.success(responseData))
+			}
+		}
+	}
+
+	/// Get status for file upload from URL
+	/// - Parameters:
+	///   - token: token recieved from upload method
+	///   - completionHandler: callback
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func uploadStatus(
+		forToken token: String,
+		_ completionHandler: @escaping (UploadFromURLStatus?, UploadError?) -> Void
+	) {
+		uploadStatus(forToken: token) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let status): completionHandler(status, nil)
 			}
 		}
 	}
@@ -231,7 +283,7 @@ extension UploadAPI {
 	///   - completionHandler: callback
 	public func uploadStatus(
 		forToken token: String,
-		_ completionHandler: @escaping (UploadFromURLStatus?, UploadError?) -> Void
+		_ completionHandler: @escaping (Result<UploadFromURLStatus, UploadError>) -> Void
 	) {
         var components = URLComponents()
         components.scheme = "https"
@@ -250,8 +302,8 @@ extension UploadAPI {
 
         requestManager.performRequest(urlRequest) { (result: Result<UploadFromURLStatus, Error>) in
             switch result {
-            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
-            case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(UploadError.fromError(error)))
+			case .success(let status): completionHandler(.success(status))
             }
         }
 	}
@@ -269,12 +321,34 @@ extension UploadAPI {
 	///   - files: Files dictionary where key is filename, value file in Data format
 	///   - store: Sets the file storing behavior
 	///   - completionHandler: callback
+	@available(*, deprecated, message: "Use the same method with TaskResultCompletionHandler callback")
 	@discardableResult
 	public func directUpload(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskCompletionHandler
+	) -> UploadTaskable {
+		return directUpload(files: files, uploadType: .background, onProgress) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let response): completionHandler(response, nil)
+			}
+		}
+	}
+
+	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
+	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed
+	/// - Parameters:
+	///   - files: Files dictionary where key is filename, value file in Data format
+	///   - store: Sets the file storing behavior
+	///   - completionHandler: callback
+	@discardableResult
+	public func directUpload(
+		files: [String: Data],
+		store: StoringBehavior? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
+		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
 		return directUpload(files: files, uploadType: .background, onProgress, completionHandler)
 	}
@@ -285,7 +359,7 @@ extension UploadAPI {
         uploadType: DirectUploadType,
         store: StoringBehavior? = nil,
         _ onProgress: TaskProgressBlock? = nil,
-        _ completionHandler: @escaping TaskCompletionHandler
+        _ completionHandler: @escaping TaskResultCompletionHandler
     ) -> UploadTaskable {
         let url = urlWithPath("/base/")
         var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
@@ -326,10 +400,10 @@ extension UploadAPI {
                 if (response as? HTTPURLResponse)?.statusCode == 200, let data = data {
                     let decodedData = try? JSONDecoder().decode([String:String].self, from: data)
                     guard let resultData = decodedData else {
-                        completionHandler(nil, UploadError.defaultError())
+						completionHandler(.failure(UploadError.defaultError()))
                         return
                     }
-                    completionHandler(resultData, nil)
+					completionHandler(.success(resultData))
                     return
                 }
 
@@ -341,7 +415,7 @@ extension UploadAPI {
                     message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
                 }
                 let error = UploadError(status: status, detail: message)
-                completionHandler(nil, error)
+				completionHandler(.failure(error))
             }
         case .background:
             uploadTask = BackgroundSessionManager.instance.session.uploadTask(with: urlRequest, fromFile: localURL)
@@ -379,9 +453,9 @@ extension UploadAPI {
 		files: [String: Data],
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
-		_ completionHandler: @escaping ([String: String]?, UploadError?) -> Void
+		_ completionHandler: @escaping (Result<[String: String], UploadError>) -> Void
 	) -> UploadTaskable {
-        return directUpload(files: files, uploadType: .foreground, onProgress, completionHandler)
+		return directUpload(files: files, uploadType: .foreground, onProgress, completionHandler)
 	}
 }
 
@@ -776,10 +850,10 @@ extension UploadAPI: URLSessionTaskDelegate {
 		if statusCode == 200 {
 			let decodedData = try? JSONDecoder().decode([String:String].self, from: backgroundTask.dataBuffer)
 			guard let resultData = decodedData else {
-				backgroundTask.completionHandler(nil, UploadError.defaultError())
+				backgroundTask.completionHandler(.failure(UploadError.defaultError()))
 				return
 			}
-			backgroundTask.completionHandler(resultData, nil)
+			backgroundTask.completionHandler(.success(resultData))
 			return
 		}
 		
@@ -792,7 +866,7 @@ extension UploadAPI: URLSessionTaskDelegate {
 			message = error?.localizedDescription ?? defaultErrorMessage
 		}
 		let error = UploadError(status: statusCode, detail: message)
-		backgroundTask.completionHandler(nil, error)
+		backgroundTask.completionHandler(.failure(error))
 	}
 	
 	public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {

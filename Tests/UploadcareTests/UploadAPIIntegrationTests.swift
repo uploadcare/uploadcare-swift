@@ -97,16 +97,15 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
+		}) { result in
 			defer { expectation.fulfill() }
 
-			if let error = error {
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
-				return
+			case .success(let resultDictionary):
+				XCTAssertFalse(resultDictionary.isEmpty)
 			}
-
-			XCTAssertNotNil(resultDictionary)
-			XCTAssertFalse(resultDictionary!.isEmpty)
 
 //			for file in resultDictionary! {
 //				DLog("uploaded file name: \(file.key) | file id: \(file.value)")
@@ -126,11 +125,15 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 		let task = uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
+		}) { result in
 			defer { expectation.fulfill() }
 
-			XCTAssertNotNil(error)
-			XCTAssertNil(resultDictionary)
+			switch result {
+			case .failure(_):
+				break
+			case .success(_):
+				XCTFail("should fail because of cancellation")
+			}
 		}
 
 		task.cancel()
@@ -148,26 +151,25 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
-			if let error = error {
+		}) { result in
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
-				return
-			}
+			case .success(let resultDictionary):
+				XCTAssertFalse(resultDictionary.isEmpty)
 
-			XCTAssertNotNil(resultDictionary)
-			XCTAssertFalse(resultDictionary!.isEmpty)
+				let fileId = resultDictionary.first!.value
+				self.uploadcare.uploadAPI.fileInfo(withFileId: fileId) { (info, error) in
+					defer { expectation.fulfill() }
 
-			let fileId = resultDictionary!.first!.value
-			self.uploadcare.uploadAPI.fileInfo(withFileId: fileId) { (info, error) in
-				defer { expectation.fulfill() }
+					if let error = error {
+						XCTFail(error.detail)
+						return
+					}
 
-				if let error = error {
-					XCTFail(error.detail)
-					return
+					XCTAssertNotNil(info)
 				}
-
-				XCTAssertNotNil(info)
 			}
 		}
 
@@ -242,26 +244,24 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
 			DLog("upload progress: \(progress * 100)%")
-		}) { (resultDictionary, error) in
-			if let error = error {
+		}) { result in
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
-				return
-			}
+			case .success(let resultDictionary):
+				let fileID = resultDictionary.first!.value
 
-			XCTAssertNotNil(resultDictionary)
+				self.uploadcare.uploadAPI.fileInfo(withFileId: fileID) { file, error in
+					defer { expectation.fulfill() }
 
-			let fileID = resultDictionary!.first!.value
+					if let error = error {
+						XCTFail(error.detail)
+						return
+					}
 
-			self.uploadcare.uploadAPI.fileInfo(withFileId: fileID) { file, error in
-				defer { expectation.fulfill() }
-
-				if let error = error {
-					XCTFail(error.detail)
-					return
+					XCTAssertNotNil(file)
 				}
-
-				XCTAssertNotNil(file)
 			}
 		}
 
@@ -302,52 +302,51 @@ final class UploadAPIIntegrationTests: XCTestCase {
 		// upload a file
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { progress in
 			DLog("upload progress: \(progress * 100)%")
-		}) { resultDictionary, error in
-			if let error = error {
+		}) { result in
+			switch result {
+			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
-				return
-			}
+			case .success(let resultDictionary):
+				XCTAssertFalse(resultDictionary.isEmpty)
 
-			XCTAssertNotNil(resultDictionary)
-			XCTAssertFalse(resultDictionary!.isEmpty)
-
-			// file info
-			let fileId = resultDictionary!.first!.value
-			self.uploadcare.uploadAPI.fileInfo(withFileId: fileId) { info, error in
-				if let error = error {
-					XCTFail(error.detail)
-					expectation.fulfill()
-					return
-				}
-
-				XCTAssertNotNil(info)
-
-				self.newGroup = self.uploadcare.group(ofFiles:[info!])
-				self.newGroup!.create { response, error in
+				// file info
+				let fileId = resultDictionary.first!.value
+				self.uploadcare.uploadAPI.fileInfo(withFileId: fileId) { info, error in
 					if let error = error {
 						XCTFail(error.detail)
 						expectation.fulfill()
 						return
 					}
 
-					XCTAssertNotNil(response)
-					XCTAssertNotNil(response!.files)
-					XCTAssertFalse(response!.files!.isEmpty)
+					XCTAssertNotNil(info)
 
-					XCTAssertEqual(response!.filesCount, 1)
-
-					self.uploadcare.uploadAPI.filesGroupInfo(groupId: response!.id) { group, error in
-						defer { expectation.fulfill() }
-
+					self.newGroup = self.uploadcare.group(ofFiles:[info!])
+					self.newGroup!.create { response, error in
 						if let error = error {
 							XCTFail(error.detail)
+							expectation.fulfill()
 							return
 						}
 
-						XCTAssertNotNil(group)
-						XCTAssertNotNil(group!.files)
-						XCTAssertFalse(group!.files!.isEmpty)
+						XCTAssertNotNil(response)
+						XCTAssertNotNil(response!.files)
+						XCTAssertFalse(response!.files!.isEmpty)
+
+						XCTAssertEqual(response!.filesCount, 1)
+
+						self.uploadcare.uploadAPI.filesGroupInfo(groupId: response!.id) { group, error in
+							defer { expectation.fulfill() }
+
+							if let error = error {
+								XCTFail(error.detail)
+								return
+							}
+
+							XCTAssertNotNil(group)
+							XCTAssertNotNil(group!.files)
+							XCTAssertFalse(group!.files!.isEmpty)
+						}
 					}
 				}
 			}
