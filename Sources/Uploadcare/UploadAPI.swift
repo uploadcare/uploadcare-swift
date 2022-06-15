@@ -405,77 +405,70 @@ extension UploadAPI {
 			withName: filename,
 			size: totalSize,
 			mimeType: fileMimeType,
-			store: store ?? .store) { [weak self] (response, error) in
+			store: store ?? .store) { [weak self] result in
 				guard let self = self else { return }
-				if let error = error {
+
+				switch result {
+				case .failure(let error):
 					completionHandler(nil, error)
-					return
-				}
+				case .success(let response):
+					// Uploading individual file parts
+					var offset = 0
+					var i = 0
+					var numberOfUploadedChunks = 0
+					let uploadGroup = DispatchGroup()
 
-				// Uploading individual file parts
-				guard let parts = response?.parts, let uuid = response?.uuid else {
-					completionHandler(nil, UploadError.defaultError())
-					return
-				}
+					while offset < totalSize {
+						let bytesLeft = totalSize - offset
+						let currentChunkSize = bytesLeft > Self.uploadChunkSize ? Self.uploadChunkSize : bytesLeft
 
-				var offset = 0
-				var i = 0
-				var numberOfUploadedChunks = 0
-				let uploadGroup = DispatchGroup()
-
-				while offset < totalSize {
-					let bytesLeft = totalSize - offset
-					let currentChunkSize = bytesLeft > Self.uploadChunkSize ? Self.uploadChunkSize : bytesLeft
-
-					// data chunk
-					let range = NSRange(location: offset, length: currentChunkSize)
-					guard let dataRange = Range(range) else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
-					let chunk = data.subdata(in: dataRange)
-
-					// presigned upload url
-					let partUrl = parts[i]
-
-					// uploading individual part
-					self.uploadIndividualFilePart(
-						chunk,
-						toPresignedUrl: partUrl,
-						withMimeType: fileMimeType,
-						task: task,
-						group: uploadGroup,
-						completeMessage: nil, //"Uploaded \(i) of \(parts.count)",
-						onComplete: {
-							numberOfUploadedChunks += 1
-
-							let total = Double(parts.count)
-							let ready = Double(numberOfUploadedChunks)
-							let percent = round(ready * 100 / total)
-							onProgress?(percent / 100)
-					})
-
-					offset += currentChunkSize
-					i += 1
-				}
-
-				// Completing a multipart upload
-				uploadGroup.notify(queue: self.uploadQueue) {
-					guard task.isCancelled == false else {
-						completionHandler(nil, UploadError(status: 0, detail: "Upload cancelled"))
-						return
-					}
-					task.complete()
-					self.completeMultipartUpload(forFileUIID: uuid) { (file, error) in
-						if let error = error {
-							completionHandler(nil, error)
-							return
-						}
-						guard let uploadedFile = file else {
+						// data chunk
+						let range = NSRange(location: offset, length: currentChunkSize)
+						guard let dataRange = Range(range) else {
 							completionHandler(nil, UploadError.defaultError())
 							return
 						}
-						completionHandler(uploadedFile, nil)
+						let chunk = data.subdata(in: dataRange)
+
+						// presigned upload url
+						let partUrl = response.parts[i]
+
+						// uploading individual part
+						self.uploadIndividualFilePart(
+							chunk,
+							toPresignedUrl: partUrl,
+							withMimeType: fileMimeType,
+							task: task,
+							group: uploadGroup,
+							completeMessage: nil, //"Uploaded \(i) of \(parts.count)",
+							onComplete: {
+								numberOfUploadedChunks += 1
+
+								let total = Double(response.parts.count)
+								let ready = Double(numberOfUploadedChunks)
+								let percent = round(ready * 100 / total)
+								onProgress?(percent / 100)
+						})
+
+						offset += currentChunkSize
+						i += 1
+					}
+
+					// Completing a multipart upload
+					uploadGroup.notify(queue: self.uploadQueue) {
+						guard task.isCancelled == false else {
+							completionHandler(nil, UploadError(status: 0, detail: "Upload cancelled"))
+							return
+						}
+						task.complete()
+						self.completeMultipartUpload(forFileUIID: response.uuid) { result in
+							switch result {
+							case .failure(let error):
+								completionHandler(nil, error)
+							case .success(let file):
+								completionHandler(file, nil)
+							}
+						}
 					}
 				}
 		}
@@ -507,7 +500,7 @@ extension UploadAPI {
 		size: Int,
 		mimeType: String,
 		store: StoringBehavior,
-		_ completionHandler: @escaping (StartMulipartUploadResponse?, UploadError?) -> Void
+		_ completionHandler: @escaping (Result<StartMulipartUploadResponse, UploadError>) -> Void
 	) {
 		let url = urlWithPath("/multipart/start/")
 		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
@@ -529,8 +522,8 @@ extension UploadAPI {
 
 		requestManager.performRequest(urlRequest) { (result: Result<StartMulipartUploadResponse, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, UploadError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(UploadError.fromError(error)))
+			case .success(let responseData): completionHandler(.success(responseData))
 			}
 		}
 	}
@@ -542,7 +535,7 @@ extension UploadAPI {
 		task: MultipartUploadTask,
 		group: DispatchGroup? = nil,
 		completeMessage: String? = nil,
-		onComplete: (()->Void)? = nil
+		onComplete: (() -> Void)? = nil
 	) {
 		group?.enter()
 
@@ -608,7 +601,7 @@ extension UploadAPI {
 	///   - completionHandler: callback
 	private func completeMultipartUpload(
 		forFileUIID: String,
-		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
 	) {
         let url = urlWithPath("/multipart/complete/")
         var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
@@ -622,8 +615,8 @@ extension UploadAPI {
 
         requestManager.performRequest(urlRequest) { (result: Result<UploadedFile, Error>) in
             switch result {
-            case .failure(let error): completionHandler(nil, UploadError.fromError(error))
-            case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(UploadError.fromError(error)))
+			case .success(let file): completionHandler(.success(file))
             }
         }
 	}
