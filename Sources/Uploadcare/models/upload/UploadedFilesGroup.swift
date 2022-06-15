@@ -103,6 +103,11 @@ public class UploadedFilesGroup: Codable {
 	}
 	
 	// MARK: - Public methods
+
+	/// Init with files
+	/// - Parameters:
+	///   - files: files
+	///   - uploadAPI: Upload API object
 	public init(withFiles files: [UploadedFile], uploadAPI: UploadAPI) {
 		self.datetimeCreated = Date()
 		self.filesCount = files.count
@@ -113,31 +118,32 @@ public class UploadedFilesGroup: Codable {
 		
 		self.uploadAPI = uploadAPI
 	}
-	
-	public func create(_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?)->Void) {
-		uploadAPI?.createFilesGroup(files: self.files ?? [], { [weak self] (group, error) in
-			if let error = error {
-				completionHandler(nil, error)
-				return
+
+	/// Create group of files
+	/// - Parameter completionHandler: completion handler
+	public func create(_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>)->Void) {
+		uploadAPI?.createFilesGroup(files: self.files ?? [], { [weak self] result in
+			switch result {
+			case .failure(let error):
+				completionHandler(.failure(error))
+			case .success(let createdGroup):
+				guard let self = self else {
+					completionHandler(.failure(UploadError.defaultError()))
+					return
+				}
+
+				self.datetimeCreated = createdGroup.datetimeCreated
+				self.filesCount = createdGroup.filesCount
+				self.cdnUrl = createdGroup.cdnUrl
+				self.files = createdGroup.files
+				self.url = createdGroup.url
+				self.id = createdGroup.id
+
+				completionHandler(.success(self))
 			}
-			
-			guard let createdGroup = group, let self = self else {
-				completionHandler(nil, UploadError.defaultError())
-				return
-			}
-			
-			self.datetimeCreated = createdGroup.datetimeCreated
-			self.filesCount = createdGroup.filesCount
-			self.cdnUrl = createdGroup.cdnUrl
-			self.files = createdGroup.files
-			self.url = createdGroup.url
-			self.id = createdGroup.id
-			
-			completionHandler(self, nil)
 		})
 	}
 }
-
 
 
 extension UploadedFilesGroup: CustomDebugStringConvertible {
@@ -155,3 +161,30 @@ extension UploadedFilesGroup: CustomDebugStringConvertible {
 	}
 }
 
+
+// MARK: - Deprecated methods
+extension UploadedFilesGroup {
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func create(_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?)->Void) {
+		uploadAPI?.createFilesGroup(files: self.files ?? [], { [weak self] result in
+			switch result {
+			case .failure(let error):
+				completionHandler(nil, error)
+			case .success(let createdGroup):
+				guard let self = self else {
+					completionHandler(nil, UploadError.defaultError())
+					return
+				}
+
+				self.datetimeCreated = createdGroup.datetimeCreated
+				self.filesCount = createdGroup.filesCount
+				self.cdnUrl = createdGroup.cdnUrl
+				self.files = createdGroup.files
+				self.url = createdGroup.url
+				self.id = createdGroup.id
+
+				completionHandler(self, nil)
+			}
+		})
+	}
+}
