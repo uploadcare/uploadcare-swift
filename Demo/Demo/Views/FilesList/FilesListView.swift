@@ -147,14 +147,17 @@ struct FilesListView: View {
 	
 	func loadMoreIfNeed() {
 		self.isLoading = true
-		filesListStore.loadNext { (list, error) in
+		filesListStore.loadNext { result in
 			defer { self.isLoading = false }
-			if let error = error {
+
+			switch result {
+			case .failure(let error):
 				self.alertMessage = error.detail
 				self.isShowingAlert.toggle()
-				return DLog(error)
+				DLog(error)
+			case .success(let list):
+				list.results.forEach({ self.filesListStore.files.append(FileViewData( file: $0)) })
 			}
-			list?.results.forEach({ self.filesListStore.files.append(FileViewData( file: $0)) })
 		}
 	}
     
@@ -163,11 +166,14 @@ struct FilesListView: View {
             let fileView = filesListStore.files[index]
             let uuid = fileView.file.uuid
             
-            self.api.uploadcare?.deleteFile(withUUID: uuid, { (_, error) in
-                if let error = error {
+            self.api.uploadcare?.deleteFile(withUUID: uuid) { result in
+				switch result {
+				case .failure(let error):
 					DLog(error)
-                }
-            })
+				case .success(_):
+					break
+				}
+            }
         }
         
 		filesListStore.files.remove(atOffsets: offsets)
@@ -175,33 +181,35 @@ struct FilesListView: View {
 	
 	func loadData() {
 		filesListStore.uploadcare = self.api.uploadcare
-		filesListStore.load { (list, error) in
+		filesListStore.load { result in
 			defer { self.isLoading = false }
-			if let error = error {
+
+			switch result {
+			case .failure(let error):
 				self.alertMessage = error.detail
 				self.isShowingAlert.toggle()
-				return DLog(error)
+				DLog(error)
+			case .success(let list):
+				self.didLoadData = true
+				self.filesListStore.files.removeAll()
+				list.results.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
 			}
-			self.didLoadData = true
-			self.filesListStore.files.removeAll()
-			list?.results.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
-			
-//			list?.results.forEach { print($0) }
 		}
 	}
 	
 	func insertFileByFileId(_ fileId: String) {
 		// getting file by uuid
-		self.api.uploadcare?.fileInfo(withUUID: fileId, { (file, error) in
-			if let error = error {
+		self.api.uploadcare?.fileInfo(withUUID: fileId) { result in
+			switch result {
+			case .failure(let error):
 				self.alertMessage = error.detail
 				self.isShowingAlert.toggle()
-				return DLog(error)
+				DLog(error)
+			case .success(let file):
+				let viewData = FileViewData(file: file)
+				self.filesListStore.files.insert(viewData, at: 0)
 			}
-			guard let file = file else { return }
-			let viewData = FileViewData(file: file)
-			self.filesListStore.files.insert(viewData, at: 0)
-		})
+		}
 	}
 }
 
