@@ -50,17 +50,19 @@ struct GroupFileList: View {
     }
 	
 	func loadData() {
-		self.api.uploadcare?.groupInfo(withUUID: self.viewData.group.id, { (group, error) in
+		self.api.uploadcare?.groupInfo(withUUID: self.viewData.group.id) { result in
 			defer { self.isLoading = false }
-			if let error = error {
+
+			switch result {
+			case .failure(let error):
 				self.alertMessage = error.detail
 				self.isShowingAlert.toggle()
-				return DLog(error)
+				DLog(error)
+			case .success(let group):
+				self.filesListStore.files.removeAll()
+				group.files?.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
 			}
-			
-			self.filesListStore.files.removeAll()
-			group?.files?.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
-		})
+		}
 //		filesListStore.uploadcare = self.api.uploadcare
 //		filesListStore.load { (list, error) in
 //			defer { self.isLoading = false }

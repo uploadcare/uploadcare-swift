@@ -109,53 +109,53 @@ extension GroupsList {
 	///   - completionHandler: completion hanlder
 	public func get(
 		withQuery query: GroupsListQuery? = nil,
-		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
 	) {
 		guard let api = RESTAPI else {
-			completionHandler(nil, RESTAPIError.defaultError())
+			completionHandler(.failure(RESTAPIError.defaultError()))
 			return
 		}
-		
-		api.listOfGroups(withQuery: query) { [weak self] (list, error) in
-			if let error = error {
-				completionHandler(nil, error)
+
+		api.listOfGroups(withQuery: query) { [weak self] result in
+			guard let self = self else {
+				completionHandler(.failure(RESTAPIError.defaultError()))
 				return
 			}
-			
-			guard let self = self, let list = list else {
-				completionHandler(nil, RESTAPIError.defaultError())
-				return
+
+			switch result {
+			case .failure(let error):
+				completionHandler(.failure(error))
+			case .success(let list):
+				self.next = list.next
+				self.previous = list.previous
+				self.total = list.total
+				self.perPage = list.perPage
+				self.results = list.results
+				completionHandler(.success(list))
 			}
-			
-			self.next = list.next
-			self.previous = list.previous
-			self.total = list.total
-			self.perPage = list.perPage
-			self.results = list.results
-			completionHandler(list, nil)
 		}
 	}
-	
+
 	/// Get next page of files list
 	/// - Parameter completionHandler: completion handler
-	public func nextPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
+	public func nextPage(_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void) {
 		guard let next = next, let query = URL(string: next)?.query else {
 			self.results = []
-			completionHandler(self, nil)
+			completionHandler(.success(self))
 			return
 		}
-		
+
 		getPage(withQueryString: query, completionHandler)
 	}
-	
+
 	/// Get previous page of files list
 	/// - Parameter completionHandler: completion handler
-	public func previousPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
+	public func previousPage(_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void) {
 		guard let previous = previous, let query = URL(string: previous)?.query else {
-			completionHandler(nil, RESTAPIError.defaultError())
+			completionHandler(.failure(RESTAPIError.defaultError()))
 			return
 		}
-		
+
 		getPage(withQueryString: query, completionHandler)
 	}
 }
@@ -169,30 +169,71 @@ private extension GroupsList {
 	///   - completionHandler: completion handler
 	func getPage(
 		withQueryString query: String,
-		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
 	) {
 		guard let api = RESTAPI else {
-			completionHandler(nil, RESTAPIError.defaultError())
+			completionHandler(.failure(RESTAPIError.defaultError()))
 			return
 		}
 		
-		api.listOfGroups(withQueryString: query) { [weak self] (list, error) in
-			if let error = error {
-				completionHandler(nil, error)
-				return
+		api.listOfGroups(withQueryString: query) { [weak self] result in
+			guard let self = self else { return }
+
+			switch result {
+			case .failure(let error):
+				completionHandler(.failure(error))
+			case .success(let groupsList):
+				self.next = groupsList.next
+				self.previous = groupsList.previous
+				self.total = groupsList.total
+				self.perPage = groupsList.perPage
+				self.results = groupsList.results
+				completionHandler(.success(groupsList))
 			}
-			
-			guard let self = self, let list = list else {
-				completionHandler(nil, RESTAPIError.defaultError())
-				return
+		}
+	}
+}
+
+// MARK: - Deprecated methods
+extension GroupsList {
+	/// Get list of files
+	/// - Parameters:
+	///   - query: query object
+	///   - completionHandler: completion hanlder
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func get(
+		withQuery query: GroupsListQuery? = nil,
+		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+	) {
+		get(withQuery: query) { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let groupsList): completionHandler(groupsList, nil)
 			}
-			
-			self.next = list.next
-			self.previous = list.previous
-			self.total = list.total
-			self.perPage = list.perPage
-			self.results = list.results
-			completionHandler(list, nil)
+		}
+	}
+
+	/// Get next page of files list
+	/// - Parameter completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func nextPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
+		nextPage { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let groupsList): completionHandler(groupsList, nil)
+			}
+		}
+	}
+
+	/// Get previous page of files list
+	/// - Parameter completionHandler: completion handler
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	public func previousPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
+		previousPage { result in
+			switch result {
+			case .failure(let error): completionHandler(nil, error)
+			case .success(let groupsList): completionHandler(groupsList, nil)
+			}
 		}
 	}
 }

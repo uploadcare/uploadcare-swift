@@ -28,12 +28,13 @@ guard let data = try? Data(contentsOf: url) else { return }
 
 let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore) { progress in
     print("progress: \(progress)")
-} _: { file, error in
-    if let error = error {
+} _: { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let file):
+        print(file)
     }
-    print(file as Any)
 }
 
 // You can cancel uploading if needed
@@ -56,15 +57,14 @@ guard let url = URL(string: "https://source.unsplash.com/random"),
       
 let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store) { progress in
     print("upload progress: \(progress * 100)%")
-} _: { resultDictionary, error in
-    if let error = error {
+} _: { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
-    }
-
-    guard let files = resultDictionary else { return }
-    for file in files {
-        print("uploaded file name: \(file.key) | file id: \(file.value)")
+    case .success(let files):
+		for file in files {
+			print("uploaded file name: \(file.key) | file id: \(file.value)")
+		}
     }
 }
 
@@ -87,12 +87,13 @@ let data = try! Data(contentsOf: url)
 
 let task = uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .store) { progress in
     print("progress: \(progress)")
-} _: { file, error in
-    if let error = error {
+} _: { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let file):
+        print(file)
     }
-    print(file as Any)
 }
 
 // You can cancel uploading if needed
@@ -123,15 +124,16 @@ let task2 = UploadFromURLTask(sourceUrl: url)
     .store(.store)
 
 // Upload
-uploadcare.uploadAPI.upload(task: task1) { result, error in
-    if let error = error {
+uploadcare.uploadAPI.upload(task: task1) { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let response):
+        print(response)
+        
+		// Upload token that you can use to check status
+		let token = result?.token
     }
-    print(result as Any)
-    
-    // Upload token that you can use to check status
-    let token = result?.token
 }
 ```
 
@@ -140,24 +142,26 @@ uploadcare.uploadAPI.upload(task: task1) { result, error in
 Use a token recieved with Upload files from the URLs method:
 
 ```swift
-uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { status, error in
-    if let error = error {
+uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let status):
+        print(status)
     }
-    print(status as Any)
 }
 ```
 
 ## File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo/)) ##
 
 ```swift
-uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { file, error in
-    if let error = error {
+uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let file):
+        print(file)
     }
-    print(file as Any)
 }
 ```
 
@@ -169,12 +173,13 @@ Uploadcare library provides 2 methods to create a group:
 
 ```swift
 let files: [UploadedFile] = [file1,file2]
-uploadcare.uploadAPI.createFilesGroup(files: files) { response, error in
-    if let error = error {
+uploadcare.uploadAPI.createFilesGroup(files: files) { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let group):
+        print(group)
     }
-    print(response as Any)
 }
 ```
 
@@ -182,24 +187,26 @@ uploadcare.uploadAPI.createFilesGroup(files: files) { response, error in
 
 ```swift
 let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
-uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { response, error in
-    if let error = error {
+uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let group):
+        print(group)
     }
-    print(response as Any)
 }
 ```
 
 ## Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo/)) ##
 
 ```swift
-uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { group, error in
-    if let error = error {
+uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let group):
+        print(group)
     }
-    print(group as Any)
 }
 ```
 

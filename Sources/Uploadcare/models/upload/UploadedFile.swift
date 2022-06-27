@@ -168,16 +168,23 @@ public class UploadedFile: Codable {
 	
 	
 	// MARK: - Public methods
+
+	/// Upload file
+	/// - Parameters:
+	///   - name: file name
+	///   - store: A flag indicating if we should store your outputs.
+	///   - onProgress: A callback that will be used to report upload progress
+	///   - completionHandler: completion handler
+	/// - Returns: Upload task. Confirms to UploadTaskable protocol in anycase. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload
 	@discardableResult
 	public func upload(
 		withName name: String,
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
-		_ completionHandler: ((UploadedFile?, UploadError?) -> Void)? = nil
+		_ completionHandler: ((Result<UploadedFile, UploadError>) -> Void)? = nil
 	) -> UploadTaskable? {
 		guard let fileData = self.data else {
-			let error = UploadError(status: 0, detail: "Unable to upload file: Data is empty")
-			completionHandler?(nil, error)
+			completionHandler?(.failure(UploadError(status: 0, detail: "Unable to upload file: Data is empty")))
 			return nil
 		}
 		
@@ -186,34 +193,30 @@ public class UploadedFile: Codable {
 
 		return restAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { progress in
 			onProgress?(progress)
-		}, { [weak self] file, error in
-			if let error = error {
-				completionHandler?(nil, error)
+		}, { [weak self] result in
+			switch result {
+			case .failure(let error):
+				completionHandler?(.failure(error))
 				return
+			case .success(let uploadedFile):
+				defer { completionHandler?(.success(uploadedFile)) }
+
+				guard let self = self else { return }
+
+				self.size = uploadedFile.size
+				self.total = uploadedFile.total
+				self.uuid = uploadedFile.uuid
+				self.fileId = uploadedFile.fileId
+				self.originalFilename = uploadedFile.originalFilename
+				self.filename = uploadedFile.filename
+				self.mimeType = uploadedFile.mimeType
+				self.isImage = uploadedFile.isImage
+				self.isStored = uploadedFile.isStored
+				self.isReady = uploadedFile.isReady
+				self.imageInfo = uploadedFile.imageInfo
+				self.videoInfo = uploadedFile.videoInfo
+				self.s3Bucket = uploadedFile.s3Bucket
 			}
-
-			guard let uploadedFile = file else {
-				completionHandler?(nil, UploadError.defaultError())
-				return
-			}
-
-			defer { completionHandler?(file, nil) }
-
-			guard let self = self else { return }
-
-			self.size = uploadedFile.size
-			self.total = uploadedFile.total
-			self.uuid = uploadedFile.uuid
-			self.fileId = uploadedFile.fileId
-			self.originalFilename = uploadedFile.originalFilename
-			self.filename = uploadedFile.filename
-			self.mimeType = uploadedFile.mimeType
-			self.isImage = uploadedFile.isImage
-			self.isStored = uploadedFile.isStored
-			self.isReady = uploadedFile.isReady
-			self.imageInfo = uploadedFile.imageInfo
-			self.videoInfo = uploadedFile.videoInfo
-			self.s3Bucket = uploadedFile.s3Bucket
 		})
 	}
 }
@@ -237,5 +240,54 @@ extension UploadedFile: CustomDebugStringConvertible {
 			videoInfo: \(String(describing: videoInfo))
 			s3Bucket: \(String(describing: s3Bucket))
 		"""
+	}
+}
+
+// MARK: - Deprecated methods
+extension UploadedFile {
+	@available(*, deprecated, message: "Use the same method with Result type in the callback")
+	@discardableResult
+	public func upload(
+		withName name: String,
+		store: StoringBehavior? = nil,
+		_ onProgress: ((Double) -> Void)? = nil,
+		_ completionHandler: ((UploadedFile?, UploadError?) -> Void)? = nil
+	) -> UploadTaskable? {
+		guard let fileData = self.data else {
+			let error = UploadError(status: 0, detail: "Unable to upload file: Data is empty")
+			completionHandler?(nil, error)
+			return nil
+		}
+
+		self.originalFilename = name
+		self.filename = name
+
+		return restAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { progress in
+			onProgress?(progress)
+		}, { [weak self] result in
+			switch result {
+			case .failure(let error):
+				completionHandler?(nil, error)
+				return
+			case .success(let uploadedFile):
+				defer { completionHandler?(uploadedFile, nil) }
+
+				guard let self = self else { return }
+
+				self.size = uploadedFile.size
+				self.total = uploadedFile.total
+				self.uuid = uploadedFile.uuid
+				self.fileId = uploadedFile.fileId
+				self.originalFilename = uploadedFile.originalFilename
+				self.filename = uploadedFile.filename
+				self.mimeType = uploadedFile.mimeType
+				self.isImage = uploadedFile.isImage
+				self.isStored = uploadedFile.isStored
+				self.isReady = uploadedFile.isReady
+				self.imageInfo = uploadedFile.imageInfo
+				self.videoInfo = uploadedFile.videoInfo
+				self.s3Bucket = uploadedFile.s3Bucket
+			}
+		})
 	}
 }
