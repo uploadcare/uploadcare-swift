@@ -97,7 +97,7 @@ let fileForUploading1 = uploadcare.file(fromData: data)
 let fileForUploading2 = uploadcare.file(withContentsOf: url)
 
 // Handle error or result
-fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { (result, error) in
+fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { result in
 }
 
 // Completion block is optional
@@ -106,13 +106,13 @@ fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
 // Or you can just upload data and provide a filename
 let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .store) { progress in
     print("upload progress: \(progress * 100)%")
-} _: { file, error in
-    if let error = error {
-	print(error.detail)
-	return
+} _: { result in
+    switch result {
+    case .failure(let error):
+        print(error.detail)
+    case .success(let file):
+        print(file)
     }
-
-    print(file ?? "Error: no file")
 }
 // You can cancel uploading if needed
 task.cancel()
@@ -141,13 +141,13 @@ func someFilesListMethod() {
         .limit(5)
 
     // Get file list
-    filesList.get(withQuery: query) { list, error in
-        if let error = error {
+    filesList.get(withQuery: query) { result in
+        switch result {
+        case .failure(let error):
             print(error)
-            return
+        case .success(let list):
+            print(list)
         }
-
-        print(list ?? "")
     }
 }
 ```
@@ -158,12 +158,13 @@ Get next page:
 // Check if the next page is available
 guard filesList.next != nil else { return }
 // Get the next page
-filesList.nextPage { (list, error) in
-    if let error = error {
+filesList.nextPage { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
-    }	
-    print(list ?? "")
+    case .success(let list):
+        print(list)
+    }
 }
 ```
 
@@ -173,12 +174,13 @@ Get previous page:
 // Check if the previous page is available
 guard filesList.previous != nil else { return }
 // Get the previous page
-filesList.previousPage { (list, error) in
-    if let error = error {
+filesList.previousPage { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
-    }	
-    print(list ?? "")
+    case .success(let list):
+        print(list)
+    }
 }
 ```
 
