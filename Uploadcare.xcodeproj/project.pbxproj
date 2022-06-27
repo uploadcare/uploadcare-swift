@@ -10,6 +10,14 @@
 		245DBB4D24901B9B002FB70B /* Uploadcare_watchOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 245DBB4B24901B9B002FB70B /* Uploadcare_watchOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		24875B1D243B33EC003F3E06 /* Uploadcare_tvOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B1B243B33EB003F3E06 /* Uploadcare_tvOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		24875B37243B3518003F3E06 /* Uploadcare_macOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 24875B35243B3518003F3E06 /* Uploadcare_macOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		24B90936286A47A700B907F7 /* AudioMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B90934286A47A700B907F7 /* AudioMetadata.swift */; };
+		24B90937286A47A700B907F7 /* AudioMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B90934286A47A700B907F7 /* AudioMetadata.swift */; };
+		24B90938286A47A700B907F7 /* AudioMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B90934286A47A700B907F7 /* AudioMetadata.swift */; };
+		24B90939286A47A700B907F7 /* AudioMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B90934286A47A700B907F7 /* AudioMetadata.swift */; };
+		24B9093A286A47A700B907F7 /* VideoMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B90935286A47A700B907F7 /* VideoMetadata.swift */; };
+		24B9093B286A47A700B907F7 /* VideoMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B90935286A47A700B907F7 /* VideoMetadata.swift */; };
+		24B9093C286A47A700B907F7 /* VideoMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B90935286A47A700B907F7 /* VideoMetadata.swift */; };
+		24B9093D286A47A700B907F7 /* VideoMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B90935286A47A700B907F7 /* VideoMetadata.swift */; };
 		24D69248281B40D500FE0FD3 /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D69216281B40D500FE0FD3 /* VideoInfo.swift */; };
 		24D69249281B40D500FE0FD3 /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D69216281B40D500FE0FD3 /* VideoInfo.swift */; };
 		24D6924A281B40D500FE0FD3 /* VideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D69216281B40D500FE0FD3 /* VideoInfo.swift */; };
@@ -205,6 +213,8 @@
 		248BD549243627B600B4A3CA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2495945323B77F51006BB9BF /* Uploadcare.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Uploadcare.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2495945623B7801A006BB9BF /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		24B90934286A47A700B907F7 /* AudioMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioMetadata.swift; sourceTree = "<group>"; };
+		24B90935286A47A700B907F7 /* VideoMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoMetadata.swift; sourceTree = "<group>"; };
 		24D69216281B40D500FE0FD3 /* VideoInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoInfo.swift; sourceTree = "<group>"; };
 		24D69217281B40D500FE0FD3 /* GeoLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoLocation.swift; sourceTree = "<group>"; };
 		24D69218281B40D500FE0FD3 /* ImageInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageInfo.swift; sourceTree = "<group>"; };
@@ -408,6 +418,8 @@
 		24D69215281B40D500FE0FD3 /* models */ = {
 			isa = PBXGroup;
 			children = (
+				24B90934286A47A700B907F7 /* AudioMetadata.swift */,
+				24B90935286A47A700B907F7 /* VideoMetadata.swift */,
 				24D69216281B40D500FE0FD3 /* VideoInfo.swift */,
 				24D69217281B40D500FE0FD3 /* GeoLocation.swift */,
 				24D69218281B40D500FE0FD3 /* ImageInfo.swift */,
@@ -790,10 +802,12 @@
 				24D69253281B40D500FE0FD3 /* ImageInfo.swift in Sources */,
 				24D692AB281B40D500FE0FD3 /* GroupsListQuery.swift in Sources */,
 				24D6924F281B40D500FE0FD3 /* GeoLocation.swift in Sources */,
+				24B90939286A47A700B907F7 /* AudioMetadata.swift in Sources */,
 				24D6929B281B40D500FE0FD3 /* Project.swift in Sources */,
 				24D692CB281B40D500FE0FD3 /* UploadedFile.swift in Sources */,
 				24D692F3281B40D500FE0FD3 /* UploadAPI.swift in Sources */,
 				24D692EB281B40D500FE0FD3 /* Utils.swift in Sources */,
+				24B9093D286A47A700B907F7 /* VideoMetadata.swift in Sources */,
 				24D6925B281B40D500FE0FD3 /* FilesList.swift in Sources */,
 				24D692B7281B40D500FE0FD3 /* UploadFromURLResponse.swift in Sources */,
 				24D69293281B40D500FE0FD3 /* ConvertDocumentsResponse.swift in Sources */,
@@ -840,10 +854,12 @@
 				24D69251281B40D500FE0FD3 /* ImageInfo.swift in Sources */,
 				24D692A9281B40D500FE0FD3 /* GroupsListQuery.swift in Sources */,
 				24D6924D281B40D500FE0FD3 /* GeoLocation.swift in Sources */,
+				24B90937286A47A700B907F7 /* AudioMetadata.swift in Sources */,
 				24D69299281B40D500FE0FD3 /* Project.swift in Sources */,
 				24D692C9281B40D500FE0FD3 /* UploadedFile.swift in Sources */,
 				24D692F1281B40D500FE0FD3 /* UploadAPI.swift in Sources */,
 				24D692E9281B40D500FE0FD3 /* Utils.swift in Sources */,
+				24B9093B286A47A700B907F7 /* VideoMetadata.swift in Sources */,
 				24D69259281B40D500FE0FD3 /* FilesList.swift in Sources */,
 				24D692B5281B40D500FE0FD3 /* UploadFromURLResponse.swift in Sources */,
 				24D69291281B40D500FE0FD3 /* ConvertDocumentsResponse.swift in Sources */,
@@ -890,10 +906,12 @@
 				24D69252281B40D500FE0FD3 /* ImageInfo.swift in Sources */,
 				24D692AA281B40D500FE0FD3 /* GroupsListQuery.swift in Sources */,
 				24D6924E281B40D500FE0FD3 /* GeoLocation.swift in Sources */,
+				24B90938286A47A700B907F7 /* AudioMetadata.swift in Sources */,
 				24D6929A281B40D500FE0FD3 /* Project.swift in Sources */,
 				24D692CA281B40D500FE0FD3 /* UploadedFile.swift in Sources */,
 				24D692F2281B40D500FE0FD3 /* UploadAPI.swift in Sources */,
 				24D692EA281B40D500FE0FD3 /* Utils.swift in Sources */,
+				24B9093C286A47A700B907F7 /* VideoMetadata.swift in Sources */,
 				24D6925A281B40D500FE0FD3 /* FilesList.swift in Sources */,
 				24D692B6281B40D500FE0FD3 /* UploadFromURLResponse.swift in Sources */,
 				24D69292281B40D500FE0FD3 /* ConvertDocumentsResponse.swift in Sources */,
@@ -940,10 +958,12 @@
 				24D69250281B40D500FE0FD3 /* ImageInfo.swift in Sources */,
 				24D692A8281B40D500FE0FD3 /* GroupsListQuery.swift in Sources */,
 				24D6924C281B40D500FE0FD3 /* GeoLocation.swift in Sources */,
+				24B90936286A47A700B907F7 /* AudioMetadata.swift in Sources */,
 				24D69298281B40D500FE0FD3 /* Project.swift in Sources */,
 				24D692C8281B40D500FE0FD3 /* UploadedFile.swift in Sources */,
 				24D692F0281B40D500FE0FD3 /* UploadAPI.swift in Sources */,
 				24D692E8281B40D500FE0FD3 /* Utils.swift in Sources */,
+				24B9093A286A47A700B907F7 /* VideoMetadata.swift in Sources */,
 				24D69258281B40D500FE0FD3 /* FilesList.swift in Sources */,
 				24D692B4281B40D500FE0FD3 /* UploadFromURLResponse.swift in Sources */,
 				24D69290281B40D500FE0FD3 /* ConvertDocumentsResponse.swift in Sources */,
