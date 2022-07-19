@@ -156,7 +156,9 @@ struct FilesListView: View {
 				self.isShowingAlert.toggle()
 				DLog(error)
 			case .success(let list):
-				list.results.forEach({ self.filesListStore.files.append(FileViewData( file: $0)) })
+                DispatchQueue.main.async {
+                    list.results.forEach({ self.filesListStore.files.append(FileViewData( file: $0)) })
+                }
 			}
 		}
 	}
@@ -191,8 +193,10 @@ struct FilesListView: View {
 				DLog(error)
 			case .success(let list):
 				self.didLoadData = true
-				self.filesListStore.files.removeAll()
-				list.results.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
+                DispatchQueue.main.async {
+                    self.filesListStore.files.removeAll()
+                    list.results.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
+                }
 			}
 		}
 	}
