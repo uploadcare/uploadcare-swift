@@ -268,22 +268,28 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - files: Files dictionary where key is filename, value file in Data format
 	///   - store: Sets the file storing behavior
+    ///   - uploadSignature: Sets the signature for the upload request
 	///   - completionHandler: callback
 	@discardableResult
 	public func directUpload(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
+        uploadSignature: UploadSignature? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
-		_ completionHandler: @escaping TaskCompletionHandler
-	) -> UploadTaskable {
-		return directUpload(files: files, uploadType: .background, onProgress, completionHandler)
-	}
+        _ completionHandler: @escaping TaskCompletionHandler
+    ) -> UploadTaskable {
+        directUpload(files: files,
+                     uploadType: .background,
+                     uploadSignature: uploadSignature,
+                     onProgress, completionHandler)
+    }
 
     @discardableResult
     private func directUpload(
         files: [String: Data],
         uploadType: DirectUploadType,
         store: StoringBehavior? = nil,
+        uploadSignature: UploadSignature? = nil,
         _ onProgress: TaskProgressBlock? = nil,
         _ completionHandler: @escaping TaskCompletionHandler
     ) -> UploadTaskable {
@@ -298,7 +304,7 @@ extension UploadAPI {
             builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
         }
 
-        if let uploadSignature = getSignature() {
+        if let uploadSignature = (uploadSignature ?? getSignature()) {
             builder.addMultiformValue(uploadSignature.signature, forName: "signature")
             builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
         }
