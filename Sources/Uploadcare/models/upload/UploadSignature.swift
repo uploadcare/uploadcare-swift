@@ -15,8 +15,8 @@ public struct UploadSignature {
 	/// Signature expire timestamp
 	let expire: Int
     
-    public init(signature: String, expire: Int) {
-        self.signature = signature
-        self.expire = expire
-    }
+	public init(signature: String, expire: Int) {
+		self.signature = signature
+		self.expire = expire
+	}
 }

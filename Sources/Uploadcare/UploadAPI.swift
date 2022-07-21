@@ -269,13 +269,13 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - files: Files dictionary where key is filename, value file in Data format
 	///   - store: Sets the file storing behavior
-  ///   - uploadSignature: Sets the signature for the upload request
+	///   - uploadSignature: Sets the signature for the upload request
 	///   - completionHandler: callback
 	@discardableResult
 	public func directUpload(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
-        uploadSignature: UploadSignature? = nil,
+		uploadSignature: UploadSignature? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
@@ -284,13 +284,13 @@ extension UploadAPI {
 
     @discardableResult
     internal func directUpload(
-        files: [String: Data],
-        uploadType: DirectUploadType,
-        store: StoringBehavior? = nil,
-        uploadSignature: UploadSignature? = nil,
-        _ onProgress: TaskProgressBlock? = nil,
-        _ completionHandler: @escaping TaskResultCompletionHandler
-    ) -> UploadTaskable {
+		files: [String: Data],
+		uploadType: DirectUploadType,
+		store: StoringBehavior? = nil,
+		uploadSignature: UploadSignature? = nil,
+		_ onProgress: TaskProgressBlock? = nil,
+		_ completionHandler: @escaping TaskResultCompletionHandler
+	) -> UploadTaskable {
         let url = urlWithPath("/base/")
         var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
 
