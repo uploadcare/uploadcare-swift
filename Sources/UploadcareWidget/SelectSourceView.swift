@@ -150,14 +150,15 @@ public struct SelectSourceView: View {
 		let onProgress: (Double)->Void = { (progress) in
 			
 		}
-		self.api.uploadcare?.uploadAPI.directUpload(files: [filename: data], store: .store, onProgress, { (uploadData, error) in
-			if let error = error {
+		self.api.uploadcare?.uploadAPI.directUpload(files: [filename: data], store: .store, onProgress, { result in
+			switch result {
+			case .failure(let error):
 				DLog(error)
 				completionHandler(error)
+			case .success(let uploadData):
+				completionHandler(nil)
+				DLog(uploadData)
 			}
-
-			completionHandler(nil)
-			DLog(uploadData ?? "no data")
 		})
 	}
 	
@@ -170,15 +171,14 @@ public struct SelectSourceView: View {
 			return
 		}
 		
-		fileForUploading.upload(withName: filename, store: .store, onProgress, { (file, error) in
-			if let error = error {
+		fileForUploading.upload(withName: filename, store: .store, onProgress, { result in
+			switch result {
+			case .failure(let error):
 				DLog(error)
 				completionHandler(error)
-				return
+			case .success(_):
+				completionHandler(nil)
 			}
-			
-			completionHandler(nil)
-			DLog(file ?? "no file")
 		})
 	}
 	

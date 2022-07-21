@@ -59,7 +59,6 @@
 		247301832565285B0052BE65 /* ProjectInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectInfoViewModel.swift; sourceTree = "<group>"; };
 		24730186256536F30052BE65 /* CollaboratorViewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaboratorViewData.swift; sourceTree = "<group>"; };
 		2492150424A66991008D335D /* GroupFileList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupFileList.swift; sourceTree = "<group>"; };
-		24931A5B24755311003EE044 /* Tester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tester.swift; sourceTree = "<group>"; };
 		24931A5D247554A6003EE044 /* uploadcare-swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "uploadcare-swift"; path = ..; sourceTree = "<group>"; };
 		2496853A2498FAF3006A2AF8 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -136,7 +135,6 @@
 				243A7145242CFC6F00CA229B /* Demo.entitlements */,
 				243A7129242CEAA200CA229B /* AppDelegate.swift */,
 				243A712B242CEAA200CA229B /* SceneDelegate.swift */,
-				24931A5B24755311003EE044 /* Tester.swift */,
 				243A712F242CEAA400CA229B /* Assets.xcassets */,
 				243A7134242CEAA400CA229B /* LaunchScreen.storyboard */,
 				243A7137242CEAA400CA229B /* Info.plist */,

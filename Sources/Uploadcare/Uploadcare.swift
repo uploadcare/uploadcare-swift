@@ -1,3 +1,11 @@
+//
+//  Uploadcare.swift
+//
+//
+//  Created by Sergey Armodin on 03.02.2020.
+//  Copyright © 2020 Uploadcare, Inc. All rights reserved.
+//
+
 import Foundation
 
 
@@ -44,7 +52,7 @@ public class Uploadcare: NSObject {
 	/// Library name
 	private var libraryName = "UploadcareSwift"
 	/// Library version
-	private var libraryVersion = "0.6.0"
+	private var libraryVersion = "0.7.0"
 
 	/// Performs network requests
 	private let requestManager: RequestManager
@@ -137,50 +145,49 @@ internal extension Uploadcare {
 
 // MARK: - REST API
 extension Uploadcare {
-	
 	/// Get list of files
 	/// - Parameters:
 	///   - query: query object
 	///   - completionHandler: completion handler
-	public func listOfFiles(withQuery query: PaginationQuery?, _ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
+	public func listOfFiles(withQuery query: PaginationQuery?, _ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		listOfFiles(withQueryString: query?.stringValue, completionHandler)
 	}
-	
-	/// Get list of files
-	/// - Parameters:
-	///   - query: query string
-	///   - completionHandler: completion handler
-	internal func listOfFiles(
-		withQueryString query: String?,
-		_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void
-	) {
-		var urlString = RESTAPIBaseUrl + "/files/"
-		if let queryValue = query {
-			urlString += "?\(queryValue)"
-		}
-		
-		guard let url = URL(string: urlString) else {
-			assertionFailure("Incorrect url")
-			return
-		}
 
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
-		requestManager.signRequest(&urlRequest)
-		requestManager.performRequest(urlRequest) { (result: Result<FilesList, Error>) in
-			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
-			}
-		}
-	}
-	
+    /// Get list of files
+    /// - Parameters:
+    ///   - query: query string
+    ///   - completionHandler: completion handler
+    internal func listOfFiles(
+        withQueryString query: String?,
+        _ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void
+    ) {
+        var urlString = RESTAPIBaseUrl + "/files/"
+        if let queryValue = query {
+            urlString += "?\(queryValue)"
+        }
+
+        guard let url = URL(string: urlString) else {
+            assertionFailure("Incorrect url")
+            return
+        }
+
+        var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+        requestManager.signRequest(&urlRequest)
+        requestManager.performRequest(urlRequest) { (result: Result<FilesList, Error>) in
+            switch result {
+            case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+            case .success(let filesList): completionHandler(.success(filesList))
+            }
+        }
+    }
+
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
 	/// - Parameters:
 	///   - uuid: FILE UUID
 	///   - completionHandler: completion handler
 	public func fileInfo(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/\(uuid)/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
@@ -188,43 +195,43 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let file): completionHandler(.success(file))
 			}
 		}
 	}
-	
+
 	/// Delete file. Beside deleting in a multi-file mode, you can remove individual files.
 	/// - Parameters:
 	///   - uuid: file UUID
 	///   - completionHandler: completion handler
 	public func deleteFile(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/\(uuid)/storage/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
 		signRequest(&urlRequest)
-		
+
 		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let file): completionHandler(.success(file))
 			}
 		}
 	}
-	
+
 	/// Batch file delete. Used to delete multiple files in one go. Up to 100 files are supported per request.
 	/// - Parameters:
 	///   - uuids: List of files UUIDs to store.
 	///   - completionHandler: completion handler
 	public func deleteFiles(
 		withUUIDs uuids: [String],
-		_ completionHandler: @escaping (BatchFilesOperationResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/storage/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
-		
+
 		if let body = try? JSONEncoder().encode(uuids) {
 			urlRequest.httpBody = body
 		}
@@ -232,19 +239,19 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<BatchFilesOperationResponse, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
 			}
 		}
 	}
-	
+
 	/// Store a single file by UUID.
 	/// - Parameters:
 	///   - uuid: file UUID
 	///   - completionHandler: completion handler
 	public func storeFile(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (File?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/\(uuid)/storage/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
@@ -252,19 +259,19 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let file): completionHandler(.success(file))
 			}
 		}
 	}
-	
+
 	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
 	/// - Parameters:
 	///   - uuids: List of files UUIDs to store.
 	///   - completionHandler: completion handler
 	public func storeFiles(
 		withUUIDs uuids: [String],
-		_ completionHandler: @escaping (BatchFilesOperationResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/storage/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
@@ -276,19 +283,19 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<BatchFilesOperationResponse, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
 			}
 		}
 	}
-	
+
 	/// Get list of groups
 	/// - Parameters:
 	///   - query: query object
 	///   - completionHandler: completion handler
 	public func listOfGroups(
 		withQuery query: GroupsListQuery?,
-		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
 	) {
 		var queryString: String?
 		if let queryValue = query {
@@ -303,7 +310,7 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	internal func listOfGroups(
 		withQueryString query: String?,
-		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
 	) {
 		var urlString = RESTAPIBaseUrl + "/groups/"
 		if let queryValue = query {
@@ -319,19 +326,19 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<GroupsList, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let groupsList): completionHandler(.success(groupsList))
 			}
 		}
 	}
-	
+
 	/// Get a file group by UUID.
 	/// - Parameters:
 	///   - uuid: Group UUID.
 	///   - completionHandler: completion handler
 	public func groupInfo(
 		withUUID uuid: String,
-		_ completionHandler: @escaping (Group?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<Group, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/groups/\(uuid)/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
@@ -339,8 +346,8 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<Group, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let group): completionHandler(.success(group))
 			}
 		}
 	}
@@ -364,7 +371,7 @@ extension Uploadcare {
 			}
 		}
 	}
-	
+
 	/// Copy file to local storage. Used to copy original files or their modified versions to default storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
 	/// - Parameters:
 	///   - source: A CDN URL or just UUID of a file subjected to copy.
@@ -375,11 +382,11 @@ extension Uploadcare {
 		source: String,
 		store: Bool? = nil,
 		makePublic: Bool? = nil,
-		_ completionHandler: @escaping (CopyFileToLocalStorageResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<CopyFileToLocalStorageResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/local_copy/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
-		
+
 		let bodyDictionary = [
 			"source": source,
 			"store": "\(store ?? false)",
@@ -392,12 +399,12 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<CopyFileToLocalStorageResponse, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
 			}
 		}
 	}
-	
+
 	/// POST requests are used to copy original files or their modified versions to a custom storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
 	/// - Parameters:
 	///   - source: A CDN URL or just UUID of a file subjected to copy.
@@ -410,23 +417,23 @@ extension Uploadcare {
 		target: String,
 		makePublic: Bool? = nil,
 		pattern: NamesPattern?,
-		_ completionHandler: @escaping (CopyFileToRemoteStorageResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<CopyFileToRemoteStorageResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/remote_copy/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
-		
+
 		var bodyDictionary = [
 			"source": source,
 			"target": target
 		]
-		
+
 		if let makePublicVal = makePublic {
 			bodyDictionary["make_public"] = "\(makePublicVal)"
 		}
 		if let patternVal = pattern {
 			bodyDictionary["pattern"] = patternVal.rawValue
 		}
-		
+
 		if let body = try? JSONEncoder().encode(bodyDictionary) {
 			urlRequest.httpBody = body
 		}
@@ -434,44 +441,44 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<CopyFileToRemoteStorageResponse, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
 			}
 		}
 	}
-	
+
 	/// Getting info about account project.
 	/// - Parameter completionHandler: completion handler
-	public func getProjectInfo(_ completionHandler: @escaping (Project?, RESTAPIError?) -> Void) {
+	public func getProjectInfo(_ completionHandler: @escaping (Result<Project, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/project/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<Project, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let project): completionHandler(.success(project))
 			}
 		}
 	}
-    
-    /// This method allows you to get authonticated url from your backend using redirect.
-    /// By request to that url your backend should generate authenticated url to your file and perform REDIRECT to generated url.
-    /// Redirect url will be caught and returned in completion handler of that method
-    ///
-    /// Example of URL: https://yourdomain.com/{UUID}/
-    /// Redirect to: https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
-    ///
-    /// URL for redirect will be returned in completion handler
-    ///
-    /// More details in documentation: https://uploadcare.com/docs/delivery/file_api/#authenticated-urls
-    ///
-    /// - Parameters:
-    ///   - url: url for request to your backend
-    ///   - completionHandler: completion handler
-	public func getAuthenticatedUrlFromUrl(_ url: URL, _ completionHandler: @escaping (String?, RESTAPIError?) -> Void) {
+
+	/// This method allows you to get authonticated url from your backend using redirect.
+	/// By request to that url your backend should generate authenticated url to your file and perform REDIRECT to generated url.
+	/// Redirect url will be caught and returned in completion handler of that method
+	///
+	/// Example of URL: https://yourdomain.com/{UUID}/
+	/// Redirect to: https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
+	///
+	/// URL for redirect will be returned in completion handler
+	///
+	/// More details in documentation: https://uploadcare.com/docs/delivery/file_api/#authenticated-urls
+	///
+	/// - Parameters:
+	///   - url: url for request to your backend
+	///   - completionHandler: completion handler
+	public func getAuthenticatedUrlFromUrl(_ url: URL, _ completionHandler: @escaping (Result<String, RESTAPIError>) -> Void) {
 		let urlString = url.absoluteString
-        
+
 		redirectValues[urlString] = ""
 
 		let config = URLSessionConfiguration.default
@@ -483,42 +490,42 @@ extension Uploadcare {
 			defer { self.redirectValues.removeValue(forKey: urlString) }
 
 			if let error = error {
-				completionHandler(nil, RESTAPIError(detail: error.localizedDescription))
+				completionHandler(.failure(RESTAPIError(detail: error.localizedDescription)))
 				return
 			}
 
 			guard let redirectUrl = self.redirectValues[urlString], redirectUrl.isEmpty == false else {
-				completionHandler(nil, RESTAPIError(detail: "No redirect happened"))
+				completionHandler(.failure(RESTAPIError(detail: "No redirect happened")))
 				return
 			}
 
-			completionHandler(redirectUrl, nil)
+			completionHandler(.success(redirectUrl))
 		}
 		task.resume()
-    }
-    
-    /// List of project webhooks.
-    /// - Parameter completionHandler: completion handler
-	public func getListOfWebhooks(_ completionHandler: @escaping ([Webhook]?, RESTAPIError?) -> Void) {
+	}
+
+	/// List of project webhooks.
+	/// - Parameter completionHandler: completion handler
+	public func getListOfWebhooks(_ completionHandler: @escaping (Result<[Webhook], RESTAPIError>) -> Void) {
 		let url = urlWithPath("/webhooks/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<[Webhook], Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let webhooks): completionHandler(.success(webhooks))
 			}
 		}
 	}
-    
-    /// Create webhook
-    /// - Parameters:
-    ///   - targetUrl: A URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
-    ///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
-    ///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
-    ///   - completionHandler: completion handler
-	public func createWebhook(targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
+
+	/// Create webhook
+	/// - Parameters:
+	///   - targetUrl: A URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
+	///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
+	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
+	///   - completionHandler: completion handler
+	public func createWebhook(targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Result<Webhook, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/webhooks/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
 		var bodyDictionary = [
@@ -540,20 +547,20 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<Webhook, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let webhook): completionHandler(.success(webhook))
 			}
 		}
 	}
-	
-    /// Update webhook attributes
-    /// - Parameters:
-    ///   - id: Webhook ID
-    ///   - targetUrl: Where webhook data will be posted.
-    ///   - isActive: Marks a subscription as either active or not
-    ///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
-    ///   - completionHandler: completion handler
-	public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Webhook?, RESTAPIError?) -> Void) {
+
+	/// Update webhook attributes
+	/// - Parameters:
+	///   - id: Webhook ID
+	///   - targetUrl: Where webhook data will be posted.
+	///   - isActive: Marks a subscription as either active or not
+	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
+	///   - completionHandler: completion handler
+	public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Result<Webhook, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/webhooks/\(id)/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
 		var bodyDictionary = [
@@ -575,12 +582,12 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<Webhook, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let webhook): completionHandler(.success(webhook))
 			}
 		}
 	}
-	
+
 	/// Delete webhook
 	/// - Parameters:
 	///   - targetUrl: url of webhook target
@@ -605,7 +612,7 @@ extension Uploadcare {
 			}
 		}
 	}
-	
+
 	/// Uploadcare allows converting documents to the following target formats: DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG.
 	/// - Parameters:
 	///   - paths: An array of UUIDs of your source documents to convert together with the specified target format.
@@ -615,11 +622,11 @@ extension Uploadcare {
 	public func convertDocuments(
 		_ paths: [String],
 		store: StoringBehavior? = nil,
-		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<ConvertDocumentsResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/convert/document/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
-		
+
 		let storeValue = store == StoringBehavior.auto ? .store : store
 		let requestData = ConvertRequestData(
 			paths: paths,
@@ -631,12 +638,12 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<ConvertDocumentsResponse, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
 			}
 		}
 	}
-	
+
 	/// Convert documents
 	/// - Parameters:
 	///   - files: files array
@@ -646,30 +653,30 @@ extension Uploadcare {
 	public func convertDocumentsWithSettings(
 		_ tasks: [DocumentConversionJobSettings],
 		store: StoringBehavior? = nil,
-		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<ConvertDocumentsResponse, RESTAPIError>) -> Void
 	) {
 		var paths = [String]()
 		tasks.forEach({ paths.append($0.stringValue) })
 		convertDocuments(paths, store: store, completionHandler)
 	}
-	
+
 	/// Document conversion job status
 	/// - Parameters:
 	///   - token: Job token
 	///   - completionHandler: completion handler
-	public func documentConversionJobStatus(token: Int, _ completionHandler: @escaping (ConvertDocumentJobStatus?, RESTAPIError?) -> Void) {
+	public func documentConversionJobStatus(token: Int, _ completionHandler: @escaping (Result<ConvertDocumentJobStatus, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/convert/document/status/\(token)/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<ConvertDocumentJobStatus, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let status): completionHandler(.success(status))
 			}
 		}
 	}
-	
+
 	/// Convert videos with settings
 	/// - Parameters:
 	///   - tasks: array of VideoConversionJobSettings objects which settings for conversion for every file
@@ -678,14 +685,14 @@ extension Uploadcare {
 	public func convertVideosWithSettings(
 		_ tasks: [VideoConversionJobSettings],
 		store: StoringBehavior? = nil,
-		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<ConvertDocumentsResponse, RESTAPIError>) -> Void
 	) {
 		var paths = [String]()
 		tasks.forEach({ paths.append($0.stringValue) })
 		convertVideos(paths, completionHandler)
 	}
-	
-	/// Convert video
+
+	/// Convert videos
 	/// - Parameters:
 	///   - paths: An array of UUIDs of your video files to process together with a set of needed operations.
 	///   See documentation: https://uploadcare.com/docs/transformations/video_encoding/#process-operations
@@ -694,11 +701,11 @@ extension Uploadcare {
 	public func convertVideos(
 		_ paths: [String],
 		store: StoringBehavior? = nil,
-		_ completionHandler: @escaping (ConvertDocumentsResponse?, RESTAPIError?) -> Void
+		_ completionHandler: @escaping (Result<ConvertDocumentsResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/convert/video/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
-		
+
 		let storeValue = store == StoringBehavior.auto ? .store : store
 		let requestData = ConvertRequestData(
 			paths: paths,
@@ -710,25 +717,25 @@ extension Uploadcare {
 
 		requestManager.performRequest(urlRequest) { (result: Result<ConvertDocumentsResponse, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
 			}
 		}
 	}
-	
+
 	/// Video conversion job status
 	/// - Parameters:
 	///   - token: Job token
 	///   - completionHandler: completion handler
-	public func videoConversionJobStatus(token: Int, _ completionHandler: @escaping (ConvertVideoJobStatus?, RESTAPIError?) -> Void) {
+	public func videoConversionJobStatus(token: Int, _ completionHandler: @escaping (Result<ConvertVideoJobStatus, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/convert/video/status/\(token)/")
 		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<ConvertVideoJobStatus, Error>) in
 			switch result {
-			case .failure(let error): completionHandler(nil, RESTAPIError.fromError(error))
-			case .success(let responseData): completionHandler(responseData, nil)
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let status): completionHandler(.success(status))
 			}
 		}
 	}
@@ -750,55 +757,48 @@ extension Uploadcare {
 		withName name: String,
 		store: StoringBehavior? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
-		_ completionHandler: @escaping (UploadedFile?, UploadError?) -> Void
+		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
 	) -> UploadTaskable {
 		let filename = name.isEmpty ? "noname.ext" : name
 
 		// using direct upload if file is small
 		if data.count < UploadAPI.multipartMinFileSize {
 			let files = [filename: data]
-			return uploadAPI.directUpload(files: files, store: store, onProgress) { [weak self] response, error in
-				if let error = error {
-					completionHandler(nil, error)
-					return
-				}
-
-				guard let response = response, let fileUUID = response[filename] else {
-					completionHandler(nil, UploadError.defaultError())
-					return
-				}
-
-				self?.fileInfo(withUUID: fileUUID, { file, error in
-					if let error = error {
-						let uploadError = UploadError(status: 0, detail: error.detail)
-						completionHandler(nil, uploadError)
+			return uploadAPI.directUpload(files: files, store: store, onProgress) { [weak self] result in
+				switch result {
+				case .failure(let error):
+					completionHandler(.failure(error))
+				case .success(let response):
+					guard let fileUUID = response[filename] else {
+						completionHandler(.failure(UploadError.defaultError()))
 						return
 					}
 
-					guard let file = file else {
-						completionHandler(nil, UploadError.defaultError())
-						return
-					}
+					self?.fileInfo(withUUID: fileUUID, { result in
+						switch result {
+						case .failure(let error):
+							completionHandler(.failure(UploadError(status: 0, detail: error.detail)))
+						case .success(let file):
+							let uploadedFile = UploadedFile(
+								size: file.size,
+								total: file.size,
+								uuid: file.uuid,
+								fileId: file.uuid,
+								originalFilename: file.originalFilename,
+								filename: file.originalFilename,
+								mimeType: file.mimeType,
+								isImage: file.isImage,
+								isStored: store != .doNotStore,
+								isReady: file.isReady,
+								imageInfo: file.imageInfo,
+								videoInfo: file.videoInfo,
+								s3Bucket: nil
+							)
 
-					let uploadedFile = UploadedFile(
-						size: file.size,
-						total: file.size,
-						uuid: file.uuid,
-						fileId: file.uuid,
-						originalFilename: file.originalFilename,
-						filename: file.originalFilename,
-						mimeType: file.mimeType,
-						isImage: file.isImage,
-						isStored: store != .doNotStore,
-						isReady: file.isReady,
-						imageInfo: file.imageInfo,
-						videoInfo: file.videoInfo,
-						s3Bucket: nil
-					)
-
-					completionHandler(uploadedFile, nil)
-					return
-				})
+							completionHandler(.success(uploadedFile))
+						}
+					})
+				}
 			}
 		}
 
