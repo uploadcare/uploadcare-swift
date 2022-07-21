@@ -4,6 +4,7 @@
 * [File upload](#file-upload)
 * [Direct uploads](#direct-uploads-api-reference)
 * [Multipart uploads](#multipart-uploads-api-reference)
+* [Background uploads](#background-uploads)
 * [Upload files from URLs](#upload-files-from-urls-api-reference)
 * [Check the status of a file uploaded from URL](#check-the-status-of-a-file-uploaded-from-url-api-reference)
 * [File info](#file-info-api-reference)
@@ -106,6 +107,12 @@ task.pause()
 task.resume()
 ```
 
+## Background uploads
+
+It is possible to perform uploads in background but since it's implementation is platform-specific the lib doesn't provide default implementation. Anyway you can fine an example for iOS in our Demo app. See [FilesListStore.swift](https://github.com/uploadcare/uploadcare-swift/blob/1e6341edcdcb887589a4e798b746c525c9023b4e/Demo/Demo/Modules/FilesListStore.swift).
+
+Direct upload method works with background URLSession, so uploading will continue if the app goes to the background state.
+
 ## Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/)) ##
 
 ```swift
@@ -165,7 +172,7 @@ uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { result in
 }
 ```
 
-## Create file group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/)) ##
+## Create files group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/)) ##
 
 Uploadcare library provides 2 methods to create a group:
 
