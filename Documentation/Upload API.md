@@ -63,14 +63,33 @@ let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": da
     case .failure(let error):
         print(error)
     case .success(let files):
-		for file in files {
-			print("uploaded file name: \(file.key) | file id: \(file.value)")
-		}
+        for file in files {
+            print("uploaded file name: \(file.key) | file id: \(file.value)")
+        }
     }
 }
 
 // You can cancel uploading if needed
 task.cancel()
+```
+
+Sometimes you don't want to have thee secret key in your client app and want to get it from backend. In that case you can provide upload signature directly:
+
+```swift
+guard let url = URL(string: "https://source.unsplash.com/random"),
+      let data = try? Data(contentsOf: url) else { return }
+      
+let signature = UploadSignature(signature: "signature", expire: 1658486910)
+let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store, uploadSignature: signature) { progress in
+    print("upload progress: \(progress * 100)%")
+} _: { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let files):
+        break
+    }
+}
 ```
 
 ## Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart/)) ##
