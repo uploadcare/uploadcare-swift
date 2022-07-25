@@ -169,9 +169,11 @@ extension UploadAPI {
 	/// Upload file from url
 	/// - Parameters:
 	///   - task: upload settings
+	///   - uploadSignature: Sets the signature for the upload request
 	///   - completionHandler: callback
 	public func upload(
 		task: UploadFromURLTask,
+		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<UploadFromURLResponse, UploadError>) -> Void
 	) {
 		var components = URLComponents()
@@ -204,7 +206,7 @@ extension UploadAPI {
 			)
 		}
 
-		if let uploadSignature = getSignature() {
+		if let uploadSignature = uploadSignature ?? getSignature() {
 			queryItems.append(contentsOf: [
 				URLQueryItem(name: "signature", value: uploadSignature.signature),
 				URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
@@ -302,7 +304,7 @@ extension UploadAPI {
             builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
         }
 
-        if let uploadSignature = (uploadSignature ?? getSignature()) {
+		if let uploadSignature = uploadSignature ?? getSignature() {
             builder.addMultiformValue(uploadSignature.signature, forName: "signature")
             builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
         }
@@ -386,6 +388,7 @@ extension UploadAPI {
 	///   - data: File data
 	///   - name: File name
 	///   - store: Sets the file storing behavior
+	///   - uploadSignature: Sets the signature for the upload request
 	///   - onProgress: A callback that will be used to report upload progress
 	///   - completionHandler: Completion handler
 	/// - Returns: Upload task. You can use that task to pause, resume or cancel uploading.
@@ -393,6 +396,7 @@ extension UploadAPI {
 		_ data: Data,
 		withName name: String,
 		store: StoringBehavior? = nil,
+		uploadSignature: UploadSignature? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
 	) -> UploadTaskResumable {
@@ -408,7 +412,8 @@ extension UploadAPI {
 			withName: filename,
 			size: totalSize,
 			mimeType: fileMimeType,
-			store: store ?? .store) { [weak self] result in
+			store: store ?? .store,
+			uploadSignature: uploadSignature) { [weak self] result in
 				guard let self = self else { return }
 
 				switch result {
@@ -478,12 +483,14 @@ extension UploadAPI {
 	///   - size: Precise file size in bytes. Should not exceed your project file size cap.
 	///   - mimeType: A file MIME-type.
 	///   - store: Sets the file storing behavior.
+	///   - uploadSignature: Sets the signature for the upload request
 	///   - completionHandler: callback
 	private func startMulipartUpload(
 		withName filename: String,
 		size: Int,
 		mimeType: String,
 		store: StoringBehavior,
+		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<StartMulipartUploadResponse, UploadError>) -> Void
 	) {
 		let url = urlWithPath("/multipart/start/")
@@ -497,7 +504,7 @@ extension UploadAPI {
 		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
 		builder.addMultiformValue(store.rawValue, forName: "UPLOADCARE_STORE")
 
-		if let uploadSignature = getSignature() {
+		if let uploadSignature = uploadSignature ?? getSignature() {
 			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
 			builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
 		}
@@ -612,21 +619,25 @@ extension UploadAPI {
 	/// Create files group from a set of files
 	/// - Parameters:
 	///   - files: files array
+	///   - uploadSignature: Sets the signature for the upload request
 	///   - completionHandler: callback
 	public func createFilesGroup(
 		files: [UploadedFile],
+		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void
 	) {
 		let fileIds: [String] = files.map { $0.fileId }
-		createFilesGroup(fileIds: fileIds, completionHandler)
+		createFilesGroup(fileIds: fileIds, uploadSignature: uploadSignature, completionHandler)
 	}
 
 	/// Create files group from a set of files UUIDs.
 	/// - Parameters:
 	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
+	///   - uploadSignature: Sets the signature for the upload request
 	///   - completionHandler: callback
 	public func createFilesGroup(
 		fileIds: [String],
+		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void
 	) {
         var urlComponents = URLComponents()
@@ -643,7 +654,7 @@ extension UploadAPI {
             )
         }
 
-        if let uploadSignature = self.getSignature() {
+		if let uploadSignature = uploadSignature ?? getSignature() {
             urlComponents.queryItems?.append(contentsOf: [
                 URLQueryItem(name: "signature", value: uploadSignature.signature),
                 URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
@@ -667,9 +678,11 @@ extension UploadAPI {
 	/// Files group info
 	/// - Parameters:
 	///   - groupId: Group ID. Group IDs look like UUID~N.
+	///   - uploadSignature: Sets the signature for the upload request
 	///   - completionHandler: callback
 	public func filesGroupInfo(
 		groupId: String,
+		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void
 	) {
         var urlComponents = URLComponents()
@@ -681,7 +694,7 @@ extension UploadAPI {
             URLQueryItem(name: "group_id", value: groupId)
         ]
 		
-        if let uploadSignature = self.getSignature() {
+		if let uploadSignature = uploadSignature ?? getSignature() {
             urlComponents.queryItems?.append(contentsOf: [
                 URLQueryItem(name: "signature", value: uploadSignature.signature),
                 URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
