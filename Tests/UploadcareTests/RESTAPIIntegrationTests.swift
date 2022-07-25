@@ -675,7 +675,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		}
 
-		wait(for: [expectation], timeout: 60.0)
+		wait(for: [expectation], timeout: 180.0)
 	}
 
 	func test20_video_conversion_and_status() {
