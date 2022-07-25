@@ -173,6 +173,7 @@ public class UploadedFile: Codable {
 	/// - Parameters:
 	///   - name: file name
 	///   - store: A flag indicating if we should store your outputs.
+	///   - uploadSignature: Sets the signature for the upload request
 	///   - onProgress: A callback that will be used to report upload progress
 	///   - completionHandler: completion handler
 	/// - Returns: Upload task. Confirms to UploadTaskable protocol in anycase. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload
@@ -180,6 +181,7 @@ public class UploadedFile: Codable {
 	public func upload(
 		withName name: String,
 		store: StoringBehavior? = nil,
+		uploadSignature: UploadSignature? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: ((Result<UploadedFile, UploadError>) -> Void)? = nil
 	) -> UploadTaskable? {
@@ -191,7 +193,7 @@ public class UploadedFile: Codable {
 		self.originalFilename = name
 		self.filename = name
 
-		return restAPI?.uploadFile(fileData, withName: name, store: store ?? .store, { progress in
+		return restAPI?.uploadFile(fileData, withName: name, store: store ?? .store, uploadSignature: uploadSignature, { progress in
 			onProgress?(progress)
 		}, { [weak self] result in
 			switch result {
