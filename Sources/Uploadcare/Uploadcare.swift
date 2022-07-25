@@ -748,6 +748,7 @@ extension Uploadcare {
 	///   - data: File data
 	///   - name: File name
 	///   - store: Sets the file storing behavior
+	///   - uploadSignature: Sets the signature for the upload request
 	///   - onProgress: A callback that will be used to report upload progress
 	///   - completionHandler: Completion handler
 	/// - Returns: Upload task. Confirms to UploadTaskable protocol in anycase. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload
@@ -756,6 +757,7 @@ extension Uploadcare {
 		_ data: Data,
 		withName name: String,
 		store: StoringBehavior? = nil,
+		uploadSignature: UploadSignature? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
 	) -> UploadTaskable {
@@ -764,7 +766,7 @@ extension Uploadcare {
 		// using direct upload if file is small
 		if data.count < UploadAPI.multipartMinFileSize {
 			let files = [filename: data]
-			return uploadAPI.directUpload(files: files, store: store, onProgress) { [weak self] result in
+			return uploadAPI.directUpload(files: files, store: store, uploadSignature: uploadSignature, onProgress) { [weak self] result in
 				switch result {
 				case .failure(let error):
 					completionHandler(.failure(error))
@@ -803,7 +805,7 @@ extension Uploadcare {
 		}
 
 		// using multipart upload otherwise
-		return uploadAPI.multipartUpload(data, withName: filename, store: store, onProgress, completionHandler)
+		return uploadAPI.multipartUpload(data, withName: filename, store: store, uploadSignature: uploadSignature, onProgress, completionHandler)
 	}
 }
 
