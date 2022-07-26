@@ -134,7 +134,7 @@ task.resume()
 
 ## Background uploads
 
-It is possible to perform uploads in background but since it's implementation is platform-specific the lib doesn't provide default implementation. Anyway you can fine an example for iOS in our Demo app. See [FilesListStore.swift](https://github.com/uploadcare/uploadcare-swift/blob/1e6341edcdcb887589a4e798b746c525c9023b4e/Demo/Demo/Modules/FilesListStore.swift).
+It is possible to perform uploads in background. But implementation is a platform-specific. This lib doesn't provide default implementation. You can find an example for the iOS in our Demo app. See [FilesListStore.swift](https://github.com/uploadcare/uploadcare-swift/blob/1e6341edcdcb887589a4e798b746c525c9023b4e/Demo/Demo/Modules/FilesListStore.swift).
 
 Direct upload method works with background URLSession, so uploading will continue if the app goes to the background state.
 
