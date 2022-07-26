@@ -47,13 +47,15 @@ extension ProjectInfoViewModel {
 			onComplete()
 			return
 		}
-		
-		api.getProjectInfo({ (project, error) in
-			if let error = error {
-				return DLog(error)
+
+		api.getProjectInfo { result in
+			switch result {
+			case .failure(let error):
+				DLog(error)
+			case .success(let project):
+				self.projectData = project
+				onComplete()
 			}
-			self.projectData = project
-			onComplete()
-		})
+		}
 	}
 }

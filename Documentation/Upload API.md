@@ -4,6 +4,7 @@
 * [File upload](#file-upload)
 * [Direct uploads](#direct-uploads-api-reference)
 * [Multipart uploads](#multipart-uploads-api-reference)
+* [Background uploads](#background-uploads)
 * [Upload files from URLs](#upload-files-from-urls-api-reference)
 * [Check the status of a file uploaded from URL](#check-the-status-of-a-file-uploaded-from-url-api-reference)
 * [File info](#file-info-api-reference)
@@ -28,12 +29,13 @@ guard let data = try? Data(contentsOf: url) else { return }
 
 let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore) { progress in
     print("progress: \(progress)")
-} _: { file, error in
-    if let error = error {
+} _: { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let file):
+        print(file)
     }
-    print(file as Any)
 }
 
 // You can cancel uploading if needed
@@ -46,6 +48,17 @@ task.cancel()
 (task as? UploadTaskResumable)?.resume()
 ```
 
+Sometimes you don't want to have the secret key in your client app and want to get it from backend. In that case you can provide upload signature directly:
+
+```swift
+let signature = UploadSignature(signature: "signature", expire: 1658486910)
+let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore, uploadSignature: signature) { progress in
+    print("progress: \(progress)")
+} _: { result in
+    ...
+}
+```
+
 ## Direct uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/baseUpload/)) ##
 
 Direct uploads work with background URLSession, so uploading will continue if the app goes to the background state. It support files smaller than 100MB only
@@ -56,20 +69,33 @@ guard let url = URL(string: "https://source.unsplash.com/random"),
       
 let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store) { progress in
     print("upload progress: \(progress * 100)%")
-} _: { resultDictionary, error in
-    if let error = error {
+} _: { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
-    }
-
-    guard let files = resultDictionary else { return }
-    for file in files {
-        print("uploaded file name: \(file.key) | file id: \(file.value)")
+    case .success(let files):
+        for file in files {
+            print("uploaded file name: \(file.key) | file id: \(file.value)")
+        }
     }
 }
 
 // You can cancel uploading if needed
 task.cancel()
+```
+
+Sometimes you don't want to have the secret key in your client app and want to get it from backend. In that case you can provide upload signature directly:
+
+```swift
+guard let url = URL(string: "https://source.unsplash.com/random"),
+      let data = try? Data(contentsOf: url) else { return }
+      
+let signature = UploadSignature(signature: "signature", expire: 1658486910)
+let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store, uploadSignature: signature) { progress in
+    print("upload progress: \(progress * 100)%")
+} _: { result in
+    /// ...
+}
 ```
 
 ## Multipart uploads ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart/)) ##
@@ -87,12 +113,13 @@ let data = try! Data(contentsOf: url)
 
 let task = uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .store) { progress in
     print("progress: \(progress)")
-} _: { file, error in
-    if let error = error {
+} _: { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let file):
+        print(file)
     }
-    print(file as Any)
 }
 
 // You can cancel uploading if needed
@@ -104,6 +131,12 @@ task.pause()
 // To resume uploading
 task.resume()
 ```
+
+## Background uploads
+
+It is possible to perform uploads in background. But implementation is a platform-specific. This lib doesn't provide default implementation. You can find an example for the iOS in our Demo app. See [FilesListStore.swift](https://github.com/uploadcare/uploadcare-swift/blob/1e6341edcdcb887589a4e798b746c525c9023b4e/Demo/Demo/Modules/FilesListStore.swift).
+
+Direct upload method works with background URLSession, so uploading will continue if the app goes to the background state.
 
 ## Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/)) ##
 
@@ -123,45 +156,57 @@ let task2 = UploadFromURLTask(sourceUrl: url)
     .store(.store)
 
 // Upload
-uploadcare.uploadAPI.upload(task: task1) { result, error in
-    if let error = error {
+uploadcare.uploadAPI.upload(task: task1) { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let response):
+        print(response)
+        
+		// Upload token that you can use to check status
+		let token = result?.token
     }
-    print(result as Any)
-    
-    // Upload token that you can use to check status
-    let token = result?.token
 }
 ```
+
+Sometimes you don't want to have the secret key in your client app and want to get it from backend. In that case you can provide upload signature directly:
+```swift
+let signature = UploadSignature(signature: "signature", expire: 1658486910)
+uploadcare.uploadAPI.upload(task: task1) { result in
+    // ...
+}
+```
+
 
 ## Check the status of a file uploaded from URL ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUploadStatus/)) ##
 
 Use a token recieved with Upload files from the URLs method:
 
 ```swift
-uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { status, error in
-    if let error = error {
+uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let status):
+        print(status)
     }
-    print(status as Any)
 }
 ```
 
 ## File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo/)) ##
 
 ```swift
-uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { file, error in
-    if let error = error {
+uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let file):
+        print(file)
     }
-    print(file as Any)
 }
 ```
 
-## Create file group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/)) ##
+## Create files group ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup/)) ##
 
 Uploadcare library provides 2 methods to create a group:
 
@@ -169,12 +214,13 @@ Uploadcare library provides 2 methods to create a group:
 
 ```swift
 let files: [UploadedFile] = [file1,file2]
-uploadcare.uploadAPI.createFilesGroup(files: files) { response, error in
-    if let error = error {
+uploadcare.uploadAPI.createFilesGroup(files: files) { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let group):
+        print(group)
     }
-    print(response as Any)
 }
 ```
 
@@ -182,24 +228,47 @@ uploadcare.uploadAPI.createFilesGroup(files: files) { response, error in
 
 ```swift
 let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
-uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { response, error in
-    if let error = error {
+uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let group):
+        print(group)
     }
-    print(response as Any)
+}
+```
+
+Sometimes you don't want to have the secret key in your client app and want to get it from backend. In that case you can provide upload signature directly:
+```swift
+let signature = UploadSignature(signature: "signature", expire: 1658486910)
+uploadcare.uploadAPI.createFilesGroup(files: files) { result in
+    // ...
+}
+// or
+uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { result in
+    // ...
 }
 ```
 
 ## Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo/)) ##
 
 ```swift
-uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { group, error in
-    if let error = error {
+uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { result in
+    switch result {
+    case .failure(let error):
         print(error)
-        return
+    case .success(let group):
+        print(group)
     }
-    print(group as Any)
+}
+```
+
+Sometimes you don't want to have the secret key in your client app and want to get it from backend. In that case you can provide upload signature directly:
+
+```swift
+let signature = UploadSignature(signature: "signature", expire: 1658486910)
+uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { result in
+    // ...
 }
 ```
 

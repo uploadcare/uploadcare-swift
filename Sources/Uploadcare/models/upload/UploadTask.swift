@@ -28,7 +28,7 @@ class UploadTask: UploadTaskable {
 	internal let task: URLSessionUploadTask
 
 	/// Completion handler
-	internal let completionHandler: TaskCompletionHandler
+	internal let completionHandler: TaskResultCompletionHandler
 	
 	/// Progress callback
 	internal let progressCallback: TaskProgressBlock?
@@ -40,7 +40,7 @@ class UploadTask: UploadTaskable {
 	internal var localDataUrl: URL?
 	
 	// MARK: - Init
-	internal init(task: URLSessionUploadTask, completionHandler: @escaping TaskCompletionHandler, progressCallback: TaskProgressBlock? = nil) {
+	internal init(task: URLSessionUploadTask, completionHandler: @escaping TaskResultCompletionHandler, progressCallback: TaskProgressBlock? = nil) {
 		self.task = task
 		self.completionHandler = completionHandler
 		self.progressCallback = progressCallback

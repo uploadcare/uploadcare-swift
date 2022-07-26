@@ -8,10 +8,15 @@
 
 import Foundation
 
-struct UploadSignature {
+public struct UploadSignature {
 	/// Signature string
 	let signature: String
 	
 	/// Signature expire timestamp
 	let expire: Int
+    
+	public init(signature: String, expire: Int) {
+		self.signature = signature
+		self.expire = expire
+	}
 }

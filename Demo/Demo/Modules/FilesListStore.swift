@@ -39,7 +39,7 @@ class FilesListStore: ObservableObject {
 	}
 	
 	// MARK: - Public methods
-	func load(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
+	func load(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		let query = PaginationQuery()
 			.limit(5)
 			.ordering(.dateTimeUploadedDESC)
@@ -47,7 +47,7 @@ class FilesListStore: ObservableObject {
 		self.list?.get(withQuery: query, completionHandler)
 	}
 	
-	func loadNext(_ completionHandler: @escaping (FilesList?, RESTAPIError?) -> Void) {
+	func loadNext(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		self.list?.nextPage(completionHandler)
 	}
 	
@@ -105,17 +105,13 @@ class FilesListStore: ObservableObject {
 			}
 		}
 
-		self.currentTask = self.uploadcare?.uploadFile(data, withName: filename, store: .doNotStore, onProgress, { file, error in
-			if let error = error {
+		self.currentTask = self.uploadcare?.uploadFile(data, withName: filename, store: .doNotStore, onProgress, { result in
+			switch result {
+			case .failure(let error):
 				DLog(error)
-				return
+			case .success(let file):
+				completionHandler(file.uuid)
 			}
-
-			guard let file = file else {
-				DLog("error: no file")
-				return
-			}
-			completionHandler(file.uuid)
 		}) as? UploadTaskResumable
 	}
 }

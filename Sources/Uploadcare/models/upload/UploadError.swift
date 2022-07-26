@@ -9,7 +9,7 @@
 import Foundation
 
 
-public struct UploadError {
+public struct UploadError: Error {
 	/// Usually backend network respon se status
 	public var status: Int
 

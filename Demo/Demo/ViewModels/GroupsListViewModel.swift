@@ -34,21 +34,25 @@ extension GroupsListViewModel {
 			.limit(5)
 			.ordering(.datetimeCreatedDESC)
 		
-		self.list?.get(withQuery: query) { [weak self] (list, error) in
-			if let error = error {
-				return DLog(error)
+		self.list?.get(withQuery: query) { [weak self] result in
+			switch result {
+			case .failure(let error):
+				DLog(error)
+			case .success(let list):
+				self?.groups.removeAll()
+				list.results.forEach { self?.groups.append(GroupViewData(group: $0)) }
 			}
-			self?.groups.removeAll()
-			list?.results.forEach { self?.groups.append(GroupViewData(group: $0)) }
 		}
 	}
 	
 	func loadMoreIfNeed() {
-		self.list?.nextPage { [weak self] (list, error) in
-			if let error = error {
-				return DLog(error)
+		self.list?.nextPage { [weak self] result in
+			switch result {
+			case .failure(let error):
+				DLog(error)
+			case .success(let list):
+				list.results.forEach({ self?.groups.append(GroupViewData(group: $0)) })
 			}
-			self?.list?.results.forEach({ self?.groups.append(GroupViewData(group: $0)) })
 		}
 	}
 }
