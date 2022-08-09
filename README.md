@@ -92,11 +92,18 @@ final class MyClass {
 You can create more than Uploadcare objects if you need to work with multiple projects on your Uploadcare account:
 
 ```swift
-let project1 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_1")
-let project2 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_2")
+final class MyClass {
+    private let project1: Uploadcare
+    private let project2: Uploadcare
+    
+    init() {
+        self.project1 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_1")
+        self.project2 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_2")
+    }
+}
 ```
 
-Keep in mind that you should store a strong reference (as an instance variable for example) to your Uploadcare object or it will get deallocated.
+Keep in mind that since Uploadcare is not a singleton you should store a strong reference (as an instance variable for example) to your Uploadcare object or it will get deallocated.
 
 ## Using Upload API
 
