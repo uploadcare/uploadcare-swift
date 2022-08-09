@@ -82,6 +82,13 @@ let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY")
 let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
 ```
 
+You can create more than Uploadcare objects if you need to work with multiple projects:
+
+```swift
+let project1 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_1")
+let project2 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_2")
+```
+
 ## Using Upload API
 
 Check the [Upload API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/Upload%20API.md) to see all available methods.
