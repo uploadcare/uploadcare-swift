@@ -40,8 +40,11 @@ final class MyClass {
     private let project2: Uploadcare
     
     init() {
+        // A project to use Upload API only 
         self.project1 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_1")
-        self.project2 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_2")
+        
+	// A project to use both REST API and Upload API
+        self.project2 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_2", secretKey: "YOUR_SECRET_KEY_2")
     }
 }
 ```
