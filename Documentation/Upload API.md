@@ -49,7 +49,7 @@ final class MyClass {
 }
 ```
 
-Keep in mind that since Uploadcare is not a singleton you should store a strong reference (as an instance variable for example) to your Uploadcare object or it will get deallocated.
+Keep in mind that since Uploadcare is not a singleton. You should store a strong reference (as an instance variable, for example) to your Uploadcare object or it will get deallocated.
 
 ## File upload ##
 Uploadcare provides a simple method that will handle file upload. It decides internally the best way to upload a file (to use direct or multipart upload).
