@@ -90,7 +90,7 @@ final class MyClass {
 }
 ```
 
-You can create more than Uploadcare objects if you need to work with multiple projects on your Uploadcare account:
+You can create more Uploadcare objects if you need to work with multiple projects in your Uploadcare account:
 
 ```swift
 final class MyClass {
