@@ -55,7 +55,7 @@ final class MyClass {
 }
 ```
 
-Keep in mind that since Uploadcare is not a singleton you should store a strong reference (as an instance variable for example) to your Uploadcare object or it will get deallocated.
+Keep in mind that since Uploadcare is not a singleton. You should store a strong reference (as an instance variable, for example) to your Uploadcare object or it will get deallocated.
 
 ## List of files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/filesList)) ##
 
