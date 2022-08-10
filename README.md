@@ -77,10 +77,37 @@ Create your project in [Uploadcare dashboard](https://uploadcare.com/dashboard/?
 Upload API requires only a public key, while REST API requires both public and secret keys:
 
 ```swift
-let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY")
-// Secret key is optional. Initialization with secret key:
-let uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
+final class MyClass {
+    private var uploadcare: Uploadcare
+    
+    init() {
+        self.uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY")
+        
+        // Secret key is optional if you want to use Upload API only.
+        // REST API requires both public and secret keys:
+        self.uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
+    }
+}
 ```
+
+You can create more Uploadcare objects if you need to work with multiple projects in your Uploadcare account:
+
+```swift
+final class MyClass {
+    private let project1: Uploadcare
+    private let project2: Uploadcare
+    
+    init() {
+        // A project to use Upload API only 
+        self.project1 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_1")
+
+        // A project to use both REST API and Upload API
+        self.project2 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_2", secretKey: "YOUR_SECRET_KEY_2")
+    }
+}
+```
+
+Keep in mind that since Uploadcare is not a singleton. You should store a strong reference (as an instance variable, for example) to your Uploadcare object or it will get deallocated.
 
 ## Using Upload API
 
