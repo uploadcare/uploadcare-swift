@@ -790,7 +790,7 @@ extension Uploadcare {
 								filename: file.originalFilename,
 								mimeType: file.mimeType,
 								isImage: file.isImage,
-								isStored: store != .doNotStore,
+								isStored: file.datetimeStored != nil,
 								isReady: file.isReady,
 								imageInfo: file.imageInfo,
 								videoInfo: file.videoInfo,

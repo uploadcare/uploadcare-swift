@@ -281,7 +281,7 @@ extension UploadAPI {
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
-		return directUpload(files: files, uploadType: .background, uploadSignature: uploadSignature, onProgress, completionHandler)
+		return directUpload(files: files, uploadType: .background, store: store, uploadSignature: uploadSignature, onProgress, completionHandler)
 	}
 
     @discardableResult

@@ -762,6 +762,33 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		wait(for: [expectation], timeout: 60.0)
 	}
+
+	var storingTestTask: UploadTaskable?
+	func test21_storing_shoudBeStored() {
+		let expectation = XCTestExpectation(description: "test21_storing_shoudBeStored")
+
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+		let file = uploadcare.file(fromData: data)
+		let name = UUID().uuidString
+
+		storingTestTask = file.upload(withName: name, store: .store, uploadSignature: nil) { _ in
+
+		} _: { result in
+			switch result {
+			case .failure(let error):
+				XCTFail(error.debugDescription)
+			case .success(let file):
+				XCTAssertEqual(file.isStored, true)
+
+				self.uploadcare.deleteFile(withUUID: file.uuid) { _ in
+					expectation.fulfill()
+				}
+			}
+		}
+
+		wait(for: [expectation], timeout: 20.0)
+	}
 }
 
 #endif
