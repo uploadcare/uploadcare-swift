@@ -52,7 +52,7 @@ public class Uploadcare: NSObject {
 	/// Library name
 	private var libraryName = "UploadcareSwift"
 	/// Library version
-	private var libraryVersion = "0.8.0"
+	private var libraryVersion = "0.8.1"
 
 	/// Performs network requests
 	private let requestManager: RequestManager
@@ -790,7 +790,7 @@ extension Uploadcare {
 								filename: file.originalFilename,
 								mimeType: file.mimeType,
 								isImage: file.isImage,
-								isStored: store != .doNotStore,
+								isStored: file.datetimeStored != nil,
 								isReady: file.isReady,
 								imageInfo: file.imageInfo,
 								videoInfo: file.videoInfo,
