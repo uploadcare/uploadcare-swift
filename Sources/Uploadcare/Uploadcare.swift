@@ -718,6 +718,7 @@ extension Uploadcare {
 						case .failure(let error):
 							completionHandler(.failure(UploadError(status: 0, detail: error.detail)))
 						case .success(let file):
+							#warning("CHECK if imageInfo and videoInfo are still part of the model")
 							let uploadedFile = UploadedFile(
 								size: file.size,
 								total: file.size,
