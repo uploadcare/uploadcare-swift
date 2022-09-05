@@ -51,9 +51,6 @@ public struct File: Codable {
 	/// Dictionary of other files that has been created using this file as source. Used for video, document and etc. conversion.
 	public var variations: [String: String]?
 	
-	/// Video metadata.
-	public var videoInfo: VideoInfo?
-	
 	
 	enum CodingKeys: String, CodingKey {
 		case size
@@ -69,7 +66,6 @@ public struct File: Codable {
 		case url
 		case source
 		case variations
-		case videoInfo = "video_info"
 	}
 	
 	
@@ -86,8 +82,7 @@ public struct File: Codable {
 		originalFileUrl: String?,
 		url: String,
 		source: String?,
-		variations: [String: String]?,
-		videoInfo: VideoInfo?
+		variations: [String: String]?
 	) {
 		self.size = size
 		self.uuid = uuid
@@ -102,7 +97,6 @@ public struct File: Codable {
 		self.url = url
 		self.source = source
 		self.variations = variations
-		self.videoInfo = videoInfo
 	}
 
 	public init(from decoder: Decoder) throws {
@@ -142,7 +136,6 @@ public struct File: Codable {
 		let url = try container.decodeIfPresent(String.self, forKey: .url) ?? ""
 		let source = try container.decodeIfPresent(String.self, forKey: .source)
 		let variations = try container.decodeIfPresent([String: String].self, forKey: .variations)
-		let videoInfo = try container.decodeIfPresent(VideoInfo.self, forKey: .videoInfo)
 		
 
 		self.init(
@@ -158,8 +151,7 @@ public struct File: Codable {
 			originalFileUrl: originalFileUrl,
 			url: url,
 			source: source,
-			variations: variations,
-			videoInfo: videoInfo
+			variations: variations
 		)
 	}
 	
@@ -182,8 +174,7 @@ extension File: CustomDebugStringConvertible {
 			originalFileUrl: \(String(describing: originalFileUrl)),
 			url: \(url),
 			source: \(String(describing: source)),
-			variations: \(String(describing: variations)),
-			videoInfo: \(String(describing: videoInfo))
+			variations: \(String(describing: variations))
 		"""
 	}
 }
