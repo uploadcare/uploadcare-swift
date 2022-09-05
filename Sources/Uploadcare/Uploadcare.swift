@@ -79,21 +79,7 @@ public class Uploadcare: NSObject {
 
 
 // MARK: - Private methods
-internal extension Uploadcare {
-	/// Build url request for REST API
-	/// - Parameter fromURL: request url
-	func makeUrlRequest(fromURL url: URL, method: RequestManager.HTTPMethod) -> URLRequest {
-		var urlRequest = URLRequest(url: url)
-		urlRequest.httpMethod = method.rawValue
-		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
-		urlRequest.addValue("application/vnd.uploadcare-v0.6+json", forHTTPHeaderField: "Accept")
-		
-		let userAgent = "\(libraryName)/\(libraryVersion)/\(publicKey) (Swift/\(getSwiftVersion()))"
-		urlRequest.addValue(userAgent, forHTTPHeaderField: "User-Agent")
-		
-		return urlRequest
-	}
-	
+internal extension Uploadcare {	
 	/// Adds signature to network request for secure authorization
 	/// - Parameter urlRequest: url request
 	func signRequest(_ urlRequest: inout URLRequest) {
@@ -190,7 +176,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/\(uuid)/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
@@ -210,7 +196,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/\(uuid)/storage/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
@@ -230,7 +216,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/storage/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
 
 		if let body = try? JSONEncoder().encode(uuids) {
 			urlRequest.httpBody = body
@@ -254,7 +240,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/\(uuid)/storage/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
@@ -274,7 +260,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/storage/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
 
 		if let body = try? JSONEncoder().encode(uuids) {
 			urlRequest.httpBody = body
@@ -321,7 +307,7 @@ extension Uploadcare {
 			assertionFailure("Incorrect url")
 			return
 		}
-		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<GroupsList, Error>) in
@@ -341,7 +327,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<Group, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/groups/\(uuid)/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<Group, Error>) in
@@ -361,7 +347,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (RESTAPIError?) -> Void
 	) {
 		let url = urlWithPath("/groups/\(uuid)/storage/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<Group, Error>) in
@@ -385,7 +371,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<CopyFileToLocalStorageResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/local_copy/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 
 		let bodyDictionary = [
 			"source": source,
@@ -420,7 +406,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<CopyFileToRemoteStorageResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/files/remote_copy/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 
 		var bodyDictionary = [
 			"source": source,
@@ -451,7 +437,7 @@ extension Uploadcare {
 	/// - Parameter completionHandler: completion handler
 	public func getProjectInfo(_ completionHandler: @escaping (Result<Project, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/project/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<Project, Error>) in
@@ -508,7 +494,7 @@ extension Uploadcare {
 	/// - Parameter completionHandler: completion handler
 	public func getListOfWebhooks(_ completionHandler: @escaping (Result<[Webhook], RESTAPIError>) -> Void) {
 		let url = urlWithPath("/webhooks/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<[Webhook], Error>) in
@@ -527,7 +513,7 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func createWebhook(targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Result<Webhook, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/webhooks/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 		var bodyDictionary = [
 			"target_url": targetUrl.absoluteString,
 			"event": "file.uploaded", // Presently, we only support the file.uploaded event.
@@ -562,7 +548,7 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Result<Webhook, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/webhooks/\(id)/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .put)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
 		var bodyDictionary = [
 			"target_url": targetUrl.absoluteString,
 			"event": "file.uploaded", // Presently, we only support the file.uploaded event.
@@ -594,7 +580,7 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func deleteWebhook(forTargetUrl targetUrl: URL, _ completionHandler: @escaping (RESTAPIError?) -> Void) {
 		let url = urlWithPath("/webhooks/unsubscribe/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .delete)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
 		let bodyDictionary = [
 			"target_url": targetUrl.absoluteString
 		]
@@ -625,7 +611,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<ConvertDocumentsResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/convert/document/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 
 		let storeValue = store == StoringBehavior.auto ? .store : store
 		let requestData = ConvertRequestData(
@@ -666,7 +652,7 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func documentConversionJobStatus(token: Int, _ completionHandler: @escaping (Result<ConvertDocumentJobStatus, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/convert/document/status/\(token)/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<ConvertDocumentJobStatus, Error>) in
@@ -704,7 +690,7 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<ConvertDocumentsResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/convert/video/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .post)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 
 		let storeValue = store == StoringBehavior.auto ? .store : store
 		let requestData = ConvertRequestData(
@@ -729,7 +715,7 @@ extension Uploadcare {
 	///   - completionHandler: completion handler
 	public func videoConversionJobStatus(token: Int, _ completionHandler: @escaping (Result<ConvertVideoJobStatus, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/convert/video/status/\(token)/")
-		var urlRequest = makeUrlRequest(fromURL: url, method: .get)
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		signRequest(&urlRequest)
 
 		requestManager.performRequest(urlRequest) { (result: Result<ConvertVideoJobStatus, Error>) in

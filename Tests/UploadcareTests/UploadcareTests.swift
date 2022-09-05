@@ -13,15 +13,5 @@ final class uploadcare_swiftTests: XCTestCase {
 		XCTAssertEqual(randomGeneratedPublicKey, uploadcare.publicKey)
 		XCTAssertEqual(randomGeneratedSecretKey, uploadcare.secretKey)
 	}
-	
-	func testRequestMethod() {
-		let uploadcare = Uploadcare(withPublicKey: "123", secretKey: "123")
-		
-		let urlString = "https://uploadcare.com"
-		let url = URL(string: urlString)!
-		let request = uploadcare.makeUrlRequest(fromURL: url, method: RequestManager.HTTPMethod.put)
-		
-		XCTAssertEqual(request.httpMethod, "PUT")
-	}
 }
 #endif

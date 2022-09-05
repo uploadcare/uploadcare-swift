@@ -51,8 +51,11 @@ internal class RequestManager {
 
 // MARK: - Public methods
 extension RequestManager {
-	/// Build url request for REST API
-	/// - Parameter fromURL: request url
+	/// Build URL request.
+	/// - Parameters:
+	///   - url: Request url.
+	///   - method: HTTP method.
+	/// - Returns: Request object.
 	func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = method.rawValue
