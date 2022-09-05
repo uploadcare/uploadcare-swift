@@ -8,9 +8,5 @@ final class UploadFromURLTaskTests: XCTestCase {
 		
 		XCTAssertEqual(task.store, StoringBehavior.auto)
     }
-
-    static var allTests = [
-        ("testInit_shouldHaveDefaultValues", testInit_shouldHaveDefaultValues),
-    ]
 }
 #endif

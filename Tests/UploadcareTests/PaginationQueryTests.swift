@@ -33,10 +33,6 @@ final class PaginationQueryTests: XCTestCase {
 		XCTAssertEqual(s1.stringValue, "ordering=datetime_uploaded&from=2020-02-01T10:31:47")
 		XCTAssertEqual(s2.stringValue, "ordering=size&from=12909")
 	}
-
-    static var allTests = [
-        ("testOrderingInit", testOrderingInit),
-    ]
 }
 #endif
 

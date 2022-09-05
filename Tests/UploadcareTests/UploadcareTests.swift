@@ -23,10 +23,5 @@ final class uploadcare_swiftTests: XCTestCase {
 		
 		XCTAssertEqual(request.httpMethod, "PUT")
 	}
-	
-	static var allTests = [
-		("testInitWithKeys", testInitWithKeys),
-		("testRequestMethod", testRequestMethod)
-	]
 }
 #endif
