@@ -30,27 +30,26 @@ public class PaginationQuery {
 	internal static let maxLimitValue: Int = 10000
 	
 	public enum Ordering {
-		case dateTimeUploadedASC(from: Date)
+		case dateTimeUploadedASC(from: Date?)
 		case dateTimeUploadedDESC
-		case sizeASC(from: Int)
-		case sizeDESC
 		
 		internal var stringValue: String {
 			switch self {
-			case .dateTimeUploadedASC(let date):
-				let formatter = DateFormatter()
-				formatter.timeZone = TimeZone(identifier: "GMT")
-				// date format should be YYYY-MM-DDTHH:MM:SS, where T is used as a separator
-				formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-				let dateString = formatter.string(from: date)
+			case .dateTimeUploadedASC(let from):
+				var fromString = ""
+
+				if let date = from {
+					let formatter = DateFormatter()
+					formatter.timeZone = TimeZone(identifier: "GMT")
+					// date format should be YYYY-MM-DDTHH:MM:SS, where T is used as a separator
+					formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+					let dateString = formatter.string(from: date)
+					fromString = "&from=\(dateString)"
+				}
 				
-				return "ordering=datetime_uploaded&from=\(dateString)"
+				return "ordering=datetime_uploaded" + fromString
 			case .dateTimeUploadedDESC:
 				return "ordering=-datetime_uploaded"
-			case .sizeASC(let size):
-				return "ordering=size&from=\(size)"
-			case .sizeDESC:
-				return "ordering=-size"
 			}
 		}
 	}

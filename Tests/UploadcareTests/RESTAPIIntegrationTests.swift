@@ -20,7 +20,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		let query = PaginationQuery()
 			.stored(true)
-			.ordering(.sizeDESC)
+			.ordering(.dateTimeUploadedDESC)
 			.limit(5)
 
 		let filesList = uploadcare.listOfFiles()
@@ -44,7 +44,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		let query = PaginationQuery()
 			.stored(true)
-			.ordering(.sizeDESC)
+			.ordering(.dateTimeUploadedDESC)
 			.limit(5)
 
 		let filesList = uploadcare.listOfFiles()
@@ -683,8 +683,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		let query = PaginationQuery()
 			.stored(true)
-			.ordering(.sizeDESC)
-			.limit(50)
+			.ordering(.dateTimeUploadedDESC)
+			.limit(100)
 
 		uploadcare.listOfFiles(withQuery: query) { result in
 			switch result {

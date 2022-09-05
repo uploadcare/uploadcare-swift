@@ -28,10 +28,12 @@ final class PaginationQueryTests: XCTestCase {
 	func testOrdering() {
 		let date = Date(timeIntervalSince1970: 1580553107)
 		let s1 = PaginationQuery.Ordering.dateTimeUploadedASC(from: date)
-		let s2 = PaginationQuery.Ordering.sizeASC(from: 12909)
+		let s2 = PaginationQuery.Ordering.dateTimeUploadedDESC
+		let s3 = PaginationQuery.Ordering.dateTimeUploadedASC(from: nil)
 		
 		XCTAssertEqual(s1.stringValue, "ordering=datetime_uploaded&from=2020-02-01T10:31:47")
-		XCTAssertEqual(s2.stringValue, "ordering=size&from=12909")
+		XCTAssertEqual(s2.stringValue, "ordering=-datetime_uploaded")
+		XCTAssertEqual(s3.stringValue, "ordering=datetime_uploaded")
 	}
 }
 #endif
