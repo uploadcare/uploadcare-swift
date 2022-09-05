@@ -9,15 +9,6 @@
 import Foundation
 
 
-/// Upload API base url
-let uploadAPIBaseUrl = "https://upload.uploadcare.com"
-let uploadAPIHost = "upload.uploadcare.com"
-
-/// REST API base URL
-let RESTAPIBaseUrl = "https://api.uploadcare.com"
-let RESTAPIHost = "api.uploadcare.com"
-
-
 public class Uploadcare: NSObject {
 	
 	// TODO: log turn on or off

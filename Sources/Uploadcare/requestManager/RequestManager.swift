@@ -32,16 +32,12 @@ internal class RequestManager {
 	var authScheme: Uploadcare.AuthScheme = .signed
 
 	// MARK: - Private properties
-	/// Library name
-	private var libraryName = "UploadcareSwift"
-	/// Library version
-	private var libraryVersion = "0.8.1"
 	/// API public key
-	private var publicKey: String
+	private let publicKey: String
 	/// Secret Key. Optional. Is used for authorization
-	private var secretKey: String?
+	private let secretKey: String?
 	/// URL session
-	private var urlSession: URLSession = URLSession.shared
+	private let urlSession: URLSession = URLSession.shared
 
 	// MARK: - Init
 	init(publicKey: String, secretKey: String?) {
@@ -61,7 +57,7 @@ extension RequestManager {
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = method.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
-		urlRequest.addValue("application/vnd.uploadcare-v0.6+json", forHTTPHeaderField: "Accept")
+		urlRequest.addValue("application/vnd.uploadcare-v\(APIVersion)+json", forHTTPHeaderField: "Accept")
 
 		let userAgent = "\(libraryName)/\(libraryVersion)/\(publicKey) (Swift/\(getSwiftVersion()))"
 		urlRequest.addValue(userAgent, forHTTPHeaderField: "User-Agent")
