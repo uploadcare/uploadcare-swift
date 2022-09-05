@@ -90,7 +90,6 @@ let testFile = File(
 	url: "https://api.uploadcare.com/files/d1a13e8a-eb9a-4782-b828-e561adad2cf1/",
 	source: nil,
 	variations: nil,
-	rekognitionInfo: nil,
 	imageInfo: ImageInfo(
 		height: 2002,
 		width: 3000,

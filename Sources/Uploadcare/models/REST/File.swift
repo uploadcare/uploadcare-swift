@@ -51,9 +51,6 @@ public struct File: Codable {
 	/// Dictionary of other files that has been created using this file as source. Used for video, document and etc. conversion.
 	public var variations: [String: String]?
 	
-	/// Dictionary of file categories with it's confidence.
-	public var rekognitionInfo: [String: Int]?
-	
 	/// Image metadata.
 	public var imageInfo: ImageInfo?
 	
@@ -75,7 +72,6 @@ public struct File: Codable {
 		case url
 		case source
 		case variations
-		case rekognitionInfo = "rekognition_info"
 		case imageInfo = "image_info"
 		case videoInfo = "video_info"
 	}
@@ -95,7 +91,6 @@ public struct File: Codable {
 		url: String,
 		source: String?,
 		variations: [String: String]?,
-		rekognitionInfo: [String: Int]?,
 		imageInfo: ImageInfo?,
 		videoInfo: VideoInfo?
 	) {
@@ -112,7 +107,6 @@ public struct File: Codable {
 		self.url = url
 		self.source = source
 		self.variations = variations
-		self.rekognitionInfo = rekognitionInfo
 		self.imageInfo = imageInfo
 		self.videoInfo = videoInfo
 	}
@@ -154,7 +148,6 @@ public struct File: Codable {
 		let url = try container.decodeIfPresent(String.self, forKey: .url) ?? ""
 		let source = try container.decodeIfPresent(String.self, forKey: .source)
 		let variations = try container.decodeIfPresent([String: String].self, forKey: .variations)
-		let rekognitionInfo = try container.decodeIfPresent([String: Int].self, forKey: .rekognitionInfo)
 		let imageInfo = try container.decodeIfPresent(ImageInfo.self, forKey: .imageInfo)
 		let videoInfo = try container.decodeIfPresent(VideoInfo.self, forKey: .videoInfo)
 		
@@ -173,7 +166,6 @@ public struct File: Codable {
 			url: url,
 			source: source,
 			variations: variations,
-			rekognitionInfo: rekognitionInfo,
 			imageInfo: imageInfo,
 			videoInfo: videoInfo
 		)
@@ -199,7 +191,6 @@ extension File: CustomDebugStringConvertible {
 			url: \(url),
 			source: \(String(describing: source)),
 			variations: \(String(describing: variations)),
-			rekognitionInfo: \(String(describing: rekognitionInfo)),
 			imageInfo: \(String(describing: imageInfo)),
 			videoInfo: \(String(describing: videoInfo))
 		"""
