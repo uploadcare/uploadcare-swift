@@ -90,17 +90,6 @@ let testFile = File(
 	url: "https://api.uploadcare.com/files/d1a13e8a-eb9a-4782-b828-e561adad2cf1/",
 	source: nil,
 	variations: nil,
-	imageInfo: ImageInfo(
-		height: 2002,
-		width: 3000,
-		geoLocation: nil,
-		datetimeOriginal: nil,
-		format: "JPEG",
-		colorMode: .RGB,
-		dpi: [72, 72],
-		orientation: 1,
-		sequence: false
-	),
 	videoInfo: nil
 )
 let testFileViewData = FileViewData(file: testFile)

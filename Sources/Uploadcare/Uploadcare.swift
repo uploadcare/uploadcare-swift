@@ -729,7 +729,7 @@ extension Uploadcare {
 								isImage: file.isImage,
 								isStored: file.datetimeStored != nil,
 								isReady: file.isReady,
-								imageInfo: file.imageInfo,
+								imageInfo: nil,
 								videoInfo: file.videoInfo,
 								s3Bucket: nil
 							)
