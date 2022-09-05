@@ -22,4 +22,4 @@ internal let libraryName = "UploadcareSwift"
 internal let libraryVersion = "0.8.1"
 
 /// API version
-internal let APIVersion = "0.6"
+internal let APIVersion = "0.7"
