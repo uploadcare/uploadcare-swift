@@ -1,8 +1,9 @@
 //
-//  File.swift
+//  RequestManager.swift
 //  
 //
 //  Created by Sergei Armodin on 01.02.2022.
+//  Copyright © 2022 Uploadcare, Inc. All rights reserved.
 //
 
 import Foundation
@@ -68,8 +69,8 @@ extension RequestManager {
 		return urlRequest
 	}
 
-	/// Adds signature to network request for secure authorization
-	/// - Parameter urlRequest: url request
+	/// Adds signature to network request for secure authorization.
+	/// - Parameter urlRequest: URL request object.
 	func signRequest(_ urlRequest: inout URLRequest) {
 		let dateString = GMTDate()
 		urlRequest.addValue(dateString, forHTTPHeaderField: "Date")
