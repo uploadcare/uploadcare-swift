@@ -13,6 +13,7 @@ internal enum RequestManagerError: Error {
 	case invalidUploadAPIResponse(error: UploadError)
 	case noResponse
 	case parsingError
+	case emptyResponse
 }
 
 internal class RequestManager {
@@ -117,6 +118,16 @@ extension RequestManager {
 
 			if data.count == 0, true is T {
 				completion(.success(true as! T))
+				return
+			}
+
+			if data.count == 0 {
+				completion(.failure(RequestManagerError.emptyResponse))
+				return
+			}
+
+			if T.self is String.Type, let string = String(data: data, encoding: .utf8) {
+				completion(.success(string as! T))
 				return
 			}
 
