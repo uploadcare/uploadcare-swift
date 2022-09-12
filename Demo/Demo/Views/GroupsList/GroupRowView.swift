@@ -52,6 +52,8 @@ let jsonData = """
 		"url": "https://api.uploadcare.com/groups/ec207006-882b-4184-8318-5b57ca2135d8~2/"
 	}
 """.data(using: .utf8)!
-let testGroup = try! JSONDecoder().decode(Group.self, from: jsonData)
+let decoder = JSONDecoder()
+decoder.keyDecodingStrategy = .convertFromSnakeCase
+let testGroup = try! .decode(Group.self, from: jsonData)
 let testGroupViewData = GroupViewData(group: testGroup)
 #endif

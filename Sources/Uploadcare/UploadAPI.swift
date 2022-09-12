@@ -330,7 +330,10 @@ extension UploadAPI {
         case .foreground:
             uploadTask = foregroundUploadURLSession.uploadTask(with: urlRequest, fromFile: localURL) { data, response, error in
                 if (response as? HTTPURLResponse)?.statusCode == 200, let data = data {
-                    let decodedData = try? JSONDecoder().decode([String:String].self, from: data)
+					let decoder = JSONDecoder()
+					decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+                    let decodedData = try? decoder.decode([String:String].self, from: data)
                     guard let resultData = decodedData else {
 						completionHandler(.failure(UploadError.defaultError()))
                         return
@@ -754,7 +757,10 @@ extension UploadAPI: URLSessionTaskDelegate {
 		let statusCode: Int = (task.response as? HTTPURLResponse)?.statusCode ?? 0
 		
 		if statusCode == 200 {
-			let decodedData = try? JSONDecoder().decode([String:String].self, from: backgroundTask.dataBuffer)
+			let decoder = JSONDecoder()
+			decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+			let decodedData = try? decoder.decode([String:String].self, from: backgroundTask.dataBuffer)
 			guard let resultData = decodedData else {
 				backgroundTask.completionHandler(.failure(UploadError.defaultError()))
 				return
