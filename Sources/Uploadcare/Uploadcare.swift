@@ -503,6 +503,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuid: Group UUID.
 	///   - completionHandler: completion handler
+	@available(*, unavailable, message: "This method is removed on API side. To store or remove files from a group, query the list of files in it, split the list into chunks of 100 files per chunk and then perform batch file storing or batch file removal for all the chunks.")
 	public func storeGroup(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (RESTAPIError?) -> Void
