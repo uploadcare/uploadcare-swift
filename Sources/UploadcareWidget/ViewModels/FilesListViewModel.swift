@@ -82,10 +82,7 @@ extension FilesListViewModel {
 			case .failure(let error):
 				DLog(error.localizedDescription)
 			case .success(let data):
-				let decoder = JSONDecoder()
-				decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-				guard let file = try? decoder.decode(SelectedFile.self, from: data),
+				guard let file = try? JSONDecoder().decode(SelectedFile.self, from: data),
 					  let fileUrlString = file.url else { return }
 
 				// Calling upload from URL
@@ -137,10 +134,7 @@ extension FilesListViewModel {
 			case .success(let data):
 				DispatchQueue.main.async {
 					do {
-						let decoder = JSONDecoder()
-						decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-						self.currentChunk = try decoder.decode(ChunkResponse.self, from: data)
+						self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
 					} catch let error {
 						DLog(error.localizedDescription)
 						DLog(data.toString() ?? "")
@@ -171,10 +165,7 @@ extension FilesListViewModel {
 			case .success(let data):
 				DispatchQueue.main.async {
 					do {
-						let decoder = JSONDecoder()
-						decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-						let newChunk = try decoder.decode(ChunkResponse.self, from: data)
+						let newChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
 						self.currentChunk?.next_page = newChunk.next_page
 						newChunk.things.forEach({ self.currentChunk?.things.append($0) })
 					} catch let error {

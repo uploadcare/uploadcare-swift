@@ -139,9 +139,7 @@ extension RequestManager {
                 if request.url?.host == uploadAPIHost {
                     try self.validateUploadAPIResponse(response: response, data: data)
                 }
-				let decoder = JSONDecoder()
-				decoder.keyDecodingStrategy = .convertFromSnakeCase
-				responseData = try decoder.decode(T.self, from: data)
+				responseData = try JSONDecoder().decode(T.self, from: data)
 			} catch let error {
 				completion(.failure(error))
 				return
@@ -162,10 +160,7 @@ extension RequestManager {
 			}
 			#endif
 
-			let decoder = JSONDecoder()
-			decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-			if let data = data, let decodedData = try? decoder.decode(RESTAPIError.self, from: data) {
+			if let data = data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) {
                 throw RequestManagerError.invalidRESTAPIResponse(error: decodedData)
 			}
 
