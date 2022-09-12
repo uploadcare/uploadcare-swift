@@ -301,10 +301,145 @@ extension Uploadcare {
 		}
 	}
 
+	/// Get file's metadata.
+	/// - Parameters:
+	///   - uuid: File UUID.
+	///   - completionHandler: Completion handler.
+	public func fileMetadata(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (Result<[String: String], RESTAPIError>) -> Void
+	) {
+		let url = urlWithPath("/files/\(uuid)/metadata/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<[String: String], Error>) in
+			switch result {
+			case .failure(let error):
+				if case .emptyResponse = error as? RequestManagerError {
+					completionHandler(.success([:]))
+					return
+				}
+				completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let data):
+				completionHandler(.success(data))
+			}
+		}
+	}
+
+	/// Get metadata key's value.
+	///
+	/// List of allowed characters for the key:
+	/// - Latin letters in lower or upper case (a-z,A-Z)
+	/// - digits (0-9)
+	/// - underscore _
+	/// - a hyphen `-`
+	/// - dot `.`
+	/// - colon `:`
+	///
+	/// - Parameters:
+	///   - key: Key of file metadata.
+	///   - uuid: File UUID.
+	///   - completionHandler: Completion handler.
+	public func fileMetadataValue(
+		forKey key: String,
+		withUUID uuid: String,
+		_ completionHandler: @escaping (Result<String, RESTAPIError>) -> Void
+	) {
+		let url = urlWithPath("/files/\(uuid)/metadata/\(key)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<String, Error>) in
+			switch result {
+			case .failure(let error):
+				completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let val):
+				let trimmedVal = val.trimmingCharacters(in: CharacterSet(arrayLiteral: "\""))
+				completionHandler(.success(trimmedVal))
+			}
+		}
+	}
+
+	/// Update metadata key's value. If the key does not exist, it will be created.
+	///
+	/// List of allowed characters for the key:
+	/// - Latin letters in lower or upper case (a-z,A-Z)
+	/// - digits (0-9)
+	/// - underscore _
+	/// - a hyphen `-`
+	/// - dot `.`
+	/// - colon `:`
+	///
+	/// - Parameters:
+	///   - uuid: File UUID.
+	///   - key: Key of file metadata.
+	///   - value: New value.
+	///   - completionHandler: Completion handler.
+	public func updateFileMetadata(
+		withUUID uuid: String,
+		key: String,
+		value: String,
+		_ completionHandler: @escaping (Result<String, RESTAPIError>) -> Void
+	) {
+		let url = urlWithPath("/files/\(uuid)/metadata/\(key)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
+		urlRequest.httpBody = "\"\(value)\"".data(using: .utf8)!
+		urlRequest.allHTTPHeaderFields?.removeValue(forKey: "Content-Type")
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<String, Error>) in
+			switch result {
+			case .failure(let error):
+				completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let val):
+				let trimmedVal = val.trimmingCharacters(in: CharacterSet(arrayLiteral: "\""))
+				completionHandler(.success(trimmedVal))
+			}
+		}
+	}
+
+	/// Delete metadata key.
+	///
+	/// List of allowed characters for the key:
+	/// - Latin letters in lower or upper case (a-z,A-Z)
+	/// - digits (0-9)
+	/// - underscore _
+	/// - a hyphen `-`
+	/// - dot `.`
+	/// - colon `:`
+	/// 
+	/// - Parameters:
+	///   - key: Key of file metadata.
+	///   - uuid: File UUID.
+	///   - completionHandler: Completion handler.
+	public func deleteFileMetadata(
+		forKey key: String,
+		withUUID uuid: String,
+		_ completionHandler: @escaping (RESTAPIError?) -> Void
+	) {
+		let url = urlWithPath("/files/\(uuid)/metadata/\(key)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<String, Error>) in
+			switch result {
+			case .failure(let error):
+				if case .emptyResponse = error as? RequestManagerError {
+					completionHandler(nil)
+					return
+				}
+				completionHandler(RESTAPIError.fromError(error))
+			case .success:
+				completionHandler(nil)
+			}
+		}
+	}
+
 	/// Get list of groups
 	/// - Parameters:
-	///   - query: query object
-	///   - completionHandler: completion handler
+	///   - query: Request query object.
+	///   - completionHandler: Completion handler.
 	public func listOfGroups(
 		withQuery query: GroupsListQuery?,
 		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
