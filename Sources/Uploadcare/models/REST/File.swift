@@ -55,6 +55,9 @@ public struct File: Codable {
 	/// Metadata is key-value data. You can specify up to 50 keys, with key names up to 64 characters long and values up to 512 characters long.
 	public var metadata: [String: String]?
 
+	/// Information about file content.
+	public var contentInfo: ContentInfo?
+
 
 	enum CodingKeys: String, CodingKey {
 		case size
@@ -71,6 +74,7 @@ public struct File: Codable {
 		case source
 		case variations
 		case metadata
+		case contentInfo = "content_info"
 	}
 	
 	
@@ -88,6 +92,7 @@ public struct File: Codable {
 		url: String,
 		source: String?,
 		variations: [String: String]?,
+		contentInfo: ContentInfo?,
 		metadata: [String: String]?
 	) {
 		self.size = size
@@ -103,6 +108,7 @@ public struct File: Codable {
 		self.url = url
 		self.source = source
 		self.variations = variations
+		self.contentInfo = contentInfo
 		self.metadata = metadata
 	}
 
@@ -143,6 +149,7 @@ public struct File: Codable {
 		let url = try container.decodeIfPresent(String.self, forKey: .url) ?? ""
 		let source = try container.decodeIfPresent(String.self, forKey: .source)
 		let variations = try container.decodeIfPresent([String: String].self, forKey: .variations)
+		let contentInfo = try container.decodeIfPresent(ContentInfo.self, forKey: .contentInfo)
 		let metadata = try container.decodeIfPresent([String: String].self, forKey: .metadata)
 
 		self.init(
@@ -159,6 +166,7 @@ public struct File: Codable {
 			url: url,
 			source: source,
 			variations: variations,
+			contentInfo: contentInfo,
 			metadata: metadata
 		)
 	}
@@ -182,6 +190,7 @@ extension File: CustomDebugStringConvertible {
 			url: \(url),
 			source: \(String(describing: source)),
 			variations: \(String(describing: variations)),
+			contentInfo: \(String(describing: contentInfo)),
 			metadata: \(String(describing: metadata))
 		"""
 	}

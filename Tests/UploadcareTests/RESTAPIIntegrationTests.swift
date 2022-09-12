@@ -776,7 +776,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				expectation.fulfill()
 			case .success(let list):
 				let uuid = list.results.first!.uuid
-				var expectedValue = NSUUID().uuidString
+				let expectedValue = NSUUID().uuidString
 
 				// update
 				self.uploadcare.updateFileMetadata(withUUID: uuid, key: "myMeta", value:expectedValue) { result in
