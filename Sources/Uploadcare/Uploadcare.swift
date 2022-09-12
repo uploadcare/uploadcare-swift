@@ -118,6 +118,50 @@ extension Uploadcare {
         }
     }
 
+	/// Store a single file by UUID.
+	/// - Parameters:
+	///   - uuid: file UUID
+	///   - completionHandler: completion handler
+	public func storeFile(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
+	) {
+		let url = urlWithPath("/files/\(uuid)/storage/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let file): completionHandler(.success(file))
+			}
+		}
+	}
+
+	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
+	/// - Parameters:
+	///   - uuids: List of files UUIDs to store.
+	///   - completionHandler: completion handler
+	public func storeFiles(
+		withUUIDs uuids: [String],
+		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
+	) {
+		let url = urlWithPath("/files/storage/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
+
+		if let body = try? JSONEncoder().encode(uuids) {
+			urlRequest.httpBody = body
+		}
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<BatchFilesOperationResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
+			}
+		}
+	}
+
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
 	/// - Parameters:
 	///   - uuid: FILE UUID
@@ -182,43 +226,74 @@ extension Uploadcare {
 		}
 	}
 
-	/// Store a single file by UUID.
+	/// Copy file to local storage. Used to copy original files or their modified versions to default storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
 	/// - Parameters:
-	///   - uuid: file UUID
+	///   - source: A CDN URL or just UUID of a file subjected to copy.
+	///   - store: The parameter only applies to the Uploadcare storage. Default: "false"
+	///   - makePublic: Applicable to custom storage only. True to make copied files available via public links, false to reverse the behavior. Default: "true"
 	///   - completionHandler: completion handler
-	public func storeFile(
-		withUUID uuid: String,
-		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
+	public func copyFileToLocalStorage(
+		source: String,
+		store: Bool? = nil,
+		makePublic: Bool? = nil,
+		_ completionHandler: @escaping (Result<CopyFileToLocalStorageResponse, RESTAPIError>) -> Void
 	) {
-		let url = urlWithPath("/files/\(uuid)/storage/")
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
-		requestManager.signRequest(&urlRequest)
+		let url = urlWithPath("/files/local_copy/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 
-		requestManager.performRequest(urlRequest) { (result: Result<File, Error>) in
-			switch result {
-			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
-			case .success(let file): completionHandler(.success(file))
-			}
-		}
-	}
-
-	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
-	/// - Parameters:
-	///   - uuids: List of files UUIDs to store.
-	///   - completionHandler: completion handler
-	public func storeFiles(
-		withUUIDs uuids: [String],
-		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
-	) {
-		let url = urlWithPath("/files/storage/")
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
-
-		if let body = try? JSONEncoder().encode(uuids) {
+		let bodyDictionary = [
+			"source": source,
+			"store": "\(store ?? false)",
+			"make_public": "\(makePublic ?? true)"
+		]
+		if let body = try? JSONEncoder().encode(bodyDictionary) {
 			urlRequest.httpBody = body
 		}
 		requestManager.signRequest(&urlRequest)
 
-		requestManager.performRequest(urlRequest) { (result: Result<BatchFilesOperationResponse, Error>) in
+		requestManager.performRequest(urlRequest) { (result: Result<CopyFileToLocalStorageResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
+			}
+		}
+	}
+
+	/// POST requests are used to copy original files or their modified versions to a custom storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
+	/// - Parameters:
+	///   - source: A CDN URL or just UUID of a file subjected to copy.
+	///   - target: Identifies a custom storage name related to your project. Implies you are copying a file to a specified custom storage. Keep in mind you can have multiple storages associated with a single S3 bucket.
+	///   - makePublic: MUST be either true or false. true to make copied files available via public links, false to reverse the behavior.
+	///   - pattern: The parameter is used to specify file names Uploadcare passes to a custom storage. In case the parameter is omitted, we use pattern of your custom storage. Use any combination of allowed values.
+	///   - completionHandler: completion handler
+	public func copyFileToRemoteStorage(
+		source: String,
+		target: String,
+		makePublic: Bool? = nil,
+		pattern: NamesPattern?,
+		_ completionHandler: @escaping (Result<CopyFileToRemoteStorageResponse, RESTAPIError>) -> Void
+	) {
+		let url = urlWithPath("/files/remote_copy/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		var bodyDictionary = [
+			"source": source,
+			"target": target
+		]
+
+		if let makePublicVal = makePublic {
+			bodyDictionary["make_public"] = "\(makePublicVal)"
+		}
+		if let patternVal = pattern {
+			bodyDictionary["pattern"] = patternVal.rawValue
+		}
+
+		if let body = try? JSONEncoder().encode(bodyDictionary) {
+			urlRequest.httpBody = body
+		}
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<CopyFileToRemoteStorageResponse, Error>) in
 			switch result {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let response): completionHandler(.success(response))
@@ -305,81 +380,6 @@ extension Uploadcare {
 			switch result {
 			case .failure(let error): completionHandler(RESTAPIError.fromError(error))
 			case .success(_): completionHandler(nil)
-			}
-		}
-	}
-
-	/// Copy file to local storage. Used to copy original files or their modified versions to default storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
-	/// - Parameters:
-	///   - source: A CDN URL or just UUID of a file subjected to copy.
-	///   - store: The parameter only applies to the Uploadcare storage. Default: "false"
-	///   - makePublic: Applicable to custom storage only. True to make copied files available via public links, false to reverse the behavior. Default: "true"
-	///   - completionHandler: completion handler
-	public func copyFileToLocalStorage(
-		source: String,
-		store: Bool? = nil,
-		makePublic: Bool? = nil,
-		_ completionHandler: @escaping (Result<CopyFileToLocalStorageResponse, RESTAPIError>) -> Void
-	) {
-		let url = urlWithPath("/files/local_copy/")
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
-
-		let bodyDictionary = [
-			"source": source,
-			"store": "\(store ?? false)",
-			"make_public": "\(makePublic ?? true)"
-		]
-		if let body = try? JSONEncoder().encode(bodyDictionary) {
-			urlRequest.httpBody = body
-		}
-		requestManager.signRequest(&urlRequest)
-
-		requestManager.performRequest(urlRequest) { (result: Result<CopyFileToLocalStorageResponse, Error>) in
-			switch result {
-			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
-			case .success(let response): completionHandler(.success(response))
-			}
-		}
-	}
-
-	/// POST requests are used to copy original files or their modified versions to a custom storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
-	/// - Parameters:
-	///   - source: A CDN URL or just UUID of a file subjected to copy.
-	///   - target: Identifies a custom storage name related to your project. Implies you are copying a file to a specified custom storage. Keep in mind you can have multiple storages associated with a single S3 bucket.
-	///   - makePublic: MUST be either true or false. true to make copied files available via public links, false to reverse the behavior.
-	///   - pattern: The parameter is used to specify file names Uploadcare passes to a custom storage. In case the parameter is omitted, we use pattern of your custom storage. Use any combination of allowed values.
-	///   - completionHandler: completion handler
-	public func copyFileToRemoteStorage(
-		source: String,
-		target: String,
-		makePublic: Bool? = nil,
-		pattern: NamesPattern?,
-		_ completionHandler: @escaping (Result<CopyFileToRemoteStorageResponse, RESTAPIError>) -> Void
-	) {
-		let url = urlWithPath("/files/remote_copy/")
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
-
-		var bodyDictionary = [
-			"source": source,
-			"target": target
-		]
-
-		if let makePublicVal = makePublic {
-			bodyDictionary["make_public"] = "\(makePublicVal)"
-		}
-		if let patternVal = pattern {
-			bodyDictionary["pattern"] = patternVal.rawValue
-		}
-
-		if let body = try? JSONEncoder().encode(bodyDictionary) {
-			urlRequest.httpBody = body
-		}
-		requestManager.signRequest(&urlRequest)
-
-		requestManager.performRequest(urlRequest) { (result: Result<CopyFileToRemoteStorageResponse, Error>) in
-			switch result {
-			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
-			case .success(let response): completionHandler(.success(response))
 			}
 		}
 	}
