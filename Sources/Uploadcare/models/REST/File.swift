@@ -52,9 +52,10 @@ public struct File: Codable {
 	public var variations: [String: String]?
 
 	/// Arbitrary metadata associated with a file.
+	/// Metadata is key-value data. You can specify up to 50 keys, with key names up to 64 characters long and values up to 512 characters long.
 	public var metadata: [String: String]?
-	
-	
+
+
 	enum CodingKeys: String, CodingKey {
 		case size
 		case uuid
