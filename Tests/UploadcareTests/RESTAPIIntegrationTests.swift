@@ -132,7 +132,10 @@ final class RESTAPIIntegrationTests: XCTestCase {
 			case .success(let list):
 				// get file info by file UUID
 				let uuid = list.results.first!.uuid
-				self.uploadcare.fileInfo(withUUID: uuid) { result in
+
+				let fileInfoQuery = FileInfoQuery().include(.appdata)
+
+				self.uploadcare.fileInfo(withUUID: uuid, withQuery: fileInfoQuery) { result in
 					defer { expectation.fulfill() }
 
 					switch result {

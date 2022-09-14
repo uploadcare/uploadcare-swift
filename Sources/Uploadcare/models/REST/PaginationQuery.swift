@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 /**
 	Defines params for files list query
 

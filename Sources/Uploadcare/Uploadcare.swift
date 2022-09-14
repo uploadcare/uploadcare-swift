@@ -164,13 +164,26 @@ extension Uploadcare {
 
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
 	/// - Parameters:
-	///   - uuid: FILE UUID
-	///   - completionHandler: completion handler
+	///   - uuid: File UUID.
+	///   - query: Query parameters string.
+	///   - completionHandler: Completion handler.
 	public func fileInfo(
 		withUUID uuid: String,
+		withQueryString query: String? = nil,
 		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
-		let url = urlWithPath("/files/\(uuid)/")
+
+		var urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
+		if let queryValue = query {
+			urlString += "?\(queryValue)"
+		}
+
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			completionHandler(.failure(RESTAPIError.init(detail: "Incorrect url")))
+			return
+		}
+
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		requestManager.signRequest(&urlRequest)
 
@@ -180,6 +193,19 @@ extension Uploadcare {
 			case .success(let file): completionHandler(.success(file))
 			}
 		}
+	}
+
+	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
+	/// - Parameters:
+	///   - uuid: File UUID.
+	///   - query: Query parameters
+	///   - completionHandler: Completion handler.
+	public func fileInfo(
+		withUUID uuid: String,
+		withQuery query: FileInfoQuery,
+		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
+	) {
+		fileInfo(withUUID: uuid, withQueryString: query.stringValue, completionHandler)
 	}
 
 	/// Delete file. Beside deleting in a multi-file mode, you can remove individual files.
