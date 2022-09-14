@@ -9,30 +9,6 @@
 import Foundation
 
 public struct UCClamavVirusScan {
-	public struct ClamavData: Codable {
-		public let infected: Bool
-		public let infectedWith: String
-
-		enum CodingKeys: String, CodingKey {
-			case infected
-			case infectedWith = "infected_with"
-		}
-
-		public init(from decoder: Decoder) throws {
-			let container = try decoder.container(keyedBy: CodingKeys.self)
-
-			let infected = try container.decode(Bool.self, forKey: .infected)
-			let infectedWith = try container.decodeIfPresent(String.self, forKey: .infectedWith) ?? ""
-
-			self.init(infected: infected, infectedWith: infectedWith)
-		}
-
-		internal init(infected: Bool, infectedWith: String) {
-			self.infected = infected
-			self.infectedWith = infectedWith
-		}
-	}
-
 	/// An application version.
 	public let version: String
 
@@ -86,3 +62,29 @@ public struct UCClamavVirusScan {
 	}
 }
 
+
+extension UCClamavVirusScan {
+	public struct ClamavData: Codable {
+		public let infected: Bool
+		public let infectedWith: String
+
+		enum CodingKeys: String, CodingKey {
+			case infected
+			case infectedWith = "infected_with"
+		}
+
+		public init(from decoder: Decoder) throws {
+			let container = try decoder.container(keyedBy: CodingKeys.self)
+
+			let infected = try container.decode(Bool.self, forKey: .infected)
+			let infectedWith = try container.decodeIfPresent(String.self, forKey: .infectedWith) ?? ""
+
+			self.init(infected: infected, infectedWith: infectedWith)
+		}
+
+		internal init(infected: Bool, infectedWith: String) {
+			self.infected = infected
+			self.infectedWith = infectedWith
+		}
+	}
+}

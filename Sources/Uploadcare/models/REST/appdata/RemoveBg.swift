@@ -9,26 +9,6 @@
 import Foundation
 
 public struct RemoveBg: Codable {
-	public struct RemoveBgData: Codable {
-		internal init(foregroundType: String) {
-			self.foregroundType = foregroundType
-		}
-
-		public let foregroundType: String
-
-		enum CodingKeys: String, CodingKey {
-			case foregroundType = "foreground_type"
-		}
-
-		public init(from decoder: Decoder) throws {
-			let container = try decoder.container(keyedBy: CodingKeys.self)
-
-			let foregroundType = try container.decodeIfPresent(String.self, forKey: .foregroundType) ?? ""
-
-			self.init(foregroundType: foregroundType)
-		}
-	}
-
 	/// An application version.
 	public let version: String
 
@@ -79,5 +59,27 @@ public struct RemoveBg: Codable {
 		let data = try container.decode(RemoveBgData.self, forKey: .data)
 
 		self.init(version: version, datetimeCreated: datetimeCreated, datetimeUpdated: datetimeUpdated, data: data)
+	}
+}
+
+extension RemoveBg {
+	public struct RemoveBgData: Codable {
+		internal init(foregroundType: String) {
+			self.foregroundType = foregroundType
+		}
+
+		public let foregroundType: String
+
+		enum CodingKeys: String, CodingKey {
+			case foregroundType = "foreground_type"
+		}
+
+		public init(from decoder: Decoder) throws {
+			let container = try decoder.container(keyedBy: CodingKeys.self)
+
+			let foregroundType = try container.decodeIfPresent(String.self, forKey: .foregroundType) ?? ""
+
+			self.init(foregroundType: foregroundType)
+		}
 	}
 }
