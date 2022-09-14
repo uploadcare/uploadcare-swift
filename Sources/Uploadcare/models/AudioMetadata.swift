@@ -20,7 +20,7 @@ public struct AudioMetadata: Codable {
 	public var sampleRate: Int?
 
 	/// Audio stream number of channels.
-	public var channels: String?
+	public var channels: Int?
 
 
 	enum CodingKeys: String, CodingKey {
