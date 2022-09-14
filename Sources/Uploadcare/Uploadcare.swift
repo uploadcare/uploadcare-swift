@@ -520,6 +520,34 @@ extension Uploadcare {
 		}
 	}
 
+	/// Delete a file group by its ID.
+	///
+	/// **Note**: The operation only removes the group object itself. **All the files that were part of the group are left as is.**
+	///
+	/// - Parameters:
+	///   - uuid: Group UUID.
+	///   - completionHandler: Completion handler.
+	public func deleteGroup(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (RESTAPIError?) -> Void
+	) {
+		let url = urlWithPath("/groups/\(uuid)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<Group, Error>) in
+			switch result {
+			case .failure(let error):
+				if case .emptyResponse = error as? RequestManagerError {
+					completionHandler(nil)
+					return
+				}
+				completionHandler(RESTAPIError.fromError(error))
+			case .success(_): completionHandler(nil)
+			}
+		}
+	}
+
 	/// Getting info about account project.
 	/// - Parameter completionHandler: completion handler
 	public func getProjectInfo(_ completionHandler: @escaping (Result<Project, RESTAPIError>) -> Void) {

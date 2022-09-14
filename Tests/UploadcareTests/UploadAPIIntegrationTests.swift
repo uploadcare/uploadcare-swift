@@ -293,7 +293,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 120.0)
 	}
 
-	func test10_createFilesGroup_and_filesGroupInfo() {
+	func test10_createFilesGroup_and_filesGroupInfo_and_delegeGroup() {
 		let expectation = XCTestExpectation(description: "test10_createFilesGroup_and_filesGroupInfo")
 
 		let url = URL(string: "https://source.unsplash.com/random?\(UUID().uuidString)")!
@@ -320,6 +320,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 						XCTFail(error.detail)
 						expectation.fulfill()
 					case .success(let info):
+						// create new group
 						self.newGroup = self.uploadcare.group(ofFiles:[info])
 						self.newGroup!.create { result in
 							switch result {
@@ -332,15 +333,21 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 								XCTAssertEqual(response.filesCount, 1)
 
+								// group info
 								self.uploadcare.uploadAPI.filesGroupInfo(groupId: response.id) { result in
-									defer { expectation.fulfill() }
-
 									switch result {
 									case .failure(let error):
 										XCTFail(error.detail)
+										expectation.fulfill()
 									case .success(let group):
 										XCTAssertNotNil(group.files)
 										XCTAssertFalse(group.files!.isEmpty)
+
+										// delete group
+										self.uploadcare.deleteGroup(withUUID: group.id) { error in
+											defer { expectation.fulfill() }
+											XCTAssertNil(error)
+										}
 									}
 								}
 							}
