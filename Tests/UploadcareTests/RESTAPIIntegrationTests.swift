@@ -823,6 +823,46 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		wait(for: [expectation], timeout: 15.0)
 	}
+
+	func test23_clamav_execute_and_status() {
+		let expectation = XCTestExpectation(description: "test23_clamav_execute_and_status")
+
+		// get any file from list of files
+		let query = PaginationQuery().limit(1)
+		let filesList = uploadcare.listOfFiles()
+		filesList.get(withQuery: query) { result in
+			switch result {
+			case .failure(let error):
+				XCTFail(error.detail)
+				expectation.fulfill()
+			case .success(let list):
+				let uuid = list.results.first!.uuid
+
+				self.uploadcare.executeAWSRecognition(fileUUID: uuid) { result in
+					switch result {
+					case .failure(let error):
+						XCTFail(error.detail)
+					case .success(let response):
+						DLog(response)
+
+						// check status
+						self.uploadcare.checkAWSRecognitionStatus(requestID: response.requestID) { result in
+							defer { expectation.fulfill() }
+
+							switch result {
+							case .failure(let error):
+								XCTFail(error.detail)
+							case .success(let status):
+								XCTAssertTrue(status != .unknown)
+							}
+						}
+					}
+				}
+			}
+		}
+
+		wait(for: [expectation], timeout: 20.0)
+	}
 }
 
 #endif
