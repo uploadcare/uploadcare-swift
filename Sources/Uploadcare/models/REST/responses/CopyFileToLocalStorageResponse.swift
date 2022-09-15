@@ -10,21 +10,17 @@ import Foundation
 
 
 public struct CopyFileToLocalStorageResponse: Codable {
-	
+	/// Default: "file"
 	public var type: String
 	public var result: File?
 	
 	
 	enum CodingKeys: String, CodingKey {
-		case type
-		case result
+		case type, result
 	}
 	
 	
-	init(
-		type: String,
-		result: File?
-	) {
+	init(type: String, result: File?) {
 		self.type = type
 		self.result = result
 	}
@@ -35,10 +31,7 @@ public struct CopyFileToLocalStorageResponse: Codable {
 		let type = try container.decodeIfPresent(String.self, forKey: .type) ?? "file"
 		let result = try container.decodeIfPresent(File.self, forKey: .result)
 
-		self.init(
-			type: type,
-			result: result
-		)
+		self.init(type: type, result: result)
 	}
 }
 

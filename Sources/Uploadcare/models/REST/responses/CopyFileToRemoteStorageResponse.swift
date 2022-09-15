@@ -22,23 +22,19 @@ public enum NamesPattern: String {
 
 public struct CopyFileToRemoteStorageResponse: Codable {
 	
-	/// Default: "file"
+	/// Default: "url"
 	public var type: String
 		
-	/// For the url type, the result is a URL with the s3 scheme. Your bucket name is put as a host, and an s3 object path follows.
+	/// URL with an s3 scheme. Your bucket name is put as a host, and an s3 object path follows.
 	public var result: String
 	
 	
 	enum CodingKeys: String, CodingKey {
-		case type
-		case result
+		case type, result
 	}
 	
 	
-	init(
-		type: String,
-		result: String
-	) {
+	init(type: String, result: String) {
 		self.type = type
 		self.result = result
 	}
@@ -49,10 +45,7 @@ public struct CopyFileToRemoteStorageResponse: Codable {
 		let type = try container.decodeIfPresent(String.self, forKey: .type) ?? "file"
 		let result = try container.decodeIfPresent(String.self, forKey: .result) ?? ""
 
-		self.init(
-			type: type,
-			result: result
-		)
+		self.init(type: type, result: result)
 	}
 }
 
