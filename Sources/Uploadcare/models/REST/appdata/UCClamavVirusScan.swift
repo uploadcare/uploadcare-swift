@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct UCClamavVirusScan {
+public struct UCClamavVirusScan: Codable {
 	/// An application version.
 	public let version: String
 

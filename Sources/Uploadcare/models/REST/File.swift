@@ -58,6 +58,9 @@ public struct File: Codable {
 	/// Information about file content.
 	public var contentInfo: ContentInfo?
 
+	/// Application names and data associated with these applications.
+	public let appData: AppData?
+
 
 	enum CodingKeys: String, CodingKey {
 		case size
@@ -75,6 +78,7 @@ public struct File: Codable {
 		case variations
 		case metadata
 		case contentInfo = "content_info"
+		case appData = "appdata"
 	}
 	
 	
@@ -93,7 +97,8 @@ public struct File: Codable {
 		source: String?,
 		variations: [String: String]?,
 		contentInfo: ContentInfo?,
-		metadata: [String: String]?
+		metadata: [String: String]?,
+		appData: AppData?
 	) {
 		self.size = size
 		self.uuid = uuid
@@ -110,6 +115,7 @@ public struct File: Codable {
 		self.variations = variations
 		self.contentInfo = contentInfo
 		self.metadata = metadata
+		self.appData = appData
 	}
 
 	public init(from decoder: Decoder) throws {
@@ -151,6 +157,7 @@ public struct File: Codable {
 		let variations = try container.decodeIfPresent([String: String].self, forKey: .variations)
 		let contentInfo = try container.decodeIfPresent(ContentInfo.self, forKey: .contentInfo)
 		let metadata = try container.decodeIfPresent([String: String].self, forKey: .metadata)
+		let appData = try container.decodeIfPresent(AppData.self, forKey: .appData)
 
 		self.init(
 			size: size,
@@ -167,7 +174,8 @@ public struct File: Codable {
 			source: source,
 			variations: variations,
 			contentInfo: contentInfo,
-			metadata: metadata
+			metadata: metadata,
+			appData: appData
 		)
 	}
 }
@@ -191,7 +199,8 @@ extension File: CustomDebugStringConvertible {
 			source: \(String(describing: source)),
 			variations: \(String(describing: variations)),
 			contentInfo: \(String(describing: contentInfo)),
-			metadata: \(String(describing: metadata))
+			metadata: \(String(describing: metadata)),
+			appData: \(String(describing: appData))
 		"""
 	}
 }
