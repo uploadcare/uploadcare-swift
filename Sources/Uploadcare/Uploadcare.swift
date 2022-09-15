@@ -893,6 +893,32 @@ extension Uploadcare {
 			}
 		}
 	}
+
+	/// Check AWS Rekognition execution status.
+	/// - Parameters:
+	///   - requestID: Request ID returned by the Add-On execution request.
+	///   - completionHandler: Completion handler.
+	public func checkAWSRecognitionStatus(requestID: String, _ completionHandler: @escaping (Result<AddonExecutionStatus, RESTAPIError>) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/addons/aws_rekognition_detect_labels/execute/status/?request_id=\(requestID)"
+
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			completionHandler(.failure(RESTAPIError.init(detail: "Incorrect url")))
+			return
+		}
+
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<ExecuteAddonStatusResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response):
+				let status = AddonExecutionStatus(rawValue: response.status) ?? .unknown
+				completionHandler(.success(status))
+			}
+		}
+	}
 }
 
 // MARK: - Upload
