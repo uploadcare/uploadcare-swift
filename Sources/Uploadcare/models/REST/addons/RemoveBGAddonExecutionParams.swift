@@ -101,3 +101,8 @@ public struct RemoveBGAddonExecutionParams: Codable {
 		self.position = try container.decodeIfPresent(String.self, forKey: .position)
 	}
 }
+
+internal struct RemoveBGAddonExecutionRequestBody: Codable {
+	let target: String
+	let params: RemoveBGAddonExecutionParams?
+}
