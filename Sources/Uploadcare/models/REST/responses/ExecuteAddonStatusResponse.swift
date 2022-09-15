@@ -15,6 +15,7 @@ public enum AddonExecutionStatus: String {
 
 /// Response that API will return for Exectute Add-On request.
 internal struct ExecuteAddonStatusResponse: Codable {
+
 	/// Defines the status of an Add-On execution. In most cases, once the status changes to done, Application Data of the file that had been specified as a target, will contain the result of the execution.
 	var status: String
 

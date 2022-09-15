@@ -919,6 +919,55 @@ extension Uploadcare {
 			}
 		}
 	}
+
+	/// Execute ClamAV virus checking Add-On for a given target.
+	/// - Parameters:
+	///   - fileUUID: Unique ID of the file to process.
+	///   - parameters: Optional object with Add-On specific parameters.
+	///   - completionHandler: Completion handler.
+	public func executeClamav(fileUUID: String, parameters: ClamAVAddonExecutionParams? = nil, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {
+		let url = urlWithPath("/addons/uc_clamav_virus_scan/execute/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let requestBody = ClamAVAddonExecutionRequestBody(target: fileUUID, params: parameters)
+		urlRequest.httpBody = try? JSONEncoder().encode(requestBody)
+
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<ExecuteAddonResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
+			}
+		}
+	}
+
+	/// Check the status of an Add-On execution request that had been started using ``executeClamav(fileUUID:parameters:_:)`` method.
+	/// - Parameters:
+	///   - requestID: Request ID returned by the Add-On execution request described above.
+	///   - completionHandler: Completion handler.
+	public func checkClamAVStatus(requestID: String, _ completionHandler: @escaping (Result<AddonExecutionStatus, RESTAPIError>) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/addons/uc_clamav_virus_scan/execute/status/?request_id=\(requestID)"
+
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			completionHandler(.failure(RESTAPIError.init(detail: "Incorrect url")))
+			return
+		}
+
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<ExecuteAddonStatusResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response):
+				let status = AddonExecutionStatus(rawValue: response.status) ?? .unknown
+				completionHandler(.success(status))
+			}
+		}
+	}
+
 }
 
 // MARK: - Upload
