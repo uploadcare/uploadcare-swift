@@ -868,6 +868,33 @@ extension Uploadcare {
 	}
 }
 
+// MARK: - Add-Ons
+extension Uploadcare {
+	/// Execute AWS Rekognition
+	/// - Parameters:
+	///   - fileUUID: Unique ID of the file to process.
+	///   - completionHandler: Completion handler.
+	public func executeAWSRecognition(fileUUID: String, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {
+		let url = urlWithPath("/addons/aws_rekognition_detect_labels/execute/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let bodyDictionary = [
+			"target": fileUUID
+		]
+
+		urlRequest.httpBody = try? JSONEncoder().encode(bodyDictionary)
+
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<ExecuteAddonResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
+			}
+		}
+	}
+}
+
 // MARK: - Upload
 extension Uploadcare {
 	/// Upload file. This method will decide internally which upload will be used (direct or multipart)
