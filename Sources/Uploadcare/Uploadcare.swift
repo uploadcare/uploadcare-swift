@@ -52,7 +52,7 @@ public class Uploadcare: NSObject {
 	/// Library name
 	private var libraryName = "UploadcareSwift"
 	/// Library version
-	private var libraryVersion = "0.8.1"
+	private var libraryVersion = "0.8.2"
 
 	/// Performs network requests
 	private let requestManager: RequestManager
