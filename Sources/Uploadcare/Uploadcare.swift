@@ -1066,6 +1066,7 @@ extension Uploadcare {
 								isReady: file.isReady,
 								imageInfo: nil,
 								videoInfo: nil,
+								contentInfo: nil,
 								s3Bucket: nil
 							)
 

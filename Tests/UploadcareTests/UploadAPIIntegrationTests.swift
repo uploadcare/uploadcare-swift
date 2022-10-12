@@ -260,8 +260,10 @@ final class UploadAPIIntegrationTests: XCTestCase {
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
-					case .success(_):
-						break
+					case .success(let file):
+						XCTAssertNotNil(file.contentInfo)
+						XCTAssertNotNil(file.total)
+						XCTAssertEqual(file.total, file.size)
 					}
 				}
 			}

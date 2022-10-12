@@ -52,6 +52,9 @@ public class UploadedFile: Codable {
 	
 	/// Video metadata.
 	public var videoInfo: VideoInfo?
+
+	/// Information about file content.
+	public var contentInfo: ContentInfo?
 	
 	/// Your custom user bucket on which file are stored. Only available of you setup foreign storage bucket for your project.
 	public var s3Bucket: String?
@@ -82,6 +85,7 @@ public class UploadedFile: Codable {
 		case isReady = "is_ready"
 		case imageInfo = "image_info"
 		case videoInfo = "video_info"
+		case contentInfo = "content_info"
 		case s3Bucket = "s3_bucket"
 	}
 	
@@ -101,6 +105,7 @@ public class UploadedFile: Codable {
 		isReady: Bool,
 		imageInfo: ImageInfo?,
 		videoInfo: VideoInfo?,
+		contentInfo: ContentInfo?,
 		s3Bucket: String?
 	) {
 		self.size = size
@@ -116,6 +121,7 @@ public class UploadedFile: Codable {
 		self.isReady = isReady
 		self.imageInfo = imageInfo
 		self.videoInfo = videoInfo
+		self.contentInfo = contentInfo
 		self.s3Bucket = s3Bucket
 	}
 	
@@ -135,6 +141,7 @@ public class UploadedFile: Codable {
 		let isReady = try container.decodeIfPresent(Bool.self, forKey: .isReady) ?? false
 		let imageInfo = try container.decodeIfPresent(ImageInfo.self, forKey: .imageInfo)
 		let videoInfo = try container.decodeIfPresent(VideoInfo.self, forKey: .videoInfo)
+		let contentInfo = try container.decodeIfPresent(ContentInfo.self, forKey: .contentInfo)
 		let s3Bucket = try container.decodeIfPresent(String.self, forKey: .s3Bucket)
 		
 		self.init(
@@ -151,6 +158,7 @@ public class UploadedFile: Codable {
 			isReady: isReady,
 			imageInfo: imageInfo,
 			videoInfo: videoInfo,
+			contentInfo: contentInfo,
 			s3Bucket: s3Bucket
 		)
 	}
@@ -172,6 +180,7 @@ public class UploadedFile: Codable {
 		self.isReady = false
 		self.imageInfo = nil
 		self.videoInfo = nil
+		self.contentInfo = nil
 		self.s3Bucket = ""
 	}
 	
@@ -227,6 +236,7 @@ public class UploadedFile: Codable {
 				self.isReady = uploadedFile.isReady
 				self.imageInfo = uploadedFile.imageInfo
 				self.videoInfo = uploadedFile.videoInfo
+				self.contentInfo = uploadedFile.contentInfo
 				self.s3Bucket = uploadedFile.s3Bucket
 			}
 		})
@@ -251,6 +261,7 @@ extension UploadedFile: CustomDebugStringConvertible {
 			isReady: \(isReady)
 			imageInfo: \(String(describing: imageInfo))
 			videoInfo: \(String(describing: videoInfo))
+			contentInfo: \(String(describing: contentInfo))
 			s3Bucket: \(String(describing: s3Bucket))
 		"""
 	}
@@ -300,6 +311,7 @@ extension UploadedFile {
 				self.isReady = uploadedFile.isReady
 				self.imageInfo = uploadedFile.imageInfo
 				self.videoInfo = uploadedFile.videoInfo
+				self.contentInfo = uploadedFile.contentInfo
 				self.s3Bucket = uploadedFile.s3Bucket
 			}
 		})
