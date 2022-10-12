@@ -25,7 +25,7 @@ struct FileRowView: View {
 						Image(systemName: "photo.fill")
 							.frame(width: 30, height: 30, alignment: .center)
 					}
-				} else if fileData.file.videoInfo != nil {
+				} else if fileData.file.contentInfo?.video != nil {
 					Image(systemName: "video.fill")
 						.frame(width: 30, height: 30, alignment: .center)
 				} else {
@@ -65,33 +65,3 @@ struct FileRowView: View {
 		}
 	}
 }
-
-struct FileRowView_Previews: PreviewProvider {
-    static var previews: some View {
-		#if DEBUG
-		FileRowView(fileData: testFileViewData)
-			.previewLayout(.sizeThatFits)
-		#endif
-    }
-}
-
-#if DEBUG
-let testFile = File(
-	size: 54306,
-	uuid: "d1a13e8a-eb9a-4782-b828-e561adad2cf1",
-	originalFilename: "random_file_name.jpg",
-	mimeType: "image/jpeg",
-	isImage: true,
-	isReady: true,
-	datetimeRemoved: nil,
-	datetimeStored: nil,
-	datetimeUploaded: Date(),
-	originalFileUrl: "https://ucarecdn.com/d1a13e8a-eb9a-4782-b828-e561adad2cf1/random_file_name.jpg",
-	url: "https://api.uploadcare.com/files/d1a13e8a-eb9a-4782-b828-e561adad2cf1/",
-	source: nil,
-	variations: nil,
-	videoInfo: nil,
-	metadata: nil
-)
-let testFileViewData = FileViewData(file: testFile)
-#endif
