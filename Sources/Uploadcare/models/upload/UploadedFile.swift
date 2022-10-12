@@ -19,10 +19,13 @@ public class UploadedFile: Codable {
 	
 	/// File size in bytes. Same as size.
 	public var total: Int
+
+	/// Same as ``size``.
+	public var done: Int
 	
 	/// File UUID
 	public var uuid: String
-	
+
 	/// Same as uuid
 	public var fileId: String
 	
@@ -68,6 +71,7 @@ public class UploadedFile: Codable {
 	enum CodingKeys: String, CodingKey {
 		case size
 		case total
+		case done
 		case uuid
 		case fileId = "file_id"
 		case originalFilename = "original_filename"
@@ -86,6 +90,7 @@ public class UploadedFile: Codable {
 	init(
 		size: Int,
 		total: Int,
+		done: Int,
 		uuid: String,
 		fileId: String,
 		originalFilename: String,
@@ -100,6 +105,7 @@ public class UploadedFile: Codable {
 	) {
 		self.size = size
 		self.total = total
+		self.done = done
 		self.uuid = uuid
 		self.fileId = fileId
 		self.originalFilename = originalFilename
@@ -118,6 +124,7 @@ public class UploadedFile: Codable {
 		
 		let size = try container.decodeIfPresent(Int.self, forKey: .size) ?? 0
 		let total = try container.decodeIfPresent(Int.self, forKey: .total) ?? 0
+		let done = try container.decodeIfPresent(Int.self, forKey: .done) ?? 0
 		let uuid = try container.decodeIfPresent(String.self, forKey: .uuid) ?? ""
 		let fileId = try container.decodeIfPresent(String.self, forKey: .fileId) ?? ""
 		let originalFilename = try container.decodeIfPresent(String.self, forKey: .originalFilename) ?? ""
@@ -133,6 +140,7 @@ public class UploadedFile: Codable {
 		self.init(
 			size: size,
 			total: total,
+			done: done,
 			uuid: uuid,
 			fileId: fileId,
 			originalFilename: originalFilename,
@@ -153,6 +161,7 @@ public class UploadedFile: Codable {
 		
 		self.size = data.count
 		self.total = data.count
+		self.done = data.count
 		self.uuid = ""
 		self.fileId = ""
 		self.originalFilename = ""
@@ -207,6 +216,7 @@ public class UploadedFile: Codable {
 
 				self.size = uploadedFile.size
 				self.total = uploadedFile.total
+				self.done = uploadedFile.done
 				self.uuid = uploadedFile.uuid
 				self.fileId = uploadedFile.fileId
 				self.originalFilename = uploadedFile.originalFilename
@@ -230,6 +240,7 @@ extension UploadedFile: CustomDebugStringConvertible {
 		\(type(of: self)):
 			size: \(size)
 			total: \(total)
+			done: \(done)
 			uuid: \(uuid)
 			fileId: \(fileId)
 			originalFilename: \(originalFilename)
@@ -278,6 +289,7 @@ extension UploadedFile {
 
 				self.size = uploadedFile.size
 				self.total = uploadedFile.total
+				self.done = uploadedFile.done
 				self.uuid = uploadedFile.uuid
 				self.fileId = uploadedFile.fileId
 				self.originalFilename = uploadedFile.originalFilename

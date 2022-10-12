@@ -1055,6 +1055,7 @@ extension Uploadcare {
 							let uploadedFile = UploadedFile(
 								size: file.size,
 								total: file.size,
+								done: file.size,
 								uuid: file.uuid,
 								fileId: file.uuid,
 								originalFilename: file.originalFilename,
