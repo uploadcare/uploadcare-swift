@@ -286,7 +286,9 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			DLog("progress: \(progress)")
 		}
 
-		uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, onProgress) { result in
+		let metadata = ["multipart": "upload"]
+
+		uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, metadata: metadata, onProgress) { result in
 			defer { expectation.fulfill() }
 
 			switch result {

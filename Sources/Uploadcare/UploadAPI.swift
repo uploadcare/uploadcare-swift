@@ -413,6 +413,7 @@ extension UploadAPI {
 		_ data: Data,
 		withName name: String,
 		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
@@ -430,6 +431,7 @@ extension UploadAPI {
 			size: totalSize,
 			mimeType: fileMimeType,
 			store: store ?? .store,
+			metadata: metadata,
 			uploadSignature: uploadSignature) { [weak self] result in
 				guard let self = self else { return }
 
@@ -507,6 +509,7 @@ extension UploadAPI {
 		size: Int,
 		mimeType: String,
 		store: StoringBehavior,
+		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<StartMulipartUploadResponse, UploadError>) -> Void
 	) {
@@ -520,6 +523,12 @@ extension UploadAPI {
 		builder.addMultiformValue(mimeType, forName: "content_type")
 		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
 		builder.addMultiformValue(store.rawValue, forName: "UPLOADCARE_STORE")
+
+		if let metadata = metadata {
+			for meta in metadata {
+				builder.addMultiformValue(meta.value, forName: "metadata[\(meta.key)]")
+			}
+		}
 
 		if let uploadSignature = uploadSignature ?? getSignature() {
 			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
