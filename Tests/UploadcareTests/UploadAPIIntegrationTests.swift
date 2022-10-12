@@ -24,6 +24,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			.saveURLDuplicates(true)
 			.filename("file_from_url")
 			.store(.doNotStore)
+			.setMetadata("hi", forKey: "hello")
 
 		uploadcare.uploadAPI.upload(task: task) { [unowned self] result in
 			switch result {

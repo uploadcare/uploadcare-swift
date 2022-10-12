@@ -206,6 +206,14 @@ extension UploadAPI {
 			)
 		}
 
+		if let metadata = task.metadata {
+			for meta in metadata {
+				queryItems.append(
+					URLQueryItem(name: "metadata[\(meta.key)]", value: meta.value)
+				)
+			}
+		}
+
 		if let uploadSignature = uploadSignature ?? getSignature() {
 			queryItems.append(contentsOf: [
 				URLQueryItem(name: "signature", value: uploadSignature.signature),
