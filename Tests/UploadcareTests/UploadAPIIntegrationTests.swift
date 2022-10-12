@@ -264,6 +264,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 						XCTAssertNotNil(file.contentInfo)
 						XCTAssertNotNil(file.total)
 						XCTAssertEqual(file.total, file.size)
+						XCTAssertTrue(file.metadata?.isEmpty ?? true)
 					}
 				}
 			}

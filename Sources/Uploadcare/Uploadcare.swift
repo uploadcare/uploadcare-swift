@@ -1067,6 +1067,7 @@ extension Uploadcare {
 								imageInfo: nil,
 								videoInfo: nil,
 								contentInfo: nil,
+								metadata: nil,
 								s3Bucket: nil
 							)
 

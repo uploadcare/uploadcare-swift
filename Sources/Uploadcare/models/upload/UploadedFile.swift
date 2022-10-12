@@ -55,6 +55,10 @@ public class UploadedFile: Codable {
 
 	/// Information about file content.
 	public var contentInfo: ContentInfo?
+
+	/// Arbitrary metadata associated with a file.
+	/// Metadata is key-value data. You can specify up to 50 keys, with key names up to 64 characters long and values up to 512 characters long.
+	public var metadata: [String: String]?
 	
 	/// Your custom user bucket on which file are stored. Only available of you setup foreign storage bucket for your project.
 	public var s3Bucket: String?
@@ -86,6 +90,7 @@ public class UploadedFile: Codable {
 		case imageInfo = "image_info"
 		case videoInfo = "video_info"
 		case contentInfo = "content_info"
+		case metadata
 		case s3Bucket = "s3_bucket"
 	}
 	
@@ -106,6 +111,7 @@ public class UploadedFile: Codable {
 		imageInfo: ImageInfo?,
 		videoInfo: VideoInfo?,
 		contentInfo: ContentInfo?,
+		metadata: [String: String]?,
 		s3Bucket: String?
 	) {
 		self.size = size
@@ -122,6 +128,7 @@ public class UploadedFile: Codable {
 		self.imageInfo = imageInfo
 		self.videoInfo = videoInfo
 		self.contentInfo = contentInfo
+		self.metadata = metadata
 		self.s3Bucket = s3Bucket
 	}
 	
@@ -142,6 +149,7 @@ public class UploadedFile: Codable {
 		let imageInfo = try container.decodeIfPresent(ImageInfo.self, forKey: .imageInfo)
 		let videoInfo = try container.decodeIfPresent(VideoInfo.self, forKey: .videoInfo)
 		let contentInfo = try container.decodeIfPresent(ContentInfo.self, forKey: .contentInfo)
+		let metadata = try container.decodeIfPresent([String: String].self, forKey: .metadata)
 		let s3Bucket = try container.decodeIfPresent(String.self, forKey: .s3Bucket)
 		
 		self.init(
@@ -159,6 +167,7 @@ public class UploadedFile: Codable {
 			imageInfo: imageInfo,
 			videoInfo: videoInfo,
 			contentInfo: contentInfo,
+			metadata: metadata,
 			s3Bucket: s3Bucket
 		)
 	}
@@ -181,6 +190,7 @@ public class UploadedFile: Codable {
 		self.imageInfo = nil
 		self.videoInfo = nil
 		self.contentInfo = nil
+		self.metadata = nil
 		self.s3Bucket = ""
 	}
 	
@@ -237,6 +247,7 @@ public class UploadedFile: Codable {
 				self.imageInfo = uploadedFile.imageInfo
 				self.videoInfo = uploadedFile.videoInfo
 				self.contentInfo = uploadedFile.contentInfo
+				self.metadata = uploadedFile.metadata
 				self.s3Bucket = uploadedFile.s3Bucket
 			}
 		})
@@ -262,6 +273,7 @@ extension UploadedFile: CustomDebugStringConvertible {
 			imageInfo: \(String(describing: imageInfo))
 			videoInfo: \(String(describing: videoInfo))
 			contentInfo: \(String(describing: contentInfo))
+			metadata: \(String(describing: metadata))
 			s3Bucket: \(String(describing: s3Bucket))
 		"""
 	}
@@ -312,6 +324,7 @@ extension UploadedFile {
 				self.imageInfo = uploadedFile.imageInfo
 				self.videoInfo = uploadedFile.videoInfo
 				self.contentInfo = uploadedFile.contentInfo
+				self.metadata = uploadedFile.metadata
 				self.s3Bucket = uploadedFile.s3Bucket
 			}
 		})
