@@ -285,11 +285,12 @@ extension UploadAPI {
 	public func directUpload(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
-		return directUpload(files: files, uploadType: .background, store: store, uploadSignature: uploadSignature, onProgress, completionHandler)
+		return directUpload(files: files, uploadType: .background, store: store, metadata: metadata, uploadSignature: uploadSignature, onProgress, completionHandler)
 	}
 
     @discardableResult
@@ -297,6 +298,7 @@ extension UploadAPI {
 		files: [String: Data],
 		uploadType: DirectUploadType,
 		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
@@ -311,6 +313,12 @@ extension UploadAPI {
         if let storeVal = store {
             builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
         }
+
+		if let metadata = metadata {
+			for meta in metadata {
+				builder.addMultiformValue(meta.value, forName: "metadata[\(meta.key)]")
+			}
+		}
 
 		if let uploadSignature = uploadSignature ?? getSignature() {
             builder.addMultiformValue(uploadSignature.signature, forName: "signature")
@@ -381,10 +389,11 @@ extension UploadAPI {
 	internal func directUploadInForeground(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
-		return directUpload(files: files, uploadType: .foreground, onProgress, completionHandler)
+		return directUpload(files: files, uploadType: .foreground, store: store, metadata: metadata, onProgress, completionHandler)
 	}
 }
 

@@ -65,7 +65,9 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 		DLog("size of file: \(sizeString(ofData: data))")
 
-		uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore, { progress in
+		let metadata = ["direct": "upload"]
+
+		uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore, metadata: metadata, { progress in
 			DLog("upload progress: \(progress * 100)%")
 		}) { result in
 			defer { expectation.fulfill() }
