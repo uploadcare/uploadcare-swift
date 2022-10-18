@@ -1027,6 +1027,7 @@ extension Uploadcare {
 		_ data: Data,
 		withName name: String,
 		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
@@ -1036,13 +1037,36 @@ extension Uploadcare {
 		// using direct upload if file is small
 		if data.count < UploadAPI.multipartMinFileSize {
 			let files = [filename: data]
-			return uploadAPI.directUpload(files: files, store: store, uploadSignature: uploadSignature, onProgress) { [weak self] result in
+			return uploadAPI.directUpload(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature, onProgress) { [weak self] result in
 				switch result {
 				case .failure(let error):
 					completionHandler(.failure(error))
 				case .success(let response):
 					guard let fileUUID = response[filename] else {
 						completionHandler(.failure(UploadError.defaultError()))
+						return
+					}
+
+					if uploadSignature == nil && self?.secretKey == nil {
+						let uploadedFile = UploadedFile(
+							size: data.count,
+							total: data.count,
+							done: data.count,
+							uuid: fileUUID,
+							fileId: fileUUID,
+							originalFilename: filename,
+							filename: filename,
+							mimeType: "application/octet-stream",
+							isImage: false,
+							isStored: store == .store,
+							isReady: true,
+							imageInfo: nil,
+							videoInfo: nil,
+							contentInfo: nil,
+							metadata: metadata,
+							s3Bucket: nil
+						)
+						completionHandler(.success(uploadedFile))
 						return
 					}
 
@@ -1078,7 +1102,7 @@ extension Uploadcare {
 		}
 
 		// using multipart upload otherwise
-		return uploadAPI.multipartUpload(data, withName: filename, store: store, uploadSignature: uploadSignature, onProgress, completionHandler)
+		return uploadAPI.multipartUpload(data, withName: filename, store: store, metadata: metadata, uploadSignature: uploadSignature, onProgress, completionHandler)
 	}
 }
 

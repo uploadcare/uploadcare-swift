@@ -12,6 +12,8 @@ import XCTest
 final class UploadAPIIntegrationTests: XCTestCase {
 //	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
 	let uploadcare = Uploadcare(withPublicKey: String(cString: getenv("UPLOADCARE_PUBLIC_KEY")), secretKey: String(cString: getenv("UPLOADCARE_SECRET_KEY")))
+//	let uploadcarePublicKeyOnly = Uploadcare(withPublicKey: "demopublickey")
+	let uploadcarePublicKeyOnly = Uploadcare(withPublicKey: String(cString: getenv("UPLOADCARE_PUBLIC_KEY")))
 	var newGroup: UploadedFilesGroup?
 
 	func test01_UploadFileFromURL_and_UploadStatus() {
@@ -363,6 +365,27 @@ final class UploadAPIIntegrationTests: XCTestCase {
 					}
 				}
 			}
+		}
+
+		wait(for: [expectation], timeout: 120.0)
+	}
+
+	func test11_public_key_only() {
+		let expectation = XCTestExpectation(description: "test11_public_key_only")
+
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
+
+		fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { result in
+			switch result {
+			case .success(let file):
+				DLog(file)
+			case .failure(let error):
+				XCTFail(String(describing: error))
+			}
+
+			expectation.fulfill()
 		}
 
 		wait(for: [expectation], timeout: 120.0)
