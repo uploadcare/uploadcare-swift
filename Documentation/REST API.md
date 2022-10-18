@@ -9,7 +9,8 @@
 * [Copy file to local storage](#copy-file-to-local-storage-api-reference)
 * [Copy file to remote storage](#copy-file-to-remote-storage-api-reference)
 * [List of groups](#list-of-groups-api-reference)
-* [Group info](#group-info-api-reference)
+* [Group info](#group-info-api-reference) 
+* [Delete group](#delete-group-api-reference)
 * [Project info](#project-info-api-reference)
 * [Secure delivery](#secure-delivery-api-reference)
 * [List of webhooks](#list-of-webhooks-api-reference)
@@ -326,6 +327,15 @@ uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { resul
         print(error)
     case .success(let group):
         print(group)
+    }
+}
+```
+
+## Delete group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/deleteGroup)) ##
+```swift
+uploadcare.deleteGroup(withUUID: "groupId") { error in
+    if let error = error {
+        print(error)
     }
 }
 ```
