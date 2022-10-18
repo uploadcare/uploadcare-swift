@@ -121,7 +121,7 @@ guard let data = try? Data(contentsOf: url) else { return }
 
 // You can create UploadedFile object to operate with it
 let fileForUploading1 = uploadcare.file(fromData: data)
-var fileForUploading2 = uploadcare.file(withContentsOf: url)
+var fileForUploading2 = uploadcare.file(withContentsOf: url)!
 fileForUploading2.metadata = ["myKey": "myValue"]
 
 // Handle error or result
@@ -129,7 +129,7 @@ fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { resu
 }
 
 // Completion block is optional
-fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
+fileForUploading2.upload(withName: "my_file.jpg", store: .store)
 
 // Or you can just upload data and provide a filename
 let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .store, metadata: ["someKey": "someMetaValue"]) { progress in
