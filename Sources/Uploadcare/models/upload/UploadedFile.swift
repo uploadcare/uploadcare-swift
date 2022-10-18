@@ -221,7 +221,7 @@ public class UploadedFile: Codable {
 		self.originalFilename = name
 		self.filename = name
 
-		return restAPI?.uploadFile(fileData, withName: name, store: store ?? .store, uploadSignature: uploadSignature, { progress in
+		return restAPI?.uploadFile(fileData, withName: name, store: store ?? .store, metadata: self.metadata, uploadSignature: uploadSignature, { progress in
 			onProgress?(progress)
 		}, { [weak self] result in
 			switch result {
