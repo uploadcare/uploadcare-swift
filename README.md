@@ -1,7 +1,7 @@
 # Swift API client for Uploadcare
 
 ![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)
-![swift](https://img.shields.io/badge/swift-5.1-brightgreen.svg)
+![swift](https://img.shields.io/badge/swift-5.5-brightgreen.svg)
 [![Build Status](https://travis-ci.com/uploadcare/uploadcare-swift.svg?branch=master)](https://travis-ci.com/uploadcare/uploadcare-swift)
 
 Uploadcare Swift API client for iOS, iPadOS, tvOS, macOS, and Linux handles uploads and further operations with files by wrapping Uploadcare Upload and REST APIs.
@@ -121,7 +121,8 @@ guard let data = try? Data(contentsOf: url) else { return }
 
 // You can create UploadedFile object to operate with it
 let fileForUploading1 = uploadcare.file(fromData: data)
-let fileForUploading2 = uploadcare.file(withContentsOf: url)
+var fileForUploading2 = uploadcare.file(withContentsOf: url)
+fileForUploading2.metadata = ["myKey": "myValue"]
 
 // Handle error or result
 fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { result in
@@ -131,7 +132,7 @@ fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { resu
 fileForUploading2?.upload(withName: "my_file.jpg", store: .store)
 
 // Or you can just upload data and provide a filename
-let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .store) { progress in
+let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .store, metadata: ["someKey": "someMetaValue"]) { progress in
     print("upload progress: \(progress * 100)%")
 } _: { result in
     switch result {
@@ -166,7 +167,7 @@ func someFilesListMethod() {
     // Make a query object
     let query = PaginationQuery()
         .stored(true)
-        .ordering(.sizeDESC)
+        .ordering(.dateTimeUploadedDESC)
         .limit(5)
 
     // Get file list
