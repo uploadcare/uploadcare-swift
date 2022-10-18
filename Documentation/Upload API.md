@@ -58,7 +58,7 @@ Uploadcare provides a simple method that will handle file upload. It decides int
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
 guard let data = try? Data(contentsOf: url) else { return }
 
-let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore) { progress in
+let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore, metadata: ["someKey": "someMetaValue"]) { progress in
     print("progress: \(progress)")
 } _: { result in
     switch result {
@@ -77,6 +77,15 @@ task.cancel()
 
 // To resume uploading
 (task as? UploadTaskResumable)?.resume()
+```
+
+Another example with creating file object:
+```swift
+var fileForUploading2 = uploadcare.file(withContentsOf: url)!
+fileForUploading2.metadata = ["myKey": "myValue"]
+
+// progress and completion callbacks are optional
+fileForUploading2.upload(withName: "my_file.jpg", store: .store)
 ```
 
 Sometimes you don't want to have the secret key in your client app and want to get it from backend. In that case you can provide upload signature directly:
@@ -98,7 +107,7 @@ Direct uploads work with background URLSession, so uploading will continue if th
 guard let url = URL(string: "https://source.unsplash.com/random"),
       let data = try? Data(contentsOf: url) else { return }
       
-let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store) { progress in
+let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store, metadata: ["someKey": "someMetaValue"]) { progress in
     print("upload progress: \(progress * 100)%")
 } _: { result in
     switch result {
@@ -142,7 +151,7 @@ You can use this upload method and it'll run all 3 steps for you:
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
 let data = try! Data(contentsOf: url)
 
-let task = uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .store) { progress in
+let task = uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .store, metadata: ["someKey": "someMetaValue"]) { progress in
     print("progress: \(progress)")
 } _: { result in
     switch result {
@@ -185,6 +194,7 @@ let task2 = UploadFromURLTask(sourceUrl: url)
     .checkURLDuplicates(true)
     .saveURLDuplicates(true)
     .store(.store)
+    .setMetadata("myValue", forKey: "someKey")
 
 // Upload
 uploadcare.uploadAPI.upload(task: task1) { result in
