@@ -9,7 +9,6 @@
 * [Copy file to remote storage](#copy-file-to-remote-storage-api-reference)
 * [List of groups](#list-of-groups-api-reference)
 * [Group info](#group-info-api-reference)
-* [Store group](#store-group-api-reference)
 * [Project info](#project-info-api-reference)
 * [Secure delivery](#secure-delivery-api-reference)
 * [List of webhooks](#list-of-webhooks-api-reference)
@@ -66,7 +65,7 @@ lazy var filesList = uploadcare.listOfFiles()
 // Make a query object
 let query = PaginationQuery()
     .stored(true)
-    .ordering(.sizeDESC)
+    .ordering(.dateTimeUploadedDESC)
     .limit(5)
 
 // Get file list
@@ -116,6 +115,17 @@ filesList.previousPage { result in
 
 ```swift
 uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let file):
+        print(file)
+    }
+}
+
+// with query
+let fileInfoQuery = FileInfoQuery().include(.appdata)
+uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", withQuery: fileInfoQuery) { result in
     switch result {
     case .failure(let error):
         print(error)
@@ -269,18 +279,6 @@ uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { resul
     case .success(let group):
         print(group)
     }
-}
-```
-
-## Store group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put)) ##
-
-```swift
-uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { error in
-    if let error = error {
-        print(error)
-        return
-    }
-    print("store group success")
 }
 ```
 
