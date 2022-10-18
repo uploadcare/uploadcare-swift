@@ -21,6 +21,7 @@
 * [Document conversion job status](#document-conversion-job-status-api-reference)
 * [Convert video](#convert-video-api-reference)
 * [Video conversion job status](#video-conversion-job-status-api-reference)
+* [Add-Ons](#add-ons-api-reference)
 
 
 ## Initialization
@@ -541,3 +542,87 @@ uploadcare.videoConversionJobStatus(token: 123456) { result in
     }
 }
 ```
+
+
+## Add-Ons ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons)) ##
+An Add-On is an application implemented by Uploadcare that accepts uploaded files as an input and can produce other files and/or appdata as an output.
+
+### Execute AWS Rekognition
+Execute AWS Rekognition Add-On for a given target to detect labels in an image. Note: Detected labels are stored in the file's appdata.
+```swift
+uploadcare.executeAWSRecognition(fileUUID: "uuid") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let response):
+        print(response) // contains requestID
+    }
+}
+
+// check status
+uploadcare.checkAWSRecognitionStatus(requestID: "requestID") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let status):
+        print(status)
+    }
+}
+```
+
+### Execute ClamAV
+Execute ClamAV virus checking Add-On for a given target.
+```swift
+let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+uploadcare.executeClamav(fileUUID: "uuid", parameters: parameters) { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let response):
+        print(response) // contains requestID
+    }
+}
+                
+// check status
+uploadcare.checkClamAVStatus(requestID: "requestID") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let status):
+        print(status)
+    }
+}
+```
+
+### Execute Remove.bg
+Execute remove.bg background image removal Add-On for a given target.
+```swift
+// more parameters in RemoveBGAddonExecutionParams model
+let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two) 
+uploadcare.executeRemoveBG(fileUUID: "uuid", parameters: parameters) { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let response):
+        print(response) // contains requestID
+    }
+}
+                
+// check status
+uploadcare.checkRemoveBGStatus(requestID: "requestID") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let status):
+        print(status)
+    }
+}
+```
+
+
+
+
+
+
+
+
