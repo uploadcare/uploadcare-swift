@@ -370,14 +370,16 @@ final class UploadAPIIntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 120.0)
 	}
 
-	func test11_public_key_only() {
+	func test11_direct_upload_public_key_only() {
 		let expectation = XCTestExpectation(description: "test11_public_key_only")
 
 		let url = URL(string: "https://source.unsplash.com/random")!
 		let data = try! Data(contentsOf: url)
 		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
 
-		fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { result in
+		fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { _ in
+
+		} _: { result in
 			switch result {
 			case .success(let file):
 				DLog(file)
@@ -387,6 +389,29 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 			expectation.fulfill()
 		}
+
+		wait(for: [expectation], timeout: 120.0)
+	}
+
+	func test12_multipartUpload_public_key_only() {
+		let expectation = XCTestExpectation(description: "test11_public_key_only")
+		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
+		let data = try! Data(contentsOf: url)
+		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
+
+		fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { _ in
+
+		} _: { result in
+			switch result {
+			case .success(let file):
+				DLog(file)
+			case .failure(let error):
+				XCTFail(String(describing: error))
+			}
+
+			expectation.fulfill()
+		}
+
 
 		wait(for: [expectation], timeout: 120.0)
 	}
