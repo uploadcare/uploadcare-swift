@@ -114,7 +114,7 @@ filesList.previousPage { result in
 }
 ```
 
-## File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo)) ##
+## File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/fileInfo)) ##
 
 ```swift
 uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
@@ -185,7 +185,7 @@ uploadcare.deleteFileMetadata(forKey: "myMeta", withUUID: "1bac376c-aa7e-4356-86
 }
 ```
 
-## Store files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/storeFile)) ##
+## Store files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/storeFile)) ##
 
 Store an individual file:
 
@@ -214,7 +214,7 @@ uploadcare.storeFiles(withUUIDs: uuids) { result in
 }
 ```
 
-## Delete files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/deleteFile)) ##
+## Delete files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/deleteFileStorage)) ##
 
 Delete an individual file:
 
@@ -243,7 +243,7 @@ uploadcare.deleteFiles(withUUIDs: uuids) { result in
 }
 ```
 
-## Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFileLocal)) ##
+## Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createLocalCopy)) ##
 
 ```swift
 uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { result in
@@ -256,7 +256,7 @@ uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9"
 }
 ```
 
-## Copy file to remote storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFile)) ##
+## Copy file to remote storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createRemoteCopy)) ##
 
 ```swift
 let source = "99c48392-46ab-4877-a6e1-e2557b011176"
@@ -270,7 +270,7 @@ uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", m
 }
 ```
 
-## List of groups ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupsList)) ##
+## List of groups ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/groupsList)) ##
 
 ```swift
 let query = GroupsListQuery()
@@ -319,7 +319,7 @@ groupsList.previousPage { result in
 }
 ```
 
-## Group info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupInfo)) ##
+## Group info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/groupInfo)) ##
 
 ```swift
 uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { result in
@@ -341,7 +341,7 @@ uploadcare.deleteGroup(withUUID: "groupId") { error in
 }
 ```
 
-## Project info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/projectInfo)) ##
+## Project info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/projectInfo)) ##
 
 ```swift
 uploadcare.getProjectInfo { result in
@@ -374,7 +374,7 @@ uploadcare.getAuthenticatedUrlFromUrl(url) { result in
 }
 ```
 
-## List of webhooks ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhooksList)) ##
+## List of webhooks ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhooksList)) ##
 
 ```swift
 uploadcare.getListOfWebhooks { result in
@@ -387,7 +387,7 @@ uploadcare.getListOfWebhooks { result in
 }
 ```
 
-## Create webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhookCreate)) ##
+## Create webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhookCreate)) ##
 
 Create and subscribe to a webhook. You can use webhooks to receive notifications about your uploads. For instance, once a file gets uploaded to your project, we can notify you by sending a message to a target URL.
 
@@ -403,7 +403,7 @@ uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSig
 }
 ```
 
-## Update webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/updateWebhook)) ##
+## Update webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/updateWebhook)) ##
 
 Update webhook attributes.
 
@@ -420,7 +420,7 @@ uploadcare.updateWebhook(id: webhookId, targetUrl: url, isActive: true, signingS
 }
 ```
 
-## Delete webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhookUnsubscribe)) ##
+## Delete webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhookUnsubscribe)) ##
 
 Unsubscribe and delete a webhook.
 
@@ -466,7 +466,7 @@ uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { resul
 }
 ```
 
-## Document conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Conversion/paths/~1convert~1document~1status~1{token}~1/get)) ##
+## Document conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/documentConvertStatus)) ##
 
 ```swift
 uploadcare.documentConversionJobStatus(token: 123456) { result in
@@ -524,7 +524,7 @@ uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { result in
 }
 ```
 
-## Video conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/videoConvertStatus)) ##
+## Video conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/videoConvertStatus)) ##
 
 ```swift
 uploadcare.videoConversionJobStatus(token: 123456) { result in    
