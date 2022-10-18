@@ -3,6 +3,7 @@
 * [Initialization](#initialization)
 * [List of files](#list-of-files-api-reference)
 * [File info](#file-info-api-reference)
+* [File metadata](#file-metadata-api-reference)
 * [Store files](#store-files-api-reference)
 * [Delete files](#delete-files-api-reference)
 * [Copy file to local storage](#copy-file-to-local-storage-api-reference)
@@ -131,6 +132,53 @@ uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", withQuery:
         print(error)
     case .success(let file):
         print(file)
+    }
+}
+```
+
+## File metadata ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/File-metadata)) ##
+
+Get file’s metadata:
+```swift
+uploadcare.fileMetadata(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let metadataDictionary):
+        print(metadataDictionary)
+    }
+}
+```
+
+Get metadata key's value:
+```swift
+uploadcare.fileMetadataValue(forKey: "myMeta", withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let value):
+        print(value)
+    }
+}
+```
+
+Update metadata key's value.  If the key does not exist, it will be created:
+```swift
+uploadcare.updateFileMetadata(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", key: "myMeta", value: "myValue") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let value):
+        print(value)
+    }
+}
+```
+
+Delete metadata key:
+```swift
+uploadcare.deleteFileMetadata(forKey: "myMeta", withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { error in
+    if let error = error { 
+        print(error)
     }
 }
 ```
