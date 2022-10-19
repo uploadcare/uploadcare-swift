@@ -618,11 +618,3 @@ uploadcare.checkRemoveBGStatus(requestID: "requestID") { result in
     }
 }
 ```
-
-
-
-
-
-
-
-
