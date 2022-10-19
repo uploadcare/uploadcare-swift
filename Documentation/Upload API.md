@@ -79,7 +79,7 @@ task.cancel()
 (task as? UploadTaskResumable)?.resume()
 ```
 
-Another example with creating file object:
+If you want to create a file object (alternative syntax):
 ```swift
 var fileForUploading2 = uploadcare.file(withContentsOf: url)!
 fileForUploading2.metadata = ["myKey": "myValue"]
