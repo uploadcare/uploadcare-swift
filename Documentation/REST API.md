@@ -21,9 +21,9 @@
 * [Document conversion job status](#document-conversion-job-status-api-reference)
 * [Convert video](#convert-video-api-reference)
 * [Video conversion job status](#video-conversion-job-status-api-reference)
-* [Execute AWS Rekognition](#execute-aws-rekognition-api-reference)
-* [Execute ClamAV](#execute-clamav-api-reference)
-* [Execute Remove.bg](#execute-removebg-api-reference)
+* [AWS Rekognition](#aws-rekognition-api-reference)
+* [ClamAV](#clamav-api-reference)
+* [Remove.bg](#removebg-api-reference)
 
 
 ## Initialization
@@ -549,7 +549,7 @@ uploadcare.videoConversionJobStatus(token: 123456) { result in
 ## Add-Ons
 An Add-On is an application implemented by Uploadcare that accepts uploaded files as an input and can produce other files and/or appdata as an output.
 
-### Execute AWS Rekognition ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/awsRekognitionExecute))
+### AWS Rekognition ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/awsRekognitionExecute))
 Execute AWS Rekognition Add-On for a given target to detect labels in an image. Note: Detected labels are stored in the file's appdata.
 ```swift
 uploadcare.executeAWSRecognition(fileUUID: "uuid") { result in
@@ -572,7 +572,7 @@ uploadcare.checkAWSRecognitionStatus(requestID: "requestID") { result in
 }
 ```
 
-### Execute ClamAV ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/ucClamavVirusScanExecute))
+### ClamAV ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/ucClamavVirusScanExecute))
 Execute ClamAV virus checking Add-On for a given target.
 ```swift
 let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
@@ -596,7 +596,7 @@ uploadcare.checkClamAVStatus(requestID: "requestID") { result in
 }
 ```
 
-### Execute Remove.bg ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/removeBgExecute))
+### Remove.bg ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/removeBgExecute))
 Execute remove.bg background image removal Add-On for a given target.
 ```swift
 // more parameters in RemoveBGAddonExecutionParams model
