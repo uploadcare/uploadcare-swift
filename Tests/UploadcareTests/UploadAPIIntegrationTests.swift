@@ -12,6 +12,8 @@ import XCTest
 final class UploadAPIIntegrationTests: XCTestCase {
 //	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
 	let uploadcare = Uploadcare(withPublicKey: String(cString: getenv("UPLOADCARE_PUBLIC_KEY")), secretKey: String(cString: getenv("UPLOADCARE_SECRET_KEY")))
+//	let uploadcarePublicKeyOnly = Uploadcare(withPublicKey: "demopublickey")
+	let uploadcarePublicKeyOnly = Uploadcare(withPublicKey: String(cString: getenv("UPLOADCARE_PUBLIC_KEY")))
 	var newGroup: UploadedFilesGroup?
 
 	func test01_UploadFileFromURL_and_UploadStatus() {
@@ -24,6 +26,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			.saveURLDuplicates(true)
 			.filename("file_from_url")
 			.store(.doNotStore)
+			.setMetadata("hi", forKey: "hello")
 
 		uploadcare.uploadAPI.upload(task: task) { [unowned self] result in
 			switch result {
@@ -64,7 +67,9 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 		DLog("size of file: \(sizeString(ofData: data))")
 
-		uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore, { progress in
+		let metadata = ["direct": "upload"]
+
+		uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore, metadata: metadata, { progress in
 			DLog("upload progress: \(progress * 100)%")
 		}) { result in
 			defer { expectation.fulfill() }
@@ -260,8 +265,11 @@ final class UploadAPIIntegrationTests: XCTestCase {
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
-					case .success(_):
-						break
+					case .success(let file):
+						XCTAssertNotNil(file.contentInfo)
+						XCTAssertNotNil(file.total)
+						XCTAssertEqual(file.total, file.size)
+						XCTAssertTrue(file.metadata?.isEmpty ?? true)
 					}
 				}
 			}
@@ -280,7 +288,9 @@ final class UploadAPIIntegrationTests: XCTestCase {
 			DLog("progress: \(progress)")
 		}
 
-		uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, onProgress) { result in
+		let metadata = ["multipart": "upload"]
+
+		uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, metadata: metadata, onProgress) { result in
 			defer { expectation.fulfill() }
 
 			switch result {
@@ -293,7 +303,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 120.0)
 	}
 
-	func test10_createFilesGroup_and_filesGroupInfo() {
+	func test10_createFilesGroup_and_filesGroupInfo_and_delegeGroup() {
 		let expectation = XCTestExpectation(description: "test10_createFilesGroup_and_filesGroupInfo")
 
 		let url = URL(string: "https://source.unsplash.com/random?\(UUID().uuidString)")!
@@ -320,6 +330,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 						XCTFail(error.detail)
 						expectation.fulfill()
 					case .success(let info):
+						// create new group
 						self.newGroup = self.uploadcare.group(ofFiles:[info])
 						self.newGroup!.create { result in
 							switch result {
@@ -332,15 +343,21 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 								XCTAssertEqual(response.filesCount, 1)
 
+								// group info
 								self.uploadcare.uploadAPI.filesGroupInfo(groupId: response.id) { result in
-									defer { expectation.fulfill() }
-
 									switch result {
 									case .failure(let error):
 										XCTFail(error.detail)
+										expectation.fulfill()
 									case .success(let group):
 										XCTAssertNotNil(group.files)
 										XCTAssertFalse(group.files!.isEmpty)
+
+										// delete group
+										self.uploadcare.deleteGroup(withUUID: group.id) { error in
+											defer { expectation.fulfill() }
+											XCTAssertNil(error)
+										}
 									}
 								}
 							}
@@ -349,6 +366,52 @@ final class UploadAPIIntegrationTests: XCTestCase {
 				}
 			}
 		}
+
+		wait(for: [expectation], timeout: 120.0)
+	}
+
+	func test11_direct_upload_public_key_only() {
+		let expectation = XCTestExpectation(description: "test11_public_key_only")
+
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
+
+		fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { _ in
+
+		} _: { result in
+			switch result {
+			case .success(let file):
+				DLog(file)
+			case .failure(let error):
+				XCTFail(String(describing: error))
+			}
+
+			expectation.fulfill()
+		}
+
+		wait(for: [expectation], timeout: 120.0)
+	}
+
+	func test12_multipartUpload_public_key_only() {
+		let expectation = XCTestExpectation(description: "test11_public_key_only")
+		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
+		let data = try! Data(contentsOf: url)
+		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
+
+		fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { _ in
+
+		} _: { result in
+			switch result {
+			case .success(let file):
+				DLog(file)
+			case .failure(let error):
+				XCTFail(String(describing: error))
+			}
+
+			expectation.fulfill()
+		}
+
 
 		wait(for: [expectation], timeout: 120.0)
 	}

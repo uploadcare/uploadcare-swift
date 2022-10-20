@@ -50,17 +50,18 @@ public struct File: Codable {
 	
 	/// Dictionary of other files that has been created using this file as source. Used for video, document and etc. conversion.
 	public var variations: [String: String]?
-	
-	/// Dictionary of file categories with it's confidence.
-	public var rekognitionInfo: [String: Int]?
-	
-	/// Image metadata.
-	public var imageInfo: ImageInfo?
-	
-	/// Video metadata.
-	public var videoInfo: VideoInfo?
-	
-	
+
+	/// Arbitrary metadata associated with a file.
+	/// Metadata is key-value data. You can specify up to 50 keys, with key names up to 64 characters long and values up to 512 characters long.
+	public var metadata: [String: String]?
+
+	/// Information about file content.
+	public var contentInfo: ContentInfo?
+
+	/// Application names and data associated with these applications.
+	public let appData: AppData?
+
+
 	enum CodingKeys: String, CodingKey {
 		case size
 		case uuid
@@ -75,9 +76,9 @@ public struct File: Codable {
 		case url
 		case source
 		case variations
-		case rekognitionInfo = "rekognition_info"
-		case imageInfo = "image_info"
-		case videoInfo = "video_info"
+		case metadata
+		case contentInfo = "content_info"
+		case appData = "appdata"
 	}
 	
 	
@@ -95,9 +96,9 @@ public struct File: Codable {
 		url: String,
 		source: String?,
 		variations: [String: String]?,
-		rekognitionInfo: [String: Int]?,
-		imageInfo: ImageInfo?,
-		videoInfo: VideoInfo?
+		contentInfo: ContentInfo?,
+		metadata: [String: String]?,
+		appData: AppData?
 	) {
 		self.size = size
 		self.uuid = uuid
@@ -112,9 +113,9 @@ public struct File: Codable {
 		self.url = url
 		self.source = source
 		self.variations = variations
-		self.rekognitionInfo = rekognitionInfo
-		self.imageInfo = imageInfo
-		self.videoInfo = videoInfo
+		self.contentInfo = contentInfo
+		self.metadata = metadata
+		self.appData = appData
 	}
 
 	public init(from decoder: Decoder) throws {
@@ -154,10 +155,9 @@ public struct File: Codable {
 		let url = try container.decodeIfPresent(String.self, forKey: .url) ?? ""
 		let source = try container.decodeIfPresent(String.self, forKey: .source)
 		let variations = try container.decodeIfPresent([String: String].self, forKey: .variations)
-		let rekognitionInfo = try container.decodeIfPresent([String: Int].self, forKey: .rekognitionInfo)
-		let imageInfo = try container.decodeIfPresent(ImageInfo.self, forKey: .imageInfo)
-		let videoInfo = try container.decodeIfPresent(VideoInfo.self, forKey: .videoInfo)
-		
+		let contentInfo = try container.decodeIfPresent(ContentInfo.self, forKey: .contentInfo)
+		let metadata = try container.decodeIfPresent([String: String].self, forKey: .metadata)
+		let appData = try container.decodeIfPresent(AppData.self, forKey: .appData)
 
 		self.init(
 			size: size,
@@ -173,12 +173,11 @@ public struct File: Codable {
 			url: url,
 			source: source,
 			variations: variations,
-			rekognitionInfo: rekognitionInfo,
-			imageInfo: imageInfo,
-			videoInfo: videoInfo
+			contentInfo: contentInfo,
+			metadata: metadata,
+			appData: appData
 		)
 	}
-	
 }
 
 
@@ -199,9 +198,9 @@ extension File: CustomDebugStringConvertible {
 			url: \(url),
 			source: \(String(describing: source)),
 			variations: \(String(describing: variations)),
-			rekognitionInfo: \(String(describing: rekognitionInfo)),
-			imageInfo: \(String(describing: imageInfo)),
-			videoInfo: \(String(describing: videoInfo))
+			contentInfo: \(String(describing: contentInfo)),
+			metadata: \(String(describing: metadata)),
+			appData: \(String(describing: appData))
 		"""
 	}
 }

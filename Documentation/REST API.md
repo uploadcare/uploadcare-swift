@@ -3,13 +3,14 @@
 * [Initialization](#initialization)
 * [List of files](#list-of-files-api-reference)
 * [File info](#file-info-api-reference)
+* [File metadata](#file-metadata-api-reference)
 * [Store files](#store-files-api-reference)
 * [Delete files](#delete-files-api-reference)
 * [Copy file to local storage](#copy-file-to-local-storage-api-reference)
 * [Copy file to remote storage](#copy-file-to-remote-storage-api-reference)
 * [List of groups](#list-of-groups-api-reference)
-* [Group info](#group-info-api-reference)
-* [Store group](#store-group-api-reference)
+* [Group info](#group-info-api-reference) 
+* [Delete group](#delete-group-api-reference)
 * [Project info](#project-info-api-reference)
 * [Secure delivery](#secure-delivery-api-reference)
 * [List of webhooks](#list-of-webhooks-api-reference)
@@ -20,6 +21,9 @@
 * [Document conversion job status](#document-conversion-job-status-api-reference)
 * [Convert video](#convert-video-api-reference)
 * [Video conversion job status](#video-conversion-job-status-api-reference)
+* [AWS Rekognition](#aws-rekognition-api-reference)
+* [ClamAV](#clamav-api-reference)
+* [Remove.bg](#removebg-api-reference)
 
 
 ## Initialization
@@ -57,7 +61,7 @@ final class MyClass {
 
 Keep in mind that since Uploadcare is not a singleton. You should store a strong reference (as an instance variable, for example) to your Uploadcare object or it will get deallocated.
 
-## List of files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/filesList)) ##
+## List of files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/filesList)) ##
 
 ```swift
 // Make a list of files object
@@ -66,7 +70,7 @@ lazy var filesList = uploadcare.listOfFiles()
 // Make a query object
 let query = PaginationQuery()
     .stored(true)
-    .ordering(.sizeDESC)
+    .ordering(.dateTimeUploadedDESC)
     .limit(5)
 
 // Get file list
@@ -112,7 +116,7 @@ filesList.previousPage { result in
 }
 ```
 
-## File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/fileInfo)) ##
+## File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/fileInfo)) ##
 
 ```swift
 uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
@@ -123,9 +127,67 @@ uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result i
         print(file)
     }
 }
+
+// with query
+let fileInfoQuery = FileInfoQuery().include(.appdata)
+uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", withQuery: fileInfoQuery) { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let file):
+        print(file)
+    }
+}
 ```
 
-## Store files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/storeFile)) ##
+## File metadata ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/File-metadata)) ##
+
+Get file’s metadata:
+```swift
+uploadcare.fileMetadata(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let metadataDictionary):
+        print(metadataDictionary)
+    }
+}
+```
+
+Get metadata key's value:
+```swift
+uploadcare.fileMetadataValue(forKey: "myMeta", withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let value):
+        print(value)
+    }
+}
+```
+
+Update metadata key's value.  If the key does not exist, it will be created:
+```swift
+uploadcare.updateFileMetadata(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", key: "myMeta", value: "myValue") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let value):
+        print(value)
+    }
+}
+```
+
+Delete metadata key:
+```swift
+uploadcare.deleteFileMetadata(forKey: "myMeta", withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { error in
+    if let error = error { 
+        print(error)
+    }
+}
+```
+
+## Store files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/storeFile)) ##
 
 Store an individual file:
 
@@ -154,7 +216,7 @@ uploadcare.storeFiles(withUUIDs: uuids) { result in
 }
 ```
 
-## Delete files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/deleteFile)) ##
+## Delete files ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/deleteFileStorage)) ##
 
 Delete an individual file:
 
@@ -183,7 +245,7 @@ uploadcare.deleteFiles(withUUIDs: uuids) { result in
 }
 ```
 
-## Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFileLocal)) ##
+## Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createLocalCopy)) ##
 
 ```swift
 uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { result in
@@ -196,7 +258,7 @@ uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9"
 }
 ```
 
-## Copy file to remote storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/copyFile)) ##
+## Copy file to remote storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createRemoteCopy)) ##
 
 ```swift
 let source = "99c48392-46ab-4877-a6e1-e2557b011176"
@@ -210,7 +272,7 @@ uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", m
 }
 ```
 
-## List of groups ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupsList)) ##
+## List of groups ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/groupsList)) ##
 
 ```swift
 let query = GroupsListQuery()
@@ -259,7 +321,7 @@ groupsList.previousPage { result in
 }
 ```
 
-## Group info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/groupInfo)) ##
+## Group info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/groupInfo)) ##
 
 ```swift
 uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { result in
@@ -272,19 +334,16 @@ uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { resul
 }
 ```
 
-## Store group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put)) ##
-
+## Delete group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/deleteGroup)) ##
 ```swift
-uploadcare.storeGroup(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { error in
+uploadcare.deleteGroup(withUUID: "groupId") { error in
     if let error = error {
         print(error)
-        return
     }
-    print("store group success")
 }
 ```
 
-## Project info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/projectInfo)) ##
+## Project info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/projectInfo)) ##
 
 ```swift
 uploadcare.getProjectInfo { result in
@@ -317,7 +376,7 @@ uploadcare.getAuthenticatedUrlFromUrl(url) { result in
 }
 ```
 
-## List of webhooks ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhooksList)) ##
+## List of webhooks ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhooksList)) ##
 
 ```swift
 uploadcare.getListOfWebhooks { result in
@@ -330,7 +389,7 @@ uploadcare.getListOfWebhooks { result in
 }
 ```
 
-## Create webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhookCreate)) ##
+## Create webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhookCreate)) ##
 
 Create and subscribe to a webhook. You can use webhooks to receive notifications about your uploads. For instance, once a file gets uploaded to your project, we can notify you by sending a message to a target URL.
 
@@ -346,7 +405,7 @@ uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSig
 }
 ```
 
-## Update webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/updateWebhook)) ##
+## Update webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/updateWebhook)) ##
 
 Update webhook attributes.
 
@@ -363,7 +422,7 @@ uploadcare.updateWebhook(id: webhookId, targetUrl: url, isActive: true, signingS
 }
 ```
 
-## Delete webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/webhookUnsubscribe)) ##
+## Delete webhook ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhookUnsubscribe)) ##
 
 Unsubscribe and delete a webhook.
 
@@ -409,7 +468,7 @@ uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { resul
 }
 ```
 
-## Document conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Conversion/paths/~1convert~1document~1status~1{token}~1/get)) ##
+## Document conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/documentConvertStatus)) ##
 
 ```swift
 uploadcare.documentConversionJobStatus(token: 123456) { result in
@@ -467,7 +526,7 @@ uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { result in
 }
 ```
 
-## Video conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/videoConvertStatus)) ##
+## Video conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/videoConvertStatus)) ##
 
 ```swift
 uploadcare.videoConversionJobStatus(token: 123456) { result in    
@@ -482,6 +541,82 @@ uploadcare.videoConversionJobStatus(token: 123456) { result in
         default: 
             break
         }
+    }
+}
+```
+
+
+## Add-Ons
+An Add-On is an application implemented by Uploadcare that accepts uploaded files as an input and can produce other files and/or appdata as an output.
+
+### AWS Rekognition ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/awsRekognitionExecute))
+Execute AWS Rekognition Add-On for a given target to detect labels in an image. Note: Detected labels are stored in the file's appdata.
+```swift
+uploadcare.executeAWSRecognition(fileUUID: "uuid") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let response):
+        print(response) // contains requestID
+    }
+}
+
+// check status
+uploadcare.checkAWSRecognitionStatus(requestID: "requestID") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let status):
+        print(status)
+    }
+}
+```
+
+### ClamAV ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/ucClamavVirusScanExecute))
+Execute ClamAV virus checking Add-On for a given target.
+```swift
+let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+uploadcare.executeClamav(fileUUID: "uuid", parameters: parameters) { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let response):
+        print(response) // contains requestID
+    }
+}
+                
+// check status
+uploadcare.checkClamAVStatus(requestID: "requestID") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let status):
+        print(status)
+    }
+}
+```
+
+### Remove.bg ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/removeBgExecute))
+Execute remove.bg background image removal Add-On for a given target.
+```swift
+// more parameters in RemoveBGAddonExecutionParams model
+let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two) 
+uploadcare.executeRemoveBG(fileUUID: "uuid", parameters: parameters) { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let response):
+        print(response) // contains requestID
+    }
+}
+                
+// check status
+uploadcare.checkRemoveBGStatus(requestID: "requestID") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let status):
+        print(status)
     }
 }
 ```

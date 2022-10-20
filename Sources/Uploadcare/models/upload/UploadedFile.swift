@@ -19,10 +19,13 @@ public class UploadedFile: Codable {
 	
 	/// File size in bytes. Same as size.
 	public var total: Int
+
+	/// Same as ``size``.
+	public var done: Int
 	
 	/// File UUID
 	public var uuid: String
-	
+
 	/// Same as uuid
 	public var fileId: String
 	
@@ -49,6 +52,13 @@ public class UploadedFile: Codable {
 	
 	/// Video metadata.
 	public var videoInfo: VideoInfo?
+
+	/// Information about file content.
+	public var contentInfo: ContentInfo?
+
+	/// Arbitrary metadata associated with a file.
+	/// Metadata is key-value data. You can specify up to 50 keys, with key names up to 64 characters long and values up to 512 characters long.
+	public var metadata: [String: String]?
 	
 	/// Your custom user bucket on which file are stored. Only available of you setup foreign storage bucket for your project.
 	public var s3Bucket: String?
@@ -68,6 +78,7 @@ public class UploadedFile: Codable {
 	enum CodingKeys: String, CodingKey {
 		case size
 		case total
+		case done
 		case uuid
 		case fileId = "file_id"
 		case originalFilename = "original_filename"
@@ -78,6 +89,8 @@ public class UploadedFile: Codable {
 		case isReady = "is_ready"
 		case imageInfo = "image_info"
 		case videoInfo = "video_info"
+		case contentInfo = "content_info"
+		case metadata
 		case s3Bucket = "s3_bucket"
 	}
 	
@@ -86,6 +99,7 @@ public class UploadedFile: Codable {
 	init(
 		size: Int,
 		total: Int,
+		done: Int,
 		uuid: String,
 		fileId: String,
 		originalFilename: String,
@@ -96,10 +110,13 @@ public class UploadedFile: Codable {
 		isReady: Bool,
 		imageInfo: ImageInfo?,
 		videoInfo: VideoInfo?,
+		contentInfo: ContentInfo?,
+		metadata: [String: String]?,
 		s3Bucket: String?
 	) {
 		self.size = size
 		self.total = total
+		self.done = done
 		self.uuid = uuid
 		self.fileId = fileId
 		self.originalFilename = originalFilename
@@ -110,6 +127,8 @@ public class UploadedFile: Codable {
 		self.isReady = isReady
 		self.imageInfo = imageInfo
 		self.videoInfo = videoInfo
+		self.contentInfo = contentInfo
+		self.metadata = metadata
 		self.s3Bucket = s3Bucket
 	}
 	
@@ -118,6 +137,7 @@ public class UploadedFile: Codable {
 		
 		let size = try container.decodeIfPresent(Int.self, forKey: .size) ?? 0
 		let total = try container.decodeIfPresent(Int.self, forKey: .total) ?? 0
+		let done = try container.decodeIfPresent(Int.self, forKey: .done) ?? 0
 		let uuid = try container.decodeIfPresent(String.self, forKey: .uuid) ?? ""
 		let fileId = try container.decodeIfPresent(String.self, forKey: .fileId) ?? ""
 		let originalFilename = try container.decodeIfPresent(String.self, forKey: .originalFilename) ?? ""
@@ -128,11 +148,14 @@ public class UploadedFile: Codable {
 		let isReady = try container.decodeIfPresent(Bool.self, forKey: .isReady) ?? false
 		let imageInfo = try container.decodeIfPresent(ImageInfo.self, forKey: .imageInfo)
 		let videoInfo = try container.decodeIfPresent(VideoInfo.self, forKey: .videoInfo)
+		let contentInfo = try container.decodeIfPresent(ContentInfo.self, forKey: .contentInfo)
+		let metadata = try container.decodeIfPresent([String: String].self, forKey: .metadata)
 		let s3Bucket = try container.decodeIfPresent(String.self, forKey: .s3Bucket)
 		
 		self.init(
 			size: size,
 			total: total,
+			done: done,
 			uuid: uuid,
 			fileId: fileId,
 			originalFilename: originalFilename,
@@ -143,6 +166,8 @@ public class UploadedFile: Codable {
 			isReady: isReady,
 			imageInfo: imageInfo,
 			videoInfo: videoInfo,
+			contentInfo: contentInfo,
+			metadata: metadata,
 			s3Bucket: s3Bucket
 		)
 	}
@@ -153,6 +178,7 @@ public class UploadedFile: Codable {
 		
 		self.size = data.count
 		self.total = data.count
+		self.done = data.count
 		self.uuid = ""
 		self.fileId = ""
 		self.originalFilename = ""
@@ -163,6 +189,8 @@ public class UploadedFile: Codable {
 		self.isReady = false
 		self.imageInfo = nil
 		self.videoInfo = nil
+		self.contentInfo = nil
+		self.metadata = nil
 		self.s3Bucket = ""
 	}
 	
@@ -193,7 +221,7 @@ public class UploadedFile: Codable {
 		self.originalFilename = name
 		self.filename = name
 
-		return restAPI?.uploadFile(fileData, withName: name, store: store ?? .store, uploadSignature: uploadSignature, { progress in
+		return restAPI?.uploadFile(fileData, withName: name, store: store ?? .store, metadata: self.metadata, uploadSignature: uploadSignature, { progress in
 			onProgress?(progress)
 		}, { [weak self] result in
 			switch result {
@@ -207,6 +235,7 @@ public class UploadedFile: Codable {
 
 				self.size = uploadedFile.size
 				self.total = uploadedFile.total
+				self.done = uploadedFile.done
 				self.uuid = uploadedFile.uuid
 				self.fileId = uploadedFile.fileId
 				self.originalFilename = uploadedFile.originalFilename
@@ -217,6 +246,8 @@ public class UploadedFile: Codable {
 				self.isReady = uploadedFile.isReady
 				self.imageInfo = uploadedFile.imageInfo
 				self.videoInfo = uploadedFile.videoInfo
+				self.contentInfo = uploadedFile.contentInfo
+				self.metadata = uploadedFile.metadata
 				self.s3Bucket = uploadedFile.s3Bucket
 			}
 		})
@@ -230,6 +261,7 @@ extension UploadedFile: CustomDebugStringConvertible {
 		\(type(of: self)):
 			size: \(size)
 			total: \(total)
+			done: \(done)
 			uuid: \(uuid)
 			fileId: \(fileId)
 			originalFilename: \(originalFilename)
@@ -240,6 +272,8 @@ extension UploadedFile: CustomDebugStringConvertible {
 			isReady: \(isReady)
 			imageInfo: \(String(describing: imageInfo))
 			videoInfo: \(String(describing: videoInfo))
+			contentInfo: \(String(describing: contentInfo))
+			metadata: \(String(describing: metadata))
 			s3Bucket: \(String(describing: s3Bucket))
 		"""
 	}
@@ -278,6 +312,7 @@ extension UploadedFile {
 
 				self.size = uploadedFile.size
 				self.total = uploadedFile.total
+				self.done = uploadedFile.done
 				self.uuid = uploadedFile.uuid
 				self.fileId = uploadedFile.fileId
 				self.originalFilename = uploadedFile.originalFilename
@@ -288,6 +323,8 @@ extension UploadedFile {
 				self.isReady = uploadedFile.isReady
 				self.imageInfo = uploadedFile.imageInfo
 				self.videoInfo = uploadedFile.videoInfo
+				self.contentInfo = uploadedFile.contentInfo
+				self.metadata = uploadedFile.metadata
 				self.s3Bucket = uploadedFile.s3Bucket
 			}
 		})

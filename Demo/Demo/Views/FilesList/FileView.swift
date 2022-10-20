@@ -34,16 +34,16 @@ struct FileView: View {
 					VStack(alignment: .leading, spacing: 12) {
 						Text("\(self.fileData.file.originalFilename)")
 							.bold()
-						
-						if self.fileData.file.imageInfo?.width != nil && self.fileData.file.imageInfo?.height != nil {
+
+						if let width = self.fileData.file.contentInfo?.image?.width, let height = self.fileData.file.contentInfo?.image?.height {
 							VStack(alignment: .leading) {
 								Text("Size:").bold()
-								Text("\(self.fileData.file.imageInfo!.width)x\(self.fileData.file.imageInfo!.height) | \(self.fileData.file.size / 1024) kb")
+								Text("\(width)x\(height) | \(self.fileData.file.size / 1024) kb")
 							}
-						} else if self.fileData.file.videoInfo?.video.width != nil && self.fileData.file.videoInfo?.video.height != nil {
+						} else if let width = self.fileData.file.contentInfo?.video?.video.first?.width, let height = self.fileData.file.contentInfo?.video?.video.first?.height {
 							VStack(alignment: .leading) {
 								Text("Size:").bold()
-								Text("\(self.fileData.file.videoInfo!.video.width)x\(self.fileData.file.videoInfo!.video.height) | \(self.fileData.file.size / 1024) kb")
+								Text("\(width)x\(height) | \(self.fileData.file.size / 1024) kb")
 							}
 						} else {
 							VStack(alignment: .leading) {
@@ -143,17 +143,3 @@ struct FileView: View {
 		}
 	}
 }
-
-struct FileView_Previews: PreviewProvider {
-    static var previews: some View {
-		#if DEBUG
-		NavigationView {
-			FileView(fileData: testFileViewData)
-		}
-		#endif
-    }
-}
-
-
-
-

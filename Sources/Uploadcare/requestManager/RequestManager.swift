@@ -1,8 +1,9 @@
 //
-//  File.swift
+//  RequestManager.swift
 //  
 //
 //  Created by Sergei Armodin on 01.02.2022.
+//  Copyright © 2022 Uploadcare, Inc. All rights reserved.
 //
 
 import Foundation
@@ -12,6 +13,7 @@ internal enum RequestManagerError: Error {
 	case invalidUploadAPIResponse(error: UploadError)
 	case noResponse
 	case parsingError
+	case emptyResponse
 }
 
 internal class RequestManager {
@@ -31,16 +33,12 @@ internal class RequestManager {
 	var authScheme: Uploadcare.AuthScheme = .signed
 
 	// MARK: - Private properties
-	/// Library name
-	private var libraryName = "UploadcareSwift"
-	/// Library version
-	private var libraryVersion = "0.8.2"
 	/// API public key
-	private var publicKey: String
+	private let publicKey: String
 	/// Secret Key. Optional. Is used for authorization
-	private var secretKey: String?
+	private let secretKey: String?
 	/// URL session
-	private var urlSession: URLSession = URLSession.shared
+	private let urlSession: URLSession = URLSession.shared
 
 	// MARK: - Init
 	init(publicKey: String, secretKey: String?) {
@@ -51,13 +49,16 @@ internal class RequestManager {
 
 // MARK: - Public methods
 extension RequestManager {
-	/// Build url request for REST API
-	/// - Parameter fromURL: request url
+	/// Build URL request.
+	/// - Parameters:
+	///   - url: Request url.
+	///   - method: HTTP method.
+	/// - Returns: Request object.
 	func makeUrlRequest(fromURL url: URL, method: HTTPMethod) -> URLRequest {
 		var urlRequest = URLRequest(url: url)
 		urlRequest.httpMethod = method.rawValue
 		urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
-		urlRequest.addValue("application/vnd.uploadcare-v0.6+json", forHTTPHeaderField: "Accept")
+		urlRequest.addValue("application/vnd.uploadcare-v\(APIVersion)+json", forHTTPHeaderField: "Accept")
 
 		let userAgent = "\(libraryName)/\(libraryVersion)/\(publicKey) (Swift/\(getSwiftVersion()))"
 		urlRequest.addValue(userAgent, forHTTPHeaderField: "User-Agent")
@@ -65,8 +66,8 @@ extension RequestManager {
 		return urlRequest
 	}
 
-	/// Adds signature to network request for secure authorization
-	/// - Parameter urlRequest: url request
+	/// Adds signature to network request for secure authorization.
+	/// - Parameter urlRequest: URL request object.
 	func signRequest(_ urlRequest: inout URLRequest) {
 		let dateString = GMTDate()
 		urlRequest.addValue(dateString, forHTTPHeaderField: "Date")
@@ -117,6 +118,16 @@ extension RequestManager {
 
 			if data.count == 0, true is T {
 				completion(.success(true as! T))
+				return
+			}
+
+			if data.count == 0 {
+				completion(.failure(RequestManagerError.emptyResponse))
+				return
+			}
+
+			if T.self is String.Type, let string = String(data: data, encoding: .utf8) {
+				completion(.success(string as! T))
 				return
 			}
 

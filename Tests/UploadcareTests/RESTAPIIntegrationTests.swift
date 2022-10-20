@@ -20,7 +20,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		let query = PaginationQuery()
 			.stored(true)
-			.ordering(.sizeDESC)
+			.ordering(.dateTimeUploadedDESC)
 			.limit(5)
 
 		let filesList = uploadcare.listOfFiles()
@@ -44,7 +44,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		let query = PaginationQuery()
 			.stored(true)
-			.ordering(.sizeDESC)
+			.ordering(.dateTimeUploadedDESC)
 			.limit(5)
 
 		let filesList = uploadcare.listOfFiles()
@@ -132,7 +132,10 @@ final class RESTAPIIntegrationTests: XCTestCase {
 			case .success(let list):
 				// get file info by file UUID
 				let uuid = list.results.first!.uuid
-				self.uploadcare.fileInfo(withUUID: uuid) { result in
+
+				let fileInfoQuery = FileInfoQuery().include(.appdata)
+
+				self.uploadcare.fileInfo(withUUID: uuid, withQuery: fileInfoQuery) { result in
 					defer { expectation.fulfill() }
 
 					switch result {
@@ -415,35 +418,6 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 20.0)
 	}
 
-	func test12_store_group() {
-		let expectation = XCTestExpectation(description: "test12_store_group")
-
-		let query = GroupsListQuery()
-			.limit(100)
-			.ordering(.datetimeCreatedDESC)
-
-		uploadcare.listOfGroups(withQuery: query) { result in
-			switch result {
-			case .failure(let error):
-				XCTFail(error.detail)
-				expectation.fulfill()
-			case .success(let list):
-				XCTAssertFalse(list.results.isEmpty)
-
-				let uuid = list.results.first!.id
-				self.uploadcare.storeGroup(withUUID: uuid) { error in
-					defer { expectation.fulfill() }
-
-					if let error = error {
-						XCTFail(error.detail)
-					}
-				}
-			}
-		}
-
-		wait(for: [expectation], timeout: 20.0)
-	}
-
 	func test13_copy_file_to_local_storage() {
 		let expectation = XCTestExpectation(description: "test13_copy_file_to_local_storage")
 
@@ -683,8 +657,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		let query = PaginationQuery()
 			.stored(true)
-			.ordering(.sizeDESC)
-			.limit(50)
+			.ordering(.dateTimeUploadedDESC)
+			.limit(100)
 
 		uploadcare.listOfFiles(withQuery: query) { result in
 			switch result {
@@ -783,6 +757,187 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 				self.uploadcare.deleteFile(withUUID: file.uuid) { _ in
 					expectation.fulfill()
+				}
+			}
+		}
+
+		wait(for: [expectation], timeout: 20.0)
+	}
+
+	func test22_fileMetadata() {
+		let expectation = XCTestExpectation(description: "expectation")
+
+		uploadcare.authScheme = .simple
+
+		// get any file from list of files
+		let query = PaginationQuery().limit(1)
+		let filesList = uploadcare.listOfFiles()
+		filesList.get(withQuery: query) { result in
+			switch result {
+			case .failure(let error):
+				XCTFail(error.detail)
+				expectation.fulfill()
+			case .success(let list):
+				let uuid = list.results.first!.uuid
+				let expectedValue = NSUUID().uuidString
+
+				// update
+				self.uploadcare.updateFileMetadata(withUUID: uuid, key: "myMeta", value:expectedValue) { result in
+					switch result {
+					case .failure(let error):
+						XCTFail(error.detail)
+					case .success(let val):
+						XCTAssertEqual(val, expectedValue)
+
+						// value by key
+						self.uploadcare.fileMetadataValue(forKey: "myMeta", withUUID: uuid) { result in
+							switch result {
+							case .failure(let error):
+								XCTFail(error.detail)
+							case .success(let value):
+								XCTAssertEqual(value, expectedValue)
+
+								// get metadata for file
+								self.uploadcare.fileMetadata(withUUID: uuid) { result in
+									defer { expectation.fulfill() }
+
+									switch result {
+									case .failure(let error):
+										XCTFail(error.detail)
+									case .success(let metadata):
+										XCTAssertFalse(metadata.isEmpty)
+										XCTAssertEqual(metadata["myMeta"], expectedValue)
+
+										// delete metadata
+										self.uploadcare.deleteFileMetadata(forKey: "myMeta", withUUID: uuid) { error in
+											XCTAssertNil(error)
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		wait(for: [expectation], timeout: 15.0)
+	}
+
+	func test23_aws_recognition_execute_and_status() {
+		let expectation = XCTestExpectation(description: "test23_aws_recognition_execute_and_status")
+
+		// get any file from list of files
+		let query = PaginationQuery().limit(1)
+		let filesList = uploadcare.listOfFiles()
+		filesList.get(withQuery: query) { result in
+			switch result {
+			case .failure(let error):
+				XCTFail(error.detail)
+				expectation.fulfill()
+			case .success(let list):
+				let uuid = list.results.first!.uuid
+
+				self.uploadcare.executeAWSRecognition(fileUUID: uuid) { result in
+					switch result {
+					case .failure(let error):
+						XCTFail(error.detail)
+					case .success(let response):
+						DLog(response)
+
+						// check status
+						self.uploadcare.checkAWSRecognitionStatus(requestID: response.requestID) { result in
+							defer { expectation.fulfill() }
+
+							switch result {
+							case .failure(let error):
+								XCTFail(error.detail)
+							case .success(let status):
+								XCTAssertTrue(status != .unknown)
+							}
+						}
+					}
+				}
+			}
+		}
+
+		wait(for: [expectation], timeout: 20.0)
+	}
+
+	func test24_clamav_execute_and_status() {
+		let expectation = XCTestExpectation(description: "test24_clamav_execute_and_status")
+
+		// get any file from list of files
+		let query = PaginationQuery().limit(1)
+		let filesList = uploadcare.listOfFiles()
+		filesList.get(withQuery: query) { result in
+			switch result {
+			case .failure(let error):
+				XCTFail(error.detail)
+				expectation.fulfill()
+			case .success(let list):
+				let uuid = list.results.first!.uuid
+
+				let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+				self.uploadcare.executeClamav(fileUUID: uuid, parameters: parameters) { result in
+					switch result {
+					case .failure(let error):
+						XCTFail(error.detail)
+					case .success(let response):
+						DLog(response)
+
+						// check status
+						self.uploadcare.checkClamAVStatus(requestID: response.requestID) { result in
+							defer { expectation.fulfill() }
+
+							switch result {
+							case .failure(let error):
+								XCTFail(error.detail)
+							case .success(let status):
+								XCTAssertTrue(status != .unknown)
+							}
+						}
+					}
+				}
+			}
+		}
+
+		wait(for: [expectation], timeout: 20.0)
+	}
+
+	func test25_removeBG_execute_and_status() {
+		let expectation = XCTestExpectation(description: "test25_removeBG_execute_and_status")
+
+		// get any file from list of files
+		let query = PaginationQuery().limit(1)
+		let filesList = uploadcare.listOfFiles()
+		filesList.get(withQuery: query) { result in
+			switch result {
+			case .failure(let error):
+				XCTFail(error.detail)
+				expectation.fulfill()
+			case .success(let list):
+				let uuid = list.results.first!.uuid
+
+				let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
+				self.uploadcare.executeRemoveBG(fileUUID: uuid, parameters: parameters) { result in
+					switch result {
+					case .failure(let error):
+						XCTFail(error.detail)
+					case .success(let response):
+						// check status
+						self.uploadcare.checkRemoveBGStatus(requestID: response.requestID) { result in
+							defer { expectation.fulfill() }
+
+							switch result {
+							case .failure(let error):
+								XCTFail(error.detail)
+							case .success(let response):
+								DLog(response)
+								XCTAssertTrue(response.status != .unknown)
+							}
+						}
+					}
 				}
 			}
 		}

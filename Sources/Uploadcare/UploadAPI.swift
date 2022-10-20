@@ -206,6 +206,14 @@ extension UploadAPI {
 			)
 		}
 
+		if let metadata = task.metadata {
+			for meta in metadata {
+				queryItems.append(
+					URLQueryItem(name: "metadata[\(meta.key)]", value: meta.value)
+				)
+			}
+		}
+
 		if let uploadSignature = uploadSignature ?? getSignature() {
 			queryItems.append(contentsOf: [
 				URLQueryItem(name: "signature", value: uploadSignature.signature),
@@ -277,11 +285,12 @@ extension UploadAPI {
 	public func directUpload(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
-		return directUpload(files: files, uploadType: .background, store: store, uploadSignature: uploadSignature, onProgress, completionHandler)
+		return directUpload(files: files, uploadType: .background, store: store, metadata: metadata, uploadSignature: uploadSignature, onProgress, completionHandler)
 	}
 
     @discardableResult
@@ -289,6 +298,7 @@ extension UploadAPI {
 		files: [String: Data],
 		uploadType: DirectUploadType,
 		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
@@ -303,6 +313,12 @@ extension UploadAPI {
         if let storeVal = store {
             builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
         }
+
+		if let metadata = metadata {
+			for meta in metadata {
+				builder.addMultiformValue(meta.value, forName: "metadata[\(meta.key)]")
+			}
+		}
 
 		if let uploadSignature = uploadSignature ?? getSignature() {
             builder.addMultiformValue(uploadSignature.signature, forName: "signature")
@@ -373,10 +389,11 @@ extension UploadAPI {
 	internal func directUploadInForeground(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
 		_ onProgress: ((Double) -> Void)? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
-		return directUpload(files: files, uploadType: .foreground, onProgress, completionHandler)
+		return directUpload(files: files, uploadType: .foreground, store: store, metadata: metadata, onProgress, completionHandler)
 	}
 }
 
@@ -396,6 +413,7 @@ extension UploadAPI {
 		_ data: Data,
 		withName name: String,
 		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil,
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
@@ -413,6 +431,7 @@ extension UploadAPI {
 			size: totalSize,
 			mimeType: fileMimeType,
 			store: store ?? .store,
+			metadata: metadata,
 			uploadSignature: uploadSignature) { [weak self] result in
 				guard let self = self else { return }
 
@@ -490,6 +509,7 @@ extension UploadAPI {
 		size: Int,
 		mimeType: String,
 		store: StoringBehavior,
+		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<StartMulipartUploadResponse, UploadError>) -> Void
 	) {
@@ -503,6 +523,12 @@ extension UploadAPI {
 		builder.addMultiformValue(mimeType, forName: "content_type")
 		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
 		builder.addMultiformValue(store.rawValue, forName: "UPLOADCARE_STORE")
+
+		if let metadata = metadata {
+			for meta in metadata {
+				builder.addMultiformValue(meta.value, forName: "metadata[\(meta.key)]")
+			}
+		}
 
 		if let uploadSignature = uploadSignature ?? getSignature() {
 			builder.addMultiformValue(uploadSignature.signature, forName: "signature")

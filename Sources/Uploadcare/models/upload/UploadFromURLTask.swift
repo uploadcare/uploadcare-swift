@@ -43,6 +43,10 @@ public class UploadFromURLTask {
 	
 	/// Provides the save/update URL behavior. The parameter can be used if you believe a source_url will be used more than once. If you don’t explicitly define save_URL_duplicates, it is by default set to the value of check_URL_duplicates.
 	public var saveURLDuplicates: Bool?
+
+	/// Arbitrary metadata associated with a file.
+	/// Metadata is key-value data. You can specify up to 50 keys, with key names up to 64 characters long and values up to 512 characters long.
+	public var metadata: [String: String]?
 	
 	// MARK: - Init
 	public init(
@@ -50,13 +54,15 @@ public class UploadFromURLTask {
 		store: StoringBehavior? = .auto,
 		filename: String? = nil,
 		checkURLDuplicates: Bool? = nil,
-		saveURLDuplicates: Bool? = nil
+		saveURLDuplicates: Bool? = nil,
+		metadata: [String: String]? = nil
 	) {
 		self.sourceUrl = sourceUrl
 		self.store = store ?? .auto
 		self.filename = filename
 		self.checkURLDuplicates = checkURLDuplicates
 		self.saveURLDuplicates = saveURLDuplicates
+		self.metadata = metadata
 	}
 	
 	/// Sets the file storing behavior.
@@ -80,6 +86,21 @@ public class UploadFromURLTask {
 	/// Provides the save/update URL behavior. The parameter can be used if you believe a source_url will be used more than once. If you don’t explicitly define save_URL_duplicates, it is by default set to the value of check_URL_duplicates.
 	public func saveURLDuplicates(_ val: Bool?) -> Self {
 		saveURLDuplicates = val
+		return self
+	}
+
+	/// Set metadata for uploaded file.
+	/// - Parameters:
+	///   - val: value
+	///   - key: key
+	/// - Returns: UploadFromURLTask
+	public func setMetadata(_ val: String?, forKey key: String) -> Self {
+		if metadata == nil { metadata = [:] }
+		if let value = val {
+			metadata?[key] = value
+		} else {
+			metadata?.removeValue(forKey: key)
+		}
 		return self
 	}
 }
