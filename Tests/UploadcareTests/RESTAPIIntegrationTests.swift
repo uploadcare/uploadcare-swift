@@ -666,7 +666,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				expectation.fulfill()
 			case .success(let list):
-                let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" })!
+				let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" })!
 
 				let convertSettings = VideoConversionJobSettings(forFile: videoFile)
 					.format(.webm)
