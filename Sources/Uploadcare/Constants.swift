@@ -19,7 +19,7 @@ internal let RESTAPIHost = "api.uploadcare.com"
 /// Library name
 internal let libraryName = "UploadcareSwift"
 /// Library version
-internal let libraryVersion = "0.9.0"
+internal let libraryVersion = "0.9.1"
 
 /// API version
 internal let APIVersion = "0.7"
