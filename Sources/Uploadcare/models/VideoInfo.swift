@@ -21,10 +21,10 @@ public struct VideoInfo: Codable {
 	public var bitrate: Int
 	
 	/// Audio stream metadata.
-	public var audio: [AudioMetadata]
+	public var audio: Audio?
 	
 	/// Video stream metadata.
-	public var video: [VideoMetadata]
+	public var video: VideoMetadata
 	
 	
 	enum CodingKeys: String, CodingKey {
@@ -40,8 +40,8 @@ public struct VideoInfo: Codable {
 		duration: Int,
 		format: String,
 		bitrate: Int,
-		audio: [AudioMetadata],
-		video: [VideoMetadata]
+		audio: Audio?,
+		video: VideoMetadata
 	) {
 		self.duration = duration
 		self.format = format
@@ -56,8 +56,8 @@ public struct VideoInfo: Codable {
 		let duration = try container.decodeIfPresent(Int.self, forKey: .duration) ?? 0
 		let format = try container.decodeIfPresent(String.self, forKey: .format) ?? ""
 		let bitrate = try container.decodeIfPresent(Int.self, forKey: .bitrate) ?? 0
-		let audio = try container.decodeIfPresent([AudioMetadata].self, forKey: .audio) ?? [AudioMetadata()]
-		let video = try container.decodeIfPresent([VideoMetadata].self, forKey: .video) ?? [VideoMetadata(height: 0, width: 0, frameRate: 0, bitrate: 0, codec: "")]
+		let audio = try container.decodeIfPresent(Audio.self, forKey: .audio)
+		let video = try container.decodeIfPresent(VideoMetadata.self, forKey: .video) ?? VideoMetadata(height: 0, width: 0, frameRate: 0, bitrate: 0, codec: "")
 
 		self.init(
 			duration: duration,
@@ -82,4 +82,41 @@ extension VideoInfo: CustomDebugStringConvertible {
 				video: \(video)
 		"""
 	}
+}
+
+
+extension VideoInfo {
+    /// Audio stream metadata.
+    public struct Audio: Codable, CustomDebugStringConvertible {
+        /// Audio bitrate.
+        public var bitrate: Int?
+
+        /// Audio stream codec.
+        public var codec: String?
+
+        /// Audio stream sample rate.
+        public var sampleRate: Int?
+
+        /// Audio stream number of channels.
+        public var channels: String?
+
+
+        enum CodingKeys: String, CodingKey {
+            case bitrate
+            case codec
+            case sampleRate = "sample_rate"
+            case channels
+        }
+
+        public var debugDescription: String {
+            return """
+                \(type(of: self)):
+                        bitrate: \(String(describing: bitrate))
+                        codec: \(String(describing: codec))
+                        sampleRate: \(String(describing: sampleRate))
+                        channels: \(String(describing: channels))
+            """
+        }
+    }
+
 }
