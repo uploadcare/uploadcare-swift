@@ -22,7 +22,7 @@ public struct VideoInfo: Codable {
 	
 	/// Audio stream metadata.
 	public var audio: Audio?
-	
+
 	/// Video stream metadata.
 	public var video: VideoMetadata
 	
