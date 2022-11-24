@@ -415,6 +415,31 @@ final class UploadAPIIntegrationTests: XCTestCase {
 
 		wait(for: [expectation], timeout: 120.0)
 	}
+
+    func test13_multipartUpload_videoFile() {
+        let url = URL(string: "https://ucarecdn.com/3e8a90e7-f5ce-422e-a3ed-5eee952f9f3b/")!
+        let data = try! Data(contentsOf: url)
+
+        let expectation = XCTestExpectation(description: "test13_multipartUpload_videoFile")
+
+        let onProgress: (Double)->Void = { (progress) in
+            DLog("progress: \(progress)")
+        }
+
+        let metadata = ["multipart": "upload"]
+
+        uploadcare.uploadAPI.multipartUpload(data, withName: "video.MP4", store: .doNotStore, metadata: metadata, onProgress) { result in
+            defer { expectation.fulfill() }
+
+            switch result {
+            case .failure(let error):
+                XCTFail(error.detail)
+            case .success(_):
+                break
+            }
+        }
+        wait(for: [expectation], timeout: 180.0)
+    }
 }
 
 #endif
