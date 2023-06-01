@@ -590,14 +590,12 @@ extension Uploadcare {
 	/// - Returns: Project info.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func getProjectInfo() async throws -> Project {
-		try await withCheckedThrowingContinuation({ [weak self] continuation in
-			self?.getProjectInfo({ result in
-				switch result {
-				case .success(let project): continuation.resume(returning: project)
-				case .failure(let error): continuation.resume(throwing: error)
-				}
-			})
-		})
+		let url = urlWithPath("/project/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		let project: Project = try await requestManager.performRequest(urlRequest)
+		return project
 	}
 
 	/// This method allows you to get authonticated url from your backend using redirect.
