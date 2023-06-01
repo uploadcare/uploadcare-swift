@@ -519,22 +519,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 //		wait(for: [expectation], timeout: 20.0)
 //	}
 //
-//	func test17_get_list_of_webhooks() {
-//		let expectation = XCTestExpectation(description: "test17_get_list_of_webhooks")
-//
-//		uploadcare.getListOfWebhooks { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//			case .success(let webhooks):
-//				XCTAssertFalse(webhooks.isEmpty)
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
+	func test17_get_list_of_webhooks() async throws {
+		let webhooks = try await uploadcare.getListOfWebhooks()
+		XCTAssertFalse(webhooks.isEmpty)
+	}
 //
 //	func test18_create_update_delete_webhook() {
 //		let expectation = XCTestExpectation(description: "test18_create_update_delete_webhook")

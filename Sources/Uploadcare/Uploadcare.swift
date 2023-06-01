@@ -657,6 +657,21 @@ extension Uploadcare {
 		}
 	}
 
+
+	/// Get list of project webhooks.
+	/// - Returns: Array of webhooks.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func getListOfWebhooks() async throws -> [Webhook] {
+		try await withCheckedThrowingContinuation({ [weak self] continuation in
+			self?.getListOfWebhooks({ result in
+				switch result {
+				case .success(let data): continuation.resume(returning: data)
+				case .failure(let error): continuation.resume(throwing: error)
+				}
+			})
+		})
+	}
+
 	/// Create webhook
 	/// - Parameters:
 	///   - targetUrl: A URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
