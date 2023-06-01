@@ -586,9 +586,9 @@ extension Uploadcare {
 		}
 	}
 
-	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	/// Getting info about account project.
 	/// - Returns: Project info.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func getProjectInfo() async throws -> Project {
 		try await withCheckedThrowingContinuation({ [weak self] continuation in
 			self?.getProjectInfo({ result in
