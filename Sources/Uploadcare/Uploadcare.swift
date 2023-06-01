@@ -586,6 +586,20 @@ extension Uploadcare {
 		}
 	}
 
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	/// Getting info about account project.
+	/// - Returns: Project info.
+	public func getProjectInfo() async throws -> Project {
+		try await withCheckedThrowingContinuation({ [weak self] continuation in
+			self?.getProjectInfo({ result in
+				switch result {
+				case .success(let project): continuation.resume(returning: project)
+				case .failure(let error): continuation.resume(throwing: error)
+				}
+			})
+		})
+	}
+
 	/// This method allows you to get authonticated url from your backend using redirect.
 	/// By request to that url your backend should generate authenticated url to your file and perform REDIRECT to generated url.
 	/// Redirect url will be caught and returned in completion handler of that method

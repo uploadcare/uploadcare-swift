@@ -47,8 +47,8 @@ internal class RequestManager {
 	}
 }
 
-// MARK: - Public methods
-extension RequestManager {
+// MARK: - Internal methods
+internal extension RequestManager {
 	/// Build URL request.
 	/// - Parameters:
 	///   - url: Request url.
