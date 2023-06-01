@@ -10,10 +10,7 @@ import Foundation
 
 
 public class Uploadcare: NSObject {
-	
-	// TODO: log turn on or off
-	// TODO: add logs
-	
+
 	/// Authentication scheme for REST API requests
 	/// More information about authentication: https://uploadcare.com/docs/api_reference/rest/requests_auth/#rest-api-requests-and-authentication
 	public enum AuthScheme: String {
