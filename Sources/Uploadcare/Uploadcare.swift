@@ -662,19 +662,17 @@ extension Uploadcare {
 	/// - Returns: Array of webhooks.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func getListOfWebhooks() async throws -> [Webhook] {
-		try await withCheckedThrowingContinuation({ [weak self] continuation in
-			self?.getListOfWebhooks({ result in
-				switch result {
-				case .success(let data): continuation.resume(returning: data)
-				case .failure(let error): continuation.resume(throwing: error)
-				}
-			})
-		})
+		let url = urlWithPath("/webhooks/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		let webhooks: [Webhook] = try await requestManager.performRequest(urlRequest)
+		return webhooks
 	}
 
-	/// Create webhook
+	/// Create webhook.
 	/// - Parameters:
-	///   - targetUrl: A URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
+	///   - targetUrl: An URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
 	///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
 	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
 	///   - completionHandler: completion handler
@@ -706,12 +704,39 @@ extension Uploadcare {
 		}
 	}
 
-	/// Update webhook attributes
+	/// Create a webhook.
+	/// - Parameters:
+	///   - targetUrl: An URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
+	///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
+	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
+	/// - Returns: Created webhook.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func createWebhook(targetUrl: URL, isActive: Bool, signingSecret: String? = nil) async throws -> Webhook {
+		let url = urlWithPath("/webhooks/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+		var bodyDictionary = [
+			"target_url": targetUrl.absoluteString,
+			"event": "file.uploaded", // Presently, we only support the file.uploaded event.
+			"is_active": "\(isActive)"
+		]
+
+		if let signingSecret = signingSecret {
+			bodyDictionary["signing_secret"] = signingSecret
+		}
+
+		urlRequest.httpBody = try JSONEncoder().encode(bodyDictionary)
+		requestManager.signRequest(&urlRequest)
+
+		let webhook: Webhook = try await requestManager.performRequest(urlRequest)
+		return webhook
+	}
+
+	/// Update webhook attributes.
 	/// - Parameters:
 	///   - id: Webhook ID
 	///   - targetUrl: Where webhook data will be posted.
-	///   - isActive: Marks a subscription as either active or not
-	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
+	///   - isActive: Marks a subscription as either active or not.
+	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads.
 	///   - completionHandler: completion handler
 	public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Result<Webhook, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/webhooks/\(id)/")
@@ -741,9 +766,38 @@ extension Uploadcare {
 		}
 	}
 
-	/// Delete webhook
+
+	/// Update webhook attributes.
 	/// - Parameters:
-	///   - targetUrl: url of webhook target
+	///   - id: Webhook ID
+	///   - targetUrl: Where webhook data will be posted.
+	///   - isActive: Marks a subscription as either active or not.
+	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads.
+	/// - Returns: Updated webhook.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, signingSecret: String? = nil) async throws -> Webhook {
+		let url = urlWithPath("/webhooks/\(id)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
+		var bodyDictionary = [
+			"target_url": targetUrl.absoluteString,
+			"event": "file.uploaded", // Presently, we only support the file.uploaded event.
+			"is_active": "\(isActive)"
+		]
+
+		if let signingSecret = signingSecret {
+			bodyDictionary["signing_secret"] = signingSecret
+		}
+
+		urlRequest.httpBody = try JSONEncoder().encode(bodyDictionary)
+		requestManager.signRequest(&urlRequest)
+
+		let webhook: Webhook = try await requestManager.performRequest(urlRequest)
+		return webhook
+	}
+
+	/// Delete a webhook.
+	/// - Parameters:
+	///   - targetUrl: URL of the webhook target.
 	///   - completionHandler: completion handler
 	public func deleteWebhook(forTargetUrl targetUrl: URL, _ completionHandler: @escaping (RESTAPIError?) -> Void) {
 		let url = urlWithPath("/webhooks/unsubscribe/")
@@ -764,6 +818,22 @@ extension Uploadcare {
 			case .success(_): completionHandler(nil)
 			}
 		}
+	}
+
+
+	/// Delete a webhook.
+	/// - Parameter targetUrl: URL of the webhook target.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func deleteWebhook(forTargetUrl targetUrl: URL) async throws {
+		let url = urlWithPath("/webhooks/unsubscribe/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
+		let bodyDictionary = [
+			"target_url": targetUrl.absoluteString
+		]
+		urlRequest.httpBody = try JSONEncoder().encode(bodyDictionary)
+		requestManager.signRequest(&urlRequest)
+
+		let _: Bool = try await requestManager.performRequest(urlRequest)
 	}
 
 	/// Uploadcare allows converting documents to the following target formats: DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG.

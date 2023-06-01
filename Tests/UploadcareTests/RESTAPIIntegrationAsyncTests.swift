@@ -523,42 +523,24 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let webhooks = try await uploadcare.getListOfWebhooks()
 		XCTAssertFalse(webhooks.isEmpty)
 	}
-//
-//	func test18_create_update_delete_webhook() {
-//		let expectation = XCTestExpectation(description: "test18_create_update_delete_webhook")
-//
-//		let random = (0...1000).randomElement()!
-//		let url = URL(string: "https://google.com/\(random)")!
-//		uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "sss1") { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let webhook):
-//				XCTAssertEqual(url.absoluteString, webhook.targetUrl)
-//
-//				let random2 = (0...1000).randomElement()!
-//				let url2 = URL(string: "https://google.com/\(random2)")!
-//				self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url2, isActive: true, signingSecret: "sss2") { result in
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//						expectation.fulfill()
-//					case .success(let webhook):
-//						XCTAssertEqual(url2.absoluteString, webhook.targetUrl)
-//
-//						let url = URL(string: webhook.targetUrl)!
-//						self.uploadcare.deleteWebhook(forTargetUrl: url) { error in
-//							XCTAssertNil(error)
-//							expectation.fulfill()
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
+
+	func test18_create_update_delete_webhook() async throws {
+		let random = (0...1000).randomElement()!
+		let url = URL(string: "https://google.com/\(random)")!
+
+		var webhook = try await uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "sss1")
+		XCTAssertEqual(url.absoluteString, webhook.targetUrl)
+
+		let random2 = (0...1000).randomElement()!
+		let url2 = URL(string: "https://google.com/\(random2)")!
+
+		webhook = try await uploadcare.updateWebhook(id: webhook.id, targetUrl: url2, isActive: false, signingSecret: "sss2")
+		XCTAssertEqual(url2.absoluteString, webhook.targetUrl)
+		XCTAssertFalse(webhook.isActive)
+
+		let targetUrl = URL(string: webhook.targetUrl)!
+		try await uploadcare.deleteWebhook(forTargetUrl: targetUrl)
+	}
 //
 //	func test19_document_conversion_and_status() {
 //		let expectation = XCTestExpectation(description: "test19_document_conversion_and_status")
