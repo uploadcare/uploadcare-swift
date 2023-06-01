@@ -530,6 +530,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		var webhook = try await uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "sss1")
 		XCTAssertEqual(url.absoluteString, webhook.targetUrl)
+		XCTAssertTrue(webhook.isActive)
 
 		let random2 = (0...1000).randomElement()!
 		let url2 = URL(string: "https://google.com/\(random2)")!
