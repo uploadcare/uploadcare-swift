@@ -1321,6 +1321,14 @@ extension Uploadcare {
 		file.originalFilename = url.lastPathComponent
 		return file
 	}
+
+	public func listOfFiles(_ files: [File]? = nil) -> FilesList {
+		return FilesList(withFiles: files ?? [], api: self)
+	}
+
+	public func listOfGroups(_ groups: [Group]? = nil) -> GroupsList {
+		return GroupsList(withGroups: groups ?? [], api: self)
+	}
 }
 
 // MARK: - URLSessionTaskDelegate
@@ -1330,17 +1338,6 @@ extension Uploadcare: URLSessionTaskDelegate {
 			redirectValues[key] = value
 		}
 		completionHandler(request)
-	}
-}
-
-// MARK: - Factory
-extension Uploadcare {
-	public func listOfFiles(_ files: [File]? = nil) -> FilesList {
-		return FilesList(withFiles: files ?? [], api: self)
-	}
-	
-	public func listOfGroups(_ groups: [Group]? = nil) -> GroupsList {
-		return GroupsList(withGroups: groups ?? [], api: self)
 	}
 }
 
