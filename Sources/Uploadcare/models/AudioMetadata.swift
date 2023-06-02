@@ -9,7 +9,7 @@
 import Foundation
 
 /// Audio stream metadata.
-public struct AudioMetadata: Codable {
+public struct AudioMetadata: Codable, Equatable {
 	/// Audio bitrate.
 	public var bitrate: Int?
 

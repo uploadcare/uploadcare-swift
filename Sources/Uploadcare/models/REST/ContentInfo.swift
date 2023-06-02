@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ContentInfo: Codable {
+public struct ContentInfo: Codable, Equatable {
 	/// MIME type.
 	public let mime: Mime?
 
@@ -21,7 +21,7 @@ public struct ContentInfo: Codable {
 
 extension ContentInfo {
 	/// Video metadata.
-	public struct Video: Codable, CustomDebugStringConvertible {
+	public struct Video: Codable, Equatable, CustomDebugStringConvertible {
 		/// Video duration in milliseconds.
 		public var duration: Int
 
@@ -95,7 +95,7 @@ extension ContentInfo {
 
 extension ContentInfo {
 	/// Video stream metadata.
-	public struct VideoMetadata: Codable, CustomDebugStringConvertible {
+	public struct VideoMetadata: Codable, Equatable, CustomDebugStringConvertible {
 		/// Video stream image height.
 		public var height: Int
 		/// Video stream image width.

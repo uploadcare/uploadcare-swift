@@ -9,7 +9,7 @@
 import Foundation
 
 /// Application names and data associated with these applications.
-public struct AppData: Codable {
+public struct AppData: Codable, Equatable {
 	internal init(awsRekognitionDetectLabels: AWSRekognitionDetectLabels? = nil, clamavVirusScan: UCClamavVirusScan? = nil, removeBg: RemoveBg? = nil) {
 		self.awsRekognitionDetectLabels = awsRekognitionDetectLabels
 		self.clamavVirusScan = clamavVirusScan

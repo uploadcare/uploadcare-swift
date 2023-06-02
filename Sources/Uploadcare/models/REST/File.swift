@@ -10,7 +10,7 @@ import Foundation
 
 
 /// File info model that is used for REST API
-public struct File: Codable {
+public struct File: Codable, Equatable {
 	
 	/// File size in bytes.
 	public var size: Int

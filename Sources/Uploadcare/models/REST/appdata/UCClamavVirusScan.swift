@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct UCClamavVirusScan: Codable {
+public struct UCClamavVirusScan: Codable, Equatable {
 	/// An application version.
 	public let version: String
 
@@ -64,7 +64,7 @@ public struct UCClamavVirusScan: Codable {
 
 
 extension UCClamavVirusScan {
-	public struct ClamavData: Codable {
+	public struct ClamavData: Codable, Equatable {
 		public let infected: Bool
 		public let infectedWith: String
 

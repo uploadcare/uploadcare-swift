@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct RemoveBg: Codable {
+public struct RemoveBg: Codable, Equatable {
 	/// An application version.
 	public let version: String
 
@@ -63,7 +63,7 @@ public struct RemoveBg: Codable {
 }
 
 extension RemoveBg {
-	public struct RemoveBgData: Codable {
+	public struct RemoveBgData: Codable, Equatable {
 		internal init(foregroundType: String) {
 			self.foregroundType = foregroundType
 		}

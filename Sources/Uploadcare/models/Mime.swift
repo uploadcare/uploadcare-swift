@@ -9,7 +9,7 @@
 import Foundation
 
 /// MIME type data.
-public struct Mime: Codable {
+public struct Mime: Codable, Equatable {
 	/// Full MIME type.
 	public let mime: String
 
