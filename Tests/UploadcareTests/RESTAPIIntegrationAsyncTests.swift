@@ -42,62 +42,28 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(list.results.isEmpty)
 	}
 
-//	func test03_listOfFiles_pagination() {
-//		let expectation = XCTestExpectation(description: "test3_listOfFiles_pagination")
-//		uploadcare.authScheme = .signed
-//
-//		let query = PaginationQuery()
-//			.stored(true)
-//			.ordering(.dateTimeUploadedDESC)
-//			.limit(5)
-//
-//		let filesList = uploadcare.listOfFiles()
-//
-//		DispatchQueue.global(qos: .utility).async {
-//			let semaphore = DispatchSemaphore(value: 0)
-//			filesList.get(withQuery: query) { result in
-//				defer { semaphore.signal() }
-//
-//				switch result {
-//				case .failure(let error):
-//					XCTFail(error.detail)
-//				case .success(let list):
-//					XCTAssertFalse(list.results.isEmpty)
-//				}
-//			}
-//			semaphore.wait()
-//
-//			// get next page
-//			filesList.nextPage { result in
-//				defer { semaphore.signal() }
-//
-//				switch result {
-//				case .failure(let error):
-//					XCTFail(error.detail)
-//				case .success(let list):
-//					XCTAssertFalse(list.results.isEmpty)
-//				}
-//			}
-//			semaphore.wait()
-//
-//			// get previous page
-//			filesList.previousPage { result in
-//				defer { semaphore.signal() }
-//
-//				switch result {
-//				case .failure(let error):
-//					XCTFail(error.detail)
-//				case .success(let list):
-//					XCTAssertFalse(list.results.isEmpty)
-//				}
-//			}
-//			semaphore.wait()
-//			expectation.fulfill()
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
-//
+	func test03_listOfFiles_pagination() async throws {
+		uploadcare.authScheme = .signed
+
+		let query = PaginationQuery()
+			.stored(true)
+			.ordering(.dateTimeUploadedDESC)
+			.limit(5)
+
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		XCTAssertFalse(list.results.isEmpty)
+
+		// get next page
+		let next = try await filesList.nextPage()
+		XCTAssertFalse(next.results.isEmpty)
+
+		// get previous page
+		let prev = try await filesList.previousPage()
+		XCTAssertFalse(prev.results.isEmpty)
+	}
+
 //	func test04_fileInfo_with_UUID() {
 //		let expectation = XCTestExpectation(description: "test4_fileInfo_with_UUID")
 //

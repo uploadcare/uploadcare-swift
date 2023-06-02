@@ -161,8 +161,20 @@ extension FilesList {
 		
 		getPage(withQueryString: query, completionHandler)
 	}
+
+	/// Get next page of files list.
+	/// - Returns: Files list.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func nextPage() async throws -> FilesList {
+		guard let next = next, let query = URL(string: next)?.query else {
+			self.results = []
+			return self
+		}
+
+		return try await getPage(withQueryString: query)
+	}
 	
-	/// Get previous page of files list
+	/// Get previous page of files list.
 	/// - Parameter completionHandler: completion handler
 	public func previousPage(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		guard let previous = previous, let query = URL(string: previous)?.query else {
@@ -173,14 +185,26 @@ extension FilesList {
 		
 		getPage(withQueryString: query, completionHandler)
 	}
+
+	/// Get previous page of files list.
+	/// - Returns: Files list.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func previousPage() async throws -> FilesList {
+		guard let previous = previous, let query = URL(string: previous)?.query else {
+			self.results = []
+			return self
+		}
+
+		return try await getPage(withQueryString: query)
+	}
 }
 
 
 // MARK: - Private methods
 private extension FilesList {
-	/// Get page of files list
+	/// Get page of files list.
 	/// - Parameters:
-	///   - query: query string
+	///   - query: Query string.
 	///   - completionHandler: completion handler
 	func getPage(
 		withQueryString query: String,
@@ -206,6 +230,25 @@ private extension FilesList {
 				completionHandler(.success(list))
 			}
 		}
+	}
+
+
+	/// Get page of files list.
+	/// - Parameter query: Query string.
+	/// - Returns: List of files.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	func getPage(withQueryString query: String) async throws -> FilesList {
+		guard let api = RESTAPI else {
+			throw RESTAPIError.defaultError()
+		}
+
+		let list: FilesList = try await api.listOfFiles(withQueryString: query)
+		self.next = list.next
+		self.previous = list.previous
+		self.total = list.total
+		self.perPage = list.perPage
+		self.results = list.results
+		return list
 	}
 }
 
