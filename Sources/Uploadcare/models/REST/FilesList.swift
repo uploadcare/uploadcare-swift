@@ -101,9 +101,9 @@ extension FilesList: CustomDebugStringConvertible {
 
 // MARK: - Public methods
 extension FilesList {
-	/// Get list of files
+	/// Get list of files.
 	/// - Parameters:
-	///   - query: query object
+	///   - query: Query object.
 	///   - completionHandler: completion hanlder
 	public func get(
 		withQuery query: PaginationQuery? = nil,
@@ -129,6 +129,25 @@ extension FilesList {
 				completionHandler(.success(list))
 			}
 		}
+	}
+
+
+	/// Get list of files.
+	/// - Parameter query: Query object.
+	/// - Returns: List of files.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func get(withQuery query: PaginationQuery? = nil) async throws -> FilesList {
+		guard let api = RESTAPI else {
+			throw RESTAPIError.defaultError()
+		}
+
+		let list: FilesList = try await api.listOfFiles(withQuery: query)
+		self.next = list.next
+		self.previous = list.previous
+		self.total = list.total
+		self.perPage = list.perPage
+		self.results = list.results
+		return list
 	}
 	
 	/// Get next page of files list

@@ -79,18 +79,23 @@ internal extension Uploadcare {
 
 // MARK: - REST API
 extension Uploadcare {
-	/// Get list of files
+	/// Get list of files.
 	/// - Parameters:
-	///   - query: query object
+	///   - query: Query object.
 	///   - completionHandler: completion handler
 	public func listOfFiles(withQuery query: PaginationQuery?, _ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		listOfFiles(withQueryString: query?.stringValue, completionHandler)
 	}
 
-    /// Get list of files
-    /// - Parameters:
-    ///   - query: query string
-    ///   - completionHandler: completion handler
+
+	/// Get list of files.
+	/// - Parameter query: Query object.
+	/// - Returns: List of files.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func listOfFiles(withQuery query: PaginationQuery?) async throws -> FilesList {
+		return try await listOfFiles(withQueryString: query?.stringValue)
+	}
+
     internal func listOfFiles(
         withQueryString query: String?,
         _ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void
@@ -114,6 +119,24 @@ extension Uploadcare {
             }
         }
     }
+
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	internal func listOfFiles(withQueryString query: String?) async throws -> FilesList {
+		var urlString = RESTAPIBaseUrl + "/files/"
+		if let queryValue = query {
+			urlString += "?\(queryValue)"
+		}
+
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			throw RESTAPIError.defaultError()
+		}
+
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+		let filesList: FilesList = try await requestManager.performRequest(urlRequest)
+		return filesList
+	}
 
 	/// Store a single file by UUID.
 	/// - Parameters:

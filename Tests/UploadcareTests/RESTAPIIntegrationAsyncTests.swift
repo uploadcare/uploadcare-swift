@@ -16,29 +16,18 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 	let uploadcare = Uploadcare(withPublicKey: String(cString: getenv("UPLOADCARE_PUBLIC_KEY")), secretKey: String(cString: getenv("UPLOADCARE_SECRET_KEY")))
 	var timer: Timer?
 
-//	func test01_listOfFiles_simple_authScheme() {
-//		let expectation = XCTestExpectation(description: "test1_listOfFiles_simple_authScheme")
-//		uploadcare.authScheme = .simple
-//
-//		let query = PaginationQuery()
-//			.stored(true)
-//			.ordering(.dateTimeUploadedDESC)
-//			.limit(5)
-//
-//		let filesList = uploadcare.listOfFiles()
-//		filesList.get(withQuery: query) { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//			case .success(let list):
-//				XCTAssertFalse(list.results.isEmpty)
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 15.0)
-//	}
+	func test01_listOfFiles_simple_authScheme() async throws {
+		uploadcare.authScheme = .simple
+
+		let query = PaginationQuery()
+			.stored(true)
+			.ordering(.dateTimeUploadedDESC)
+			.limit(5)
+
+		let filesList = uploadcare.listOfFiles()
+		let list = try await filesList.get(withQuery: query)
+		XCTAssertFalse(list.results.isEmpty)
+	}
 //
 //	func test02_listOfFiles_signed_authScheme() {
 //		let expectation = XCTestExpectation(description: "test2_listOfFiles_signed_authScheme")
