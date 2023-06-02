@@ -711,8 +711,8 @@ extension Uploadcare {
 	/// More details in documentation: https://uploadcare.com/docs/delivery/file_api/#authenticated-urls
 	///
 	/// - Parameters:
-	///   - url: url for request to your backend
-	///   - completionHandler: completion handler
+	///   - url: URL for request to your backend.
+	///   - completionHandler: Completion handler.
 	public func getAuthenticatedUrlFromUrl(_ url: URL, _ completionHandler: @escaping (Result<String, RESTAPIError>) -> Void) {
 		let urlString = url.absoluteString
 
@@ -739,6 +739,43 @@ extension Uploadcare {
 			completionHandler(.success(redirectUrl))
 		}
 		task.resume()
+	}
+
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	/// This method allows you to get authonticated url from your backend using redirect.
+	/// By request to that url your backend should generate authenticated url to your file and perform REDIRECT to generated url.
+	/// Redirect url will be caught and returned in completion handler of that method
+	///
+	/// Example of URL: https://yourdomain.com/{UUID}/
+	/// Redirect to: https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
+	///
+	/// URL for redirect will be returned in completion handler
+	///
+	/// More details in documentation: https://uploadcare.com/docs/delivery/file_api/#authenticated-urls
+	///
+	/// - Parameter url: URL for request to your backend.
+	/// - Returns: URL to your backend.
+	public func getAuthenticatedUrlFromUrl(_ url: URL) async throws -> String {
+		let urlString = url.absoluteString
+
+		redirectValues[urlString] = ""
+
+		let config = URLSessionConfiguration.default
+		let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+
+		defer { redirectValues.removeValue(forKey: urlString) }
+		let urlRequest = URLRequest(url: url)
+
+		do {
+			_ = try await urlSession.data(for: urlRequest)
+		} catch {
+			throw RESTAPIError(detail: error.localizedDescription)
+		}
+
+		guard let redirectUrl = self.redirectValues[urlString], redirectUrl.isEmpty == false else {
+			throw RESTAPIError(detail: "No redirect happened")
+		}
+		return redirectUrl
 	}
 
 	/// List of project webhooks.

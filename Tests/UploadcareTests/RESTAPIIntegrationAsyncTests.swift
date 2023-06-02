@@ -362,24 +362,12 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(project.name.isEmpty)
 	}
 
-//	func test16_redirect_for_Authenticated_urls() {
-//		let expectation = XCTestExpectation(description: "test16_redirect_for_Authenticated_urls")
-//
-//		let url = URL(string: "https://goo.gl/")!
-//		uploadcare.getAuthenticatedUrlFromUrl(url) { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//			case .success(let value):
-//				XCTAssertFalse(value.isEmpty)
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
-//
+	func test16_redirect_for_Authenticated_urls() async throws {
+		let url = URL(string: "https://goo.gl/")!
+		let value = try await uploadcare.getAuthenticatedUrlFromUrl(url)
+		XCTAssertFalse(value.isEmpty)
+	}
+
 	func test17_get_list_of_webhooks() async throws {
 		let webhooks = try await uploadcare.getListOfWebhooks()
 		XCTAssertFalse(webhooks.isEmpty)
