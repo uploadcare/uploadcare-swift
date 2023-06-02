@@ -265,7 +265,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		XCTAssertNil(prev.previous)
 
-//		XCTAssertEqual(prev, list)
+		XCTAssertEqual(prev.results, list.results)
 	}
 
 	func test11_group_info() async throws {

@@ -10,7 +10,7 @@ import Foundation
 
 
 /// Group
-public struct Group: Codable {
+public struct Group: Codable, Equatable {
 	
 	/// Date and time when a group was created.
 	public var datetimeCreated: Date
