@@ -299,26 +299,14 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 //		wait(for: [expectation], timeout: 20.0)
 //	}
 //
-//	func test09_list_of_groups() {
-//		let expectation = XCTestExpectation(description: "test9_list_of_groups")
-//
-//		let query = GroupsListQuery()
-//			.limit(100)
-//			.ordering(.datetimeCreatedDESC)
-//
-//		uploadcare.listOfGroups(withQuery: query) { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//			case .success(let list):
-//				XCTAssertFalse(list.results.isEmpty)
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
+	func test09_list_of_groups() async throws {
+		let query = GroupsListQuery()
+			.limit(100)
+			.ordering(.datetimeCreatedDESC)
+
+		let list = try await uploadcare.listOfGroups(withQuery: query)
+		XCTAssertFalse(list.results.isEmpty)
+	}
 //
 //	func test10_list_of_groups_pagination() {
 //		let expectation = XCTestExpectation(description: "test10_list_of_groups_pagination")
@@ -388,37 +376,18 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 //		wait(for: [expectation], timeout: 20.0)
 //	}
 //
-//	func test11_group_info() {
-//		let expectation = XCTestExpectation(description: "test11_group_info")
-//
-//		let query = GroupsListQuery()
-//			.limit(100)
-//			.ordering(.datetimeCreatedDESC)
-//
-//		uploadcare.listOfGroups(withQuery: query) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let list):
-//				XCTAssertFalse(list.results.isEmpty)
-//
-//				let uuid = list.results.first!.id
-//				self.uploadcare.groupInfo(withUUID: uuid) { result in
-//					defer { expectation.fulfill() }
-//
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//					case .success(let group):
-//						XCTAssertEqual(uuid, group.id)
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
+	func test11_group_info() async throws {
+		let query = GroupsListQuery()
+			.limit(100)
+			.ordering(.datetimeCreatedDESC)
+
+		let list = try await uploadcare.listOfGroups(withQuery: query)
+		XCTAssertFalse(list.results.isEmpty)
+
+		let uuid = list.results.first!.id
+		let group = try await uploadcare.groupInfo(withUUID: uuid)
+		XCTAssertEqual(uuid, group.id)
+	}
 //
 //	func test13_copy_file_to_local_storage() {
 //		let expectation = XCTestExpectation(description: "test13_copy_file_to_local_storage")

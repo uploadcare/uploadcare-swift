@@ -473,6 +473,18 @@ extension Uploadcare {
 		}
 		listOfGroups(withQueryString: queryString, completionHandler)
 	}
+
+	/// Get list of groups
+	/// - Parameter query: Request query object.
+	/// - Returns: List of groups.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func listOfGroups(withQuery query: GroupsListQuery?) async throws -> GroupsList {
+		var queryString: String?
+		if let queryValue = query {
+			queryString = "\(queryValue.stringValue)"
+		}
+		return try await listOfGroups(withQueryString: queryString)
+	}
 	
 	/// Get list of groups
 	/// - Parameters:
@@ -502,6 +514,27 @@ extension Uploadcare {
 		}
 	}
 
+	/// Get list of groups
+	/// - Parameter query: query string
+	/// - Returns: List of groups.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	internal func listOfGroups(withQueryString query: String?) async throws -> GroupsList {
+		var urlString = RESTAPIBaseUrl + "/groups/"
+		if let queryValue = query {
+			urlString += "?\(queryValue)"
+		}
+
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			throw RESTAPIError.defaultError()
+		}
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		let groupsList: GroupsList = try await requestManager.performRequest(urlRequest)
+		return groupsList
+	}
+
 	/// Get a file group by UUID.
 	/// - Parameters:
 	///   - uuid: Group UUID.
@@ -520,6 +553,19 @@ extension Uploadcare {
 			case .success(let group): completionHandler(.success(group))
 			}
 		}
+	}
+
+	/// Get a file group by UUID.
+	/// - Parameter uuid: Group UUID.
+	/// - Returns: File group.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func groupInfo(withUUID uuid: String) async throws -> Group {
+		let url = urlWithPath("/groups/\(uuid)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		let group: Group = try await requestManager.performRequest(urlRequest)
+		return group
 	}
 	
 	/// Mark all files in a group as stored.
