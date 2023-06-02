@@ -639,27 +639,6 @@ extension Uploadcare {
 			throw RESTAPIError.fromError(error)
 		}
 	}
-	
-	/// Mark all files in a group as stored.
-	/// - Parameters:
-	///   - uuid: Group UUID.
-	///   - completionHandler: completion handler
-	@available(*, unavailable, message: "This method is removed on API side. To store or remove files from a group, query the list of files in it, split the list into chunks of 100 files per chunk and then perform batch file storing or batch file removal for all the chunks.")
-	public func storeGroup(
-		withUUID uuid: String,
-		_ completionHandler: @escaping (RESTAPIError?) -> Void
-	) {
-		let url = urlWithPath("/groups/\(uuid)/storage/")
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
-		requestManager.signRequest(&urlRequest)
-
-		requestManager.performRequest(urlRequest) { (result: Result<Group, Error>) in
-			switch result {
-			case .failure(let error): completionHandler(RESTAPIError.fromError(error))
-			case .success(_): completionHandler(nil)
-			}
-		}
-	}
 
 	/// Delete a file group by its ID.
 	///
@@ -1362,5 +1341,29 @@ extension Uploadcare {
 	
 	public func listOfGroups(_ groups: [Group]? = nil) -> GroupsList {
 		return GroupsList(withGroups: groups ?? [], api: self)
+	}
+}
+
+// MARK: - Unavailable
+extension Uploadcare {
+	/// Mark all files in a group as stored.
+	/// - Parameters:
+	///   - uuid: Group UUID.
+	///   - completionHandler: completion handler
+	@available(*, unavailable, message: "This method is removed on API side. To store or remove files from a group, query the list of files in it, split the list into chunks of 100 files per chunk and then perform batch file storing or batch file removal for all the chunks.")
+	public func storeGroup(
+		withUUID uuid: String,
+		_ completionHandler: @escaping (RESTAPIError?) -> Void
+	) {
+		let url = urlWithPath("/groups/\(uuid)/storage/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<Group, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(RESTAPIError.fromError(error))
+			case .success(_): completionHandler(nil)
+			}
+		}
 	}
 }
