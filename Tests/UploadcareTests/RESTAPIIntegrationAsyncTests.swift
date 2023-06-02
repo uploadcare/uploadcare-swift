@@ -233,75 +233,41 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let list = try await uploadcare.listOfGroups(withQuery: query)
 		XCTAssertFalse(list.results.isEmpty)
 	}
-//
-//	func test10_list_of_groups_pagination() {
-//		let expectation = XCTestExpectation(description: "test10_list_of_groups_pagination")
-//
-//		let query = GroupsListQuery()
-//			.limit(5)
-//			.ordering(.datetimeCreatedDESC)
-//
-//		let groupsList = uploadcare.listOfGroups()
-//
-//		DispatchQueue.global(qos: .utility).async {
-//			let semaphore = DispatchSemaphore(value: 0)
-//			groupsList.get(withQuery: query) { result in
-//				defer { semaphore.signal() }
-//
-//				switch result {
-//				case .failure(let error):
-//					XCTFail(error.detail)
-//				case .success(let list):
-//					XCTAssertFalse(list.results.isEmpty)
-//					XCTAssertNotNil(list.next)
-//					XCTAssertFalse(list.next!.isEmpty)
-//				}
-//			}
-//			semaphore.wait()
-//
-//			// get next page
-//			groupsList.nextPage { result in
-//				defer { semaphore.signal() }
-//
-//				switch result {
-//				case .failure(let error):
-//					XCTFail(error.detail)
-//				case .success(let list):
-//					XCTAssertFalse(list.results.isEmpty)
-//
-//					XCTAssertNotNil(list.next)
-//					XCTAssertFalse(list.next!.isEmpty)
-//
-//					XCTAssertNotNil(list.previous)
-//					XCTAssertFalse(list.previous!.isEmpty)
-//				}
-//			}
-//			semaphore.wait()
-//
-//			// get previous page
-//			groupsList.previousPage { result in
-//				defer { semaphore.signal() }
-//
-//				switch result {
-//				case .failure(let error):
-//					XCTFail(error.detail)
-//				case .success(let list):
-//					XCTAssertFalse(list.results.isEmpty)
-//
-//					XCTAssertNotNil(list.next)
-//					XCTAssertFalse(list.next!.isEmpty)
-//
-//					XCTAssertNil(list.previous)
-//				}
-//			}
-//			semaphore.wait()
-//
-//			expectation.fulfill()
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
-//
+
+	func test10_list_of_groups_pagination() async throws {
+		let query = GroupsListQuery()
+			.limit(5)
+			.ordering(.datetimeCreatedDESC)
+
+		let groupsList = uploadcare.listOfGroups()
+
+		let list = try await groupsList.get(withQuery: query)
+		XCTAssertFalse(list.results.isEmpty)
+		XCTAssertNotNil(list.next)
+		XCTAssertFalse(list.next!.isEmpty)
+
+		// get next page
+		let next = try await groupsList.nextPage()
+		XCTAssertFalse(next.results.isEmpty)
+
+		XCTAssertNotNil(next.next)
+		XCTAssertFalse(next.next!.isEmpty)
+
+		XCTAssertNotNil(next.previous)
+		XCTAssertFalse(next.previous!.isEmpty)
+
+		// get previous page
+		let prev = try await groupsList.previousPage()
+		XCTAssertFalse(prev.results.isEmpty)
+
+		XCTAssertNotNil(prev.next)
+		XCTAssertFalse(prev.next!.isEmpty)
+
+		XCTAssertNil(prev.previous)
+
+//		XCTAssertEqual(prev, list)
+	}
+
 	func test11_group_info() async throws {
 		let query = GroupsListQuery()
 			.limit(100)

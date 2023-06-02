@@ -100,13 +100,78 @@ extension GroupsList: CustomDebugStringConvertible {
 	}
 }
 
-
-// MARK: - Public methods
+// MARK: - Public async methods
 extension GroupsList {
-	/// Get list of files
+
+	/// Get list of groups.
+	/// - Parameter query: Query object.
+	/// - Returns: List of files.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func get(withQuery query: GroupsListQuery? = nil) async throws -> GroupsList {
+		guard let api = RESTAPI else {
+			throw RESTAPIError.defaultError()
+		}
+
+		let list = try await api.listOfGroups(withQuery: query)
+		self.next = list.next
+		self.previous = list.previous
+		self.total = list.total
+		self.perPage = list.perPage
+		self.results = list.results
+		return list
+	}
+
+	/// Get next page of groups list
+	/// - Returns: Groups list.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func nextPage() async throws -> GroupsList {
+		guard let next = next, let query = URL(string: next)?.query else {
+			self.results = []
+			return self
+		}
+
+		return try await getPage(withQueryString: query)
+	}
+
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	/// Get previous page of groups list.
+	/// - Returns: Groups list.
+	public func previousPage() async throws -> GroupsList {
+		guard let previous = previous, let query = URL(string: previous)?.query else {
+			self.results = []
+			return self
+		}
+
+		return try await getPage(withQueryString: query)
+	}
+
+	/// Get page of groups list
+	/// - Parameter query: Query string.
+	/// - Returns: Groups list.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	func getPage(withQueryString query: String) async throws -> GroupsList {
+		guard let api = RESTAPI else {
+			throw RESTAPIError.defaultError()
+		}
+
+		let groupsList = try await api.listOfGroups(withQueryString: query)
+		self.next = groupsList.next
+		self.previous = groupsList.previous
+		self.total = groupsList.total
+		self.perPage = groupsList.perPage
+		self.results = groupsList.results
+		return groupsList
+	}
+
+}
+
+// MARK: - Public methods with Result callback
+extension GroupsList {
+
+	/// Get list of files.
 	/// - Parameters:
-	///   - query: query object
-	///   - completionHandler: completion hanlder
+	///   - query: Query object.
+	///   - completionHandler: Completion hanlder
 	public func get(
 		withQuery query: GroupsListQuery? = nil,
 		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
@@ -136,8 +201,8 @@ extension GroupsList {
 		}
 	}
 
-	/// Get next page of files list
-	/// - Parameter completionHandler: completion handler
+	/// Get next page of groups list.
+	/// - Parameter completionHandler: Completion handler
 	public func nextPage(_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void) {
 		guard let next = next, let query = URL(string: next)?.query else {
 			self.results = []
@@ -148,26 +213,23 @@ extension GroupsList {
 		getPage(withQueryString: query, completionHandler)
 	}
 
-	/// Get previous page of files list
+	/// Get previous page of groups list.
 	/// - Parameter completionHandler: completion handler
 	public func previousPage(_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void) {
 		guard let previous = previous, let query = URL(string: previous)?.query else {
-			completionHandler(.failure(RESTAPIError.defaultError()))
+			self.results = []
+			completionHandler(.success(self))
 			return
 		}
 
 		getPage(withQueryString: query, completionHandler)
 	}
-}
 
-
-// MARK: - Private methods
-private extension GroupsList {
-	/// Get page of files list
+	/// Get page of groups list.
 	/// - Parameters:
-	///   - query: query string
-	///   - completionHandler: completion handler
-	func getPage(
+	///   - query: Query string.
+	///   - completionHandler: Completion handler.
+	private func getPage(
 		withQueryString query: String,
 		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
 	) {
@@ -175,7 +237,7 @@ private extension GroupsList {
 			completionHandler(.failure(RESTAPIError.defaultError()))
 			return
 		}
-		
+
 		api.listOfGroups(withQueryString: query) { [weak self] result in
 			guard let self = self else { return }
 
@@ -192,14 +254,15 @@ private extension GroupsList {
 			}
 		}
 	}
+
 }
 
 // MARK: - Deprecated methods
 extension GroupsList {
-	/// Get list of files
+	/// Get list of groups.
 	/// - Parameters:
-	///   - query: query object
-	///   - completionHandler: completion hanlder
+	///   - query: Query object.
+	///   - completionHandler: Completion hanlder.
 	@available(*, deprecated, message: "Use the same method with Result type in the callback")
 	public func get(
 		withQuery query: GroupsListQuery? = nil,
@@ -213,8 +276,8 @@ extension GroupsList {
 		}
 	}
 
-	/// Get next page of files list
-	/// - Parameter completionHandler: completion handler
+	/// Get next page of groups list.
+	/// - Parameter completionHandler: Completion handler.
 	@available(*, deprecated, message: "Use the same method with Result type in the callback")
 	public func nextPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
 		nextPage { result in
@@ -225,8 +288,8 @@ extension GroupsList {
 		}
 	}
 
-	/// Get previous page of files list
-	/// - Parameter completionHandler: completion handler
+	/// Get previous page of groups list.
+	/// - Parameter completionHandler: Completion handler.
 	@available(*, deprecated, message: "Use the same method with Result type in the callback")
 	public func previousPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
 		previousPage { result in
