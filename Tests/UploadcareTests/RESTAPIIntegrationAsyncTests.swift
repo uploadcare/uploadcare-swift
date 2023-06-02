@@ -64,38 +64,20 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(prev.results.isEmpty)
 	}
 
-//	func test04_fileInfo_with_UUID() {
-//		let expectation = XCTestExpectation(description: "test4_fileInfo_with_UUID")
-//
-//		// get any file from list of files
-//		let query = PaginationQuery().limit(1)
-//		let filesList = uploadcare.listOfFiles()
-//		filesList.get(withQuery: query) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let list):
-//				// get file info by file UUID
-//				let uuid = list.results.first!.uuid
-//
-//				let fileInfoQuery = FileInfoQuery().include(.appdata)
-//
-//				self.uploadcare.fileInfo(withUUID: uuid, withQuery: fileInfoQuery) { result in
-//					defer { expectation.fulfill() }
-//
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//					case .success(let file):
-//						XCTAssertEqual(uuid, file.uuid)
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 15.0)
-//	}
+	func test04_fileInfo_with_UUID() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(1)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+
+		// get file info by file UUID
+		let uuid = list.results.first!.uuid
+
+		let fileInfoQuery = FileInfoQuery().include(.appdata)
+		let file = try await uploadcare.fileInfo(withUUID: uuid, withQuery: fileInfoQuery)
+		XCTAssertEqual(uuid, file.uuid)
+	}
 //
 //	func test05_delete_file() {
 //		let expectation = XCTestExpectation(description: "test5_delete_file")

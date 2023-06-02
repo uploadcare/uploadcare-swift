@@ -218,7 +218,34 @@ extension Uploadcare {
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
 	/// - Parameters:
 	///   - uuid: File UUID.
-	///   - query: Query parameters
+	///   - query: Query parameters string.
+	/// - Returns: File info.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func fileInfo(withUUID uuid: String, withQueryString query: String? = nil) async throws -> File {
+		var urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
+		if let queryValue = query {
+			urlString += "?\(queryValue)"
+		}
+
+		guard let url = URL(string: urlString) else {
+			throw RESTAPIError.init(detail: "Incorrect url")
+		}
+
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let file: File = try await requestManager.performRequest(urlRequest)
+			return file
+		} catch let error {
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
+	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
+	/// - Parameters:
+	///   - uuid: File UUID.
+	///   - query: Query parameters.
 	///   - completionHandler: Completion handler.
 	public func fileInfo(
 		withUUID uuid: String,
@@ -226,6 +253,16 @@ extension Uploadcare {
 		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
 		fileInfo(withUUID: uuid, withQueryString: query.stringValue, completionHandler)
+	}
+
+	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
+	/// - Parameters:
+	///   - uuid: File UUID.
+	///   - query: Query parameters.
+	/// - Returns: File info.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func fileInfo(withUUID uuid: String, withQuery query: FileInfoQuery) async throws -> File {
+		return try await fileInfo(withUUID: uuid, withQueryString: query.stringValue)
 	}
 
 	/// Delete file. Beside deleting in a multi-file mode, you can remove individual files.
