@@ -28,31 +28,20 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let list = try await filesList.get(withQuery: query)
 		XCTAssertFalse(list.results.isEmpty)
 	}
-//
-//	func test02_listOfFiles_signed_authScheme() {
-//		let expectation = XCTestExpectation(description: "test2_listOfFiles_signed_authScheme")
-//		uploadcare.authScheme = .signed
-//
-//		let query = PaginationQuery()
-//			.stored(true)
-//			.ordering(.dateTimeUploadedDESC)
-//			.limit(5)
-//
-//		let filesList = uploadcare.listOfFiles()
-//		filesList.get(withQuery: query) { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//			case .success(let list):
-//				XCTAssertFalse(list.results.isEmpty)
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 15.0)
-//	}
-//
+
+	func test02_listOfFiles_signed_authScheme() async throws {
+		uploadcare.authScheme = .signed
+
+		let query = PaginationQuery()
+			.stored(true)
+			.ordering(.dateTimeUploadedDESC)
+			.limit(5)
+
+		let filesList = uploadcare.listOfFiles()
+		let list = try await filesList.get(withQuery: query)
+		XCTAssertFalse(list.results.isEmpty)
+	}
+
 //	func test03_listOfFiles_pagination() {
 //		let expectation = XCTestExpectation(description: "test3_listOfFiles_pagination")
 //		uploadcare.authScheme = .signed
