@@ -134,8 +134,13 @@ extension Uploadcare {
 
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		requestManager.signRequest(&urlRequest)
-		let filesList: FilesList = try await requestManager.performRequest(urlRequest)
-		return filesList
+
+		do {
+			let filesList: FilesList = try await requestManager.performRequest(urlRequest)
+			return filesList
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
 	}
 
 	/// Store a single file by UUID.
@@ -192,7 +197,6 @@ extension Uploadcare {
 		withQueryString query: String? = nil,
 		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
 	) {
-
 		var urlString = RESTAPIBaseUrl + "/files/\(uuid)/"
 		if let queryValue = query {
 			urlString += "?\(queryValue)"
@@ -591,8 +595,12 @@ extension Uploadcare {
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		requestManager.signRequest(&urlRequest)
 
-		let groupsList: GroupsList = try await requestManager.performRequest(urlRequest)
-		return groupsList
+		do {
+			let groupsList: GroupsList = try await requestManager.performRequest(urlRequest)
+			return groupsList
+		} catch  {
+			throw RESTAPIError.fromError(error)
+		}
 	}
 
 	/// Get a file group by UUID.
@@ -624,8 +632,12 @@ extension Uploadcare {
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		requestManager.signRequest(&urlRequest)
 
-		let group: Group = try await requestManager.performRequest(urlRequest)
-		return group
+		do {
+			let group: Group = try await requestManager.performRequest(urlRequest)
+			return group
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
 	}
 	
 	/// Mark all files in a group as stored.
@@ -700,8 +712,12 @@ extension Uploadcare {
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		requestManager.signRequest(&urlRequest)
 
-		let project: Project = try await requestManager.performRequest(urlRequest)
-		return project
+		do {
+			let project: Project = try await requestManager.performRequest(urlRequest)
+			return project
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
 	}
 
 	/// This method allows you to get authonticated url from your backend using redirect.
@@ -761,7 +777,6 @@ extension Uploadcare {
 		}
 	}
 
-
 	/// Get list of project webhooks.
 	/// - Returns: Array of webhooks.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -770,8 +785,12 @@ extension Uploadcare {
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
 		requestManager.signRequest(&urlRequest)
 
-		let webhooks: [Webhook] = try await requestManager.performRequest(urlRequest)
-		return webhooks
+		do {
+			let webhooks: [Webhook] = try await requestManager.performRequest(urlRequest)
+			return webhooks
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
 	}
 
 	private func createWebhookRequestBody(targetUrl: URL, isActive: Bool, signingSecret: String? = nil) throws -> Data {
@@ -825,8 +844,12 @@ extension Uploadcare {
 		urlRequest.httpBody = try createWebhookRequestBody(targetUrl: targetUrl, isActive: isActive, signingSecret: signingSecret)
 		requestManager.signRequest(&urlRequest)
 
-		let webhook: Webhook = try await requestManager.performRequest(urlRequest)
-		return webhook
+		do {
+			let webhook: Webhook = try await requestManager.performRequest(urlRequest)
+			return webhook
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
 	}
 
 	/// Update webhook attributes.
@@ -854,7 +877,6 @@ extension Uploadcare {
 		}
 	}
 
-
 	/// Update webhook attributes.
 	/// - Parameters:
 	///   - id: Webhook ID
@@ -869,8 +891,12 @@ extension Uploadcare {
 		urlRequest.httpBody = try createWebhookRequestBody(targetUrl: targetUrl, isActive: isActive, signingSecret: signingSecret)
 		requestManager.signRequest(&urlRequest)
 
-		let webhook: Webhook = try await requestManager.performRequest(urlRequest)
-		return webhook
+		do {
+			let webhook: Webhook = try await requestManager.performRequest(urlRequest)
+			return webhook
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
 	}
 
 	/// Delete a webhook.
@@ -908,7 +934,11 @@ extension Uploadcare {
 		urlRequest.httpBody = try JSONEncoder().encode(["target_url": targetUrl.absoluteString])
 		requestManager.signRequest(&urlRequest)
 
-		let _: Bool = try await requestManager.performRequest(urlRequest)
+		do {
+			let _: Bool = try await requestManager.performRequest(urlRequest)
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
 	}
 
 	/// Uploadcare allows converting documents to the following target formats: DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG.
