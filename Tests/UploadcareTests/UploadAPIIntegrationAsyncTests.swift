@@ -59,9 +59,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //		wait(for: [expectation], timeout: 20.0)
 //	}
 //
-//	func test02_DirectUpload() {
-//		let expectation = XCTestExpectation(description: "test02_DirectUpload")
-//
+//	func test02_DirectUpload() async throws {
 //		let url = URL(string: "https://source.unsplash.com/random")!
 //		let data = try! Data(contentsOf: url)
 //
@@ -69,54 +67,38 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //
 //		let metadata = ["direct": "upload"]
 //
+//		let resultDictionary = try await uploadcare.uploadAPI.directupload
+//
 //		uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore, metadata: metadata, { progress in
 //			DLog("upload progress: \(progress * 100)%")
 //		}) { result in
-//			defer { expectation.fulfill() }
-//
 //			switch result {
 //			case .failure(let error):
 //				XCTFail(error.detail)
 //				return
 //			case .success(let resultDictionary):
 //				XCTAssertFalse(resultDictionary.isEmpty)
-////				for file in resultDictionary {
-////					DLog("uploaded file name: \(file.key) | file id: \(file.value)")
-////				}
+//				for file in resultDictionary {
+//					DLog("uploaded file name: \(file.key) | file id: \(file.value)")
+//				}
 //			}
 //		}
 //
-//		wait(for: [expectation], timeout: 20.0)
 //	}
-//
-//	func test03_DirectUploadInForeground() {
-//		let expectation = XCTestExpectation(description: "test03_DirectUploadInForeground")
-//
-//		let url = URL(string: "https://source.unsplash.com/random")!
-//		let data = try! Data(contentsOf: url)
-//
-//		DLog("size of file: \(sizeString(ofData: data))")
-//
-//
-//		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
-//			DLog("upload progress: \(progress * 100)%")
-//		}) { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//			case .success(let resultDictionary):
-//				XCTAssertFalse(resultDictionary.isEmpty)
-//			}
-//
-////			for file in resultDictionary! {
-////				DLog("uploaded file name: \(file.key) | file id: \(file.value)")
-////			}
-//		}
-//
-//		wait(for: [expectation], timeout: 10.0)
-//	}
+
+	func test03_DirectUploadInForeground() async throws {
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+
+		DLog("size of file: \(sizeString(ofData: data))")
+
+		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
+		XCTAssertFalse(resultDictionary.isEmpty)
+
+		for file in resultDictionary {
+			DLog("uploaded file name: \(file.key) | file id: \(file.value)")
+		}
+	}
 //
 //	func test04_DirectUploadInForegroundCancel() {
 //		let expectation = XCTestExpectation(description: "test04_DirectUploadInForegroundCancel")

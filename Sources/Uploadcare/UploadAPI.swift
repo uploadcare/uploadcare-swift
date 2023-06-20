@@ -303,34 +303,7 @@ extension UploadAPI {
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
-        let url = urlWithPath("/base/")
-        var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
-
-        // Making request body
-        let builder = MultipartRequestBuilder(request: urlRequest)
-        builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
-
-        if let storeVal = store {
-            builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
-        }
-
-		if let metadata = metadata {
-			for meta in metadata {
-				builder.addMultiformValue(meta.value, forName: "metadata[\(meta.key)]")
-			}
-		}
-
-		if let uploadSignature = uploadSignature ?? getSignature() {
-            builder.addMultiformValue(uploadSignature.signature, forName: "signature")
-            builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
-        }
-
-        for file in files {
-            let fileName = file.key.isEmpty ? "noname.ext" : file.key
-            builder.addMultiformData(file.value, forName: fileName)
-        }
-
-        urlRequest = builder.finalize()
+		let urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
 
         // writing data to temp file
         let tempDir = FileManager.default.temporaryDirectory
@@ -379,12 +352,49 @@ extension UploadAPI {
         uploadTask.resume()
         return backgroundUploadTask
     }
-	
+
+	private func createDirectUploadRequest(
+		files: [String: Data],
+		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
+		uploadSignature: UploadSignature? = nil
+	) -> URLRequest {
+		let url = urlWithPath("/base/")
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+		// Making request body
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+
+		if let storeVal = store {
+			builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
+		}
+
+		if let metadata = metadata {
+			for meta in metadata {
+				builder.addMultiformValue(meta.value, forName: "metadata[\(meta.key)]")
+			}
+		}
+
+		if let uploadSignature = uploadSignature ?? getSignature() {
+			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
+			builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
+		}
+
+		for file in files {
+			let fileName = file.key.isEmpty ? "noname.ext" : file.key
+			builder.addMultiformData(file.value, forName: fileName)
+		}
+
+		urlRequest = builder.finalize()
+		return urlRequest
+	}
+
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
 	/// - Parameters:
-	///   - files: Files dictionary where key is filename, value file in Data format
-	///   - store: Sets the file storing behavior
-	///   - completionHandler: callback
+	///   - files: Files dictionary where key is filename, value file in Data format.
+	///   - store: Sets the file storing behavior.
+	///   - completionHandler: Completion handler.
 	@discardableResult
 	internal func directUploadInForeground(
 		files: [String: Data],
@@ -394,6 +404,41 @@ extension UploadAPI {
 		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
 		return directUpload(files: files, uploadType: .foreground, store: store, metadata: metadata, onProgress, completionHandler)
+	}
+
+	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
+	/// - Parameters:
+	///   - files: Files dictionary where key is filename, value file in Data format.
+	///   - store: Sets the file storing behavior.
+	///   - metadata: File metadata.
+	/// - Returns: Dictionary where keys are file names, values are IDs of uploaded files.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	internal func directUploadInForeground(
+		files: [String: Data],
+		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil
+	) async throws -> [String: String] {
+		let urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata)
+
+		// writing data to temp file
+		let tempDir = FileManager.default.temporaryDirectory
+		let localURL = tempDir.appendingPathComponent(UUID().uuidString)
+
+		if let data = urlRequest.httpBody {
+			try? data.write(to: localURL)
+		}
+
+		let (data, response) = try await foregroundUploadURLSession.upload(for: urlRequest, fromFile: localURL)
+		if (response as? HTTPURLResponse)?.statusCode == 200 {
+			let decodedData = try JSONDecoder().decode([String:String].self, from: data)
+			return decodedData
+		}
+
+		// error happened
+		let status: Int = (response as? HTTPURLResponse)?.statusCode ?? 0
+		let defaultErrorMessage = "Error happened or upload was cancelled"
+		let message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
+		throw UploadError(status: status, detail: message)
 	}
 }
 
