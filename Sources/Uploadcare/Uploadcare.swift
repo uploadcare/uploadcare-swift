@@ -329,6 +329,27 @@ extension Uploadcare {
 			}
 		}
 	}
+	
+	/// Batch file delete. Used to delete multiple files in one go. Up to 100 files are supported per request.
+	/// - Parameter uuids: List of files UUIDs to store.
+	/// - Returns: Operation response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func deleteFiles(withUUIDs uuids: [String]) async throws -> BatchFilesOperationResponse {
+		let url = urlWithPath("/files/storage/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
+
+		if let body = try? JSONEncoder().encode(uuids) {
+			urlRequest.httpBody = body
+		}
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: BatchFilesOperationResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch let error {
+			throw RESTAPIError.fromError(error)
+		}
+	}
 
 	/// Copy file to local storage. Used to copy original files or their modified versions to default storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
 	/// - Parameters:

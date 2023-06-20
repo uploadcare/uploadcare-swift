@@ -91,41 +91,20 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertEqual(uuid, file.uuid)
 	}
 
-//	func test06_batch_delete_files() {
-//		let expectation = XCTestExpectation(description: "test6_batch_delete_files")
-//
-//		let url = URL(string: "https://source.unsplash.com/random")!
-//		let data = try! Data(contentsOf: url)
-//
-//		DLog("size of file: \(sizeString(ofData: data))")
-//
-//
-//		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
-//			DLog("upload progress: \(progress * 100)%")
-//		}) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let resultDictionary):
-//				let uuid = resultDictionary.values.first!
-//				self.uploadcare.deleteFiles(withUUIDs: [uuid, "shouldBeInProblems"]) { result in
-//					defer { expectation.fulfill() }
-//
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//					case .success(let response):
-//						XCTAssertEqual(uuid, response.result.first?.uuid)
-//						XCTAssertNotNil(response.problems["shouldBeInProblems"])
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
-//
+	func test06_batch_delete_files() async throws {
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+
+		DLog("size of file: \(sizeString(ofData: data))")
+
+		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
+		let uuid = resultDictionary.values.first!
+
+		let response = try await uploadcare.deleteFiles(withUUIDs: [uuid, "shouldBeInProblems"])
+		XCTAssertEqual(uuid, response.result.first?.uuid)
+		XCTAssertNotNil(response.problems["shouldBeInProblems"])
+	}
+
 //	func test07_store_file() {
 //		let expectation = XCTestExpectation(description: "test7_store_file")
 //
