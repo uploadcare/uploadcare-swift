@@ -183,7 +183,7 @@ extension Uploadcare {
 	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
 	/// - Parameters:
 	///   - uuids: List of files UUIDs to store.
-	///   - completionHandler: completion handler
+	///   - completionHandler: Completion handler.
 	public func storeFiles(
 		withUUIDs uuids: [String],
 		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
@@ -201,6 +201,27 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let response): completionHandler(.success(response))
 			}
+		}
+	}
+	
+	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
+	/// - Parameter uuids: List of files UUIDs to store.
+	/// - Returns: Operation response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func storeFiles(withUUIDs uuids: [String]) async throws -> BatchFilesOperationResponse {
+		let url = urlWithPath("/files/storage/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
+
+		if let body = try? JSONEncoder().encode(uuids) {
+			urlRequest.httpBody = body
+		}
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: BatchFilesOperationResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 
