@@ -271,8 +271,8 @@ extension Uploadcare {
 
 	/// Delete file. Beside deleting in a multi-file mode, you can remove individual files.
 	/// - Parameters:
-	///   - uuid: file UUID
-	///   - completionHandler: completion handler
+	///   - uuid: File UUID.
+	///   - completionHandler: Completion handler.
 	public func deleteFile(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
@@ -286,6 +286,23 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let file): completionHandler(.success(file))
 			}
+		}
+	}
+	
+	/// Delete file. Beside deleting in a multi-file mode, you can remove individual files.
+	/// - Parameter uuid: File UUID.
+	/// - Returns: Deleted file data.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func deleteFile(withUUID uuid: String) async throws -> File {
+		let url = urlWithPath("/files/\(uuid)/storage/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let file: File = try await requestManager.performRequest(urlRequest)
+			return file
+		} catch let error {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 
