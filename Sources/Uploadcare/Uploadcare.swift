@@ -145,7 +145,7 @@ extension Uploadcare {
 
 	/// Store a single file by UUID.
 	/// - Parameters:
-	///   - uuid: file UUID
+	///   - uuid: File UUID.
 	///   - completionHandler: completion handler
 	public func storeFile(
 		withUUID uuid: String,
@@ -160,6 +160,23 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let file): completionHandler(.success(file))
 			}
+		}
+	}
+	
+	/// Store a single file by UUID.
+	/// - Parameter uuid: File UUID.
+	/// - Returns: File data.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func storeFile(withUUID uuid: String) async throws -> File {
+		let url = urlWithPath("/files/\(uuid)/storage/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let file: File = try await requestManager.performRequest(urlRequest)
+			return file
+		} catch {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 
@@ -293,6 +310,7 @@ extension Uploadcare {
 	/// - Parameter uuid: File UUID.
 	/// - Returns: Deleted file data.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	@discardableResult
 	public func deleteFile(withUUID uuid: String) async throws -> File {
 		let url = urlWithPath("/files/\(uuid)/storage/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
