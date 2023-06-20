@@ -395,7 +395,7 @@ extension Uploadcare {
 	///   - source: A CDN URL or just UUID of a file subjected to copy.
 	///   - store: The parameter only applies to the Uploadcare storage. Default: "false"
 	///   - makePublic: Applicable to custom storage only. True to make copied files available via public links, false to reverse the behavior. Default: "true"
-	///   - completionHandler: completion handler
+	///   - completionHandler: Completion handler.
 	public func copyFileToLocalStorage(
 		source: String,
 		store: Bool? = nil,
@@ -420,6 +420,33 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let response): completionHandler(.success(response))
 			}
+		}
+	}
+	
+	/// Copy file to local storage. Used to copy original files or their modified versions to default storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
+	/// - Parameters:
+	///   - source: A CDN URL or just UUID of a file subjected to copy.
+	///   - store: The parameter only applies to the Uploadcare storage. Default: `false`
+	///   - makePublic: Applicable to custom storage only. True to make copied files available via public links, false to reverse the behavior. Default: `true`
+	/// - Returns: Operation response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func copyFileToLocalStorage(source: String, store: Bool? = nil, makePublic: Bool? = nil) async throws -> CopyFileToLocalStorageResponse {
+		let url = urlWithPath("/files/local_copy/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let bodyDictionary = [
+			"source": source,
+			"store": "\(store ?? false)",
+			"make_public": "\(makePublic ?? true)"
+		]
+		urlRequest.httpBody = try? JSONEncoder().encode(bodyDictionary)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: CopyFileToLocalStorageResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch let error {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 

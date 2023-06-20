@@ -192,46 +192,25 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let group = try await uploadcare.groupInfo(withUUID: uuid)
 		XCTAssertEqual(uuid, group.id)
 	}
-//
-//	func test13_copy_file_to_local_storage() {
-//		let expectation = XCTestExpectation(description: "test13_copy_file_to_local_storage")
-//
-//		let url = URL(string: "https://source.unsplash.com/random")!
-//		let data = try! Data(contentsOf: url)
-//
-//		DLog("size of file: \(sizeString(ofData: data))")
-//
-//		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
-//			DLog("upload progress: \(progress * 100)%")
-//		}) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let resultDictionary):
-//				let uuid = resultDictionary.values.first!
-//				delay(5) {
-//					self.uploadcare.copyFileToLocalStorage(source: uuid) { result in
-//						switch result {
-//						case .failure(let error):
-//							XCTFail(error.detail)
-//							expectation.fulfill()
-//						case .success(let response):
-//							XCTAssertEqual("file", response.type)
-//
-//							// cleanup
-//							self.uploadcare.deleteFile(withUUID: uuid) { _ in
-//								expectation.fulfill()
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 25.0)
-//	}
-//
+
+	func test13_copy_file_to_local_storage() async throws {
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+
+		DLog("size of file: \(sizeString(ofData: data))")
+
+		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
+		let uuid = resultDictionary.values.first!
+
+		try await Task.sleep(nanoseconds: 5 * NSEC_PER_SEC)
+
+		let response = try await uploadcare.copyFileToLocalStorage(source: uuid)
+		XCTAssertEqual("file", response.type)
+
+		// cleanup
+		try await uploadcare.deleteFile(withUUID: uuid)
+	}
+
 //	func test14_copy_file_to_remote_storage() {
 //		let expectation = XCTestExpectation(description: "test14_copy_file_to_remote_storage")
 //
