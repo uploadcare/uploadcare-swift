@@ -1108,7 +1108,7 @@ extension Uploadcare {
 	///   - paths: An array of UUIDs of your source documents to convert together with the specified target format.
 	///   See documentation: https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting
 	///   - store: A flag indicating if we should store your outputs.
-	///   - completionHandler: completion handler
+	///   - completionHandler: Completion handler.
 	public func convertDocuments(
 		_ paths: [String],
 		store: StoringBehavior? = nil,
@@ -1133,13 +1133,40 @@ extension Uploadcare {
 			}
 		}
 	}
-
-	/// Convert documents
+	
+	/// Uploadcare allows converting documents to the following target formats: DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG.
 	/// - Parameters:
-	///   - files: files array
-	///   - format: target format (DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG)
+	///   - paths: An array of UUIDs of your source documents to convert together with the specified target format. See documentation: https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting
 	///   - store: A flag indicating if we should store your outputs.
-	///   - completionHandler: completion handler
+	/// - Returns: Operation response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func convertDocuments(_ paths: [String], store: StoringBehavior? = nil) async throws -> ConvertDocumentsResponse {
+		let url = urlWithPath("/convert/document/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let storeValue = store == StoringBehavior.auto ? .store : store
+		let requestData = ConvertRequestData(
+			paths: paths,
+			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue
+		)
+
+		urlRequest.httpBody = try? JSONEncoder().encode(requestData)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ConvertDocumentsResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
+	/// Convert documents.
+	/// - Parameters:
+	///   - files: Files array.
+	///   - format: Target format (DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG).
+	///   - store: A flag indicating if we should store your outputs.
+	///   - completionHandler: Completion handler.
 	public func convertDocumentsWithSettings(
 		_ tasks: [DocumentConversionJobSettings],
 		store: StoringBehavior? = nil,
@@ -1149,11 +1176,23 @@ extension Uploadcare {
 		tasks.forEach({ paths.append($0.stringValue) })
 		convertDocuments(paths, store: store, completionHandler)
 	}
-
-	/// Document conversion job status
+	
+	/// Convert documents.
 	/// - Parameters:
-	///   - token: Job token
-	///   - completionHandler: completion handler
+	///   - tasks: Files array.
+	///   - store: A flag indicating if we should store your outputs.
+	/// - Returns: Operation response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func convertDocumentsWithSettings(_ tasks: [DocumentConversionJobSettings], store: StoringBehavior? = nil) async throws -> ConvertDocumentsResponse {
+		var paths = [String]()
+		tasks.forEach({ paths.append($0.stringValue) })
+		return try await convertDocuments(paths, store: store)
+	}
+
+	/// Document conversion job status.
+	/// - Parameters:
+	///   - token: Job token.
+	///   - completionHandler: Completion handler.
 	public func documentConversionJobStatus(token: Int, _ completionHandler: @escaping (Result<ConvertDocumentJobStatus, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/convert/document/status/\(token)/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
@@ -1164,6 +1203,23 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let status): completionHandler(.success(status))
 			}
+		}
+	}
+	
+	/// Document conversion job status.
+	/// - Parameter token: Job token.
+	/// - Returns: Job status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func documentConversionJobStatus(token: Int) async throws -> ConvertDocumentJobStatus {
+		let url = urlWithPath("/convert/document/status/\(token)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let status: ConvertDocumentJobStatus = try await requestManager.performRequest(urlRequest)
+			return status
+		} catch {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 

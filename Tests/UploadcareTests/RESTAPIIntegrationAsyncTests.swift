@@ -264,77 +264,36 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let targetUrl = URL(string: webhook.targetUrl)!
 		try await uploadcare.deleteWebhook(forTargetUrl: targetUrl)
 	}
-//
-//	func test19_document_conversion_and_status() {
-//		let expectation = XCTestExpectation(description: "test19_document_conversion_and_status")
-//
-//		let url = URL(string: "https://source.unsplash.com/random")!
-//		let data = try! Data(contentsOf: url)
-//
-//		DLog("size of file: \(sizeString(ofData: data))")
-//
-//		// upload random image
-//		uploadcare.uploadAPI.directUploadInForeground(files: ["file_for_conversion.jpg": data], store: .doNotStore, { (progress) in
-//			DLog("upload progress: \(progress * 100)%")
-//		}) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let resultDictionary):
-//				// fileinfo
-//				let uuid = resultDictionary.values.first!
-//				self.uploadcare.fileInfo(withUUID: uuid) { result in
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//						expectation.fulfill()
-//					case .success(let file):
-//						delay(4) {
-//							let convertSettings = DocumentConversionJobSettings(forFile: file)
-//								.format(.png)
-//
-//							self.uploadcare.convertDocumentsWithSettings([convertSettings]) { result in
-//								switch result {
-//								case .failure(let error):
-//									XCTFail(error.detail)
-//									expectation.fulfill()
-//								case .success(let response):
-//									XCTAssertTrue(response.problems.isEmpty)
-//
-//									let job = response.result.first!
-//
-//									// check status
-//									self.uploadcare.documentConversionJobStatus(token: job.token) { result in
-//										switch result {
-//										case .failure(let error):
-//											XCTFail(error.detail)
-//											expectation.fulfill()
-//										case .success(let status):
-//											XCTAssertFalse(status.statusString.isEmpty)
-//
-//											// cleanup
-//
-//											delay(4) {
-//												self.uploadcare.deleteFile(withUUID: job.uuid) { _ in
-//													expectation.fulfill()
-//												}
-//											}
-//										}
-//									}
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//
-//
-//		}
-//
-//		wait(for: [expectation], timeout: 180.0)
-//	}
-//
+
+	func test19_document_conversion_and_status() async throws {
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+		DLog("size of file: \(sizeString(ofData: data))")
+
+		// upload random image
+		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
+		let uuid = resultDictionary.values.first!
+		let file = try await uploadcare.fileInfo(withUUID: uuid)
+
+		try await Task.sleep(nanoseconds: 4 * NSEC_PER_SEC)
+
+		let convertSettings = DocumentConversionJobSettings(forFile: file)
+			.format(.png)
+
+		let response = try await uploadcare.convertDocumentsWithSettings([convertSettings])
+		XCTAssertTrue(response.problems.isEmpty)
+
+		let job = response.result.first!
+
+		// check status
+		let status = try await uploadcare.documentConversionJobStatus(token: job.token)
+		XCTAssertFalse(status.statusString.isEmpty)
+
+		// cleanup
+		try await Task.sleep(nanoseconds: 5 * NSEC_PER_SEC)
+		try await uploadcare.deleteFile(withUUID: job.uuid)
+	}
+
 //	func test20_video_conversion_and_status() {
 //		let expectation = XCTestExpectation(description: "test19_document_conversion_and_status")
 //
