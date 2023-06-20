@@ -211,41 +211,23 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		try await uploadcare.deleteFile(withUUID: uuid)
 	}
 
-//	func test14_copy_file_to_remote_storage() {
-//		let expectation = XCTestExpectation(description: "test14_copy_file_to_remote_storage")
-//
-//		let url = URL(string: "https://source.unsplash.com/random")!
-//		let data = try! Data(contentsOf: url)
-//
-//		DLog("size of file: \(sizeString(ofData: data))")
-//
-//		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
-//			DLog("upload progress: \(progress * 100)%")
-//		}) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let resultDictionary):
-//				let uuid = resultDictionary.values.first!
-//				self.uploadcare.copyFileToRemoteStorage(source: uuid, target: "one_more_project", pattern: .uuid) { result in
-//					switch result {
-//					case .failure(let error):
-//						XCTAssertFalse(error.detail == RESTAPIError.defaultError().detail)
-//					case .success(_):
-//						XCTFail("should fail")
-//					}
-//
-//					// cleanup
-//					self.uploadcare.deleteFile(withUUID: uuid) { _ in
-//						expectation.fulfill()
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
+	func test14_copy_file_to_remote_storage() async throws {
+		let url = URL(string: "https://source.unsplash.com/random")!
+		let data = try! Data(contentsOf: url)
+
+		DLog("size of file: \(sizeString(ofData: data))")
+
+		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
+		let uuid = resultDictionary.values.first!
+
+		do {
+			_ = try await uploadcare.copyFileToRemoteStorage(source: uuid, target: "one_more_project", pattern: .uuid)
+			XCTFail("should fail")
+		} catch {
+			let error = error as! RESTAPIError
+			XCTAssertFalse(error.detail == RESTAPIError.defaultError().detail)
+		}
+	}
 
 	func test15_get_project_info() async throws {
 		let project = try await uploadcare.getProjectInfo()

@@ -456,7 +456,7 @@ extension Uploadcare {
 	///   - target: Identifies a custom storage name related to your project. Implies you are copying a file to a specified custom storage. Keep in mind you can have multiple storages associated with a single S3 bucket.
 	///   - makePublic: MUST be either true or false. true to make copied files available via public links, false to reverse the behavior.
 	///   - pattern: The parameter is used to specify file names Uploadcare passes to a custom storage. In case the parameter is omitted, we use pattern of your custom storage. Use any combination of allowed values.
-	///   - completionHandler: completion handler
+	///   - completionHandler: Completion handler.
 	public func copyFileToRemoteStorage(
 		source: String,
 		target: String,
@@ -489,6 +489,48 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let response): completionHandler(.success(response))
 			}
+		}
+	}
+	
+	/// POST requests are used to copy original files or their modified versions to a custom storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
+	/// - Parameters:
+	///   - source: A CDN URL or just UUID of a file subjected to copy.
+	///   - target: Identifies a custom storage name related to your project. Implies you are copying a file to a specified custom storage. Keep in mind you can have multiple storages associated with a single S3 bucket.
+	///   - makePublic: MUST be either `true` or `false`. `true` to make copied files available via public links, `false` to reverse the behavior.
+	///   - pattern: The parameter is used to specify file names Uploadcare passes to a custom storage. In case the parameter is omitted, we use pattern of your custom storage. Use any combination of allowed values.
+	/// - Returns: Operation response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func copyFileToRemoteStorage(
+		source: String,
+		target: String,
+		makePublic: Bool? = nil,
+		pattern: NamesPattern?
+	) async throws -> CopyFileToRemoteStorageResponse {
+		let url = urlWithPath("/files/remote_copy/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		var bodyDictionary = [
+			"source": source,
+			"target": target
+		]
+
+		if let makePublicVal = makePublic {
+			bodyDictionary["make_public"] = "\(makePublicVal)"
+		}
+		if let patternVal = pattern {
+			bodyDictionary["pattern"] = patternVal.rawValue
+		}
+
+		if let body = try? JSONEncoder().encode(bodyDictionary) {
+			urlRequest.httpBody = body
+		}
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: CopyFileToRemoteStorageResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch let error {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 
