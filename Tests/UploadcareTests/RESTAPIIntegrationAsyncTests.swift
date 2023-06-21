@@ -294,91 +294,53 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		try await uploadcare.deleteFile(withUUID: job.uuid)
 	}
 
-//	func test20_video_conversion_and_status() {
-//		let expectation = XCTestExpectation(description: "test19_document_conversion_and_status")
-//
-//		let query = PaginationQuery()
-//			.stored(true)
-//			.ordering(.dateTimeUploadedDESC)
-//			.limit(100)
-//
-//		uploadcare.listOfFiles(withQuery: query) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let list):
-//				let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" })!
-//
-//				let convertSettings = VideoConversionJobSettings(forFile: videoFile)
-//					.format(.webm)
-//					.size(VideoSize(width: 640, height: 480))
-//					.resizeMode(.addPadding)
-//					.quality(.lightest)
-//					.cut( VideoCut(startTime: "0:0:5.000", length: "15") )
-//
-//				self.uploadcare.convertVideosWithSettings([convertSettings]) { result in
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//						expectation.fulfill()
-//					case .success(let response):
-//						XCTAssertTrue(response.problems.isEmpty)
-//
-//						let job = response.result.first!
-//
-//						func check() {
-//							self.uploadcare.videoConversionJobStatus(token: job.token) { result in
-//								switch result {
-//								case .failure(let error):
-//									XCTFail(error.detail)
-//									expectation.fulfill()
-//								case .success(let statusResponse):
-//									XCTAssertFalse(statusResponse.statusString.isEmpty)
-//
-//									DLog(statusResponse.statusString)
-//
-//									switch statusResponse.status {
-//									case .finished, .failed(_):
-//										// cleanup
-//										self.uploadcare.groupInfo(withUUID: statusResponse.result!.thumbnailsGroupUUID) { result in
-//											switch result {
-//											case .failure(let error):
-//												XCTFail(error.detail)
-//												expectation.fulfill()
-//											case .success(let group):
-//												var ids = group.files!.map { $0.uuid }
-//												ids.append(job.uuid)
-//
-//												self.uploadcare.deleteFiles(withUUIDs: ids) { result in
-//													switch result {
-//													case .failure(let error):
-//														XCTFail(error.detail)
-//													case .success(_):
-//														break
-//													}
-//													expectation.fulfill()
-//												}
-//											}
-//										}
-//									default:
-//										delay(2.0) {
-//											check()
-//										}
-//									}
-//								}
-//							}
-//						}
-//
-//						check()
-//					}
-//					}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 60.0)
-//	}
-//
+	func test20_video_conversion_and_status() async throws {
+		let query = PaginationQuery()
+			.stored(true)
+			.ordering(.dateTimeUploadedDESC)
+			.limit(100)
+
+		let list = try await uploadcare.listOfFiles(withQuery: query)
+
+		let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" })!
+
+		let convertSettings = VideoConversionJobSettings(forFile: videoFile)
+			.format(.webm)
+			.size(VideoSize(width: 640, height: 480))
+			.resizeMode(.addPadding)
+			.quality(.lightest)
+			.cut( VideoCut(startTime: "0:0:5.000", length: "15") )
+
+		let response = try await uploadcare.convertVideosWithSettings([convertSettings])
+
+		XCTAssertTrue(response.problems.isEmpty)
+
+		let job = response.result.first!
+
+		func check() async throws {
+			let statusResponse = try await uploadcare.videoConversionJobStatus(token: job.token)
+
+			XCTAssertFalse(statusResponse.statusString.isEmpty)
+
+			DLog(statusResponse.statusString)
+
+			switch statusResponse.status {
+			case .finished, .failed(_):
+				// cleanup
+				let group = try await uploadcare.groupInfo(withUUID: statusResponse.result!.thumbnailsGroupUUID)
+				var ids = group.files!.map { $0.uuid }
+				ids.append(job.uuid)
+
+				try await uploadcare.deleteFiles(withUUIDs: ids)
+			default:
+				try await Task.sleep(nanoseconds: 2 * NSEC_PER_SEC)
+				try await check()
+			}
+		}
+
+		try await check()
+	}
+
 //	var storingTestTask: UploadTaskable?
 //	func test21_storing_shoudBeStored() {
 //		let expectation = XCTestExpectation(description: "test21_storing_shoudBeStored")

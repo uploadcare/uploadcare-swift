@@ -1281,11 +1281,38 @@ extension Uploadcare {
 			}
 		}
 	}
-
-	/// Video conversion job status
+	
+	/// Convert videos.
 	/// - Parameters:
-	///   - token: Job token
-	///   - completionHandler: completion handler
+	///   - paths: An array of UUIDs of your video files to process together with a set of needed operations. See documentation: https://uploadcare.com/docs/transformations/video_encoding/#process-operations
+	///   - store: A flag indicating if we should store your outputs.
+	/// - Returns: Operation response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func convertVideos(_ paths: [String], store: StoringBehavior? = nil) async throws -> ConvertDocumentsResponse {
+		let url = urlWithPath("/convert/video/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let storeValue = store == StoringBehavior.auto ? .store : store
+		let requestData = ConvertRequestData(
+			paths: paths,
+			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue
+		)
+
+		urlRequest.httpBody = try? JSONEncoder().encode(requestData)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ConvertDocumentsResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
+	/// Video conversion job status.
+	/// - Parameters:
+	///   - token: Job token.
+	///   - completionHandler: Completion handler.
 	public func videoConversionJobStatus(token: Int, _ completionHandler: @escaping (Result<ConvertVideoJobStatus, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/convert/video/status/\(token)/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
@@ -1296,6 +1323,23 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let status): completionHandler(.success(status))
 			}
+		}
+	}
+	
+	/// Video conversion job status.
+	/// - Parameter token: Job token.
+	/// - Returns: Job status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func videoConversionJobStatus(token: Int) async throws -> ConvertVideoJobStatus {
+		let url = urlWithPath("/convert/video/status/\(token)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let status: ConvertVideoJobStatus = try await requestManager.performRequest(urlRequest)
+			return status
+		} catch {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 }
