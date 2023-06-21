@@ -38,7 +38,7 @@ public class Uploadcare: NSObject {
 	internal var secretKey: String?
 
 	/// Performs network requests
-	private let requestManager: RequestManager
+	internal let requestManager: RequestManager
 
 	private var redirectValues = [String: String]()
 	
@@ -1020,7 +1020,6 @@ extension Uploadcare {
 		task.resume()
 	}
 
-	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	/// This method allows you to get authonticated url from your backend using redirect.
 	/// By request to that url your backend should generate authenticated url to your file and perform REDIRECT to generated url.
 	/// Redirect url will be caught and returned in completion handler of that method
@@ -1034,6 +1033,7 @@ extension Uploadcare {
 	///
 	/// - Parameter url: URL for request to your backend.
 	/// - Returns: URL to your backend.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func getAuthenticatedUrlFromUrl(_ url: URL) async throws -> String {
 		let urlString = url.absoluteString
 
@@ -1218,7 +1218,6 @@ extension Uploadcare {
 			}
 		}
 	}
-
 
 	/// Delete a webhook.
 	/// - Parameter targetUrl: URL of the webhook target.
@@ -1904,29 +1903,5 @@ extension Uploadcare: URLSessionTaskDelegate {
 			redirectValues[key] = value
 		}
 		completionHandler(request)
-	}
-}
-
-// MARK: - Unavailable
-extension Uploadcare {
-	/// Mark all files in a group as stored.
-	/// - Parameters:
-	///   - uuid: Group UUID.
-	///   - completionHandler: completion handler
-	@available(*, unavailable, message: "This method is removed on API side. To store or remove files from a group, query the list of files in it, split the list into chunks of 100 files per chunk and then perform batch file storing or batch file removal for all the chunks.")
-	public func storeGroup(
-		withUUID uuid: String,
-		_ completionHandler: @escaping (RESTAPIError?) -> Void
-	) {
-		let url = urlWithPath("/groups/\(uuid)/storage/")
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
-		requestManager.signRequest(&urlRequest)
-
-		requestManager.performRequest(urlRequest) { (result: Result<Group, Error>) in
-			switch result {
-			case .failure(let error): completionHandler(RESTAPIError.fromError(error))
-			case .success(_): completionHandler(nil)
-			}
-		}
 	}
 }
