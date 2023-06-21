@@ -87,7 +87,6 @@ extension Uploadcare {
 		listOfFiles(withQueryString: query?.stringValue, completionHandler)
 	}
 
-
 	/// Get list of files.
 	/// - Parameter query: Query object.
 	/// - Returns: List of files.
@@ -925,6 +924,28 @@ extension Uploadcare {
 			}
 		}
 	}
+	
+	/// Delete a file group by its ID.
+	///
+	/// **Note**: The operation only removes the group object itself. **All the files that were part of the group are left as is.**
+	///
+	/// - Parameter uuid: Group UUID.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func deleteGroup(withUUID uuid: String) async throws {
+		let url = urlWithPath("/groups/\(uuid)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let _: Group = try await requestManager.performRequest(urlRequest)
+		} catch {
+			if case .emptyResponse = error as? RequestManagerError {
+				return
+			}
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
 
 	/// Getting info about account project.
 	/// - Parameter completionHandler: completion handler
