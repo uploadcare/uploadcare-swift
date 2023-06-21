@@ -412,47 +412,23 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertTrue(status != .unknown)
 	}
 
-//	func test24_clamav_execute_and_status() {
-//		let expectation = XCTestExpectation(description: "test24_clamav_execute_and_status")
-//
-//		// get any file from list of files
-//		let query = PaginationQuery().limit(1)
-//		let filesList = uploadcare.listOfFiles()
-//		filesList.get(withQuery: query) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let list):
-//				let uuid = list.results.first!.uuid
-//
-//				let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
-//				self.uploadcare.executeClamav(fileUUID: uuid, parameters: parameters) { result in
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//					case .success(let response):
-//						DLog(response)
-//
-//						// check status
-//						self.uploadcare.checkClamAVStatus(requestID: response.requestID) { result in
-//							defer { expectation.fulfill() }
-//
-//							switch result {
-//							case .failure(let error):
-//								XCTFail(error.detail)
-//							case .success(let status):
-//								XCTAssertTrue(status != .unknown)
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
-//
+	func test24_clamav_execute_and_status() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(1)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		let uuid = list.results.first!.uuid
+
+		let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+		let response = try await uploadcare.executeClamav(fileUUID: uuid, parameters: parameters)
+		DLog(response)
+
+		// check status
+		let status = try await uploadcare.checkClamAVStatus(requestID: response.requestID)
+		XCTAssertTrue(status != .unknown)
+	}
+
 //	func test25_removeBG_execute_and_status() {
 //		let expectation = XCTestExpectation(description: "test25_removeBG_execute_and_status")
 //

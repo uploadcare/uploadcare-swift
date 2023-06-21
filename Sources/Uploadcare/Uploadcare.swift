@@ -1528,7 +1528,7 @@ extension Uploadcare {
 		}
 	}
 	
-	/// Check AWS Rekognition execution status.
+	/// Check the status of an AWS Rekognition execution request that had been started using ``executeAWSRecognition(fileUUID:)`` method.
 	/// - Parameter requestID: Request ID returned by the Add-On execution request.
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -1572,6 +1572,29 @@ extension Uploadcare {
 			}
 		}
 	}
+	
+	/// Execute ClamAV virus checking Add-On for a given target.
+	/// - Parameters:
+	///   - fileUUID: Unique ID of the file to process.
+	///   - parameters: Optional object with Add-On specific parameters.
+	/// - Returns: Execution status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func executeClamav(fileUUID: String, parameters: ClamAVAddonExecutionParams? = nil) async throws -> ExecuteAddonResponse {
+		let url = urlWithPath("/addons/uc_clamav_virus_scan/execute/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let requestBody = ClamAVAddonExecutionRequestBody(target: fileUUID, params: parameters)
+		urlRequest.httpBody = try? JSONEncoder().encode(requestBody)
+
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
+	}
 
 	/// Check the status of an Add-On execution request that had been started using ``executeClamav(fileUUID:parameters:_:)`` method.
 	/// - Parameters:
@@ -1594,6 +1617,29 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let response): completionHandler(.success(response.status))
 			}
+		}
+	}
+	
+	/// Check the status of an Add-On execution request that had been started using ``executeClamav(fileUUID:parameters:)``  method.
+	/// - Parameter requestID: Request ID returned by the Add-On execution request described above.
+	/// - Returns: Execution status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func checkClamAVStatus(requestID: String) async throws -> AddonExecutionStatus {
+		let urlString = RESTAPIBaseUrl + "/addons/uc_clamav_virus_scan/execute/status/?request_id=\(requestID)"
+
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			throw RESTAPIError.init(detail: "Incorrect url")
+		}
+
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ExecuteAddonStatusResponse = try await requestManager.performRequest(urlRequest)
+			return response.status
+		} catch {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 
