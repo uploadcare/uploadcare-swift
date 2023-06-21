@@ -373,6 +373,7 @@ extension Uploadcare {
 	/// - Parameter uuids: List of files UUIDs to store.
 	/// - Returns: Operation response.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	@discardableResult
 	public func deleteFiles(withUUIDs uuids: [String]) async throws -> BatchFilesOperationResponse {
 		let url = urlWithPath("/files/storage/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
@@ -1223,11 +1224,11 @@ extension Uploadcare {
 		}
 	}
 
-	/// Convert videos with settings
+	/// Convert videos with settings.
 	/// - Parameters:
-	///   - tasks: array of VideoConversionJobSettings objects which settings for conversion for every file
+	///   - tasks: Array of VideoConversionJobSettings objects which settings for conversion for every file.
 	///   - store: A flag indicating if we should store your outputs.
-	///   - completionHandler: completion handler
+	///   - completionHandler: Completion handler.
 	public func convertVideosWithSettings(
 		_ tasks: [VideoConversionJobSettings],
 		store: StoringBehavior? = nil,
@@ -1237,13 +1238,25 @@ extension Uploadcare {
 		tasks.forEach({ paths.append($0.stringValue) })
 		convertVideos(paths, completionHandler)
 	}
+	
+	/// Convert videos with settings.
+	/// - Parameters:
+	///   - tasks: Array of VideoConversionJobSettings objects which settings for conversion for every file.
+	///   - store: A flag indicating if we should store your outputs.
+	/// - Returns: Operation response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func convertVideosWithSettings(_ tasks: [VideoConversionJobSettings], store: StoringBehavior? = nil) async throws -> ConvertDocumentsResponse {
+		var paths = [String]()
+		tasks.forEach({ paths.append($0.stringValue) })
+		return try await convertVideos(paths)
+	}
 
-	/// Convert videos
+	/// Convert videos.
 	/// - Parameters:
 	///   - paths: An array of UUIDs of your video files to process together with a set of needed operations.
 	///   See documentation: https://uploadcare.com/docs/transformations/video_encoding/#process-operations
 	///   - store: A flag indicating if we should store your outputs.
-	///   - completionHandler: completion handler
+	///   - completionHandler: Completion handler.
 	public func convertVideos(
 		_ paths: [String],
 		store: StoringBehavior? = nil,
