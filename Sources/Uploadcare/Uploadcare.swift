@@ -560,6 +560,26 @@ extension Uploadcare {
 			}
 		}
 	}
+	
+	/// Get file's metadata.
+	/// - Parameter uuid: File UUID.
+	/// - Returns: Metadata dictionary.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func fileMetadata(withUUID uuid: String) async throws -> [String: String] {
+		let url = urlWithPath("/files/\(uuid)/metadata/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let data: [String: String] = try await requestManager.performRequest(urlRequest)
+			return data
+		} catch let error {
+			if case .emptyResponse = error as? RequestManagerError {
+				return [:]
+			}
+			throw RESTAPIError.fromError(error)
+		}
+	}
 
 	/// Get metadata key's value.
 	///
@@ -592,6 +612,35 @@ extension Uploadcare {
 				let trimmedVal = val.trimmingCharacters(in: CharacterSet(arrayLiteral: "\""))
 				completionHandler(.success(trimmedVal))
 			}
+		}
+	}
+	
+	/// Get metadata key's value.
+	///
+	/// List of allowed characters for the key:
+	/// - Latin letters in lower or upper case (a-z,A-Z)
+	/// - digits (0-9)
+	/// - underscore _
+	/// - a hyphen `-`
+	/// - dot `.`
+	/// - colon `:`
+	///
+	/// - Parameters:
+	///   - key: Key of file metadata.
+	///   - uuid: File UUID.
+	/// - Returns: Metadata value.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func fileMetadataValue(forKey key: String, withUUID uuid: String) async throws -> String {
+		let url = urlWithPath("/files/\(uuid)/metadata/\(key)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let val: String = try await requestManager.performRequest(urlRequest)
+			let trimmedVal = val.trimmingCharacters(in: CharacterSet(arrayLiteral: "\""))
+			return trimmedVal
+		} catch let error {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 
@@ -632,6 +681,38 @@ extension Uploadcare {
 			}
 		}
 	}
+	
+	/// Update metadata key's value. If the key does not exist, it will be created.
+	///
+	/// List of allowed characters for the key:
+	/// - Latin letters in lower or upper case (a-z,A-Z)
+	/// - digits (0-9)
+	/// - underscore _
+	/// - a hyphen `-`
+	/// - dot `.`
+	/// - colon `:`
+	///
+	/// - Parameters:
+	///   - uuid: File UUID.
+	///   - key: Key of file metadata.
+	///   - value: New value.
+	/// - Returns: Updated value.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func updateFileMetadata(withUUID uuid: String, key: String, value: String) async throws -> String {
+		let url = urlWithPath("/files/\(uuid)/metadata/\(key)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
+		urlRequest.httpBody = "\"\(value)\"".data(using: .utf8)!
+		urlRequest.allHTTPHeaderFields?.removeValue(forKey: "Content-Type")
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let val: String = try await requestManager.performRequest(urlRequest)
+			let trimmedVal = val.trimmingCharacters(in: CharacterSet(arrayLiteral: "\""))
+			return trimmedVal
+		} catch let error {
+			throw RESTAPIError.fromError(error)
+		}
+	}
 
 	/// Delete metadata key.
 	///
@@ -667,6 +748,36 @@ extension Uploadcare {
 			case .success:
 				completionHandler(nil)
 			}
+		}
+	}
+	
+	/// Delete metadata key.
+	///
+	/// List of allowed characters for the key:
+	/// - Latin letters in lower or upper case (a-z,A-Z)
+	/// - digits (0-9)
+	/// - underscore _
+	/// - a hyphen `-`
+	/// - dot `.`
+	/// - colon `:`
+	///
+	/// - Parameters:
+	///   - key: Key of file metadata.
+	///   - uuid: File UUID.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func deleteFileMetadata(forKey key: String, withUUID uuid: String) async throws {
+		let url = urlWithPath("/files/\(uuid)/metadata/\(key)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let _: String = try await requestManager.performRequest(urlRequest)
+		} catch let error {
+			if case .emptyResponse = error as? RequestManagerError {
+				return
+			}
+
+			throw RESTAPIError.fromError(error)
 		}
 	}
 

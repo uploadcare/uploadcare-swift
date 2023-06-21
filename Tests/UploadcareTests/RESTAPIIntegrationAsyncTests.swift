@@ -367,67 +367,35 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 //
 //		wait(for: [expectation], timeout: 20.0)
 //	}
-//
-//	func test22_fileMetadata() {
-//		let expectation = XCTestExpectation(description: "expectation")
-//
-//		uploadcare.authScheme = .simple
-//
-//		// get any file from list of files
-//		let query = PaginationQuery().limit(1)
-//		let filesList = uploadcare.listOfFiles()
-//		filesList.get(withQuery: query) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let list):
-//				let uuid = list.results.first!.uuid
-//				let expectedValue = NSUUID().uuidString
-//
-//				// update
-//				self.uploadcare.updateFileMetadata(withUUID: uuid, key: "myMeta", value:expectedValue) { result in
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//					case .success(let val):
-//						XCTAssertEqual(val, expectedValue)
-//
-//						// value by key
-//						self.uploadcare.fileMetadataValue(forKey: "myMeta", withUUID: uuid) { result in
-//							switch result {
-//							case .failure(let error):
-//								XCTFail(error.detail)
-//							case .success(let value):
-//								XCTAssertEqual(value, expectedValue)
-//
-//								// get metadata for file
-//								self.uploadcare.fileMetadata(withUUID: uuid) { result in
-//									defer { expectation.fulfill() }
-//
-//									switch result {
-//									case .failure(let error):
-//										XCTFail(error.detail)
-//									case .success(let metadata):
-//										XCTAssertFalse(metadata.isEmpty)
-//										XCTAssertEqual(metadata["myMeta"], expectedValue)
-//
-//										// delete metadata
-//										self.uploadcare.deleteFileMetadata(forKey: "myMeta", withUUID: uuid) { error in
-//											XCTAssertNil(error)
-//										}
-//									}
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 15.0)
-//	}
-//
+
+	func test22_fileMetadata() async throws {
+		uploadcare.authScheme = .simple
+
+		// get any file from list of files
+		let query = PaginationQuery().limit(1)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		let uuid = list.results.first!.uuid
+		let expectedValue = NSUUID().uuidString
+
+		// update
+		let val = try await uploadcare.updateFileMetadata(withUUID: uuid, key: "myMeta", value:expectedValue)
+		XCTAssertEqual(val, expectedValue)
+
+		// value by key
+		let value = try await uploadcare.fileMetadataValue(forKey: "myMeta", withUUID: uuid)
+		XCTAssertEqual(value, expectedValue)
+
+		// get metadata for file
+		let metadata = try await uploadcare.fileMetadata(withUUID: uuid)
+		XCTAssertFalse(metadata.isEmpty)
+		XCTAssertEqual(metadata["myMeta"], expectedValue)
+
+		// delete metadata
+		try await uploadcare.deleteFileMetadata(forKey: "myMeta", withUUID: uuid)
+	}
+
 //	func test23_aws_recognition_execute_and_status() {
 //		let expectation = XCTestExpectation(description: "test23_aws_recognition_execute_and_status")
 //
