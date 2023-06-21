@@ -1457,7 +1457,7 @@ extension Uploadcare {
 
 // MARK: - Add-Ons
 extension Uploadcare {
-	/// Execute AWS Rekognition
+	/// Execute AWS Rekognition.
 	/// - Parameters:
 	///   - fileUUID: Unique ID of the file to process.
 	///   - completionHandler: Completion handler.
@@ -1478,6 +1478,29 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let response): completionHandler(.success(response))
 			}
+		}
+	}
+	
+	/// Execute AWS Rekognition.
+	/// - Parameter fileUUID: Unique ID of the file to process.
+	/// - Returns: Execution response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func executeAWSRecognition(fileUUID: String) async throws -> ExecuteAddonResponse {
+		let url = urlWithPath("/addons/aws_rekognition_detect_labels/execute/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let bodyDictionary = [
+			"target": fileUUID
+		]
+		urlRequest.httpBody = try? JSONEncoder().encode(bodyDictionary)
+
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 
@@ -1502,6 +1525,29 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let response): completionHandler(.success(response.status))
 			}
+		}
+	}
+	
+	/// Check AWS Rekognition execution status.
+	/// - Parameter requestID: Request ID returned by the Add-On execution request.
+	/// - Returns: Execution status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func checkAWSRecognitionStatus(requestID: String) async throws -> AddonExecutionStatus {
+		let urlString = RESTAPIBaseUrl + "/addons/aws_rekognition_detect_labels/execute/status/?request_id=\(requestID)"
+
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			throw RESTAPIError.init(detail: "Incorrect url")
+		}
+
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ExecuteAddonStatusResponse = try await requestManager.performRequest(urlRequest)
+			return response.status
+		} catch {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 
