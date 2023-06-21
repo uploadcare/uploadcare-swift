@@ -429,45 +429,22 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertTrue(status != .unknown)
 	}
 
-//	func test25_removeBG_execute_and_status() {
-//		let expectation = XCTestExpectation(description: "test25_removeBG_execute_and_status")
-//
-//		// get any file from list of files
-//		let query = PaginationQuery().limit(1)
-//		let filesList = uploadcare.listOfFiles()
-//		filesList.get(withQuery: query) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let list):
-//				let uuid = list.results.first!.uuid
-//
-//				let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
-//				self.uploadcare.executeRemoveBG(fileUUID: uuid, parameters: parameters) { result in
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//					case .success(let response):
-//						// check status
-//						self.uploadcare.checkRemoveBGStatus(requestID: response.requestID) { result in
-//							defer { expectation.fulfill() }
-//
-//							switch result {
-//							case .failure(let error):
-//								XCTFail(error.detail)
-//							case .success(let response):
-//								DLog(response)
-//								XCTAssertTrue(response.status != .unknown)
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
+	func test25_removeBG_execute_and_status() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(1)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		let uuid = list.results.first!.uuid
+
+		let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
+		let response = try await uploadcare.executeRemoveBG(fileUUID: uuid, parameters: parameters)
+
+		// check status
+		let status = try await uploadcare.checkRemoveBGStatus(requestID: response.requestID)
+		DLog(status)
+		XCTAssertTrue(status.status != .unknown)
+	}
 }
 
 #endif

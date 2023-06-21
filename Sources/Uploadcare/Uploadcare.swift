@@ -1596,7 +1596,7 @@ extension Uploadcare {
 		}
 	}
 
-	/// Check the status of an Add-On execution request that had been started using ``executeClamav(fileUUID:parameters:_:)`` method.
+	/// Check the status of a ClamAV Add-On execution request that had been started using ``executeClamav(fileUUID:parameters:_:)`` method.
 	/// - Parameters:
 	///   - requestID: Request ID returned by the Add-On execution request described above.
 	///   - completionHandler: Completion handler.
@@ -1620,7 +1620,7 @@ extension Uploadcare {
 		}
 	}
 	
-	/// Check the status of an Add-On execution request that had been started using ``executeClamav(fileUUID:parameters:)``  method.
+	/// Check the status of a ClamAV Add-On execution request that had been started using ``executeClamav(fileUUID:parameters:)``  method.
 	/// - Parameter requestID: Request ID returned by the Add-On execution request described above.
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -1664,8 +1664,31 @@ extension Uploadcare {
 			}
 		}
 	}
+	
+	/// Execute remove.bg background image removal Add-On for a given target.
+	/// - Parameters:
+	///   - fileUUID: Unique ID of the file to process.
+	///   - parameters: Optional object with Add-On specific parameters.
+	/// - Returns: Execution reponse.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func executeRemoveBG(fileUUID: String, parameters: RemoveBGAddonExecutionParams? = nil) async throws -> ExecuteAddonResponse {
+		let url = urlWithPath("/addons/remove_bg/execute/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 
-	/// Check Remove.bg execution status
+		let requestBody = RemoveBGAddonExecutionRequestBody(target: fileUUID, params: parameters)
+		urlRequest.httpBody = try? JSONEncoder().encode(requestBody)
+
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
+	/// Check the status of a Remove.bg Add-On execution request that had been started using ``executeRemoveBG(fileUUID:parameters:_:)`` method.
 	/// - Parameters:
 	///   - requestID: Request ID returned by the Add-On execution request described above.
 	///   - completionHandler: Completion handler.
@@ -1686,6 +1709,29 @@ extension Uploadcare {
 			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
 			case .success(let response): completionHandler(.success(response))
 			}
+		}
+	}
+	
+	/// Check the status of a Remove.bg Add-On execution request that had been started using ``executeRemoveBG(fileUUID:parameters:)`` method.
+	/// - Parameter requestID: Request ID returned by the Add-On execution request described above.
+	/// - Returns: Execution status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func checkRemoveBGStatus(requestID: String) async throws -> RemoveBGAddonAddonExecutionStatus {
+		let urlString = RESTAPIBaseUrl + "/addons/remove_bg/execute/status/?request_id=\(requestID)"
+
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			throw RESTAPIError.init(detail: "Incorrect url")
+		}
+
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: RemoveBGAddonAddonExecutionStatus = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw RESTAPIError.fromError(error)
 		}
 	}
 }
