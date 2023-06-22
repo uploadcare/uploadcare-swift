@@ -132,10 +132,10 @@ private extension UploadAPI {
 
 // MARK: - File Info
 extension UploadAPI {
-	/// File info
+	/// Get uploaded file info.
 	/// - Parameters:
-	///   - fileId: File ID
-	///   - completionHandler: completion handler
+	///   - fileId: File ID.
+	///   - completionHandler: Completion handler.
 	public func fileInfo(
 		withFileId fileId: String,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
@@ -160,6 +160,34 @@ extension UploadAPI {
 			case .failure(let error): completionHandler(.failure(UploadError.fromError(error)))
 			case .success(let file): completionHandler(.success(file))
 			}
+		}
+	}
+	
+	/// Get uploaded file info.
+	/// - Parameter fileId: File ID.
+	/// - Returns: File info.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func fileInfo(withFileId fileId: String) async throws -> UploadedFile {
+		var components = URLComponents()
+		components.scheme = "https"
+		components.host = uploadAPIHost
+		components.path = "/info"
+		components.queryItems = [
+			URLQueryItem(name: "pub_key", value: publicKey),
+			URLQueryItem(name: "file_id", value: fileId)
+		]
+
+		guard let url = components.url else {
+			assertionFailure("Incorrect url")
+			throw UploadError.defaultError()
+		}
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
+
+		do {
+			let file: UploadedFile = try await requestManager.performRequest(urlRequest)
+			return file
+		} catch {
+			throw UploadError.fromError(error)
 		}
 	}
 }

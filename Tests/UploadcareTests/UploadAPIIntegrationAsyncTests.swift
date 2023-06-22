@@ -77,41 +77,19 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		}
 	}
 
-//	func test05_UploadFileInfo() {
-//		let expectation = XCTestExpectation(description: "test05_UploadFileInfo")
-//
-//		let url = URL(string: "https://source.unsplash.com/random?\(UUID().uuidString)")!
-//		let data = try! Data(contentsOf: url)
-//
-//		DLog("size of file: \(sizeString(ofData: data))")
-//
-//		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
-//			DLog("upload progress: \(progress * 100)%")
-//		}) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let resultDictionary):
-//				XCTAssertFalse(resultDictionary.isEmpty)
-//
-//				let fileId = resultDictionary.first!.value
-//				self.uploadcare.uploadAPI.fileInfo(withFileId: fileId) { result in
-//					defer { expectation.fulfill() }
-//
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//					case .success(_):
-//						break
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 10.0)
-//	}
-//
+	func test05_UploadFileInfo() async throws {
+		let url = URL(string: "https://source.unsplash.com/random?\(UUID().uuidString)")!
+		let data = try! Data(contentsOf: url)
+
+		DLog("size of file: \(sizeString(ofData: data))")
+
+		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
+		XCTAssertFalse(resultDictionary.isEmpty)
+
+		let fileId = resultDictionary.first!.value
+		_ = try await uploadcare.uploadAPI.fileInfo(withFileId: fileId)
+	}
+
 //	func test06_MainUpload_Cancel() {
 //		let url = URL(string: "https://source.unsplash.com/random")!
 //		let data = try! Data(contentsOf: url)
