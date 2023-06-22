@@ -80,7 +80,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test05_delete_file() async throws {
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -92,7 +92,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test06_batch_delete_files() async throws {
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -106,7 +106,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test07_store_file() async throws {
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -122,7 +122,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test08_batch_store_files() async throws {
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -194,7 +194,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test13_copy_file_to_local_storage() async throws {
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -212,7 +212,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test14_copy_file_to_remote_storage() async throws {
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -266,7 +266,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test19_document_conversion_and_status() async throws {
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 		DLog("size of file: \(sizeString(ofData: data))")
 
@@ -345,7 +345,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 //	func test21_storing_shoudBeStored() {
 //		let expectation = XCTestExpectation(description: "test21_storing_shoudBeStored")
 //
-//		let url = URL(string: "https://source.unsplash.com/random")!
+//		let url = URL(string: "https://source.unsplash.com/featured")!
 //		let data = try! Data(contentsOf: url)
 //		let file = uploadcare.file(fromData: data)
 //		let name = UUID().uuidString

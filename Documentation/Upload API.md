@@ -104,7 +104,7 @@ let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotS
 Direct uploads work with background URLSession, so uploading will continue if the app goes to the background state. It support files smaller than 100MB only
 
 ```swift
-guard let url = URL(string: "https://source.unsplash.com/random"),
+guard let url = URL(string: "https://source.unsplash.com/featured"),
       let data = try? Data(contentsOf: url) else { return }
       
 let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store, metadata: ["someKey": "someMetaValue"]) { progress in
@@ -127,7 +127,7 @@ task.cancel()
 Sometimes you don't want to have the secret key in your client app and want to get it from backend. In that case you can provide upload signature directly:
 
 ```swift
-guard let url = URL(string: "https://source.unsplash.com/random"),
+guard let url = URL(string: "https://source.unsplash.com/featured"),
       let data = try? Data(contentsOf: url) else { return }
       
 let signature = UploadSignature(signature: "signature", expire: 1658486910)
@@ -181,7 +181,7 @@ Direct upload method works with background URLSession, so uploading will continu
 ## Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/)) ##
 
 ```swift
-guard let url = URL(string: "https://source.unsplash.com/random") else { return }
+guard let url = URL(string: "https://source.unsplash.com/featured") else { return }
 
 // Set parameters by accessing properties
 let task1 = UploadFromURLTask(sourceUrl: url)

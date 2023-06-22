@@ -37,7 +37,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 //	func test02_DirectUpload() async throws {
-//		let url = URL(string: "https://source.unsplash.com/random")!
+//		let url = URL(string: "https://source.unsplash.com/featured")!
 //		let data = try! Data(contentsOf: url)
 //
 //		DLog("size of file: \(sizeString(ofData: data))")
@@ -64,7 +64,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //	}
 
 	func test03_DirectUploadInForeground() async throws {
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -78,7 +78,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test05_UploadFileInfo() async throws {
-		let url = URL(string: "https://source.unsplash.com/random?\(UUID().uuidString)")!
+		let url = URL(string: "https://source.unsplash.com/featured?\(UUID().uuidString)")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -87,11 +87,16 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(resultDictionary.isEmpty)
 
 		let fileId = resultDictionary.first!.value
-		_ = try await uploadcare.uploadAPI.fileInfo(withFileId: fileId)
+		let file = try await uploadcare.uploadAPI.fileInfo(withFileId: fileId)
+
+		XCTAssertNotNil(file.contentInfo)
+		XCTAssertNotNil(file.total)
+		XCTAssertEqual(file.total, file.size)
+		XCTAssertTrue(file.metadata?.isEmpty ?? true)
 	}
 
 //	func test06_MainUpload_Cancel() {
-//		let url = URL(string: "https://source.unsplash.com/random")!
+//		let url = URL(string: "https://source.unsplash.com/featured")!
 //		let data = try! Data(contentsOf: url)
 //
 //		let expectation = XCTestExpectation(description: "test06_MainUpload_Cancel")
@@ -109,82 +114,6 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //		}
 //
 //		task.cancel()
-//
-//		wait(for: [expectation], timeout: 10.0)
-//	}
-//
-//	func test07_MainUpload_PauseResume() {
-//		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
-//		let fileForUploading = uploadcare.file(withContentsOf: url)!
-//
-//		let expectation = XCTestExpectation(description: "test07_MainUpload_PauseResume")
-//
-//		var task: UploadTaskable?
-//		var didPause = false
-//		let onProgress: (Double)->Void = { (progress) in
-//			DLog("progress: \(progress)")
-//
-//			if !didPause {
-//				didPause.toggle()
-//				(task as? UploadTaskResumable)?.pause()
-//
-//				delay(5.0) {
-//					(task as? UploadTaskResumable)?.resume()
-//				}
-//			}
-//		}
-//
-//		task = fileForUploading.upload(withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, onProgress, { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//			case .success(_):
-//				break
-//			}
-//		})
-//
-//		// pause
-//		(task as? UploadTaskResumable)?.pause()
-//		delay(2.0) {
-//			(task as? UploadTaskResumable)?.resume()
-//		}
-//
-//		wait(for: [expectation], timeout: 120.0)
-//	}
-//
-//	func test08_fileInfo() {
-//		let expectation = XCTestExpectation(description: "test08_fileInfo")
-//
-//		let url = URL(string: "https://source.unsplash.com/random")!
-//		let data = try! Data(contentsOf: url)
-//
-//		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
-//			DLog("upload progress: \(progress * 100)%")
-//		}) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let resultDictionary):
-//				let fileID = resultDictionary.first!.value
-//
-//				self.uploadcare.uploadAPI.fileInfo(withFileId: fileID) { result in
-//					defer { expectation.fulfill() }
-//
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//					case .success(let file):
-//						XCTAssertNotNil(file.contentInfo)
-//						XCTAssertNotNil(file.total)
-//						XCTAssertEqual(file.total, file.size)
-//						XCTAssertTrue(file.metadata?.isEmpty ?? true)
-//					}
-//				}
-//			}
-//		}
 //
 //		wait(for: [expectation], timeout: 10.0)
 //	}
@@ -217,7 +146,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //	func test10_createFilesGroup_and_filesGroupInfo_and_delegeGroup() {
 //		let expectation = XCTestExpectation(description: "test10_createFilesGroup_and_filesGroupInfo")
 //
-//		let url = URL(string: "https://source.unsplash.com/random?\(UUID().uuidString)")!
+//		let url = URL(string: "https://source.unsplash.com/featured?\(UUID().uuidString)")!
 //		let data = try! Data(contentsOf: url)
 //
 //		DLog("size of file: \(sizeString(ofData: data))")
@@ -284,7 +213,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //	func test11_direct_upload_public_key_only() {
 //		let expectation = XCTestExpectation(description: "test11_public_key_only")
 //
-//		let url = URL(string: "https://source.unsplash.com/random")!
+//		let url = URL(string: "https://source.unsplash.com/featured")!
 //		let data = try! Data(contentsOf: url)
 //		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
 //
