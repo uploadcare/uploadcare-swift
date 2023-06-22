@@ -16,49 +16,26 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 	let uploadcarePublicKeyOnly = Uploadcare(withPublicKey: String(cString: getenv("UPLOADCARE_PUBLIC_KEY")))
 	var newGroup: UploadedFilesGroup?
 
-//	func test01_UploadFileFromURL_and_UploadStatus() {
-//		let expectation = XCTestExpectation(description: "test01_UploadFileFromURL_and_UploadStatus")
-//
-//		// upload from url
-//		let url = URL(string: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png?\(UUID().uuidString)")!
-//		let task = UploadFromURLTask(sourceUrl: url)
-//			.checkURLDuplicates(true)
-//			.saveURLDuplicates(true)
-//			.filename("file_from_url")
-//			.store(.doNotStore)
-//			.setMetadata("hi", forKey: "hello")
-//
-//		uploadcare.uploadAPI.upload(task: task) { [unowned self] result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//				return
-//			case .success(let response):
-//				guard let token = response.token else {
-//					XCTFail("no token")
-//					expectation.fulfill()
-//					return
-//				}
-//
-//				delay(1.0) { [unowned self] in
-//					self.uploadcare.uploadAPI.uploadStatus(forToken: token) { result in
-//						defer { expectation.fulfill() }
-//
-//						switch result {
-//						case .failure(let error):
-//							XCTFail(error.detail)
-//						case .success(_):
-//							break
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 20.0)
-//	}
-//
+	func test01_UploadFileFromURL_and_UploadStatus() async throws {
+		// upload from url
+		let url = URL(string: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png?\(UUID().uuidString)")!
+		let task = UploadFromURLTask(sourceUrl: url)
+			.checkURLDuplicates(true)
+			.saveURLDuplicates(true)
+			.filename("file_from_url")
+			.store(.doNotStore)
+			.setMetadata("hi", forKey: "hello")
+
+		let response = try await uploadcare.uploadAPI.upload(task: task)
+		guard let token = response.token else {
+			XCTFail("no token")
+			return
+		}
+
+		try await Task.sleep(nanoseconds: 1 * NSEC_PER_SEC)
+		_ = try await uploadcare.uploadAPI.uploadStatus(forToken: token)
+	}
+
 //	func test02_DirectUpload() async throws {
 //		let url = URL(string: "https://source.unsplash.com/random")!
 //		let data = try! Data(contentsOf: url)
@@ -99,33 +76,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 			DLog("uploaded file name: \(file.key) | file id: \(file.value)")
 		}
 	}
-//
-//	func test04_DirectUploadInForegroundCancel() {
-//		let expectation = XCTestExpectation(description: "test04_DirectUploadInForegroundCancel")
-//
-//		let url = URL(string: "https://source.unsplash.com/random")!
-//		let data = try! Data(contentsOf: url)
-//
-//		DLog("size of file: \(sizeString(ofData: data))")
-//
-//		let task = uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
-//			DLog("upload progress: \(progress * 100)%")
-//		}) { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(_):
-//				break
-//			case .success(_):
-//				XCTFail("should fail because of cancellation")
-//			}
-//		}
-//
-//		task.cancel()
-//
-//		wait(for: [expectation], timeout: 10.0)
-//	}
-//
+
 //	func test05_UploadFileInfo() {
 //		let expectation = XCTestExpectation(description: "test05_UploadFileInfo")
 //

@@ -166,16 +166,7 @@ extension UploadAPI {
 
 // MARK: - Upload from URL
 extension UploadAPI {
-	/// Upload file from url
-	/// - Parameters:
-	///   - task: upload settings
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
-	public func upload(
-		task: UploadFromURLTask,
-		uploadSignature: UploadSignature? = nil,
-		_ completionHandler: @escaping (Result<UploadFromURLResponse, UploadError>) -> Void
-	) {
+	private func createURL(fromTask task: UploadFromURLTask, uploadSignature: UploadSignature? = nil) -> URL? {
 		var components = URLComponents()
 		components.scheme = "https"
 		components.host = uploadAPIHost
@@ -222,7 +213,20 @@ extension UploadAPI {
 		}
 
 		components.queryItems = queryItems
-		guard let url = components.url else {
+		return components.url
+	}
+
+	/// Upload file from URL.
+	/// - Parameters:
+	///   - task: Upload settings.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
+	public func upload(
+		task: UploadFromURLTask,
+		uploadSignature: UploadSignature? = nil,
+		_ completionHandler: @escaping (Result<UploadFromURLResponse, UploadError>) -> Void
+	) {
+		guard let url = createURL(fromTask: task, uploadSignature: uploadSignature) else {
 			assertionFailure("Incorrect url")
 			return
 		}
@@ -235,11 +239,32 @@ extension UploadAPI {
 			}
 		}
 	}
-
-	/// Get status for file upload from URL
+	
+	/// Upload file from URL.
 	/// - Parameters:
-	///   - token: token recieved from upload method
-	///   - completionHandler: callback
+	///   - task: Upload settings.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Operation response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func upload(task: UploadFromURLTask, uploadSignature: UploadSignature? = nil) async throws -> UploadFromURLResponse {
+		guard let url = createURL(fromTask: task, uploadSignature: uploadSignature) else {
+			assertionFailure("Incorrect url")
+			throw UploadError.defaultError()
+		}
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+		do {
+			let responseData: UploadFromURLResponse = try await requestManager.performRequest(urlRequest)
+			return responseData
+		} catch {
+			throw UploadError.fromError(error)
+		}
+	}
+
+	/// Get status for file upload from URL.
+	/// - Parameters:
+	///   - token: Token recieved from upload method response.
+	///   - completionHandler: Completion handler.
 	public func uploadStatus(
 		forToken token: String,
 		_ completionHandler: @escaping (Result<UploadFromURLStatus, UploadError>) -> Void
@@ -265,6 +290,34 @@ extension UploadAPI {
 			case .success(let status): completionHandler(.success(status))
             }
         }
+	}
+	
+	/// Get status for file upload from URL.
+	/// - Parameter token: Token recieved from upload method response.
+	/// - Returns: Operation status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func uploadStatus(forToken token: String) async throws -> UploadFromURLStatus {
+		var components = URLComponents()
+		components.scheme = "https"
+		components.host = uploadAPIHost
+		components.path = "/from_url/status/"
+		components.queryItems = [
+			URLQueryItem(name: "token", value: token)
+		]
+
+		guard let url = components.url else {
+			assertionFailure("Incorrect url")
+			throw UploadError.defaultError()
+		}
+
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
+
+		do {
+			let status: UploadFromURLStatus = try await requestManager.performRequest(urlRequest)
+			return status
+		} catch {
+			throw UploadError.fromError(error)
+		}
 	}
 }
 
