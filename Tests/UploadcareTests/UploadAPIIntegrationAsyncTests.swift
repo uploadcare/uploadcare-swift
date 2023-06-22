@@ -63,7 +63,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //
 //	}
 
-	func test03_DirectUploadInForeground() async throws {
+	func test03_DirectUploadInForeground_and_FileInfo() async throws {
 		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
@@ -75,16 +75,6 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		for file in resultDictionary {
 			DLog("uploaded file name: \(file.key) | file id: \(file.value)")
 		}
-	}
-
-	func test05_UploadFileInfo() async throws {
-		let url = URL(string: "https://source.unsplash.com/featured?\(UUID().uuidString)")!
-		let data = try! Data(contentsOf: url)
-
-		DLog("size of file: \(sizeString(ofData: data))")
-
-		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
-		XCTAssertFalse(resultDictionary.isEmpty)
 
 		let fileId = resultDictionary.first!.value
 		let file = try await uploadcare.uploadAPI.fileInfo(withFileId: fileId)
