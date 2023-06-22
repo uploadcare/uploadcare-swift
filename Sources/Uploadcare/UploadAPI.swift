@@ -527,14 +527,15 @@ extension UploadAPI {
 // MARK: - Multipart uploading
 extension UploadAPI {
 	@discardableResult
-	/// Multipart file uploading
+	/// Multipart file uploading.
 	/// - Parameters:
-	///   - data: File data
-	///   - name: File name
-	///   - store: Sets the file storing behavior
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - onProgress: A callback that will be used to report upload progress
-	///   - completionHandler: Completion handler
+	///   - data: File data.
+	///   - name: File name.
+	///   - store: Sets the file storing behavior.
+	///   - metadata: Metadata dictionary.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - onProgress: A callback that will be used to report upload progress.
+	///   - completionHandler: Completion handler.
 	/// - Returns: Upload task. You can use that task to pause, resume or cancel uploading.
 	public func multipartUpload(
 		_ data: Data,
@@ -622,15 +623,95 @@ extension UploadAPI {
 
 		return task
 	}
-	
+
+	/// File data.
+	/// - Parameters:
+	///   - data: File data.
+	///   - name: File name.
+	///   - store: Sets the file storing behavior.
+	///   - metadata: Metadata dictionary.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - onProgress: A callback that will be used to report upload progress.
+	/// - Returns: Uploaded file details.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func multipartUpload(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
+		uploadSignature: UploadSignature? = nil,
+		_ onProgress: TaskProgressBlock? = nil
+	) async throws -> UploadedFile {
+		let totalSize = data.count
+		let fileMimeType = detectMimeType(for: data)
+		let filename = name.isEmpty ? "noname.ext" : name
+
+		let task = MultipartUploadTask()
+		task.queue = self.uploadQueue
+
+		// Starting a multipart upload transaction
+		let response = try await startMulipartUpload(
+			withName: filename,
+			size: totalSize,
+			mimeType: fileMimeType,
+			store: store ?? .store,
+			metadata: metadata,
+			uploadSignature: uploadSignature
+		)
+
+		// Uploading individual file parts
+		var offset = 0
+		var i = 0
+		var numberOfUploadedChunks = 0
+
+		try await withThrowingTaskGroup(of: String.self) { taskGroup in
+			while offset < totalSize {
+				let bytesLeft = totalSize - offset
+				let currentChunkSize = bytesLeft > Self.uploadChunkSize ? Self.uploadChunkSize : bytesLeft
+
+				// data chunk
+				let range = NSRange(location: offset, length: currentChunkSize)
+				guard let dataRange = Range(range) else {
+					throw UploadError.defaultError()
+				}
+				let chunk = data.subdata(in: dataRange)
+
+				// presigned upload url
+				let partUrl = response.parts[i]
+
+				// uploading individual part
+				taskGroup.addTask { [weak self] in
+					let value = try await self?.uploadIndividualFilePart(chunk, toPresignedUrl: partUrl, withMimeType: fileMimeType, completeMessage: nil)
+					return value ?? ""
+				}
+
+				offset += currentChunkSize
+				i += 1
+			}
+
+			for try await _ in taskGroup {
+				numberOfUploadedChunks += 1
+
+				let total = Double(response.parts.count)
+				let ready = Double(numberOfUploadedChunks)
+				let percent = round(ready * 100 / total)
+				onProgress?(percent / 100)
+			}
+		}
+
+		// Completing a multipart upload
+		return try await completeMultipartUpload(forFileUIID: response.uuid)
+	}
+
 	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
 	/// - Parameters:
 	///   - filename: An original filename
 	///   - size: Precise file size in bytes. Should not exceed your project file size cap.
 	///   - mimeType: A file MIME-type.
 	///   - store: Sets the file storing behavior.
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
+	///   - metadata: File metadata.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
 	private func startMulipartUpload(
 		withName filename: String,
 		size: Int,
@@ -669,6 +750,56 @@ extension UploadAPI {
 			case .failure(let error): completionHandler(.failure(UploadError.fromError(error)))
 			case .success(let responseData): completionHandler(.success(responseData))
 			}
+		}
+	}
+	
+	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
+	/// - Parameters:
+	///   - filename: An original filename
+	///   - size: Precise file size in bytes. Should not exceed your project file size cap.
+	///   - mimeType: A file MIME-type.
+	///   - store: Sets the file storing behavior.
+	///   - metadata: File metadata.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	private func startMulipartUpload(
+		withName filename: String,
+		size: Int,
+		mimeType: String,
+		store: StoringBehavior,
+		metadata: [String: String]? = nil,
+		uploadSignature: UploadSignature? = nil
+	) async throws -> StartMulipartUploadResponse {
+		let url = urlWithPath("/multipart/start/")
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+		// Making request body
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(filename, forName: "filename")
+		builder.addMultiformValue("\(size)", forName: "size")
+		builder.addMultiformValue(mimeType, forName: "content_type")
+		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+		builder.addMultiformValue(store.rawValue, forName: "UPLOADCARE_STORE")
+
+		if let metadata = metadata {
+			for meta in metadata {
+				builder.addMultiformValue(meta.value, forName: "metadata[\(meta.key)]")
+			}
+		}
+
+		if let uploadSignature = uploadSignature ?? getSignature() {
+			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
+			builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
+		}
+
+		urlRequest = builder.finalize()
+
+		do {
+			let response: StartMulipartUploadResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw UploadError.fromError(error)
 		}
 	}
 
@@ -739,10 +870,48 @@ extension UploadAPI {
 		uploadQueue.async(execute: workItem)
 	}
 
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	private func uploadIndividualFilePart(
+		_ part: Data,
+		toPresignedUrl urlString: String,
+		withMimeType mimeType: String,
+		completeMessage: String? = nil
+	) async throws -> String? {
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			throw UploadError.defaultError()
+		}
+
+		var urlRequest = URLRequest(url: url)
+		urlRequest.httpMethod = RequestManager.HTTPMethod.put.rawValue
+		urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
+		urlRequest.httpBody = part
+
+		let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+		guard let response = response as? HTTPURLResponse else {
+			assertionFailure("No response")
+			throw UploadError.defaultError()
+		}
+
+		if response.statusCode == 200 {
+			if let message = completeMessage {
+				DLog(message)
+			}
+			return completeMessage
+		} else {
+			// Print error
+			let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+			DLog("Error with status \(response.statusCode): \(errorMessage)")
+
+			return try await uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, completeMessage: completeMessage)
+		}
+	}
+
 	/// Complete multipart upload transaction when all files parts are uploaded.
 	/// - Parameters:
 	///   - forFileUIID: Uploaded file UUID from multipart upload start response.
-	///   - completionHandler: callback
+	///   - completionHandler: Completion handler.
 	private func completeMultipartUpload(
 		forFileUIID: String,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
@@ -763,6 +932,29 @@ extension UploadAPI {
 			case .success(let file): completionHandler(.success(file))
             }
         }
+	}
+
+	/// Complete multipart upload transaction when all files parts are uploaded.
+	/// - Parameter forFileUIID: Uploaded file UUID from multipart upload start response.
+	/// - Returns: Uploaded file details.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	private func completeMultipartUpload(forFileUIID: String) async throws -> UploadedFile {
+		let url = urlWithPath("/multipart/complete/")
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+		// Making request body
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(forFileUIID, forName: "uuid")
+		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+
+		urlRequest = builder.finalize()
+
+		do {
+			let file: UploadedFile = try await requestManager.performRequest(urlRequest)
+			return file
+		} catch {
+			throw UploadError.fromError(error)
+		}
 	}
 }
 

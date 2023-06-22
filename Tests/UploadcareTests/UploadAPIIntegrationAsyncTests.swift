@@ -44,8 +44,6 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //
 //		let metadata = ["direct": "upload"]
 //
-//		let resultDictionary = try await uploadcare.uploadAPI.directupload
-//
 //		uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore, metadata: metadata, { progress in
 //			DLog("upload progress: \(progress * 100)%")
 //		}) { result in
@@ -107,32 +105,20 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //
 //		wait(for: [expectation], timeout: 10.0)
 //	}
-//
-//	func test09_multipartUpload() {
-//		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
-//		let data = try! Data(contentsOf: url)
-//
-//		let expectation = XCTestExpectation(description: "test09_multipartUpload")
-//
-//		let onProgress: (Double)->Void = { (progress) in
-//			DLog("progress: \(progress)")
-//		}
-//
-//		let metadata = ["multipart": "upload"]
-//
-//		uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, metadata: metadata, onProgress) { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//			case .success(_):
-//				break
-//			}
-//		}
-//		wait(for: [expectation], timeout: 120.0)
-//	}
-//
+
+	func test09_multipartUpload() async throws {
+		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
+		let data = try! Data(contentsOf: url)
+
+		let onProgress: (Double)->Void = { (progress) in
+			DLog("progress: \(progress)")
+		}
+
+		let metadata = ["multipart": "upload"]
+
+		try await uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, metadata: metadata, onProgress)
+	}
+
 //	func test10_createFilesGroup_and_filesGroupInfo_and_delegeGroup() {
 //		let expectation = XCTestExpectation(description: "test10_createFilesGroup_and_filesGroupInfo")
 //
