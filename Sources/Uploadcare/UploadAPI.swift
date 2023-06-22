@@ -471,7 +471,7 @@ extension UploadAPI {
 		store: StoringBehavior? = nil,
 		metadata: [String: String]? = nil
 	) async throws -> [String: String] {
-		let urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata)
+		var urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata)
 
 		// writing data to temp file
 		let tempDir = FileManager.default.temporaryDirectory
@@ -479,6 +479,7 @@ extension UploadAPI {
 
 		if let data = urlRequest.httpBody {
 			try? data.write(to: localURL)
+			urlRequest.httpBody = nil
 		}
 
 		let (data, response) = try await foregroundUploadURLSession.upload(for: urlRequest, fromFile: localURL)
