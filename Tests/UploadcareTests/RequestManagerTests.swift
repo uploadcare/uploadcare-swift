@@ -6,7 +6,6 @@
 //  Copyright © 2022 Uploadcare, Inc. All rights reserved.
 //
 
-#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 
@@ -21,4 +20,3 @@ final class RequestManagerTests: XCTestCase {
 		XCTAssertEqual(request.httpMethod, "PUT")
 	}
 }
-#endif

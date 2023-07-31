@@ -5,7 +5,6 @@
 //  Created by Sergei Armodin on 20.06.2023.
 //
 
-#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 
@@ -156,6 +155,3 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(file.fileId.isEmpty)
 	}
 }
-
-#endif
-

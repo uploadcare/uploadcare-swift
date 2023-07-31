@@ -1,4 +1,3 @@
-#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 
@@ -14,4 +13,3 @@ final class uploadcare_swiftTests: XCTestCase {
 		XCTAssertEqual(randomGeneratedSecretKey, uploadcare.secretKey)
 	}
 }
-#endif

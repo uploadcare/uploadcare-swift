@@ -6,7 +6,6 @@
 //  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
-#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 

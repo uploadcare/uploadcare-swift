@@ -6,8 +6,6 @@
 //
 
 import Foundation
-
-#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 
@@ -447,6 +445,3 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertTrue(status.status != .unknown)
 	}
 }
-
-#endif
-

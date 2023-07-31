@@ -5,7 +5,6 @@
 //  Created by Sergei Armodin on 25.09.2021.
 //
 
-#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 
@@ -441,5 +440,3 @@ final class UploadAPIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 180.0)
     }
 }
-
-#endif

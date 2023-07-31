@@ -5,7 +5,6 @@
 //  Created by Sergei Armodin on 01.02.2022.
 //
 
-#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 
@@ -945,6 +944,3 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 20.0)
 	}
 }
-
-#endif
-
