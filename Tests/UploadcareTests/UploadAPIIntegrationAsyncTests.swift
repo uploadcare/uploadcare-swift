@@ -92,7 +92,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(file.fileId.isEmpty)
 	}
 
-	func test10_createFilesGroup_and_filesGroupInfo_and_delegeGroup() async throws {
+	func test05_createFilesGroup_and_filesGroupInfo_and_delegeGroup() async throws {
 		let url = URL(string: "https://source.unsplash.com/featured?\(UUID().uuidString)")!
 		let data = try! Data(contentsOf: url)
 
@@ -125,7 +125,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		try await uploadcare.deleteGroup(withUUID: group.id)
 	}
 
-	func test11_direct_upload_public_key_only() async throws {
+	func test06_direct_upload_public_key_only() async throws {
 		// a small file that should be uploaded with multipart upload method
 		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
@@ -136,7 +136,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(file.fileId.isEmpty)
 	}
 
-	func test12_multipartUpload_public_key_only() async throws {
+	func test07_multipartUpload_public_key_only() async throws {
 		// a big file that should be uploaded with multipart upload method
 		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
 		let data = try! Data(contentsOf: url)
@@ -147,7 +147,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(file.fileId.isEmpty)
 	}
 
-	func test13_multipartUpload_videoFile() async throws {
+	func test08_multipartUpload_videoFile() async throws {
 		let url = URL(string: "https://ucarecdn.com/3e8a90e7-f5ce-422e-a3ed-5eee952f9f3b/")!
 		let data = try! Data(contentsOf: url)
 
