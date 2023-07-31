@@ -497,9 +497,10 @@ extension UploadAPI {
 	internal func directUploadInForeground(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
-		metadata: [String: String]? = nil
+		metadata: [String: String]? = nil,
+		uploadSignature: UploadSignature? = nil
 	) async throws -> [String: String] {
-		var urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata)
+		var urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
 
 		// writing data to temp file
 		let tempDir = FileManager.default.temporaryDirectory
