@@ -78,7 +78,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(file2.fileId.isEmpty)
 	}
 
-	func test09_multipartUpload() async throws {
+	func test04_multipartUpload() async throws {
 		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
 		let data = try Data(contentsOf: url)
 
@@ -92,72 +92,38 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(file.fileId.isEmpty)
 	}
 
-//	func test10_createFilesGroup_and_filesGroupInfo_and_delegeGroup() {
-//		let expectation = XCTestExpectation(description: "test10_createFilesGroup_and_filesGroupInfo")
-//
-//		let url = URL(string: "https://source.unsplash.com/featured?\(UUID().uuidString)")!
-//		let data = try! Data(contentsOf: url)
-//
-//		DLog("size of file: \(sizeString(ofData: data))")
-//
-//		// upload a file
-//		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { progress in
-//			DLog("upload progress: \(progress * 100)%")
-//		}) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				expectation.fulfill()
-//			case .success(let resultDictionary):
-//				XCTAssertFalse(resultDictionary.isEmpty)
-//
-//				// file info
-//				let fileId = resultDictionary.first!.value
-//				self.uploadcare.uploadAPI.fileInfo(withFileId: fileId) { result in
-//					switch result {
-//					case .failure(let error):
-//						XCTFail(error.detail)
-//						expectation.fulfill()
-//					case .success(let info):
-//						// create new group
-//						self.newGroup = self.uploadcare.group(ofFiles:[info])
-//						self.newGroup!.create { result in
-//							switch result {
-//							case .failure(let error):
-//								XCTFail(error.detail)
-//								expectation.fulfill()
-//							case .success(let response):
-//								XCTAssertNotNil(response.files)
-//								XCTAssertFalse(response.files!.isEmpty)
-//
-//								XCTAssertEqual(response.filesCount, 1)
-//
-//								// group info
-//								self.uploadcare.uploadAPI.filesGroupInfo(groupId: response.id) { result in
-//									switch result {
-//									case .failure(let error):
-//										XCTFail(error.detail)
-//										expectation.fulfill()
-//									case .success(let group):
-//										XCTAssertNotNil(group.files)
-//										XCTAssertFalse(group.files!.isEmpty)
-//
-//										// delete group
-//										self.uploadcare.deleteGroup(withUUID: group.id) { error in
-//											defer { expectation.fulfill() }
-//											XCTAssertNil(error)
-//										}
-//									}
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		wait(for: [expectation], timeout: 120.0)
-//	}
+	func test10_createFilesGroup_and_filesGroupInfo_and_delegeGroup() async throws {
+		let url = URL(string: "https://source.unsplash.com/featured?\(UUID().uuidString)")!
+		let data = try! Data(contentsOf: url)
+
+		DLog("size of file: \(sizeString(ofData: data))")
+
+		// upload a file
+		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
+		XCTAssertFalse(resultDictionary.isEmpty)
+
+		// file info
+		let fileId = resultDictionary.first!.value
+		let info = try await uploadcare.uploadAPI.fileInfo(withFileId: fileId)
+
+		// create new group
+		newGroup = try await uploadcare.group(ofFiles:[info]).create()
+		XCTAssertNotNil(newGroup?.files)
+		XCTAssertFalse(newGroup!.files!.isEmpty)
+		XCTAssertEqual(newGroup?.filesCount, 1)
+
+		// group info
+		let group = try await uploadcare.uploadAPI.filesGroupInfo(groupId: newGroup!.id)
+		XCTAssertNotNil(group.files)
+		XCTAssertFalse(group.files!.isEmpty)
+
+		// delete group
+		uploadcare.deleteGroup(withUUID: group.id) { error in
+			XCTAssertNil(error)
+		}
+
+		try await uploadcare.deleteGroup(withUUID: group.id)
+	}
 
 	func test11_direct_upload_public_key_only() async throws {
 		// a small file that should be uploaded with multipart upload method
@@ -180,31 +146,18 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		DLog(file)
 		XCTAssertFalse(file.fileId.isEmpty)
 	}
-//
-//	func test13_multipartUpload_videoFile() {
-//		let url = URL(string: "https://ucarecdn.com/3e8a90e7-f5ce-422e-a3ed-5eee952f9f3b/")!
-//		let data = try! Data(contentsOf: url)
-//
-//		let expectation = XCTestExpectation(description: "test13_multipartUpload_videoFile")
-//
-//		let onProgress: (Double)->Void = { (progress) in
-//			DLog("progress: \(progress)")
-//		}
-//
-//		let metadata = ["multipart": "upload"]
-//
-//		uploadcare.uploadAPI.multipartUpload(data, withName: "video.MP4", store: .doNotStore, metadata: metadata, onProgress) { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//			case .success(_):
-//				break
-//			}
-//		}
-//		wait(for: [expectation], timeout: 180.0)
-//	}
+
+	func test13_multipartUpload_videoFile() async throws {
+		let url = URL(string: "https://ucarecdn.com/3e8a90e7-f5ce-422e-a3ed-5eee952f9f3b/")!
+		let data = try! Data(contentsOf: url)
+
+		let onProgress: (Double)->Void = { (progress) in
+			DLog("progress: \(progress)")
+		}
+		let metadata = ["multipart": "upload"]
+		let file = try await uploadcare.uploadAPI.multipartUpload(data, withName: "video.MP4", store: .doNotStore, metadata: metadata, onProgress)
+		XCTAssertFalse(file.fileId.isEmpty)
+	}
 }
 
 #endif

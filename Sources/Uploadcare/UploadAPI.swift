@@ -962,11 +962,11 @@ extension UploadAPI {
 
 // MARK: - Groups
 extension UploadAPI {
-	/// Create files group from a set of files
+	/// Create files group from a set of files.
 	/// - Parameters:
-	///   - files: files array
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
+	///   - files: Files array.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
 	public func createFilesGroup(
 		files: [UploadedFile],
 		uploadSignature: UploadSignature? = nil,
@@ -975,39 +975,29 @@ extension UploadAPI {
 		let fileIds: [String] = files.map { $0.fileId }
 		createFilesGroup(fileIds: fileIds, uploadSignature: uploadSignature, completionHandler)
 	}
+	
+	/// Create files group from a set of files.
+	/// - Parameters:
+	///   - files: Files array.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Completion handler.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func createFilesGroup(files: [UploadedFile], uploadSignature: UploadSignature? = nil) async throws -> UploadedFilesGroup {
+		let fileIds: [String] = files.map { $0.fileId }
+		return try await createFilesGroup(fileIds: fileIds, uploadSignature: uploadSignature)
+	}
 
 	/// Create files group from a set of files UUIDs.
 	/// - Parameters:
 	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
 	public func createFilesGroup(
 		fileIds: [String],
 		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void
 	) {
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "https"
-        urlComponents.host = uploadAPIHost
-        urlComponents.path = "/group/"
-        urlComponents.queryItems = [
-            URLQueryItem(name: "pub_key", value: publicKey)
-        ]
-
-        for (index, fileId) in fileIds.enumerated() {
-            urlComponents.queryItems?.append(
-                URLQueryItem(name: "files[\(index)]", value: fileId)
-            )
-        }
-
-		if let uploadSignature = uploadSignature ?? getSignature() {
-            urlComponents.queryItems?.append(contentsOf: [
-                URLQueryItem(name: "signature", value: uploadSignature.signature),
-                URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
-            ])
-        }
-
-        guard let url = urlComponents.url else {
+        guard let url = makeCreateFilesGroupURL(fileIds: fileIds, uploadSignature: uploadSignature) else {
 			assertionFailure("Incorrect url")
 			return
 		}
@@ -1020,34 +1010,68 @@ extension UploadAPI {
             }
         }
 	}
-	
-	/// Files group info
+
+	/// Create files group from a set of files UUIDs.
+	/// - Parameters:
+	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Files group details.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func createFilesGroup(fileIds: [String], uploadSignature: UploadSignature? = nil) async throws -> UploadedFilesGroup {
+		guard let url = makeCreateFilesGroupURL(fileIds: fileIds, uploadSignature: uploadSignature) else {
+			throw UploadError(status: 0, detail: "Bad url.")
+		}
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+		do {
+			let filesGroup: UploadedFilesGroup = try await requestManager.performRequest(urlRequest)
+			return filesGroup
+		} catch {
+			throw UploadError.fromError(error)
+		}
+	}
+
+	/// Make url for Create files group request
+	/// - Parameters:
+	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: URL
+	private func makeCreateFilesGroupURL(fileIds: [String], uploadSignature: UploadSignature? = nil) -> URL? {
+		var urlComponents = URLComponents()
+		urlComponents.scheme = "https"
+		urlComponents.host = uploadAPIHost
+		urlComponents.path = "/group/"
+		urlComponents.queryItems = [
+			URLQueryItem(name: "pub_key", value: publicKey)
+		]
+
+		for (index, fileId) in fileIds.enumerated() {
+			urlComponents.queryItems?.append(
+				URLQueryItem(name: "files[\(index)]", value: fileId)
+			)
+		}
+
+		if let uploadSignature = uploadSignature ?? getSignature() {
+			urlComponents.queryItems?.append(contentsOf: [
+				URLQueryItem(name: "signature", value: uploadSignature.signature),
+				URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
+			])
+		}
+
+		return urlComponents.url
+	}
+
+	/// Get files group info.
 	/// - Parameters:
 	///   - groupId: Group ID. Group IDs look like UUID~N.
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
 	public func filesGroupInfo(
 		groupId: String,
 		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void
 	) {
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "https"
-        urlComponents.host = uploadAPIHost
-        urlComponents.path = "/group/info/"
-        urlComponents.queryItems = [
-            URLQueryItem(name: "pub_key", value: publicKey),
-            URLQueryItem(name: "group_id", value: groupId)
-        ]
-		
-		if let uploadSignature = uploadSignature ?? getSignature() {
-            urlComponents.queryItems?.append(contentsOf: [
-                URLQueryItem(name: "signature", value: uploadSignature.signature),
-                URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
-            ])
-        }
-		
-        guard let url = urlComponents.url else {
+		guard let url = createFilesGroupInfoUrl(groupId: groupId, uploadSignature: uploadSignature) else {
 			assertionFailure("Incorrect url")
 			return
 		}
@@ -1059,6 +1083,50 @@ extension UploadAPI {
 			case .success(let filesGroup): completionHandler(.success(filesGroup))
             }
         }
+	}
+
+	/// Get files group info.
+	/// - Parameters:
+	///   - groupId: Group ID. Group IDs look like UUID~N.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Fles group info.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func filesGroupInfo(groupId: String, uploadSignature: UploadSignature? = nil) async throws -> UploadedFilesGroup {
+		guard let url = createFilesGroupInfoUrl(groupId: groupId, uploadSignature: uploadSignature) else {
+			throw UploadError(status: 0, detail: "Bad url.")
+		}
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
+
+		do {
+			let filesGroup: UploadedFilesGroup = try await requestManager.performRequest(urlRequest)
+			return filesGroup
+		} catch {
+			throw UploadError.fromError(error)
+		}
+	}
+	
+	/// Build URL to get files group details.
+	/// - Parameters:
+	///   - groupId: Group ID.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: URL.
+	private func createFilesGroupInfoUrl(groupId: String, uploadSignature: UploadSignature? = nil) -> URL? {
+		var urlComponents = URLComponents()
+		urlComponents.scheme = "https"
+		urlComponents.host = uploadAPIHost
+		urlComponents.path = "/group/info/"
+		urlComponents.queryItems = [
+			URLQueryItem(name: "pub_key", value: publicKey),
+			URLQueryItem(name: "group_id", value: groupId)
+		]
+
+		if let uploadSignature = uploadSignature ?? getSignature() {
+			urlComponents.queryItems?.append(contentsOf: [
+				URLQueryItem(name: "signature", value: uploadSignature.signature),
+				URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
+			])
+		}
+		return urlComponents.url
 	}
 }
 
