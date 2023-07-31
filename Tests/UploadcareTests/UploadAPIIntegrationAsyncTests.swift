@@ -160,48 +160,26 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //	}
 
 	func test11_direct_upload_public_key_only() async throws {
+		// a small file that should be uploaded with multipart upload method
 		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
-
-		fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { _ in
-
-		} _: { result in
-			switch result {
-			case .success(let file):
-				DLog(file)
-			case .failure(let error):
-				XCTFail(String(describing: error))
-			}
-		}
 
 		let file = try await fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { _ in }
 		DLog(file)
 		XCTAssertFalse(file.fileId.isEmpty)
 	}
 
-//	func test12_multipartUpload_public_key_only() {
-//		let expectation = XCTestExpectation(description: "test11_public_key_only")
-//		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
-//		let data = try! Data(contentsOf: url)
-//		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
-//
-//		fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { _ in
-//
-//		} _: { result in
-//			switch result {
-//			case .success(let file):
-//				DLog(file)
-//			case .failure(let error):
-//				XCTFail(String(describing: error))
-//			}
-//
-//			expectation.fulfill()
-//		}
-//
-//
-//		wait(for: [expectation], timeout: 120.0)
-//	}
+	func test12_multipartUpload_public_key_only() async throws {
+		// a big file that should be uploaded with multipart upload method
+		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
+		let data = try! Data(contentsOf: url)
+		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
+
+		let file = try await fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { _ in }
+		DLog(file)
+		XCTAssertFalse(file.fileId.isEmpty)
+	}
 //
 //	func test13_multipartUpload_videoFile() {
 //		let url = URL(string: "https://ucarecdn.com/3e8a90e7-f5ce-422e-a3ed-5eee952f9f3b/")!
