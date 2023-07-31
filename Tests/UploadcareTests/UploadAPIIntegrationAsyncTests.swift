@@ -118,10 +118,6 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertFalse(group.files!.isEmpty)
 
 		// delete group
-		uploadcare.deleteGroup(withUUID: group.id) { error in
-			XCTAssertNil(error)
-		}
-
 		try await uploadcare.deleteGroup(withUUID: group.id)
 	}
 
