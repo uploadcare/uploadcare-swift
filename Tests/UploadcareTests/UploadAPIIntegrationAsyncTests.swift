@@ -9,6 +9,7 @@
 import XCTest
 @testable import Uploadcare
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 final class UploadAPIIntegrationAsyncTests: XCTestCase {
 //	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
 	let uploadcare = Uploadcare(withPublicKey: String(cString: getenv("UPLOADCARE_PUBLIC_KEY")), secretKey: String(cString: getenv("UPLOADCARE_SECRET_KEY")))
