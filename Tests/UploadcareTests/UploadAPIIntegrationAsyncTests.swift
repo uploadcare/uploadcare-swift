@@ -108,7 +108,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 
 	func test09_multipartUpload() async throws {
 		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
-		let data = try! Data(contentsOf: url)
+		let data = try Data(contentsOf: url)
 
 		let onProgress: (Double)->Void = { (progress) in
 			DLog("progress: \(progress)")
@@ -116,7 +116,8 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 
 		let metadata = ["multipart": "upload"]
 
-		try await uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, metadata: metadata, onProgress)
+		let file = try await uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_23mb.jpg", store: .doNotStore, metadata: metadata, onProgress)
+		XCTAssertFalse(file.fileId.isEmpty)
 	}
 
 //	func test10_createFilesGroup_and_filesGroupInfo_and_delegeGroup() {
