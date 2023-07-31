@@ -9,7 +9,7 @@
 import SwiftUI
 
 #if os(iOS)
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, macOS 10.15.0, *)
 struct OpenPathView: View {
 	let thing: ChunkThing
 	@State private var image: UIImage?

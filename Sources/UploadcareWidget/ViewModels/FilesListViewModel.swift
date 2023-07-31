@@ -11,7 +11,7 @@ import SwiftUI
 import Combine
 import WebKit
 
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, macOS 10.15.0, *)
 class FilesListViewModel: ObservableObject {
 	enum FilesListViewModelError: Error {
 		case noData
@@ -46,7 +46,7 @@ class FilesListViewModel: ObservableObject {
 }
 
 // MARK: - Public methods
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, macOS 10.15.0, *)
 extension FilesListViewModel {
 	func modelWithChunkPath(_ chunk: String) -> FilesListViewModel {
 		return FilesListViewModel(
@@ -226,7 +226,7 @@ extension FilesListViewModel {
 }
 
 // MARK: - Private methods
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, macOS 10.15.0, *)
 private extension FilesListViewModel {
 	func performRequest(_ urlRequest: URLRequest, _ completionHandler: @escaping (Result<Data, Error>)->Void) {
 		let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in

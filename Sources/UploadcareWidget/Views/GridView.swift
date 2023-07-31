@@ -9,7 +9,7 @@
 import SwiftUI
 
 #if !os(tvOS)
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, macOS 10.15.0, *)
 struct GridView<Content: View>: View {
 	let rows: Int
 	let columns: Int

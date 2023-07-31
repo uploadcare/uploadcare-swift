@@ -190,7 +190,7 @@ struct FilesListView: View {
 	}
 }
 
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, macOS 10.15.0, *)
 struct FilesLIstView_Previews: PreviewProvider {
     static var previews: some View {
 		Text("")
