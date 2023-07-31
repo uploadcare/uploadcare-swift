@@ -36,32 +36,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		_ = try await uploadcare.uploadAPI.uploadStatus(forToken: token)
 	}
 
-//	func test02_DirectUpload() async throws {
-//		let url = URL(string: "https://source.unsplash.com/featured")!
-//		let data = try! Data(contentsOf: url)
-//
-//		DLog("size of file: \(sizeString(ofData: data))")
-//
-//		let metadata = ["direct": "upload"]
-//
-//		uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore, metadata: metadata, { progress in
-//			DLog("upload progress: \(progress * 100)%")
-//		}) { result in
-//			switch result {
-//			case .failure(let error):
-//				XCTFail(error.detail)
-//				return
-//			case .success(let resultDictionary):
-//				XCTAssertFalse(resultDictionary.isEmpty)
-//				for file in resultDictionary {
-//					DLog("uploaded file name: \(file.key) | file id: \(file.value)")
-//				}
-//			}
-//		}
-//
-//	}
-
-	func test03_DirectUploadInForeground_and_FileInfo() async throws {
+	func test02_DirectUploadInForeground_and_FileInfo() async throws {
 		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
@@ -83,28 +58,25 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertTrue(file.metadata?.isEmpty ?? true)
 	}
 
-//	func test06_MainUpload_Cancel() {
-//		let url = URL(string: "https://source.unsplash.com/featured")!
-//		let data = try! Data(contentsOf: url)
-//
-//		let expectation = XCTestExpectation(description: "test06_MainUpload_Cancel")
-//		let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
-//			DLog("upload progress: \(progress * 100)%")
-//		} _: { result in
-//			defer { expectation.fulfill() }
-//
-//			switch result {
-//			case .failure(let error):
-//				XCTAssertEqual(error.detail, "cancelled")
-//			case .success(_):
-//				XCTFail("should be error")
-//			}
-//		}
-//
-//		task.cancel()
-//
-//		wait(for: [expectation], timeout: 10.0)
-//	}
+	func test03_MainUpload() async throws {
+		let url = URL(string: "https://source.unsplash.com/featured")!
+		let data = try! Data(contentsOf: url)
+
+		// small file with direct uploading
+		let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
+			DLog("upload progress: \(progress * 100)%")
+		}
+		XCTAssertFalse(file.fileId.isEmpty)
+
+		// big file for multipart uploading
+		let url2 = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!
+		let data2 = try Data(contentsOf: url2)
+
+		let file2 = try await uploadcare.uploadFile(data2, withName: "random_file_name.jpg", store: .doNotStore) { progress in
+			DLog("upload progress: \(progress * 100)%")
+		}
+		XCTAssertFalse(file2.fileId.isEmpty)
+	}
 
 	func test09_multipartUpload() async throws {
 		let url = URL(string: "https://ucarecdn.com/26ba15c5-431b-4ecc-8be1-7a094ba3ba72/")!

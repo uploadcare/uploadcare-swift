@@ -1849,6 +1849,78 @@ extension Uploadcare {
 		// using multipart upload otherwise
 		return uploadAPI.multipartUpload(data, withName: filename, store: store, metadata: metadata, uploadSignature: uploadSignature, onProgress, completionHandler)
 	}
+
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	@discardableResult
+	public func uploadFile(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
+		uploadSignature: UploadSignature? = nil,
+		_ onProgress: TaskProgressBlock? = nil
+	) async throws -> UploadedFile {
+		let filename = name.isEmpty ? "noname.ext" : name
+
+		// using direct upload if file is small
+		if data.count < UploadAPI.multipartMinFileSize {
+			let files = [filename: data]
+
+			let response = try await uploadAPI.directUploadInForeground(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
+
+			guard let fileUUID = response[filename] else {
+				throw UploadError.defaultError()
+			}
+
+			defer {
+				onProgress?(1.0)
+			}
+
+			if uploadSignature == nil && secretKey == nil {
+				return UploadedFile(
+					size: data.count,
+					total: data.count,
+					done: data.count,
+					uuid: fileUUID,
+					fileId: fileUUID,
+					originalFilename: filename,
+					filename: filename,
+					mimeType: "application/octet-stream",
+					isImage: false,
+					isStored: store == .store,
+					isReady: true,
+					imageInfo: nil,
+					videoInfo: nil,
+					contentInfo: nil,
+					metadata: metadata,
+					s3Bucket: nil
+				)
+			}
+
+			let file = try await fileInfo(withUUID: fileUUID)
+			return UploadedFile(
+				size: file.size,
+				total: file.size,
+				done: file.size,
+				uuid: file.uuid,
+				fileId: file.uuid,
+				originalFilename: file.originalFilename,
+				filename: file.originalFilename,
+				mimeType: file.mimeType,
+				isImage: file.isImage,
+				isStored: file.datetimeStored != nil,
+				isReady: file.isReady,
+				imageInfo: nil,
+				videoInfo: nil,
+				contentInfo: nil,
+				metadata: nil,
+				s3Bucket: nil
+			)
+		}
+
+		// using multipart upload otherwise
+		return try await uploadAPI.multipartUpload(data, withName: filename, store: store, metadata: metadata, uploadSignature: uploadSignature, onProgress)
+	}
 }
 
 // MARK: - Factory
