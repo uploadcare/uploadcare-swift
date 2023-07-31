@@ -1758,15 +1758,15 @@ extension Uploadcare {
 
 // MARK: - Upload
 extension Uploadcare {
-	/// Upload file. This method will decide internally which upload will be used (direct or multipart)
+	/// Upload file. This method will decide internally which upload method will be used (direct or multipart).
 	/// - Parameters:
-	///   - data: File data
-	///   - name: File name
-	///   - store: Sets the file storing behavior
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - onProgress: A callback that will be used to report upload progress
-	///   - completionHandler: Completion handler
-	/// - Returns: Upload task. Confirms to UploadTaskable protocol in anycase. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload
+	///   - data: File data.
+	///   - name: File name.
+	///   - store: Sets the file storing behavior.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - onProgress: A callback that will be used to report upload progress.
+	///   - completionHandler: Completion handler.
+	/// - Returns: Upload task. Confirms to UploadTaskable protocol in any case. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload.
 	@discardableResult
 	public func uploadFile(
 		_ data: Data,
@@ -1850,6 +1850,16 @@ extension Uploadcare {
 		return uploadAPI.multipartUpload(data, withName: filename, store: store, metadata: metadata, uploadSignature: uploadSignature, onProgress, completionHandler)
 	}
 
+
+	/// Upload file. This method will decide internally which upload method will be used (direct or multipart).
+	/// - Parameters:
+	///   - data: File data.
+	///   - name: File name.
+	///   - store: Sets the file storing behavior.
+	///   - metadata: File metadata.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - onProgress: A callback that will be used to report upload progress.
+	/// - Returns: Uploaded file.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	@discardableResult
 	public func uploadFile(

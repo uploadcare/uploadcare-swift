@@ -533,7 +533,7 @@ extension UploadAPI {
 	///   - data: File data.
 	///   - name: File name.
 	///   - store: Sets the file storing behavior.
-	///   - metadata: Metadata dictionary.
+	///   - metadata: File metadata.
 	///   - uploadSignature: Sets the signature for the upload request.
 	///   - onProgress: A callback that will be used to report upload progress.
 	///   - completionHandler: Completion handler.
@@ -630,7 +630,7 @@ extension UploadAPI {
 	///   - data: File data.
 	///   - name: File name.
 	///   - store: Sets the file storing behavior.
-	///   - metadata: Metadata dictionary.
+	///   - metadata: File metadata.
 	///   - uploadSignature: Sets the signature for the upload request.
 	///   - onProgress: A callback that will be used to report upload progress.
 	/// - Returns: Uploaded file details.
