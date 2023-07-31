@@ -35,5 +35,3 @@ final class PaginationQueryTests: XCTestCase {
 		XCTAssertEqual(s3.stringValue, "ordering=datetime_uploaded")
 	}
 }
-#endif
-
