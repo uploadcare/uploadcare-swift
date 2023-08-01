@@ -379,7 +379,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let expectedValue = NSUUID().uuidString
 
 		// update
-		let val = try await uploadcare.updateFileMetadata(withUUID: uuid, key: "myMeta", value:expectedValue)
+		let val = try await uploadcare.updateFileMetadata(withUUID: uuid, key: "myMeta", value: expectedValue)
 		XCTAssertEqual(val, expectedValue)
 
 		// value by key

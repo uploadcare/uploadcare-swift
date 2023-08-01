@@ -386,7 +386,7 @@ groupsList.get(withQuery: query) { result in
 }
 ```
 
-Get the next page
+Get the next page:
 ```swift
 // Async:
 let next = try await groupsList.nextPage()
@@ -402,7 +402,7 @@ groupsList.nextPage { result in
 }
 ```
 
-Get the previous page
+Get the previous page:
 ```swift
 // Async:
 let previous = try await groupsList.previousPage()
@@ -421,6 +421,10 @@ groupsList.previousPage { result in
 ## Group info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/groupInfo)) ##
 
 ```swift
+// Async:
+let group = try await uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1")
+
+// With completion callback:
 uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { result in
     switch result {
     case .failure(let error):
@@ -433,6 +437,10 @@ uploadcare.groupInfo(withUUID: "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1") { resul
 
 ## Delete group ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/deleteGroup)) ##
 ```swift
+// Async:
+try await uploadcare.deleteGroup(withUUID: "groupId")
+
+// With completion callback:
 uploadcare.deleteGroup(withUUID: "groupId") { error in
     if let error = error {
         print(error)
@@ -443,6 +451,10 @@ uploadcare.deleteGroup(withUUID: "groupId") { error in
 ## Project info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/projectInfo)) ##
 
 ```swift
+// Async:
+let project = try await uploadcare.getProjectInfo()
+
+// With completion callback:
 uploadcare.getProjectInfo { result in
     switch result {
     case .failure(let error):
@@ -462,6 +474,11 @@ Example: https://yourdomain.com/{UUID}/ — backend redirects to https://cdn.you
 
 ```swift
 let url = URL(string: "https://yourdomain.com/FILE_UUID/")!
+
+// Async:
+let value = try await uploadcare.getAuthenticatedUrlFromUrl(url)
+
+// With completion callback:
 uploadcare.getAuthenticatedUrlFromUrl(url) { result in
     switch result {
     case .failure(let error):
@@ -476,6 +493,10 @@ uploadcare.getAuthenticatedUrlFromUrl(url) { result in
 ## List of webhooks ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhooksList)) ##
 
 ```swift
+// Async:
+let webhooks = try await uploadcare.getListOfWebhooks()
+
+// With completion callback:
 uploadcare.getListOfWebhooks { result in
     switch result {
     case .failure(let error):
@@ -492,6 +513,11 @@ Create and subscribe to a webhook. You can use webhooks to receive notifications
 
 ```swift
 let url = URL(string: "https://yourwebhook.com")!
+
+// Async:
+let webhook = try await uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSigningSecret")
+
+// With completion callback:
 uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSigningSecret") { result in
     switch result {
     case .failure(let error):
@@ -509,6 +535,11 @@ Update webhook attributes.
 ```swift
 let url = URL(string: "https://yourwebhook.com")!
 let webhookId = 100
+
+// Async:
+let webhook = try await uploadcare.updateWebhook(id: webhook.id, targetUrl: url, isActive: false, signingSecret: "someNewSigningSecret")
+
+// With completion callback:
 uploadcare.updateWebhook(id: webhookId, targetUrl: url, isActive: true, signingSecret: "someNewSigningSecret") { result in
     switch result {
     case .failure(let error):
@@ -525,6 +556,12 @@ Unsubscribe and delete a webhook.
 
 ```swift
 let url = URL(string: "https://yourwebhook.com")!
+
+// Async:
+try await uploadcare.deleteWebhook(forTargetUrl: targetUrl)
+
+
+// With completion callback:
 uploadcare.deleteWebhook(forTargetUrl: url) { error in
     if let error = error {
         print(error)
