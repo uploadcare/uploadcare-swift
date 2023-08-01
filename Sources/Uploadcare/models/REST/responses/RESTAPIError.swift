@@ -9,7 +9,7 @@
 import Foundation
 
 public struct RESTAPIError: Error, Codable {
-	/// Error message
+	/// Error message.
 	public var detail: String
 
 	enum CodingKeys: String, CodingKey {
@@ -27,12 +27,12 @@ public struct RESTAPIError: Error, Codable {
 		self.init(detail: detail)
 	}
 
-	/// Default error
+	/// Default error.
 	static func defaultError() -> RESTAPIError {
 		return RESTAPIError(detail: "Unknown error")
 	}
 
-	/// Cast from Error
+	/// Cast from Error.
 	/// - Parameter error: Error
 	static func fromError(_ error: Error) -> RESTAPIError {
 		if case let RequestManagerError.invalidRESTAPIResponse(requestError) = error {

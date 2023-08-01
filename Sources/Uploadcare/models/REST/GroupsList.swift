@@ -9,24 +9,24 @@
 import Foundation
 
 
-/// List of groups API method response
+/// Response for a request to List of groups API method.
 public class GroupsList: Codable {
 	
 	// MARK: - Public properties
 	
-	/// URL for next page request
+	/// URL for next page request.
 	public var next: String?
 	
-	/// URL for previous page request
+	/// URL for previous page request.
 	public var previous: String?
 	
-	/// Total number of groups
+	/// Total number of groups.
 	public var total: Int
 	
-	/// Number of groups per page
+	/// Number of groups per page.
 	public var perPage: Int
 	
-	/// List of groups from current page
+	/// List of groups from current page.
 	public var results: [Group]
 	
 	

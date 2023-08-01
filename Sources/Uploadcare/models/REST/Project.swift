@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// Project
+/// Project.
 public struct Project: Codable {
 	
 	/// Project login name.
@@ -18,7 +18,7 @@ public struct Project: Codable {
 	/// Project public key.
 	public var pubKey: String
 	
-	/// Collaborators
+	/// Project collaborators.
 	public var collaborators: [Collaborator]?
 	
 	

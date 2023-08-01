@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// Storing behavior enum
+/// Storing behavior enum.
 public enum StoringBehavior: String {
 	case doNotStore = "0"
 	case store = "1"
@@ -83,7 +83,7 @@ public class UploadFromURLTask {
 		return self
 	}
 	
-	/// Provides the save/update URL behavior. The parameter can be used if you believe a source_url will be used more than once. If you don’t explicitly define save_URL_duplicates, it is by default set to the value of check_URL_duplicates.
+	/// Provides the save/update URL behavior. The parameter can be used if you believe a ``sourceUrl`` will be used more than once. If you don’t explicitly define ``saveURLDuplicates``, it is by default set to the value of ``checkURLDuplicates``.
 	public func saveURLDuplicates(_ val: Bool?) -> Self {
 		saveURLDuplicates = val
 		return self
@@ -91,9 +91,9 @@ public class UploadFromURLTask {
 
 	/// Set metadata for uploaded file.
 	/// - Parameters:
-	///   - val: value
-	///   - key: key
-	/// - Returns: UploadFromURLTask
+	///   - val: Metadata value.
+	///   - key: Metadata key.
+	/// - Returns: UploadFromURLTask.
 	public func setMetadata(_ val: String?, forKey key: String) -> Self {
 		if metadata == nil { metadata = [:] }
 		if let value = val {

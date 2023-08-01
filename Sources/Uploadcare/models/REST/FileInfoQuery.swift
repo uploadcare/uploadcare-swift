@@ -27,7 +27,7 @@ public class FileInfoQuery {
 	/// Include additional fields to the file object, such as: appdata.
 	public var include: AdditionalFields?
 
-	/// String value for adding query params to url
+	/// String value for adding query params to url.
 	public var stringValue: String {
 		var array = [String]()
 
@@ -48,7 +48,7 @@ public class FileInfoQuery {
 	// MARK: - Public methods
 
 	/// Include additional fields to the file object, such as: appdata.
-	/// - Parameter val: value
+	/// - Parameter val: Additional field value.
 	public func include(_ val: AdditionalFields?) -> Self {
 		include = val
 		return self

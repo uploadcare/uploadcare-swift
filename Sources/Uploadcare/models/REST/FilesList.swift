@@ -13,19 +13,19 @@ public class FilesList: Codable {
 	
 	// MARK: - Public properties
 	
-	/// URL for next page request
+	/// URL for next page request.
 	public var next: String?
 	
-	/// URL for previous page request
+	/// URL for previous page request.
 	public var previous: String?
 	
-	/// Total number of files
+	/// Total number of files.
 	public var total: Int
 	
-	/// Number of files per page
+	/// Number of files per page.
 	public var perPage: Int
 	
-	/// List of files from current page
+	/// List of files from the current page.
 	public var results: [File]
 	
 	
@@ -130,7 +130,6 @@ extension FilesList {
 			}
 		}
 	}
-
 
 	/// Get list of files.
 	/// - Parameter query: Query object.
@@ -254,7 +253,7 @@ private extension FilesList {
 
 // MARK: - Deprecated methods
 extension FilesList {
-	/// Get list of files
+	/// Get list of files.
 	/// - Parameters:
 	///   - query: query object
 	///   - completionHandler: completion hanlder

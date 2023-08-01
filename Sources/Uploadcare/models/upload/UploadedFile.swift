@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// File Info model that is used for Upload API
+/// File Info model that is used for Upload API.
 public class UploadedFile: Codable {
 
 	// MARK: - Public properties
@@ -23,16 +23,16 @@ public class UploadedFile: Codable {
 	/// Same as ``size``.
 	public var done: Int
 	
-	/// File UUID
+	/// File UUID.
 	public var uuid: String
 
-	/// Same as uuid
+	/// Same as ``uuid``.
 	public var fileId: String
 	
 	/// Original file name taken from uploaded file.
 	public var originalFilename: String
 	
-	/// sanitized originalFilename.
+	/// Sanitized ``originalFilename``.
 	public var filename: String
 	
 	/// File MIME-type.
@@ -65,13 +65,13 @@ public class UploadedFile: Codable {
 
 	// MARK: - Private properties
 
-	/// REST API
+	/// REST API.
 	private weak var restAPI: Uploadcare?
 	
-	/// File URL
+	/// File URL.
 	private var fileUrl: URL?
 	
-	// Data
+	// File data.
 	private var data: Data?
 	
 	

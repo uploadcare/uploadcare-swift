@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// Group
+/// This struct represents a group of files.
 public struct Group: Codable, Equatable {
 	
 	/// Date and time when a group was created.

@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// Collaborator
+/// Project collaborator.
 public struct Collaborator: Codable {
 	
 	/// Collaborator email.

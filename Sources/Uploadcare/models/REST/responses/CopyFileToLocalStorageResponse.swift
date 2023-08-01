@@ -10,7 +10,7 @@ import Foundation
 
 
 public struct CopyFileToLocalStorageResponse: Codable {
-	/// Default: "file"
+	/// Default: "file".
 	public var type: String
 	public var result: File?
 	

@@ -9,13 +9,13 @@
 import Foundation
 
 
-/// File info model that is used for REST API
+/// File info model that is used for REST API.
 public struct File: Codable, Equatable {
 	
 	/// File size in bytes.
 	public var size: Int
 	
-	/// File UUID
+	/// File UUID.
 	public var uuid: String
 	
 	/// Original file name taken from uploaded file.

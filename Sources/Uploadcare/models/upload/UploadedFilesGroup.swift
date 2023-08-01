@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// Uploaded Files group info
+/// Uploaded files group details.
 public class UploadedFilesGroup: Codable {
 	
 	/// Date and time when a group was created.

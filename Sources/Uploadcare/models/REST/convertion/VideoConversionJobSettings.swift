@@ -9,28 +9,28 @@
 import Foundation
 
 public class VideoConversionJobSettings {
-	/// File for conversion
+	/// File for conversion.
 	public let file: File
 	
-	/// Resizes a video to the specified dimensions
+	/// Resizes a video to the specified dimensions.
 	public var size: VideoSize?
 	
-	/// Resize mode
+	/// Resize mode.
 	public var resizeMode: VideoResizeMode = .preserveRatio
 	
-	/// Sets the level of video quality
+	/// Sets the level of video quality.
 	public var quality: VideoQuality = .normal
 	
-	/// Converts a file to one of the HTML5 video formats
+	/// Converts a file to one of the HTML5 video formats.
 	public var format: VideoFormat = .mp4
 	
 	/// Cuts out a video fragment. See documentation: https://uploadcare.com/docs/transformations/video_encoding/#operation-cut
 	public var cut: VideoCut?
 	
-	/// creates N thumbnails for your video, where N is a non-zero integer ranging from 1 to 50; defaults to 1.
+	/// Creates N thumbnails for your video, where N is a non-zero integer ranging from 1 to 50; defaults to 1.
 	public var thumbs: Int = 1
 	
-	/// String value for path
+	/// String value for path.
 	public var stringValue: String {
 		var string = "/\(file.uuid)/video/"
 		

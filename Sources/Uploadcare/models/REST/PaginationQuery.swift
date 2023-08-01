@@ -16,7 +16,7 @@ import Foundation
 	// Might be used with init method with values:
 	let query = PaginationQuery(removed: true, stored: false, limit: 10, ordering: .sizeDESC)
 
-	// Might be used with chaining
+	// Might be used with chaining API:
 	let query1 = PaginationQuery()
 		.removed(false)
 		.stored(true)
@@ -25,7 +25,7 @@ import Foundation
 */
 public class PaginationQuery {
 	
-	/// Max value for limit
+	/// Max value for limit.
 	internal static let maxLimitValue: Int = 10000
 	
 	public enum Ordering {
@@ -56,17 +56,17 @@ public class PaginationQuery {
 	
 	// MARK: - Public properties
 	
-	/// true to only include removed files in the response, false to include existing files. Defaults to false.
+	/// `true` to only include removed files in the response, false to include existing files. Defaults to `false`.
 	public var removed: Bool?
-	/// true to only include files that were stored, false to include temporary ones. The default is unset: both stored and not stored files are returned.
+	/// `true` to only include files that were stored, false to include temporary ones. The default is unset: both stored and not stored files are returned.
 	public var stored: Bool?
 	/// A preferred amount of files in a list for a single response. Defaults to 100, while the maximum is 1000.
 	public var limit: Int?
-	/// Specifies the way files are sorted in a returned list. The default ordering option is .dateTimeUploadedASC.
+	/// Specifies the way files are sorted in a returned list. The default ordering option is `.dateTimeUploadedASC`.
 	public var ordering: Ordering?
 	
 	
-	/// String value for adding query params to url
+	/// String value for adding query params to url.
 	public var stringValue: String {
 		var array = [String]()
 		
@@ -109,21 +109,21 @@ public class PaginationQuery {
 	
 	// MARK: - Public methods
 	
-	/// Sets removed param to query
+	/// Sets removed param to query.
 	/// - Parameter val: value
 	public func removed(_ val: Bool?) -> Self {
 		removed = val
 		return self
 	}
 	
-	/// Sets stored param to query
+	/// Sets stored param to query.
 	/// - Parameter val: value
 	public func stored(_ val: Bool?) -> Self {
 		stored = val
 		return self
 	}
 	
-	/// Sets limit param to query
+	/// Sets limit param to query.
 	/// - Parameter val: value
 	public func limit(_ val: Int?) -> Self {
 		if let limitValue = val {
@@ -136,7 +136,7 @@ public class PaginationQuery {
 		return self
 	}
 	
-	/// Sets ordering param to query
+	/// Sets ordering param to query.
 	/// - Parameter val: value
 	public func ordering(_ val: Ordering) -> Self {
 		ordering = val
