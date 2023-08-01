@@ -132,7 +132,7 @@ filesList.previousPage { result in
 
 ```swift
 // Async:
-let file = try await uploadcare.fileInfo(withUUID: uuid)
+let file = try await uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2")
 
 // With completion callback:
 uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
@@ -150,7 +150,7 @@ Using query:
 let fileInfoQuery = FileInfoQuery().include(.appdata)
 
 // Async:
-let file = try await uploadcare.fileInfo(withUUID: uuid, withQuery: fileInfoQuery)
+let file = try await uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", withQuery: fileInfoQuery)
 
 // With completion callback:
 uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", withQuery: fileInfoQuery) { result in
@@ -167,6 +167,10 @@ uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", withQuery:
 
 Get file’s metadata:
 ```swift
+// Async:
+let metadata = try await uploadcare.fileMetadata(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2")
+
+// With completion callback:
 uploadcare.fileMetadata(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
     switch result {
     case .failure(let error):
@@ -179,6 +183,13 @@ uploadcare.fileMetadata(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { resu
 
 Get metadata key's value:
 ```swift
+// Async:
+let value = try await uploadcare.fileMetadataValue(
+    forKey: "myMeta",
+	withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2"
+)
+
+// With completion callback:
 uploadcare.fileMetadataValue(forKey: "myMeta", withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
     switch result {
     case .failure(let error):
@@ -191,6 +202,14 @@ uploadcare.fileMetadataValue(forKey: "myMeta", withUUID: "1bac376c-aa7e-4356-861
 
 Update metadata key's value.  If the key does not exist, it will be created:
 ```swift
+// Async:
+let val = try await uploadcare.updateFileMetadata(
+    withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", 
+    key: "myMeta", 
+    value: "myValue"
+)
+
+// With completion callback:
 uploadcare.updateFileMetadata(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", key: "myMeta", value: "myValue") { result in
     switch result {
     case .failure(let error):
@@ -203,6 +222,13 @@ uploadcare.updateFileMetadata(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", 
 
 Delete metadata key:
 ```swift
+// Async:
+try await uploadcare.deleteFileMetadata(
+    forKey: "myMeta", 
+    withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2"
+)
+
+// With completion callback:
 uploadcare.deleteFileMetadata(forKey: "myMeta", withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { error in
     if let error = error { 
         print(error)
@@ -215,6 +241,10 @@ uploadcare.deleteFileMetadata(forKey: "myMeta", withUUID: "1bac376c-aa7e-4356-86
 Store an individual file:
 
 ```swift
+// Async:
+let file = try await uploadcare.storeFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2")
+
+// With completion callback:
 uploadcare.storeFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
     switch result {
     case .failure(let error):
@@ -229,6 +259,11 @@ Batch file storing:
 
 ```swift
 let uuids = ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "1bac376c-aa7e-4356-861b-dd2657b5bfd2"]
+
+// Async:
+let response = try await uploadcare.storeFiles(withUUIDs: uuids)
+
+// With completion callback:
 uploadcare.storeFiles(withUUIDs: uuids) { result in
     switch result {
     case .failure(let error):
@@ -244,6 +279,10 @@ uploadcare.storeFiles(withUUIDs: uuids) { result in
 Delete an individual file:
 
 ```swift
+// Async:
+let file = try await uploadcare.deleteFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2")
+
+// With completion callback:
 uploadcare.deleteFile(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
     switch result {
     case .failure(let error):
@@ -258,6 +297,11 @@ Batch file delete:
 
 ```swift
 let uuids = ["b7a301d1-1bd0-473d-8d32-708dd55addc0", "1bac376c-aa7e-4356-861b-dd2657b5bfd2"]
+
+// Async:
+try await uploadcare.deleteFiles(withUUIDs: uuids)
+
+// With completion callback:
 uploadcare.deleteFiles(withUUIDs: uuids) { result in
     switch result {
     case .failure(let error):
@@ -271,6 +315,10 @@ uploadcare.deleteFiles(withUUIDs: uuids) { result in
 ## Copy file to local storage ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createLocalCopy)) ##
 
 ```swift
+// Async:
+let response = try await uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9")
+
+// With completion callback:
 uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9") { result in
     switch result {
     case .failure(let error):
@@ -285,6 +333,11 @@ uploadcare.copyFileToLocalStorage(source: "6ca619a8-70a7-4777-8de1-7d07739ebbd9"
 
 ```swift
 let source = "99c48392-46ab-4877-a6e1-e2557b011176"
+
+// Async:
+let response = try await uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", pattern: .uuid)
+
+// With completion callback:
 uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", makePublic: true, pattern: .uuid) { result in
     switch result {
     case .failure(let error):
@@ -301,7 +354,11 @@ uploadcare.copyFileToRemoteStorage(source: source, target: "one_more_project", m
 let query = GroupsListQuery()
     .limit(100)
     .ordering(.datetimeCreatedDESC)
+    
+// Async:
+let list = try await uploadcare.listOfGroups(withQuery: query)
 
+// With completion callback:
 uploadcare.listOfGroups(withQuery: query) { result in
     switch result {
     case .failure(let error):
@@ -311,9 +368,14 @@ uploadcare.listOfGroups(withQuery: query) { result in
     }
 }
 
+
 // Using a GroupsList object
 let groupsList = uploadcare.listOfGroups()
 
+// Async:
+let list = try await groupsList.get(withQuery: query)
+
+// With completion callback:
 groupsList.get(withQuery: query) { result in
     switch result {
     case .failure(let error):
@@ -322,8 +384,14 @@ groupsList.get(withQuery: query) { result in
         print(list)
     }
 }
+```
 
-// Get the next page
+Get the next page
+```swift
+// Async:
+let next = try await groupsList.nextPage()
+
+// With completion callback:
 groupsList.nextPage { result in
     switch result {
     case .failure(let error):
@@ -332,8 +400,14 @@ groupsList.nextPage { result in
         print(list)
     }
 }
+```
 
-// Get the previous page
+Get the previous page
+```swift
+// Async:
+let previous = try await groupsList.previousPage()
+
+// With completion callback:
 groupsList.previousPage { result in			
     switch result {
     case .failure(let error):
