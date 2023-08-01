@@ -73,7 +73,7 @@ let query = PaginationQuery()
     .ordering(.dateTimeUploadedDESC)
     .limit(5)
 
-// Get file list
+// Get list of files:
 filesList.get(withQuery: query) { result in
     switch result {
     case .failure(let error):
@@ -82,6 +82,12 @@ filesList.get(withQuery: query) { result in
         print(list)
     }
 }
+```
+
+Async method:
+```swift
+// Get file list using async/await:
+let list = try await filesList.get(withQuery: query)
 ```
 
 Get next page:
