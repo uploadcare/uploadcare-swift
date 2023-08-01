@@ -73,7 +73,10 @@ let query = PaginationQuery()
     .ordering(.dateTimeUploadedDESC)
     .limit(5)
 
-// Get list of files:
+// Get list of files (async):
+let list = try await filesList.get(withQuery: query)
+
+// Get list of files (with completion callback): 
 filesList.get(withQuery: query) { result in
     switch result {
     case .failure(let error):
@@ -82,12 +85,7 @@ filesList.get(withQuery: query) { result in
         print(list)
     }
 }
-```
 
-Async method:
-```swift
-// Get file list using async/await:
-let list = try await filesList.get(withQuery: query)
 ```
 
 Get next page:
@@ -95,7 +93,11 @@ Get next page:
 ```swift
 // Check if the next page is available
 guard filesList.next != nil else { return }
-// Get the next page
+
+// Get the next page (async):
+let next = try await filesList.nextPage()
+
+// Get the next page (with completion callback):
 filesList.nextPage { result in
     switch result {
     case .failure(let error):
@@ -111,7 +113,11 @@ Get previous page:
 ```swift
 // Check if the previous page is available
 guard filesList.previous != nil else { return }
-// Get the previous page
+
+// Get the previous page (async):
+let previous = try await filesList.previousPage()
+
+// Get the previous page (with completion callback):
 filesList.previousPage { result in
     switch result {
     case .failure(let error):
@@ -125,6 +131,10 @@ filesList.previousPage { result in
 ## File info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/fileInfo)) ##
 
 ```swift
+// Async:
+let file = try await uploadcare.fileInfo(withUUID: uuid)
+
+// With completion callback:
 uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result in
     switch result {
     case .failure(let error):
@@ -133,9 +143,16 @@ uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2") { result i
         print(file)
     }
 }
+```
 
-// with query
+Using query:
+```swift
 let fileInfoQuery = FileInfoQuery().include(.appdata)
+
+// Async:
+let file = try await uploadcare.fileInfo(withUUID: uuid, withQuery: fileInfoQuery)
+
+// With completion callback:
 uploadcare.fileInfo(withUUID: "1bac376c-aa7e-4356-861b-dd2657b5bfd2", withQuery: fileInfoQuery) { result in
     switch result {
     case .failure(let error):
