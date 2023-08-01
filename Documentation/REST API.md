@@ -560,7 +560,6 @@ let url = URL(string: "https://yourwebhook.com")!
 // Async:
 try await uploadcare.deleteWebhook(forTargetUrl: targetUrl)
 
-
 // With completion callback:
 uploadcare.deleteWebhook(forTargetUrl: url) { error in
     if let error = error {
@@ -578,7 +577,11 @@ let task1 = DocumentConversionJobSettings(forFile: file1)
     .format(.odt)
 let task2 = DocumentConversionJobSettings(forFile: file2)
     .format(.pdf)
+    
+// Async:
+let response = try await uploadcare.convertDocumentsWithSettings([task1, task2])
 
+// With completion callback:
 uploadcare.convertDocumentsWithSettings([task1, task2]) { result in
     switch result {
     case .failure(let error):
@@ -592,6 +595,10 @@ uploadcare.convertDocumentsWithSettings([task1, task2]) { result in
 Alternatively, you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting))):
 
 ```swift
+// Async:
+let response = try await uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"])
+
+// With completion callback:
 uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { result in
     switch result {
     case .failure(let error):
@@ -605,6 +612,17 @@ uploadcare.convertDocuments([":uuid/document/-/format/:target-format/"]) { resul
 ## Document conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/documentConvertStatus)) ##
 
 ```swift
+// Async
+let job = try await uploadcare.documentConversionJobStatus(token: 123456)
+
+switch job.status {
+case .failed(let conversionError):
+	print(conversionError)
+default: 
+	break
+}
+
+// With completion callback:
 uploadcare.documentConversionJobStatus(token: 123456) { result in
     switch result {
     case .failure(let error):
@@ -636,7 +654,11 @@ let task1 = VideoConversionJobSettings(forFile: file1)
 let task2 = VideoConversionJobSettings(forFile: file2)
     .format(.mp4)
     .quality(.lightest)
+    
+// Async:
+let response = try await uploadcare.convertVideosWithSettings([task1, task2])
 
+// With completion callback:
 uploadcare.convertVideosWithSettings([task1, task2]) { result in
     switch result {
     case .failure(let error):
@@ -650,6 +672,10 @@ uploadcare.convertVideosWithSettings([task1, task2]) { result in
 Alternatively, you can pass custom "paths" param as array of strings (see ([documentation](https://uploadcare.com/docs/transformations/video_encoding/#process-url-formatting))):
 
 ```swift
+// Async:
+let response = try await uploadcare.convertVideos([":uuid/video/-/format/ogg/"])
+
+// With completion callback:
 uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { result in
     switch result {
     case .failure(let error):
@@ -663,6 +689,17 @@ uploadcare.convertVideos([":uuid/video/-/format/ogg/"]) { result in
 ## Video conversion job status ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/videoConvertStatus)) ##
 
 ```swift
+// Async:
+let job = try await uploadcare.videoConversionJobStatus(token: 123456)
+
+switch job.status {
+case .failed(let conversionError):
+	print(conversionError)
+default: 
+	break
+}
+
+// With completion callback:
 uploadcare.videoConversionJobStatus(token: 123456) { result in    
     switch result {
     case .failure(let error):
@@ -686,6 +723,10 @@ An Add-On is an application implemented by Uploadcare that accepts uploaded file
 ### AWS Rekognition ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/awsRekognitionExecute))
 Execute AWS Rekognition Add-On for a given target to detect labels in an image. Note: Detected labels are stored in the file's appdata.
 ```swift
+// Async:
+let response = try await uploadcare.executeAWSRecognition(fileUUID: "uuid")
+
+// With completion callback:
 uploadcare.executeAWSRecognition(fileUUID: "uuid") { result in
     switch result {
     case .failure(let error):
@@ -694,8 +735,14 @@ uploadcare.executeAWSRecognition(fileUUID: "uuid") { result in
         print(response) // contains requestID
     }
 }
+```
 
-// check status
+Check status:
+```swift
+// Async:
+let status = try await uploadcare.checkAWSRecognitionStatus(requestID: response.requestID)
+
+// With completion callback:
 uploadcare.checkAWSRecognitionStatus(requestID: "requestID") { result in
     switch result {
     case .failure(let error):
@@ -710,6 +757,11 @@ uploadcare.checkAWSRecognitionStatus(requestID: "requestID") { result in
 Execute ClamAV virus checking Add-On for a given target.
 ```swift
 let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+
+// Async:
+let response = try await uploadcare.executeClamav(fileUUID: "uuid", parameters: parameters)
+
+// With completion callback:
 uploadcare.executeClamav(fileUUID: "uuid", parameters: parameters) { result in
     switch result {
     case .failure(let error):
@@ -718,8 +770,14 @@ uploadcare.executeClamav(fileUUID: "uuid", parameters: parameters) { result in
         print(response) // contains requestID
     }
 }
+```
                 
-// check status
+Check status:
+```swift
+// Async:
+let status = try await uploadcare.checkClamAVStatus(requestID: response.requestID)
+
+// With completion callback:
 uploadcare.checkClamAVStatus(requestID: "requestID") { result in
     switch result {
     case .failure(let error):
@@ -734,7 +792,12 @@ uploadcare.checkClamAVStatus(requestID: "requestID") { result in
 Execute remove.bg background image removal Add-On for a given target.
 ```swift
 // more parameters in RemoveBGAddonExecutionParams model
-let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two) 
+let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
+
+// Async:
+let response = try await uploadcare.executeRemoveBG(fileUUID: "uuid", parameters: parameters)
+
+// With completion callback: 
 uploadcare.executeRemoveBG(fileUUID: "uuid", parameters: parameters) { result in
     switch result {
     case .failure(let error):
@@ -743,8 +806,14 @@ uploadcare.executeRemoveBG(fileUUID: "uuid", parameters: parameters) { result in
         print(response) // contains requestID
     }
 }
+```
                 
-// check status
+Check status:
+```swift
+// Async:
+let status = try await uploadcare.checkRemoveBGStatus(requestID: response.requestID)
+
+// With completion callback: 
 uploadcare.checkRemoveBGStatus(requestID: "requestID") { result in
     switch result {
     case .failure(let error):
