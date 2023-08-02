@@ -92,7 +92,7 @@ var fileForUploading = uploadcare.file(withContentsOf: url)!
 fileForUploadingfileForUploading.metadata = ["myKey": "myValue"]
 let file = try await fileForUploading.upload(withName: "random_file_name.jpg", store: .doNotStore)
 
-// With completion callback. Progress and completion callbacks are optional
+// With completion callback. Progress and completion callbacks are optional:
 var fileForUploading2 = uploadcare.file(withContentsOf: url)!
 fileForUploading2.metadata = ["myKey": "myValue"]
 fileForUploading2.upload(withName: "my_file.jpg", store: .store)
@@ -102,6 +102,11 @@ Sometimes you don't want to have the secret key in your client app and want to g
 
 ```swift
 let signature = UploadSignature(signature: "signature", expire: 1658486910)
+
+// Async:
+let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore, uploadSignature: signature)
+
+// With completion callback:
 let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore, uploadSignature: signature) { progress in
     print("progress: \(progress)")
 } _: { result in
@@ -160,8 +165,15 @@ You can use this upload method and it'll run all 3 steps for you:
 ```swift
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
 let data = try! Data(contentsOf: url)
+let metadata = ["someKey": "someMetaValue"]
 
-let task = uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .store, metadata: ["someKey": "someMetaValue"]) { progress in
+// Async:
+let file = try await uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .store, metadata: metadata) { progress in
+    print("progress: \(progress)")
+}
+
+// With completion callback:
+let task = uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .store, metadata: metadata) { progress in
     print("progress: \(progress)")
 } _: { result in
     switch result {
@@ -205,8 +217,14 @@ let task2 = UploadFromURLTask(sourceUrl: url)
     .saveURLDuplicates(true)
     .store(.store)
     .setMetadata("myValue", forKey: "someKey")
+    
+// Async upload:
+let response = try await uploadcare.uploadAPI.upload(task: task1)
+// Upload token that you can use to check status
+let token = response.token
 
-// Upload
+
+// Upload with completion callback:
 uploadcare.uploadAPI.upload(task: task1) { result in
     switch result {
     case .failure(let error):
@@ -215,7 +233,7 @@ uploadcare.uploadAPI.upload(task: task1) { result in
         print(response)
         
 		// Upload token that you can use to check status
-		let token = result?.token
+		let token = result.token
     }
 }
 ```

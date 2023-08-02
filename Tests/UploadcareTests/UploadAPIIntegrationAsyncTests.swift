@@ -127,7 +127,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		let data = try! Data(contentsOf: url)
 		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
 
-		let file = try await fileForUploading.upload(withName: "test.jpg", store: .doNotStore) { _ in }
+		let file = try await fileForUploading.upload(withName: "test.jpg", store: .doNotStore)
 		DLog(file)
 		XCTAssertFalse(file.fileId.isEmpty)
 	}
