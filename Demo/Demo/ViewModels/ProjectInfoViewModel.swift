@@ -32,7 +32,7 @@ class ProjectInfoViewModel: ObservableObject {
 	
 	// MARK: - Private properties
 	private var uploadcare: Uploadcare?
-	@Published private var projectData: Project?
+	private var projectData: Project?
 	
 	// MARK: - Init
 	init(projectData: Project? = nil, uploadcare: Uploadcare? = nil) {
