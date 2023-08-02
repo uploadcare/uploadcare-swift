@@ -223,7 +223,6 @@ let response = try await uploadcare.uploadAPI.upload(task: task1)
 // Upload token that you can use to check status
 let token = response.token
 
-
 // Upload with completion callback:
 uploadcare.uploadAPI.upload(task: task1) { result in
     switch result {
@@ -241,6 +240,11 @@ uploadcare.uploadAPI.upload(task: task1) { result in
 Sometimes you don't want to have the secret key in your client app and want to get it from backend. In that case you can provide upload signature directly:
 ```swift
 let signature = UploadSignature(signature: "signature", expire: 1658486910)
+
+let response = try await uploadcare.uploadAPI.upload(task: task1)
+
+// or with completion callback:
+
 uploadcare.uploadAPI.upload(task: task1) { result in
     // ...
 }
@@ -252,6 +256,10 @@ uploadcare.uploadAPI.upload(task: task1) { result in
 Use a token recieved with Upload files from the URLs method:
 
 ```swift
+// Async:
+let status = try await uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN")
+
+// With completion callback:
 uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { result in
     switch result {
     case .failure(let error):
@@ -265,6 +273,10 @@ uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { result in
 ## File info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fileUploadInfo/)) ##
 
 ```swift
+// Async:
+let file = try await uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID")
+
+// With completion callback:
 uploadcare.uploadAPI.fileInfo(withFileId: "FILE_UUID") { result in
     switch result {
     case .failure(let error):
@@ -283,6 +295,11 @@ Uploadcare library provides 2 methods to create a group:
 
 ```swift
 let files: [UploadedFile] = [file1,file2]
+
+// Async:
+let group = try await uploadAPI.createFilesGroup(files: files)
+
+// With completion callback:
 uploadcare.uploadAPI.createFilesGroup(files: files) { result in
     switch result {
     case .failure(let error):
@@ -297,6 +314,11 @@ uploadcare.uploadAPI.createFilesGroup(files: files) { result in
 
 ```swift
 let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
+
+// Async:
+let group = try await uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds)
+
+// With completion callback:
 uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { result in
     switch result {
     case .failure(let error):
@@ -304,6 +326,28 @@ uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { result in
     case .success(let group):
         print(group)
     }
+}
+```
+
+Alternatively you can create a `UploadedFilesGroup` object:
+
+```swift
+let files: [UploadedFile] = [file1,file2]
+let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
+
+// Async:
+let group1 = try await uploadcare.group(ofFiles: files).create()
+let group2 = try await uploadcare.group(filesIds: filesIds).create()
+
+// With completion callback:
+let group1 = uploadcare.group(ofFiles: files)
+group1.create { result in
+    // ...
+}
+
+let group2 = uploadcare.group(filesIds: filesIds)
+group2.create { result in
+    // ...
 }
 ```
 
@@ -322,6 +366,10 @@ uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { result in
 ## Files group info ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/filesGroupInfo/)) ##
 
 ```swift
+// Async:
+let group = try await uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID")
+
+// With completion callback:
 uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { result in
     switch result {
     case .failure(let error):
