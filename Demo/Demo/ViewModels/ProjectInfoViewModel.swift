@@ -42,20 +42,12 @@ class ProjectInfoViewModel: ObservableObject {
 }
 
 extension ProjectInfoViewModel {
-	func loadData(onComplete: @escaping ()->Void) {
-		guard let api = uploadcare else {
-			onComplete()
-			return
-		}
+	func loadData() async throws {
+		guard let api = uploadcare else { return }
+		let project = try await api.getProjectInfo()
 
-		api.getProjectInfo { result in
-			switch result {
-			case .failure(let error):
-				DLog(error)
-			case .success(let project):
-				self.projectData = project
-				onComplete()
-			}
+		DispatchQueue.main.async { [weak self] in
+			self?.projectData = project
 		}
 	}
 }
