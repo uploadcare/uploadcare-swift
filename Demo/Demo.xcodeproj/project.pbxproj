@@ -64,7 +64,6 @@
 		24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		24BAB4382549E4070075E79A /* PickerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerType.swift; sourceTree = "<group>"; };
 		24BAB43B2549E42D0075E79A /* UploadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadState.swift; sourceTree = "<group>"; };
-		24BAB4402549E4DA0075E79A /* APIStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIStore.swift; sourceTree = "<group>"; };
 		24BAB4442549E53A0075E79A /* GroupsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsListViewModel.swift; sourceTree = "<group>"; };
 		24BAB4472549E5AC0075E79A /* FilesListStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesListStore.swift; sourceTree = "<group>"; };
 		24BAB44A2549E6270075E79A /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
@@ -173,7 +172,6 @@
 		24BAB43E2549E4930075E79A /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				24BAB4402549E4DA0075E79A /* APIStore.swift */,
 				24BAB4472549E5AC0075E79A /* FilesListStore.swift */,
 				24BAB44A2549E6270075E79A /* ImageStore.swift */,
 				24BAB44D2549E65A0075E79A /* RandomTransformator.swift */,
