@@ -37,7 +37,7 @@ struct GroupFileList: View {
 		.onAppear {
 			guard self.didLoadData == false else { return }
 			self.didLoadData = true
-			self.loadData()
+			Task { try await self.loadData() }
 		}
 		.alert(isPresented: $isShowingAlert) {
 			Alert(
@@ -49,18 +49,23 @@ struct GroupFileList: View {
 		.navigationBarTitle(Text("Files in group"))
     }
 	
-	func loadData() {
-		self.api.uploadcare?.groupInfo(withUUID: self.viewData.group.id) { result in
-			defer { self.isLoading = false }
+	func loadData() async throws {
+		defer {
+			DispatchQueue.main.async {
+				self.isLoading = false
+			}
+		}
 
-			switch result {
-			case .failure(let error):
-				self.alertMessage = error.detail
-				self.isShowingAlert.toggle()
-				DLog(error)
-			case .success(let group):
+		do {
+			guard let group = try await self.api.uploadcare?.groupInfo(withUUID: self.viewData.group.id) else { return }
+			DispatchQueue.main.async {
 				self.filesListStore.files.removeAll()
 				group.files?.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
+			}
+		} catch {
+			DispatchQueue.main.async {
+				self.alertMessage = (error as? RESTAPIError)?.detail ?? "Error"
+				DLog(error)
 			}
 		}
 //		filesListStore.uploadcare = self.api.uploadcare
