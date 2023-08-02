@@ -241,10 +241,10 @@ Sometimes you don't want to have the secret key in your client app and want to g
 ```swift
 let signature = UploadSignature(signature: "signature", expire: 1658486910)
 
+// Async
 let response = try await uploadcare.uploadAPI.upload(task: task1)
 
-// or with completion callback:
-
+// With completion callback:
 uploadcare.uploadAPI.upload(task: task1) { result in
     // ...
 }
