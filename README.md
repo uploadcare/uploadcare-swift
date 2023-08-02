@@ -128,7 +128,7 @@ try await fileForUploading1.upload(withName: "random_file_name.jpg", store: .sto
 
 var fileForUploading2 = uploadcare.file(withContentsOf: url)!
 let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
-        print("upload progress: \(progress * 100)%")
+    print("upload progress: \(progress * 100)%")
 }
 
 // Same method with a completion callback that returns a task that can be paused or cancelled:
