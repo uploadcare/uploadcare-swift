@@ -92,10 +92,9 @@ var fileForUploading = uploadcare.file(withContentsOf: url)!
 fileForUploadingfileForUploading.metadata = ["myKey": "myValue"]
 let file = try await fileForUploading.upload(withName: "random_file_name.jpg", store: .doNotStore)
 
+// With completion callback. Progress and completion callbacks are optional
 var fileForUploading2 = uploadcare.file(withContentsOf: url)!
 fileForUploading2.metadata = ["myKey": "myValue"]
-
-// progress and completion callbacks are optional
 fileForUploading2.upload(withName: "my_file.jpg", store: .store)
 ```
 
