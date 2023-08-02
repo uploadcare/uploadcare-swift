@@ -63,14 +63,6 @@ let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg
     print("progress: \(progress)")
 }
 
-// Async using an UploadedFile object:
-var fileForUploading = uploadcare.file(withContentsOf: url)!
-fileForUploadingfileForUploading.metadata = ["myKey": "myValue"]
-let file = try await fileForUploading.upload(withName: "random_file_name.jpg", store: .doNotStore) { progress in 
-    print("progress: \(progress)")
-}
-
-
 // With completion callback:
 let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore, metadata: ["someKey": "someMetaValue"]) { progress in
     print("progress: \(progress)")
@@ -95,6 +87,11 @@ task.cancel()
 
 If you want to create a file object (alternative syntax):
 ```swift
+// Async:
+var fileForUploading = uploadcare.file(withContentsOf: url)!
+fileForUploadingfileForUploading.metadata = ["myKey": "myValue"]
+let file = try await fileForUploading.upload(withName: "random_file_name.jpg", store: .doNotStore)
+
 var fileForUploading2 = uploadcare.file(withContentsOf: url)!
 fileForUploading2.metadata = ["myKey": "myValue"]
 
