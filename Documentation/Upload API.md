@@ -26,7 +26,7 @@ final class MyClass {
         self.uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY")
         
         // Secret key is optional for Upload API
-	// But you still can provide it if you want to use both Upload API and REST API:
+        // But you still can provide it if you want to use both Upload API and REST API:
         self.uploadcare = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY", secretKey: "YOUR_SECRET_KEY")
     }
 }
@@ -43,7 +43,7 @@ final class MyClass {
         // A project to use Upload API only 
         self.project1 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_1")
         
-	// A project to use both REST API and Upload API
+        // A project to use both REST API and Upload API
         self.project2 = Uploadcare(withPublicKey: "YOUR_PUBLIC_KEY_2", secretKey: "YOUR_SECRET_KEY_2")
     }
 }
@@ -58,6 +58,20 @@ Uploadcare provides a simple method that will handle file upload. It decides int
 guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
 guard let data = try? Data(contentsOf: url) else { return }
 
+// Async:
+let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
+    print("progress: \(progress)")
+}
+
+// Async using an UploadedFile object:
+var fileForUploading = uploadcare.file(withContentsOf: url)!
+fileForUploadingfileForUploading.metadata = ["myKey": "myValue"]
+let file = try await fileForUploading.upload(withName: "random_file_name.jpg", store: .doNotStore) { progress in 
+    print("progress: \(progress)")
+}
+
+
+// With completion callback:
 let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore, metadata: ["someKey": "someMetaValue"]) { progress in
     print("progress: \(progress)")
 } _: { result in
