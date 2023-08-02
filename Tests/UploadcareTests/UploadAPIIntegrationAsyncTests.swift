@@ -107,7 +107,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		let info = try await uploadcare.uploadAPI.fileInfo(withFileId: fileId)
 
 		// create new group
-		newGroup = try await uploadcare.group(ofFiles:[info]).create()
+		newGroup = try await uploadcare.group(ofFiles: [info]).create()
 		XCTAssertNotNil(newGroup?.files)
 		XCTAssertFalse(newGroup!.files!.isEmpty)
 		XCTAssertEqual(newGroup?.filesCount, 1)

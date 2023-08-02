@@ -230,9 +230,9 @@ uploadcare.uploadAPI.upload(task: task1) { result in
         print(error)
     case .success(let response):
         print(response)
-        
-		// Upload token that you can use to check status
-		let token = result.token
+
+        // Upload token that you can use to check status
+        let token = result.token
     }
 }
 ```
@@ -297,7 +297,7 @@ Uploadcare library provides 2 methods to create a group:
 let files: [UploadedFile] = [file1,file2]
 
 // Async:
-let group = try await uploadAPI.createFilesGroup(files: files)
+let group: UploadedFilesGroup = try await uploadAPI.createFilesGroup(files: files)
 
 // With completion callback:
 uploadcare.uploadAPI.createFilesGroup(files: files) { result in
@@ -316,7 +316,7 @@ uploadcare.uploadAPI.createFilesGroup(files: files) { result in
 let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
 
 // Async:
-let group = try await uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds)
+let group: UploadedFilesGroup = try await uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds)
 
 // With completion callback:
 uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { result in
@@ -336,16 +336,16 @@ let files: [UploadedFile] = [file1,file2]
 let filesIds: [String] = ["FILE_UUID1", "FILE_UUID2"]
 
 // Async:
-let group1 = try await uploadcare.group(ofFiles: files).create()
-let group2 = try await uploadcare.group(filesIds: filesIds).create()
+let group1: UploadedFilesGroup = try await uploadcare.group(ofFiles: files).create()
+let group2: UploadedFilesGroup = try await uploadcare.group(filesIds: filesIds).create()
 
 // With completion callback:
-let group1 = uploadcare.group(ofFiles: files)
+let group1: UploadedFilesGroup = uploadcare.group(ofFiles: files)
 group1.create { result in
     // ...
 }
 
-let group2 = uploadcare.group(filesIds: filesIds)
+let group2: UploadedFilesGroup = uploadcare.group(filesIds: filesIds)
 group2.create { result in
     // ...
 }
@@ -367,7 +367,7 @@ uploadcare.uploadAPI.createFilesGroup(fileIds: filesIds) { result in
 
 ```swift
 // Async:
-let group = try await uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID")
+let group: UploadedFilesGroup = try await uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID")
 
 // With completion callback:
 uploadcare.uploadAPI.filesGroupInfo(groupId: "FILES_GROUP_ID") { result in
