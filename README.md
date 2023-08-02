@@ -111,7 +111,7 @@ Keep in mind that since Uploadcare is not a singleton. You should store a strong
 
 ## Using Upload API
 
-Check the [Upload API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/Upload%20API.md) to see all available methods.
+Check the [Upload API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/Upload%20API.md) to see all available methods. Each method has an implementation with a `Result` completion handler, and has an alternative `async` implementation to use with Swift concurrency.
 
 Example of uploads:
 
@@ -120,18 +120,18 @@ guard let url = URL(string: "https://source.unsplash.com/featured") else { retur
 guard let data = try? Data(contentsOf: url) else { return }
 
 // You can create UploadedFile object to operate with it
-let fileForUploading1 = uploadcare.file(fromData: data)
-var fileForUploading2 = uploadcare.file(withContentsOf: url)!
+var fileForUploading1 = uploadcare.file(fromData: data)
 fileForUploading2.metadata = ["myKey": "myValue"]
-
-// Handle error or result
-fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { result in
-}
-
-// Completion block is optional
-fileForUploading2.upload(withName: "my_file.jpg", store: .store)
+try await fileForUploading1.upload(withName: "random_file_name.jpg", store: .store)
 
 // Or you can just upload data and provide a filename
+
+var fileForUploading2 = uploadcare.file(withContentsOf: url)!
+let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
+        print("upload progress: \(progress * 100)%")
+}
+
+// Same method with a completion callback that returns a task that can be paused or cancelled:
 let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .store, metadata: ["someKey": "someMetaValue"]) { progress in
     print("upload progress: \(progress * 100)%")
 } _: { result in
@@ -142,7 +142,7 @@ let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: 
         print(file)
     }
 }
-// You can cancel uploading if needed
+// Cancel uploading if needed
 task.cancel()
 
 // task will confirm UploadTaskable protocol if file size is less than 100 mb, and UploadTaskResumable if file size is >= 100mb
@@ -155,7 +155,7 @@ It is possible to perform uploads in background. But implementation is a platfor
 
 ## Using REST API
 
-Refer to the [REST API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/REST%20API.md) for all methods.
+Refer to the [REST API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/REST%20API.md) for all methods. Each method has an implementation with a `Result` completion handler, and has an alternative `async` implementation to use with Swift concurrency.
 
 Example of getting list of files:
 
@@ -171,6 +171,9 @@ func someFilesListMethod() {
         .limit(5)
 
     // Get file list
+    let list = try await filesList.get(withQuery: query)
+    
+    // Same method with a completion callback.
     filesList.get(withQuery: query) { result in
         switch result {
         case .failure(let error):
@@ -187,7 +190,11 @@ Get next page:
 ```swift
 // Check if the next page is available
 guard filesList.next != nil else { return }
-// Get the next page
+
+// Async:
+let next = try await filesList.nextPage()
+
+// With a completion callback:
 filesList.nextPage { result in
     switch result {
     case .failure(let error):
@@ -203,7 +210,11 @@ Get previous page:
 ```swift
 // Check if the previous page is available
 guard filesList.previous != nil else { return }
-// Get the previous page
+
+// Async:
+let previous = try await filesList.previousPage()
+
+// With a completion callback:
 filesList.previousPage { result in
     switch result {
     case .failure(let error):
