@@ -279,7 +279,26 @@ public class UploadedFile: Codable {
 		self.originalFilename = name
 		self.filename = name
 
-		return try await restAPI.uploadFile(fileData, withName: name, store: store ?? .store, metadata: self.metadata, uploadSignature: uploadSignature, onProgress)
+		let uploadedFile = try await restAPI.uploadFile(fileData, withName: name, store: store ?? .store, metadata: self.metadata, uploadSignature: uploadSignature, onProgress)
+
+		self.size = uploadedFile.size
+		self.total = uploadedFile.total
+		self.done = uploadedFile.done
+		self.uuid = uploadedFile.uuid
+		self.fileId = uploadedFile.fileId
+		self.originalFilename = uploadedFile.originalFilename
+		self.filename = uploadedFile.filename
+		self.mimeType = uploadedFile.mimeType
+		self.isImage = uploadedFile.isImage
+		self.isStored = uploadedFile.isStored
+		self.isReady = uploadedFile.isReady
+		self.imageInfo = uploadedFile.imageInfo
+		self.videoInfo = uploadedFile.videoInfo
+		self.contentInfo = uploadedFile.contentInfo
+		self.metadata = uploadedFile.metadata
+		self.s3Bucket = uploadedFile.s3Bucket
+
+		return self
 	}
 }
 
