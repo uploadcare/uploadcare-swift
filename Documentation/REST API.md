@@ -694,9 +694,9 @@ let job = try await uploadcare.videoConversionJobStatus(token: 123456)
 
 switch job.status {
 case .failed(let conversionError):
-	print(conversionError)
+    print(conversionError)
 default: 
-	break
+    break
 }
 
 // With completion callback:
