@@ -161,21 +161,9 @@ struct FilesListView: View {
 	}
     
 	func delete(at offsets: IndexSet) {
-        offsets.forEach { (index) in
-            let fileView = filesListStore.files[index]
-            let uuid = fileView.file.uuid
-            
-            self.api.uploadcare?.deleteFile(withUUID: uuid) { result in
-				switch result {
-				case .failure(let error):
-					DLog(error)
-				case .success(_):
-					break
-				}
-            }
-        }
-        
-		filesListStore.files.remove(atOffsets: offsets)
+		Task {
+			try await self.filesListStore.deleteFiles(at: offsets)
+		}
 	}
 	
 	func loadData() {

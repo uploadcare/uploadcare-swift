@@ -60,7 +60,13 @@ class FilesListStore: ObservableObject {
 			list.results.forEach({ self.files.append(FileViewData( file: $0)) })
 		}
 	}
-	
+
+	func deleteFiles(at offsets: IndexSet) async throws {
+		let uuids = offsets.map { self.files[$0].file.uuid }
+		try await uploadcare?.deleteFiles(withUUIDs: uuids)
+		DispatchQueue.main.async { self.files.remove(atOffsets: offsets) }
+	}
+
 	func uploadFiles(_ urls: [URL], completionHandler: @escaping ([String])->Void) {
 		self.filesQueue = urls
 		var fileIds: [String] = []
