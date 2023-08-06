@@ -127,7 +127,6 @@ struct FilesListView: View {
 				}
 				EditButton()
             }
-            
         )
         .navigationBarTitle(Text("List of files"))
 	}
@@ -147,18 +146,16 @@ struct FilesListView: View {
 	
 	func loadMoreIfNeed() {
 		self.isLoading = true
-		filesListStore.loadNext { result in
-			defer { self.isLoading = false }
+		Task {
+			defer { DispatchQueue.main.async { self.isLoading = false } }
 
-			switch result {
-			case .failure(let error):
-				self.alertMessage = error.detail
-				self.isShowingAlert.toggle()
-				DLog(error)
-			case .success(let list):
-                DispatchQueue.main.async {
-                    list.results.forEach({ self.filesListStore.files.append(FileViewData( file: $0)) })
-                }
+			do {
+				try await filesListStore.loadNext()
+			} catch let error {
+				DispatchQueue.main.async {
+					self.alertMessage = (error as? RESTAPIError)?.detail ?? error.localizedDescription
+					self.isShowingAlert.toggle()
+				}
 			}
 		}
 	}
@@ -183,20 +180,17 @@ struct FilesListView: View {
 	
 	func loadData() {
 		filesListStore.uploadcare = self.api.uploadcare
-		filesListStore.load { result in
-			defer { self.isLoading = false }
+		Task {
+			defer { DispatchQueue.main.async { self.isLoading = false } }
 
-			switch result {
-			case .failure(let error):
-				self.alertMessage = error.detail
-				self.isShowingAlert.toggle()
-				DLog(error)
-			case .success(let list):
-				self.didLoadData = true
-                DispatchQueue.main.async {
-                    self.filesListStore.files.removeAll()
-                    list.results.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
-                }
+			do {
+				try await self.filesListStore.load()
+				DispatchQueue.main.async { self.didLoadData = true }
+			} catch let error {
+				DispatchQueue.main.async {
+					self.alertMessage = (error as? RESTAPIError)?.detail ?? error.localizedDescription
+					self.isShowingAlert.toggle()
+				}
 			}
 		}
 	}
