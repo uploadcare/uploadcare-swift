@@ -68,17 +68,6 @@ struct GroupFileList: View {
 				DLog(error)
 			}
 		}
-//		filesListStore.uploadcare = self.api.uploadcare
-//		filesListStore.load { (list, error) in
-//			defer { self.isLoading = false }
-//			if let error = error {
-//				self.alertMessage = error.detail
-//				self.isShowingAlert.toggle()
-//				return print(error)
-//			}
-//			self.filesListStore.files.removeAll()
-//			list?.results.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
-//		}
 	}
 }
 
