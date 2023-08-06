@@ -134,6 +134,7 @@ extension FilesList {
 	/// Get list of files.
 	/// - Parameter query: Query object.
 	/// - Returns: List of files.
+	@discardableResult
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func get(withQuery query: PaginationQuery? = nil) async throws -> FilesList {
 		guard let api = RESTAPI else {
@@ -164,6 +165,7 @@ extension FilesList {
 	/// Get next page of files list.
 	/// - Returns: Files list.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	@discardableResult
 	public func nextPage() async throws -> FilesList {
 		guard let next = next, let query = URL(string: next)?.query else {
 			self.results = []
@@ -188,6 +190,7 @@ extension FilesList {
 	/// Get previous page of files list.
 	/// - Returns: Files list.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	@discardableResult
 	public func previousPage() async throws -> FilesList {
 		guard let previous = previous, let query = URL(string: previous)?.query else {
 			self.results = []
