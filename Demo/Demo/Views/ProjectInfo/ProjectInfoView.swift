@@ -27,8 +27,8 @@ struct ProjectInfoView: View {
 				}
 				if viewModel.collaborators.isEmpty == false {
 					Section(header: Text("Collaborators")) {
-						ForEach(0 ..< viewModel.collaborators.count) { [self] index in
-							CollaboratorView(viewData: viewModel.collaborators[index])
+						ForEach(viewModel.collaborators) { collaborator in
+							CollaboratorView(viewData: collaborator)
 						}
 					}
 				}
