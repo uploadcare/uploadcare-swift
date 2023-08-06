@@ -28,7 +28,7 @@
 
 ## Initialization
 
-Create Uploadcare project in the [dashboard](https://app.uploadcare.com/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift) and copy its API keys from there.
+Create an Uploadcare project in the [dashboard](https://app.uploadcare.com/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-swift) and copy its API keys from there.
 
 REST API requires both public and secret keys:
 
