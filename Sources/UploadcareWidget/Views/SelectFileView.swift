@@ -18,22 +18,34 @@ struct SelectFileView: View {
 	// MARK: - Private properties
 	@State private var image: UIImage?
 	
-    var body: some View {
-		if let url = URL(string: self.thing.thumbnail) {
-			AsyncImage(
-				url: url,
-				placeholder: {
-					Image(systemName: "doc.fill")
-				},
-				image: {
-					Image(uiImage: $0)
-						.resizable()
-				}
-			)
-			.aspectRatio(contentMode: .fill)
-			.frame(width: size - 12, height: size - 12, alignment: .center)
-			.clipped()
+	var body: some View {
+		if #available(iOS 15.0, *) {
+			AsyncImage(url: URL(string: self.thing.thumbnail)) { image in
+				image
+					.resizable()
+					.aspectRatio(contentMode: .fill)
+					.frame(width: size - 12, height: size - 12, alignment: .center)
+					.clipped()
+			} placeholder: {
+				Image(systemName: "doc.fill")
+			}
+		} else {
+			if let url = URL(string: self.thing.thumbnail) {
+				AsyncImageOld(
+					url: url,
+					placeholder: {
+						Image(systemName: "doc.fill")
+					},
+					image: {
+						Image(uiImage: $0)
+							.resizable()
+					}
+				)
+				.aspectRatio(contentMode: .fill)
+				.frame(width: size - 12, height: size - 12, alignment: .center)
+				.clipped()
+			}
 		}
-    }
+	}
 }
 #endif

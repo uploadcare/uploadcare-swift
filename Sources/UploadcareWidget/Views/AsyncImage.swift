@@ -10,7 +10,7 @@ import SwiftUI
 
 #if os(iOS)
 @available(iOS 14.0.0, *)
-struct AsyncImage<Placeholder: View>: View {
+struct AsyncImageOld<Placeholder: View>: View {
 	@StateObject private var loader: ImageLoader
 	private let placeholder: Placeholder
 	private let image: (UIImage) -> Image
