@@ -123,7 +123,7 @@ public struct SelectSourceView: View {
 		return FilesListViewModel(
 			source: source,
 			cookie: source.getCookie() ?? "",
-			chunkPath: source.chunks.first!.values.first!,
+			chunkPath: source.chunks.first!.value,
 			publicKey: publicKey
 		)
 	}
