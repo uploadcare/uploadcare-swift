@@ -120,6 +120,22 @@ public class UploadedFilesGroup: Codable {
 	}
 
 	/// Create group of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let files: [UploadedFile] = [file1, file2]
+	/// let group = uploadcare.group(ofFiles: files)!
+	///
+	/// group.create { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error.detail)
+	///     case .success(let response):
+	///         print(response)
+	///     }
+	/// }
+	/// ```
+	///
 	/// - Parameter completionHandler: Completion handler.
 	public func create(_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void) {
 		uploadAPI?.createFilesGroup(files: self.files ?? [], { [weak self] result in
@@ -145,6 +161,14 @@ public class UploadedFilesGroup: Codable {
 	}
 
 	/// Create group of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let files: [UploadedFile] = [file1, file2]
+	/// let group = try await uploadcare.group(ofFiles: files)!.create()
+	/// print(group)
+	/// ```
+	///
 	/// - Returns: Files group.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func create() async throws -> UploadedFilesGroup {
