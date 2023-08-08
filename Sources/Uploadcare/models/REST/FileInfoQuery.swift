@@ -10,7 +10,7 @@ import Foundation
 
 /// Defines params for file info request query.
 ///
-/// **Example:**
+/// Example:
 /// ```swift
 /// let fileInfoQuery = FileInfoQuery().include(.appdata)
 /// ```

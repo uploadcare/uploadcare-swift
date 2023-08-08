@@ -104,6 +104,18 @@ extension GroupsList: CustomDebugStringConvertible {
 extension GroupsList {
 
 	/// Get list of groups.
+	///
+	/// Example:
+	/// ```swift
+	/// let query = GroupsListQuery()
+	///     .limit(5)
+	///     .ordering(.datetimeCreatedDESC)
+	///
+	/// let groupsList = uploadcare.listOfGroups()
+	/// try await groupsList.get(withQuery: query)
+	/// print(groupsList.results)
+	/// ```
+	///
 	/// - Parameter query: Query object.
 	/// - Returns: List of files.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -122,6 +134,24 @@ extension GroupsList {
 	}
 
 	/// Get next page of groups list
+	///
+	/// Example:
+	/// ```swift
+	/// let query = GroupsListQuery()
+	///     .limit(5)
+	///     .ordering(.datetimeCreatedDESC)
+	///
+	/// // get first page:
+	/// let groupsList = uploadcare.listOfGroups()
+	/// try await groupsList.get(withQuery: query)
+	///
+	/// // get next page:
+	/// if groupsList.next != nil {
+	///     try await groupsList.nextPage()
+	///     print(groupsList.results)
+	/// }
+	/// ```
+	///
 	/// - Returns: Groups list.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func nextPage() async throws -> GroupsList {
@@ -133,9 +163,26 @@ extension GroupsList {
 		return try await getPage(withQueryString: query)
 	}
 
-	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	/// Get previous page of groups list.
+	///
+	/// Example:
+	/// ```swift
+	/// let query = GroupsListQuery()
+	///     .limit(5)
+	///     .ordering(.datetimeCreatedDESC)
+	///
+	/// // get first page:
+	/// let groupsList = uploadcare.listOfGroups()
+	/// try await groupsList.get(withQuery: query)
+	///
+	/// // get previous page:
+	/// if groupsList.previous != nil {
+	///     try await groupsList.previousPage()
+	///     print(groupsList.results)
+	/// }
+	/// ```
 	/// - Returns: Groups list.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func previousPage() async throws -> GroupsList {
 		guard let previous = previous, let query = URL(string: previous)?.query else {
 			self.results = []
@@ -149,7 +196,7 @@ extension GroupsList {
 	/// - Parameter query: Query string.
 	/// - Returns: Groups list.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-	func getPage(withQueryString query: String) async throws -> GroupsList {
+	private func getPage(withQueryString query: String) async throws -> GroupsList {
 		guard let api = RESTAPI else {
 			throw RESTAPIError.defaultError()
 		}
@@ -162,16 +209,33 @@ extension GroupsList {
 		self.results = groupsList.results
 		return groupsList
 	}
-
 }
 
 // MARK: - Public methods with Result callback
 extension GroupsList {
 
 	/// Get list of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let query = GroupsListQuery()
+	///    .limit(5)
+	///	   .ordering(.datetimeCreatedDESC)
+	///
+	///	let groupsList = uploadcare.listOfGroups()
+	///	groupsList.get(withQuery: query) { result in
+	///     switch result {
+	///	    case .failure(let error):
+	///	        print(error.detail)
+	///	    case .success(let list):
+	///	        print(list)
+	///	    }
+	///	}
+	/// ```
+	///
 	/// - Parameters:
 	///   - query: Query object.
-	///   - completionHandler: Completion hanlder
+	///   - completionHandler: Completion hanlder.
 	public func get(
 		withQuery query: GroupsListQuery? = nil,
 		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
@@ -202,7 +266,34 @@ extension GroupsList {
 	}
 
 	/// Get next page of groups list.
-	/// - Parameter completionHandler: Completion handler
+	///
+	/// Example:
+	/// ```swift
+	/// let query = GroupsListQuery()
+	///    .limit(5)
+	///	   .ordering(.datetimeCreatedDESC)
+	///
+	///	let groupsList = uploadcare.listOfGroups()
+	///	groupsList.get(withQuery: query) { result in
+	///     switch result {
+	///	    case .failure(let error):
+	///	        print(error.detail)
+	///	    case .success(let list):
+	///	        // get next page:
+	///	        guard groupsList.next != nil else { return }
+	///	        groupsList.nextPage { result in
+	///	            switch result {
+	///             case .failure(let error):
+	///                 print(error.detail)
+	///             case .success(let list):
+	///                 print(list)
+	///	            }
+	///	        }
+	///	    }
+	///	}
+	/// ```
+	///
+	/// - Parameter completionHandler: Completion handler.
 	public func nextPage(_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void) {
 		guard let next = next, let query = URL(string: next)?.query else {
 			self.results = []
@@ -214,6 +305,33 @@ extension GroupsList {
 	}
 
 	/// Get previous page of groups list.
+	///
+	/// Example:
+	/// ```swift
+	/// let query = GroupsListQuery()
+	///    .limit(5)
+	///	   .ordering(.datetimeCreatedDESC)
+	///
+	///	let groupsList = uploadcare.listOfGroups()
+	///	groupsList.get(withQuery: query) { result in
+	///     switch result {
+	///	    case .failure(let error):
+	///	        print(error.detail)
+	///	    case .success(let list):
+	///	        // get previous page:
+	///	        guard groupsList.previous != nil else { return }
+	///	        groupsList.previousPage { result in
+	///	            switch result {
+	///             case .failure(let error):
+	///                 print(error.detail)
+	///             case .success(let list):
+	///                 print(list)
+	///	            }
+	///	        }
+	///	    }
+	///	}
+	/// ```
+	///
 	/// - Parameter completionHandler: completion handler
 	public func previousPage(_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void) {
 		guard let previous = previous, let query = URL(string: previous)?.query else {

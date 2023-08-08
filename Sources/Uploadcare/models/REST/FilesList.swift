@@ -102,9 +102,28 @@ extension FilesList: CustomDebugStringConvertible {
 // MARK: - Public methods
 extension FilesList {
 	/// Get list of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let query = PaginationQuery()
+	///     .stored(true)
+	///     .ordering(.dateTimeUploadedDESC)
+	///     .limit(5)
+	///
+	/// let filesList = uploadcare.listOfFiles()
+	/// filesList.get(withQuery: query) { result in
+	///	    switch result {
+	///	    case .failure(let error):
+	///         print(error.detail)
+	///	    case .success(let list):
+	///	        print(list)
+	///	    }
+	/// }
+	/// ```
+	///
 	/// - Parameters:
 	///   - query: Query object.
-	///   - completionHandler: completion hanlder
+	///   - completionHandler: Completion handler.
 	public func get(
 		withQuery query: PaginationQuery? = nil,
 		_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void
@@ -132,6 +151,18 @@ extension FilesList {
 	}
 
 	/// Get list of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let query = PaginationQuery()
+	///	    .stored(true)
+	///	    .ordering(.dateTimeUploadedDESC)
+	///	    .limit(5)
+	///
+	/// let filesList = uploadcare.listOfFiles()
+	/// let list = try await filesList.get(withQuery: query)
+	/// ```
+	///
 	/// - Parameter query: Query object.
 	/// - Returns: List of files.
 	@discardableResult
@@ -151,7 +182,36 @@ extension FilesList {
 	}
 	
 	/// Get next page of files list
-	/// - Parameter completionHandler: completion handler
+	///
+	/// Example:
+	/// ```swift
+	/// let query = PaginationQuery()
+	///	    .stored(true)
+	///	    .ordering(.dateTimeUploadedDESC)
+	///	    .limit(5)
+	///
+	/// let filesList = uploadcare.listOfFiles()
+	///
+	/// filesList.get(withQuery: query) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///	        print(error.detail)
+	///	    case .success(let list):
+	///         // get next page:
+	///         guard list.next != nil else { return }
+	///         list.nextPage { result in
+	///	            switch result {
+	///             case .failure(let error):
+	///	                print(error.detail)
+	///	            case .success(let list):
+	///	                print(list)
+	///	            }
+	///         }
+	///	    }
+	///	}
+	/// ```
+	///
+	/// - Parameter completionHandler: Completion handler.
 	public func nextPage(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		guard let next = next, let query = URL(string: next)?.query else {
 			self.results = []
@@ -163,6 +223,21 @@ extension FilesList {
 	}
 
 	/// Get next page of files list.
+	///
+	/// Example:
+	/// ```swift
+	/// let query = PaginationQuery()
+	///	    .stored(true)
+	///	    .ordering(.dateTimeUploadedDESC)
+	///	    .limit(5)
+	///
+	/// let filesList = uploadcare.listOfFiles()
+	/// if filesList.next != nil {
+	///     try await filesList.nextPage()
+	/// }
+	/// print(filesList.results)
+	/// ```
+	///
 	/// - Returns: Files list.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	@discardableResult
@@ -176,7 +251,35 @@ extension FilesList {
 	}
 	
 	/// Get previous page of files list.
-	/// - Parameter completionHandler: completion handler
+	///
+	/// Example:
+	/// ```swift
+	/// let query = PaginationQuery()
+	///	    .stored(true)
+	///	    .ordering(.dateTimeUploadedDESC)
+	///	    .limit(5)
+	///
+	/// let filesList = uploadcare.listOfFiles()
+	///
+	/// filesList.get(withQuery: query) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///	        print(error.detail)
+	///	    case .success(let list):
+	///         // get previous page:
+	///         guard list.previous != nil else { return }
+	///         list.previousPage { result in
+	///	            switch result {
+	///             case .failure(let error):
+	///	                print(error.detail)
+	///	            case .success(let list):
+	///	                print(list)
+	///	            }
+	///         }
+	///	    }
+	///	}
+	/// ```
+	/// - Parameter completionHandler: Completion handler.
 	public func previousPage(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		guard let previous = previous, let query = URL(string: previous)?.query else {
 			self.results = []
@@ -188,6 +291,21 @@ extension FilesList {
 	}
 
 	/// Get previous page of files list.
+	///
+	/// Example:
+	/// ```swift
+	/// let query = PaginationQuery()
+	///	    .stored(true)
+	///	    .ordering(.dateTimeUploadedDESC)
+	///	    .limit(5)
+	///
+	/// let filesList = uploadcare.listOfFiles()
+	/// if filesList.previous != nil {
+	///     try await filesList.previousPage()
+	/// }
+	/// print(filesList.results)
+	/// ```
+	///
 	/// - Returns: Files list.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	@discardableResult
