@@ -10,19 +10,19 @@ import Foundation
 
 
 /**
-	Defines params for groups list query
+Defines params for groups list query
 
-	**Example:**
-	```
-	// Might be used with init method with values:
-	let query = GroupsListQuery(limit: 100, from: Date(timeIntervalSince1970: 1580895369), ordering: .datetimeCreatedDESC)
+ Example:
+ ```swift
+ // Might be used with init method with values:
+ let query = GroupsListQuery(limit: 100, from: Date(timeIntervalSince1970: 1580895369), ordering: .datetimeCreatedDESC)
 
-	// Might be used with chaining
-	let query1 = GroupsListQuery()
-		.limit(100)
-		.from(Date(timeIntervalSince1970: 1580895369))
-		.ordering(.datetimeCreatedDESC)
-	```
+ // Might be used with chaining
+ let query1 = GroupsListQuery()
+     .limit(100)
+     .from(Date(timeIntervalSince1970: 1580895369))
+     .ordering(.datetimeCreatedDESC)
+ ```
 */
 public class GroupsListQuery {
 	

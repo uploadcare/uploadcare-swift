@@ -9,19 +9,19 @@
 import Foundation
 
 /**
-	Defines params for files list query
+ Defines params for files list query
 
-	**Example:**
-	```
-	// Might be used with init method with values:
-	let query = PaginationQuery(removed: true, stored: false, limit: 10, ordering: .sizeDESC)
+ Example:
+ ```swift
+ // Might be used with init method with values:
+ let query1 = PaginationQuery(removed: true, stored: false, limit: 10, ordering: .sizeDESC)
 
-	// Might be used with chaining API:
-	let query1 = PaginationQuery()
-		.removed(false)
-		.stored(true)
-		.limit(10)
-	```
+ // Might be used with chaining API:
+ let query2 = PaginationQuery()
+     .removed(false)
+     .stored(true)
+     .limit(10)
+ ```
 */
 public class PaginationQuery {
 	
