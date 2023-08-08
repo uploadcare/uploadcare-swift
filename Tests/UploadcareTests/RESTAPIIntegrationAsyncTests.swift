@@ -51,16 +51,19 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let filesList = uploadcare.listOfFiles()
 
-		let list = try await filesList.get(withQuery: query)
-		XCTAssertFalse(list.results.isEmpty)
+		try await filesList.get(withQuery: query)
+		XCTAssertFalse(filesList.results.isEmpty)
+		let firstID = filesList.results.first!.uuid
 
 		// get next page
-		let next = try await filesList.nextPage()
-		XCTAssertFalse(next.results.isEmpty)
+		try await filesList.nextPage()
+		XCTAssertFalse(filesList.results.isEmpty)
+		XCTAssertFalse(firstID == filesList.results.first!.uuid)
 
 		// get previous page
-		let prev = try await filesList.previousPage()
-		XCTAssertFalse(prev.results.isEmpty)
+		try await filesList.previousPage()
+		XCTAssertFalse(filesList.results.isEmpty)
+		XCTAssertTrue(firstID == filesList.results.first!.uuid)
 	}
 
 	func test04_fileInfo_with_UUID() async throws {
