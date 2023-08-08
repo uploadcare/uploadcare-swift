@@ -198,6 +198,31 @@ public class UploadedFile: Codable {
 	// MARK: - Public methods
 
 	/// Upload file.
+	///
+	/// Example:
+	/// ```swift
+	/// var fileForUploading = uploadcare.file(withContentsOf: url)!
+	///
+	/// let onProgress: (Double)->Void = { (progress) in
+	///     print("progress: \(progress)")
+	/// }
+	///
+	/// let task = fileForUploading.upload(withName: "my_file.jpg", store: .store, onProgress, { result in
+	///     switch result {
+	///         case .failure(let error):
+	///             print(error.detail)
+	///         case .success(let file):
+	///             print(file)
+	///     }
+	/// })
+	///
+	/// // pause:
+	/// (task as? UploadTaskResumable)?.pause()
+	///
+	/// // resume:
+	/// (task as? UploadTaskResumable)?.resume()
+	/// ```
+	///
 	/// - Parameters:
 	///   - name: File name.
 	///   - store: A flag indicating if we should store your outputs.
@@ -254,6 +279,18 @@ public class UploadedFile: Codable {
 	}
 
 	/// Upload file.
+	///
+	/// Example:
+	/// ```swift
+	/// let url = URL(string: "https://source.unsplash.com/featured")!
+	/// let data = try! Data(contentsOf: url)
+	/// let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
+	///
+	/// let uploadedFile = try await fileForUploading.upload(
+	///     withName: "my_file.jpg",
+	///     store: .store
+	/// )
+	/// ```
 	/// - Parameters:
 	///   - name: File name.
 	///   - store: A flag indicating if we should store your outputs.
