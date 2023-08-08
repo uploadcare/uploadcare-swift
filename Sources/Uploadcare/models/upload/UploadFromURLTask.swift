@@ -18,14 +18,14 @@ public enum StoringBehavior: String {
 
 
 /**
-	Struct that defines params for uploading a file from url.
+ Struct that defines params for uploading a file from url.
 
-	**Example:**
-	```
-	var task = UploadFromURLTask(sourceUrl: URL(string: "https://example.com/file.png")!)
-	task.filename = "newname.png"
-	task.store = .store
-	```
+ Example:
+ ```swift
+ var task = UploadFromURLTask(sourceUrl: URL(string: "https://example.com/file.png")!)
+ task.filename = "newName.png"
+ task.store = .store
+ ```
 */
 public class UploadFromURLTask {
 	

@@ -133,6 +133,19 @@ private extension UploadAPI {
 // MARK: - File Info
 extension UploadAPI {
 	/// Get uploaded file info.
+	///
+	/// Example:
+	/// ```swift
+	/// uploadcare.uploadAPI.fileInfo(withFileId: "fileId") { result in
+	///     switch result {
+	///         case .failure(let error):
+	///             print(error.detail)
+	///         case .success(let info):
+	///             print(info)
+	///     }
+	/// }
+	/// ```
+	///
 	/// - Parameters:
 	///   - fileId: File ID.
 	///   - completionHandler: Completion handler.
@@ -164,6 +177,13 @@ extension UploadAPI {
 	}
 	
 	/// Get uploaded file info.
+	///
+	/// Example:
+	/// ```swift
+	/// let info = try await uploadcare.uploadAPI.fileInfo(withFileId: "fileId")
+	/// print(info)
+	/// ```
+	///
 	/// - Parameter fileId: File ID.
 	/// - Returns: File info.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -245,6 +265,28 @@ extension UploadAPI {
 	}
 
 	/// Upload file from URL.
+	///
+	/// Example:
+	/// ```swift
+	/// let task = UploadFromURLTask(sourceUrl: url)
+	///     .checkURLDuplicates(true)
+	///     .saveURLDuplicates(true)
+	///     .store(.store)
+	///     .setMetadata("myValue", forKey: "someKey")
+	///
+	/// uploadcare.uploadAPI.upload(task: task) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let response):
+	///         print(response)
+	///
+	///         // Upload token that you can use to check status
+	///         let token = result.token
+	///     }
+	/// }
+	/// ```
+	///
 	/// - Parameters:
 	///   - task: Upload settings.
 	///   - uploadSignature: Sets the signature for the upload request.
@@ -269,6 +311,20 @@ extension UploadAPI {
 	}
 	
 	/// Upload file from URL.
+	///
+	/// Example:
+	/// ```swift
+	/// let task = UploadFromURLTask(sourceUrl: url)
+	///     .checkURLDuplicates(true)
+	///     .saveURLDuplicates(true)
+	///     .store(.store)
+	///     .setMetadata("myValue", forKey: "someKey")
+	///
+	/// let response = try await uploadcare.uploadAPI.upload(task: task)
+	/// // Upload token that you can use to check status
+	/// let token = response.token
+	/// ```
+	///
 	/// - Parameters:
 	///   - task: Upload settings.
 	///   - uploadSignature: Sets the signature for the upload request.
@@ -290,6 +346,18 @@ extension UploadAPI {
 	}
 
 	/// Get status for file upload from URL.
+	///
+	/// Use a token received with Upload files from the URLs method. Example:
+	/// ```swift
+	/// uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { result in
+	///    switch result {
+	///    case .failure(let error):
+	///        print(error)
+	///    case .success(let status):
+	///        print(status)
+	///    }
+	/// }
+	/// ```
 	/// - Parameters:
 	///   - token: Token recieved from upload method response.
 	///   - completionHandler: Completion handler.
@@ -321,6 +389,13 @@ extension UploadAPI {
 	}
 	
 	/// Get status for file upload from URL.
+	///
+	/// Use a token received with Upload files from the URLs method. Example:
+	/// ```swift
+	/// let status = try await uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN")
+	/// print(status)
+	/// ```
+	///
 	/// - Parameter token: Token recieved from upload method response.
 	/// - Returns: Operation status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -356,12 +431,40 @@ extension UploadAPI {
 	}
 
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
-	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed
+	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed.
+	///
+	/// Example:
+	/// ```swift
+	/// guard let url = URL(string: "https://source.unsplash.com/featured"),
+	///       let data = try? Data(contentsOf: url) else { return }
+	///
+	/// let onProgress: (Double)->Void = { (progress) in
+	///     print("upload progress: \(progress * 100)%")
+	/// }
+	///
+	/// let task = uploadcare.uploadAPI.directUpload(
+	///     files: ["random_file_name.jpg": data],
+	///     store: .doNotStore,
+	///     metadata: metadata,
+	///    onProgress
+	/// ) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let files):
+	///         print(files)
+	///     }
+	/// }
+	///
+	/// // You can cancel the uploading if needed
+	/// task.cancel()
+	/// ```
+	///
 	/// - Parameters:
-	///   - files: Files dictionary where key is filename, value file in Data format
-	///   - store: Sets the file storing behavior
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
+	///   - files: Files dictionary where key is filename, value file in Data format.
+	///   - store: Sets the file storing behavior.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
 	@discardableResult
 	public func directUpload(
 		files: [String: Data],
@@ -527,8 +630,39 @@ extension UploadAPI {
 
 // MARK: - Multipart uploading
 extension UploadAPI {
-	@discardableResult
-	/// Multipart file uploading.
+	/// Multipart file uploading. Multipart Uploads are useful when you are dealing with files larger than 100MB or you explicitly want to accelerate uploads. That method splits file into chunks and uploads them concurrently.
+	///
+	/// Example:
+	/// ```swift
+	/// guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
+	/// let data = try! Data(contentsOf: url)
+	/// let metadata = ["someKey": "someMetaValue"]
+	///
+	/// uploadcare.uploadAPI.multipartUpload(
+	///     data,
+	///     withName: "Mona_Lisa_23mb.jpg",
+	///     store: .doNotStore,
+	///     metadata: metadata,
+	///     onProgress
+	/// ) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let file):
+	///         print(file)
+	///     }
+	/// }
+	///
+	/// // You can cancel the uploading if needed
+	/// task.cancel()
+	///
+	/// // You can pause the uploading
+	/// task.pause()
+	///
+	/// // To resume the uploading:
+	/// task.resume()
+	/// ```
+	///
 	/// - Parameters:
 	///   - data: File data.
 	///   - name: File name.
@@ -538,6 +672,7 @@ extension UploadAPI {
 	///   - onProgress: A callback that will be used to report upload progress.
 	///   - completionHandler: Completion handler.
 	/// - Returns: Upload task. You can use that task to pause, resume or cancel uploading.
+	@discardableResult
 	public func multipartUpload(
 		_ data: Data,
 		withName name: String,
@@ -625,7 +760,23 @@ extension UploadAPI {
 		return task
 	}
 
-	/// File data.
+	/// Multipart file uploading. Multipart Uploads are useful when you are dealing with files larger than 100MB or you explicitly want to accelerate uploads. That method splits file into chunks and uploads them concurrently.
+	///
+	/// Example:
+	/// ```swift
+	/// guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
+	/// let data = try! Data(contentsOf: url)
+	///
+	/// let file = try await uploadcare.uploadAPI.multipartUpload(
+	///     data,
+	///     withName: "Mona_Lisa_23mb.jpg",
+	///     store: .doNotStore,
+	///     metadata: ["someKey": "someMetaValue"]
+	/// ) { progress in
+	///     print("Upload progress: \(progress)")
+	/// }
+	/// ```
+	///
 	/// - Parameters:
 	///   - data: File data.
 	///   - name: File name.
@@ -963,6 +1114,20 @@ extension UploadAPI {
 // MARK: - Groups
 extension UploadAPI {
 	/// Create files group from a set of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let files: [UploadedFile] = [file1, file2]
+	/// let group = uploadcare.uploadAPI.createFilesGroup(files: files) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let group):
+	///         print(group)
+	///     }
+	/// }
+	/// ```
+	///
 	/// - Parameters:
 	///   - files: Files array.
 	///   - uploadSignature: Sets the signature for the upload request.
@@ -977,6 +1142,14 @@ extension UploadAPI {
 	}
 	
 	/// Create files group from a set of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let files: [UploadedFile] = [file1, file2]
+	/// let group = try await uploadcare.uploadAPI.createFilesGroup(files: files)
+	/// print(group)
+	/// ```
+	///
 	/// - Parameters:
 	///   - files: Files array.
 	///   - uploadSignature: Sets the signature for the upload request.
@@ -988,6 +1161,20 @@ extension UploadAPI {
 	}
 
 	/// Create files group from a set of files UUIDs.
+	///
+	/// Example:
+	/// ```swift
+	/// let files = ["fileID1", "fileID2"]
+	/// let group = uploadcare.uploadAPI.createFilesGroup(fileIds: files) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let group):
+	///         print(group)
+	///     }
+	/// }
+	/// ```
+	///
 	/// - Parameters:
 	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
 	///   - uploadSignature: Sets the signature for the upload request.
@@ -1012,6 +1199,14 @@ extension UploadAPI {
 	}
 
 	/// Create files group from a set of files UUIDs.
+	///
+	/// Example:
+	/// ```swift
+	/// let files = ["fileID1", "fileID2"]
+	/// let group = try await uploadcare.uploadAPI.createFilesGroup(fileIds: files)
+	/// print(group)
+	/// ```
+	///
 	/// - Parameters:
 	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
 	///   - uploadSignature: Sets the signature for the upload request.
@@ -1062,6 +1257,17 @@ extension UploadAPI {
 	}
 
 	/// Get files group info.
+	///
+	/// Example:
+	/// ```swift
+	/// uploadcare.uploadAPI.filesGroupInfo(groupId: "groupID") { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let group):
+	///         print(group)
+	/// }
+	/// ```
 	/// - Parameters:
 	///   - groupId: Group ID. Group IDs look like UUID~N.
 	///   - uploadSignature: Sets the signature for the upload request.
@@ -1086,6 +1292,13 @@ extension UploadAPI {
 	}
 
 	/// Get files group info.
+	///
+	/// Example:
+	/// ```swift
+	/// let group = try await uploadcare.uploadAPI.filesGroupInfo(groupId: "groupId")
+	/// print(group)
+	/// ```
+	///
 	/// - Parameters:
 	///   - groupId: Group ID. Group IDs look like UUID~N.
 	///   - uploadSignature: Sets the signature for the upload request.
