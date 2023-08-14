@@ -248,10 +248,10 @@ Sometimes you don't want to have the secret key in your client app and want to g
 let signature = UploadSignature(signature: "signature", expire: 1658486910)
 
 // Async
-let response = try await uploadcare.uploadAPI.upload(task: task1)
+let response = try await uploadcare.uploadAPI.upload(task: task1, uploadSignature: signature)
 
 // With a completion callback:
-uploadcare.uploadAPI.upload(task: task1) { result in
+uploadcare.uploadAPI.upload(task: task1, uploadSignature: signature) { result in
     // ...
 }
 ```
