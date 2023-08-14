@@ -88,6 +88,18 @@ extension Uploadcare {
 	}
 
 	/// Get list of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let query = PaginationQuery()
+	///     .stored(true)
+	///     .ordering(.dateTimeUploadedDESC)
+	///     .limit(5)
+	///
+	/// let list = try await uploadcare.listOfFiles(withQuery: query)
+	/// print(list)
+	/// ```
+	///
 	/// - Parameter query: Query object.
 	/// - Returns: List of files.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -163,6 +175,12 @@ extension Uploadcare {
 	}
 	
 	/// Store a single file by UUID.
+	///
+	/// Example:
+	/// ```swift
+	/// let file = try await uploadcare.storeFile(withUUID: "someUUID")
+	/// ```
+	///
 	/// - Parameter uuid: File UUID.
 	/// - Returns: File data.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -204,6 +222,13 @@ extension Uploadcare {
 	}
 	
 	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
+	///
+	/// Example:
+	/// ```swift
+	/// let response = try await uploadcare.storeFiles(withUUIDs: ["uuid1", "uuid2"])
+	/// print(response)
+	/// ```
+	///
 	/// - Parameter uuids: List of files UUIDs to store.
 	/// - Returns: Operation response.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -257,6 +282,13 @@ extension Uploadcare {
 	}
 
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
+	///
+	/// Example:
+	/// ```swift
+	/// let file = try await uploadcare.fileInfo(withUUID: "fileUUID")
+	/// print(file)
+	/// ```
+	///
 	/// - Parameters:
 	///   - uuid: File UUID.
 	///   - query: Query parameters string.
@@ -297,6 +329,17 @@ extension Uploadcare {
 	}
 
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
+	///
+	/// Example:
+	/// ```swift
+	/// let fileInfoQuery = FileInfoQuery().include(.appdata)
+	/// let file = try await uploadcare.fileInfo(
+	///     withUUID: "fileUUID",
+	///     withQuery: fileInfoQuery
+	/// )
+	/// print(file)
+	/// ```
+	///
 	/// - Parameters:
 	///   - uuid: File UUID.
 	///   - query: Query parameters.
@@ -327,6 +370,14 @@ extension Uploadcare {
 	}
 	
 	/// Delete file. Beside deleting in a multi-file mode, you can remove individual files.
+	///
+	/// Example:
+	/// ```swift
+	/// let file = try await uploadcare.deleteFile(withUUID: "fileUUID")
+	/// // or
+	/// try await uploadcare.deleteFile(withUUID: "fileUUID")
+	/// ```
+	///
 	/// - Parameter uuid: File UUID.
 	/// - Returns: Deleted file data.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -369,6 +420,13 @@ extension Uploadcare {
 	}
 	
 	/// Batch file delete. Used to delete multiple files in one go. Up to 100 files are supported per request.
+	///
+	/// Example:
+	/// ```swift
+	/// let response = try await uploadcare.deleteFiles(withUUIDs: ["uuid1", "uuid2"])
+	/// print(response)
+	/// ```
+	///
 	/// - Parameter uuids: List of files UUIDs to store.
 	/// - Returns: Operation response.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -424,6 +482,12 @@ extension Uploadcare {
 	}
 	
 	/// Copy file to local storage. Used to copy original files or their modified versions to default storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
+	///
+	/// Example:
+	/// ```swift
+	/// let response = try await uploadcare.copyFileToLocalStorage(source: "fileUUID")
+	/// print(response)
+	/// ```
 	/// - Parameters:
 	///   - source: A CDN URL or just UUID of a file subjected to copy.
 	///   - store: The parameter only applies to the Uploadcare storage. Default: `false`
@@ -493,6 +557,17 @@ extension Uploadcare {
 	}
 	
 	/// POST requests are used to copy original files or their modified versions to a custom storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
+	///
+	/// Example:
+	/// ```swift
+	/// let source = "fileUUID"
+	/// let response = try await uploadcare.copyFileToRemoteStorage(
+	///     source: source,
+	///     target: "one_more_project",
+	///     pattern: .uuid
+	/// )
+	/// print(response)
+	/// ```
 	/// - Parameters:
 	///   - source: A CDN URL or just UUID of a file subjected to copy.
 	///   - target: Identifies a custom storage name related to your project. Implies you are copying a file to a specified custom storage. Keep in mind you can have multiple storages associated with a single S3 bucket.
@@ -561,6 +636,13 @@ extension Uploadcare {
 	}
 	
 	/// Get file's metadata.
+	///
+	/// Example:
+	/// ```swift
+	/// let metadata = try await uploadcare.fileMetadata(withUUID: "fileUUID")
+	/// print(metadata)
+	/// ```
+	///
 	/// - Parameter uuid: File UUID.
 	/// - Returns: Metadata dictionary.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -615,6 +697,15 @@ extension Uploadcare {
 	}
 	
 	/// Get metadata key's value.
+	///
+	/// Example:
+	/// ```swift
+	/// let value = try await uploadcare.fileMetadataValue(
+	///     forKey: "myMeta",
+	///     withUUID: "fileUUID"
+	/// )
+	/// print(value)
+	/// ```
 	///
 	/// List of allowed characters for the key:
 	/// - Latin letters in lower or upper case (a-z,A-Z)
@@ -683,10 +774,20 @@ extension Uploadcare {
 	
 	/// Update metadata key's value. If the key does not exist, it will be created.
 	///
+	/// Example:
+	/// ```swift
+	/// let val = try await uploadcare.updateFileMetadata(
+	///     withUUID: "fileUUID",
+	///     key: "myMeta",
+	///     value: "myValue"
+	/// )
+	/// print(val)
+	/// ```
+	///
 	/// List of allowed characters for the key:
 	/// - Latin letters in lower or upper case (a-z,A-Z)
 	/// - digits (0-9)
-	/// - underscore _
+	/// - underscore `_`
 	/// - a hyphen `-`
 	/// - dot `.`
 	/// - colon `:`
@@ -752,10 +853,18 @@ extension Uploadcare {
 	
 	/// Delete metadata key.
 	///
+	/// Example:
+	/// ```swift
+	/// try await uploadcare.deleteFileMetadata(
+	///     forKey: "myMeta",
+	///     withUUID: "fileUUID"
+	/// )
+	/// ```
+	///
 	/// List of allowed characters for the key:
 	/// - Latin letters in lower or upper case (a-z,A-Z)
 	/// - digits (0-9)
-	/// - underscore _
+	/// - underscore `_`
 	/// - a hyphen `-`
 	/// - dot `.`
 	/// - colon `:`
@@ -795,7 +904,18 @@ extension Uploadcare {
 		listOfGroups(withQueryString: queryString, completionHandler)
 	}
 
-	/// Get list of groups
+	/// Get list of groups.
+	///
+	/// Example:
+	/// ```swift
+	/// let query = GroupsListQuery()
+	///     .limit(100)
+	///     .ordering(.datetimeCreatedDESC)
+	///
+	/// let list = try await uploadcare.listOfGroups(withQuery: query)
+	/// print(list)
+	/// ```
+	///
 	/// - Parameter query: Request query object.
 	/// - Returns: List of groups.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -835,7 +955,7 @@ extension Uploadcare {
 		}
 	}
 
-	/// Get list of groups
+	/// Get list of groups.
 	/// - Parameter query: query string
 	/// - Returns: List of groups.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -881,6 +1001,14 @@ extension Uploadcare {
 	}
 
 	/// Get a file group by UUID.
+	///
+	/// Example:
+	/// ```swift
+	/// let uuid = "c5bec8c7-d4b6-4921-9e55-6edb027546bc~1"
+	/// let group = try await uploadcare.groupInfo(withUUID: uuid)
+	/// print(group)
+	/// ```
+	///
 	/// - Parameter uuid: Group UUID.
 	/// - Returns: File group.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -929,6 +1057,11 @@ extension Uploadcare {
 	///
 	/// **Note**: The operation only removes the group object itself. **All the files that were part of the group are left as is.**
 	///
+	/// Example:
+	/// ```swift
+	/// try await uploadcare.deleteGroup(withUUID: "groupId")
+	/// ```
+	///
 	/// - Parameter uuid: Group UUID.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func deleteGroup(withUUID uuid: String) async throws {
@@ -963,6 +1096,13 @@ extension Uploadcare {
 	}
 
 	/// Getting info about account project.
+	///
+	/// Example:
+	/// ```swift
+	/// let project = try await uploadcare.getProjectInfo()
+	/// print(project)
+	/// ```
+	///
 	/// - Returns: Project info.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func getProjectInfo() async throws -> Project {
@@ -1025,11 +1165,19 @@ extension Uploadcare {
 	/// Redirect url will be caught and returned in completion handler of that method
 	///
 	/// Example of URL: https://yourdomain.com/{UUID}/
+	///
 	/// Redirect to: https://cdn.yourdomain.com/{uuid}/?token={token}&expire={timestamp}
 	///
-	/// URL for redirect will be returned in completion handler
+	/// URL for redirect will be returned from the function.
 	///
 	/// More details in documentation: https://uploadcare.com/docs/delivery/file_api/#authenticated-urls
+	///
+	/// Example:
+	/// ```swift
+	/// let url = URL(string: "https://yourdomain.com/FILE_UUID/")!
+	/// let value = try await uploadcare.getAuthenticatedUrlFromUrl(url)
+	/// print(value)
+	/// ```
 	///
 	/// - Parameter url: URL for request to your backend.
 	/// - Returns: URL to your backend.
@@ -1073,6 +1221,13 @@ extension Uploadcare {
 	}
 
 	/// Get list of project webhooks.
+	///
+	/// Example:
+	/// ```swift
+	/// let webhooks = try await uploadcare.getListOfWebhooks()
+	/// print(webhooks)
+	/// ```
+	///
 	/// - Returns: Array of webhooks.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func getListOfWebhooks() async throws -> [Webhook] {
@@ -1127,6 +1282,18 @@ extension Uploadcare {
 	}
 
 	/// Create a webhook.
+	///
+	/// Example:
+	/// ```swift
+	/// let url = URL(string: "https://yourwebhook.com")!
+	/// let webhook = try await uploadcare.createWebhook(
+	///     targetUrl: url,
+	///     isActive: true,
+	///     signingSecret: "someSigningSecret"
+	/// )
+	/// print(webhook)
+	/// ```
+	///
 	/// - Parameters:
 	///   - targetUrl: An URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
 	///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
@@ -1173,6 +1340,19 @@ extension Uploadcare {
 	}
 
 	/// Update webhook attributes.
+	///
+	/// Example:
+	/// ```swift
+	/// let url = URL(string: "https://yourwebhook.com")!
+	/// let webhookId = 100
+	/// let webhook = try await uploadcare.updateWebhook(
+	///     id: webhookId,
+	///     targetUrl: url,
+	///     isActive: false,
+	///     signingSecret: "someNewSigningSecret"
+	/// )
+	/// print(webhook)
+	/// ```
 	/// - Parameters:
 	///   - id: Webhook ID
 	///   - targetUrl: Where webhook data will be posted.
@@ -1220,6 +1400,12 @@ extension Uploadcare {
 	}
 
 	/// Delete a webhook.
+	///
+	/// Example:
+	/// ```swift
+	/// let url = URL(string: "https://yourwebhook.com")!
+	/// try await uploadcare.deleteWebhook(forTargetUrl: targetUrl)
+	/// ```
 	/// - Parameter targetUrl: URL of the webhook target.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func deleteWebhook(forTargetUrl targetUrl: URL) async throws {
@@ -1267,8 +1453,17 @@ extension Uploadcare {
 	}
 	
 	/// Uploadcare allows converting documents to the following target formats: DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG.
+	///
+	/// Example:
+	/// ```swift
+	/// let paths = ["filePath1", "filePath2"]
+	///
+	/// let response = try await uploadcare.convertDocumentsWithSettings(paths)
+	/// print(response)
+	/// ```
+	///
 	/// - Parameters:
-	///   - paths: An array of UUIDs of your source documents to convert together with the specified target format. See documentation: https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting
+	///   - paths: An array of UUIDs of your source documents to convert together with the specified target format. [See documentation.](https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting)
 	///   - store: A flag indicating if we should store your outputs.
 	/// - Returns: Operation response.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -1310,6 +1505,25 @@ extension Uploadcare {
 	}
 	
 	/// Convert documents.
+	///
+	/// Example:
+	/// ```swift
+	/// let task1 = DocumentConversionJobSettings(forFile: file1)
+	///     .format(.odt)
+	/// let task2 = DocumentConversionJobSettings(forFile: file2)
+	///     .format(.pdf)
+	///
+	/// let response = try await uploadcare.convertDocumentsWithSettings([task1, task2])
+	/// print(response)
+	///
+	/// // possible problems:
+	/// print(response.problems)
+	///
+	/// // a token that can be used to check a job status:
+	/// let job = response.result.first
+	/// let token = job?.token
+	/// ```
+	///
 	/// - Parameters:
 	///   - tasks: Files array.
 	///   - store: A flag indicating if we should store your outputs.
@@ -1339,7 +1553,20 @@ extension Uploadcare {
 	}
 	
 	/// Document conversion job status.
-	/// - Parameter token: Job token.
+	///
+	/// Example:
+	/// ```swift
+	/// let job = try await uploadcare.documentConversionJobStatus(token: 123456)
+	///
+	/// switch job.status {
+	/// case .failed(let conversionError):
+	///     print(conversionError)
+	/// default:
+	///     break
+	/// }
+	/// ```
+	///
+	/// - Parameter token: A job token from the ``convertDocuments(_:store:)`` result.
 	/// - Returns: Job status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func documentConversionJobStatus(token: Int) async throws -> ConvertDocumentJobStatus {
@@ -1371,6 +1598,29 @@ extension Uploadcare {
 	}
 	
 	/// Convert videos with settings.
+	///
+	/// Example:
+	/// ```swift
+	/// let task1 = VideoConversionJobSettings(forFile: file1)
+	///     .format(.webm)
+	///     .size(VideoSize(width: 640, height: 480))
+	///     .resizeMode(.addPadding)
+	///     .quality(.lightest)
+	///     .cut( VideoCut(startTime: "0:0:5.000", length: "15") )
+	///     .thumbs(15)
+	///
+	/// let task2 = VideoConversionJobSettings(forFile: file2)
+	///     .format(.mp4)
+	///     .quality(.lightest)
+	///
+	/// let response = try await uploadcare.convertVideosWithSettings([task1, task2])
+	/// print(response)
+	///
+	/// // a token for checking a job status:
+	/// let job = response.result.first
+	/// let token = job?.token
+	/// ```
+	///
 	/// - Parameters:
 	///   - tasks: Array of VideoConversionJobSettings objects which settings for conversion for every file.
 	///   - store: A flag indicating if we should store your outputs.
@@ -1414,6 +1664,18 @@ extension Uploadcare {
 	}
 	
 	/// Convert videos.
+	///
+	/// Example:
+	/// ```swift
+	/// let paths = [":uuid/video/-/format/ogg/"]
+	/// let response = try await uploadcare.convertVideos(paths)
+	/// print(response)
+	///
+	/// // a token for checking a job status:
+	/// let job = response.result.first
+	/// let token = job?.token
+	/// ```
+	///
 	/// - Parameters:
 	///   - paths: An array of UUIDs of your video files to process together with a set of needed operations. See documentation: https://uploadcare.com/docs/transformations/video_encoding/#process-operations
 	///   - store: A flag indicating if we should store your outputs.
@@ -1458,7 +1720,20 @@ extension Uploadcare {
 	}
 	
 	/// Video conversion job status.
-	/// - Parameter token: Job token.
+	///
+	/// Example:
+	/// ```swift
+	/// let job = try await uploadcare.videoConversionJobStatus(token: 123456)
+	///
+	/// switch job.status {
+	/// case .failed(let conversionError):
+	///     print(conversionError)
+	/// default:
+	///     break
+	/// }
+	/// ```
+	///
+	/// - Parameter token: A job token from the ``convertVideosWithSettings(_:store:)`` method .
 	/// - Returns: Job status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func videoConversionJobStatus(token: Int) async throws -> ConvertVideoJobStatus {
@@ -1502,6 +1777,13 @@ extension Uploadcare {
 	}
 	
 	/// Execute AWS Rekognition.
+	///
+	/// Example:
+	/// ```swift
+	/// let response = try await uploadcare.executeAWSRecognition(fileUUID: "uuid")
+	/// print(response)
+	/// ```
+	///
 	/// - Parameter fileUUID: Unique ID of the file to process.
 	/// - Returns: Execution response.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -1549,6 +1831,12 @@ extension Uploadcare {
 	}
 	
 	/// Check the status of an AWS Rekognition execution request that had been started using ``executeAWSRecognition(fileUUID:)`` method.
+	///
+	/// Example:
+	/// ```swift
+	/// let status = try await uploadcare.checkAWSRecognitionStatus(requestID: "requestID")
+	/// print(status)
+	/// ```
 	/// - Parameter requestID: Request ID returned by the Add-On execution request.
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -1594,6 +1882,17 @@ extension Uploadcare {
 	}
 	
 	/// Execute ClamAV virus checking Add-On for a given target.
+	///
+	/// Example:
+	/// ```swift
+	/// let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+	/// let response = try await uploadcare.executeClamav(
+	///     fileUUID: "uuid",
+	///     parameters: parameters
+	/// )
+	///
+	/// print(response)
+	/// ```
 	/// - Parameters:
 	///   - fileUUID: Unique ID of the file to process.
 	///   - parameters: Optional object with Add-On specific parameters.
@@ -1641,6 +1940,12 @@ extension Uploadcare {
 	}
 	
 	/// Check the status of a ClamAV Add-On execution request that had been started using ``executeClamav(fileUUID:parameters:)``  method.
+	///
+	/// Example:
+	/// ```swift
+	/// let status = try await uploadcare.checkClamAVStatus(requestID: "requestID")
+	/// print(status)
+	/// ```
 	/// - Parameter requestID: Request ID returned by the Add-On execution request described above.
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -1686,6 +1991,17 @@ extension Uploadcare {
 	}
 	
 	/// Execute remove.bg background image removal Add-On for a given target.
+	///
+	/// Example:
+	/// ```swift
+	/// let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
+	/// let response = try await uploadcare.executeRemoveBG(
+	///     fileUUID: "uuid",
+	///     parameters: parameters
+	/// )
+	///
+	/// print(response)
+	/// ```
 	/// - Parameters:
 	///   - fileUUID: Unique ID of the file to process.
 	///   - parameters: Optional object with Add-On specific parameters.
@@ -1733,6 +2049,13 @@ extension Uploadcare {
 	}
 	
 	/// Check the status of a Remove.bg Add-On execution request that had been started using ``executeRemoveBG(fileUUID:parameters:)`` method.
+	///
+	/// Example:
+	/// ```swift
+	/// let status = try await uploadcare.checkRemoveBGStatus(requestID: "requestID")
+	/// print(status)
+	/// ```
+	///
 	/// - Parameter requestID: Request ID returned by the Add-On execution request described above.
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -1852,6 +2175,21 @@ extension Uploadcare {
 
 
 	/// Upload file. This method will decide internally which upload method will be used (direct or multipart).
+	///
+	/// Example:
+	/// ```swift
+	/// guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
+	/// guard let data = try? Data(contentsOf: url) else { return }
+	///
+	/// let file = try await uploadcare.uploadFile(
+	///     data,
+	///     withName: "random_file_name.jpg",
+	///     store: .doNotStore
+	/// ) { progress in
+	///     print("progress: \(progress)")
+	/// }
+	/// ```
+	///
 	/// - Parameters:
 	///   - data: File data.
 	///   - name: File name.
