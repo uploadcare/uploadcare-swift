@@ -537,7 +537,7 @@ let url = URL(string: "https://yourwebhook.com")!
 let webhookId = 100
 
 // Async:
-let webhook = try await uploadcare.updateWebhook(id: webhook.id, targetUrl: url, isActive: false, signingSecret: "someNewSigningSecret")
+let webhook = try await uploadcare.updateWebhook(id: webhookId, targetUrl: url, isActive: false, signingSecret: "someNewSigningSecret")
 
 // With a completion callback:
 uploadcare.updateWebhook(id: webhookId, targetUrl: url, isActive: true, signingSecret: "someNewSigningSecret") { result in
