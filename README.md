@@ -2,7 +2,7 @@
 
 ![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)
 ![swift](https://img.shields.io/badge/swift-5.5-brightgreen.svg)
-[![Build Status](https://travis-ci.com/uploadcare/uploadcare-swift.svg?branch=master)](https://travis-ci.com/uploadcare/uploadcare-swift)
+[![Build and test](https://github.com/uploadcare/uploadcare-swift/actions/workflows/test.yml/badge.svg)](https://github.com/uploadcare/uploadcare-swift/actions/workflows/test.yml)
 
 Uploadcare Swift API client for iOS, iPadOS, tvOS and macOS handles uploads and further operations with files by wrapping Uploadcare Upload and REST APIs.
 
