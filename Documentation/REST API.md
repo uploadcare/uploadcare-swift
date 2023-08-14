@@ -65,7 +65,7 @@ Keep in mind that since Uploadcare is not a singleton. You should store a strong
 
 ```swift
 // Make a list of files object
-lazy var filesList = uploadcare.listOfFiles()
+var filesList = uploadcare.listOfFiles()
 
 // Make a query object
 let query = PaginationQuery()
