@@ -558,7 +558,7 @@ Unsubscribe and delete a webhook.
 let url = URL(string: "https://yourwebhook.com")!
 
 // Async:
-try await uploadcare.deleteWebhook(forTargetUrl: targetUrl)
+try await uploadcare.deleteWebhook(forTargetUrl: url)
 
 // With a completion callback:
 uploadcare.deleteWebhook(forTargetUrl: url) { error in

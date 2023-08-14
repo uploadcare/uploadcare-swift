@@ -781,7 +781,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				let expectedValue = NSUUID().uuidString
 
 				// update
-				self.uploadcare.updateFileMetadata(withUUID: uuid, key: "myMeta", value:expectedValue) { result in
+				self.uploadcare.updateFileMetadata(withUUID: uuid, key: "myMeta", value: expectedValue) { result in
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
