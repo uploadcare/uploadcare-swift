@@ -345,6 +345,48 @@ extension UploadAPI {
 		}
 	}
 
+
+	/// Upload file from URL and wait for upload completion.
+	///
+	/// Example:
+	/// ```swift
+	/// let task = UploadFromURLTask(sourceUrl: url)
+	///     .checkURLDuplicates(true)
+	///     .saveURLDuplicates(true)
+	///     .store(.store)
+	///     .setMetadata("myValue", forKey: "someKey")
+	///
+	/// let file = try await uploadcare.uploadAPI.uploadAndWaitForCompletion(task: task)
+	/// print(file)
+	/// ```
+	/// 
+	/// - Parameters:
+	///   - task: Upload settings.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Uploaded file.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func uploadAndWaitForCompletion(task: UploadFromURLTask, uploadSignature: UploadSignature? = nil) async throws -> UploadedFile {
+		let response = try await upload(task: task, uploadSignature: uploadSignature)
+		guard let token = response.token else {
+			throw UploadError.defaultError()
+		}
+
+		while true {
+			let status = try await uploadStatus(forToken: token)
+			if status.status == .error {
+				throw UploadError(status: 0, detail: status.error ?? "Upload error")
+			}
+			if status.status == .success {
+				guard let fileInfo = status.fileInfo else {
+					throw UploadError(status: 0, detail: "File info missing")
+				}
+				return fileInfo
+			}
+
+			try await Task.sleep(nanoseconds: 5 * NSEC_PER_SEC)
+		}
+	}
+
 	/// Get status for file upload from URL.
 	///
 	/// Use a token received with Upload files from the URLs method. Example:

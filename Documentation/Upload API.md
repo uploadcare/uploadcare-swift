@@ -218,6 +218,12 @@ let task2 = UploadFromURLTask(sourceUrl: url)
     .store(.store)
     .setMetadata("myValue", forKey: "someKey")
     
+let file = try await uploadcare.uploadAPI.uploadAndWaitForCompletion(task: task)
+print(file)
+```
+
+If you don't want to wait for the upload completion you can start uploading and check it's status manually:
+```swift
 // Async upload:
 let response = try await uploadcare.uploadAPI.upload(task: task1)
 // Upload token that you can use to check status

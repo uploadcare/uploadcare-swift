@@ -154,4 +154,18 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 		let file = try await uploadcare.uploadAPI.multipartUpload(data, withName: "video.MP4", store: .doNotStore, metadata: metadata, onProgress)
 		XCTAssertFalse(file.fileId.isEmpty)
 	}
+
+	func test09_UploadFileFromURL_and_WaitForUpload() async throws {
+		// upload from url
+		let url = URL(string: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png?\(UUID().uuidString)")!
+		let task = UploadFromURLTask(sourceUrl: url)
+			.checkURLDuplicates(true)
+			.saveURLDuplicates(true)
+			.filename("file_from_url")
+			.store(.doNotStore)
+			.setMetadata("hi", forKey: "hello")
+
+		let file = try await uploadcare.uploadAPI.uploadAndWaitForCompletion(task: task)
+		XCTAssertFalse(file.fileId.isEmpty)
+	}
 }
