@@ -12,7 +12,7 @@ jobs:
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.5.3
 
     - name: Swift build for iOS
       run: swift build -c release -Xswiftc "-sdk" -Xswiftc "`xcrun --sdk iphonesimulator --show-sdk-path`" -Xswiftc "-target" -Xswiftc "x86_64-apple-ios13.0-simulator"
@@ -31,7 +31,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.5.3
       
     - name: Build Carthage target ${{matrix.target}}
       run: xcodebuild build -project Uploadcare.xcodeproj -scheme ${{matrix.target}} -configuration Release
