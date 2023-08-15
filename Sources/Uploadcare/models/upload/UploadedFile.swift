@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// File Info model that is used for Upload API
+/// File Info model that is used for Upload API.
 public class UploadedFile: Codable {
 
 	// MARK: - Public properties
@@ -23,16 +23,16 @@ public class UploadedFile: Codable {
 	/// Same as ``size``.
 	public var done: Int
 	
-	/// File UUID
+	/// File UUID.
 	public var uuid: String
 
-	/// Same as uuid
+	/// Same as ``uuid``.
 	public var fileId: String
 	
 	/// Original file name taken from uploaded file.
 	public var originalFilename: String
 	
-	/// sanitized originalFilename.
+	/// Sanitized ``originalFilename``.
 	public var filename: String
 	
 	/// File MIME-type.
@@ -65,13 +65,13 @@ public class UploadedFile: Codable {
 
 	// MARK: - Private properties
 
-	/// REST API
+	/// REST API.
 	private weak var restAPI: Uploadcare?
 	
-	/// File URL
+	/// File URL.
 	private var fileUrl: URL?
 	
-	// Data
+	// File data.
 	private var data: Data?
 	
 	
@@ -197,14 +197,39 @@ public class UploadedFile: Codable {
 	
 	// MARK: - Public methods
 
-	/// Upload file
+	/// Upload file.
+	///
+	/// Example:
+	/// ```swift
+	/// var fileForUploading = uploadcare.file(withContentsOf: url)!
+	///
+	/// let onProgress: (Double)->Void = { (progress) in
+	///     print("progress: \(progress)")
+	/// }
+	///
+	/// let task = fileForUploading.upload(withName: "my_file.jpg", store: .store, onProgress, { result in
+	///     switch result {
+	///         case .failure(let error):
+	///             print(error.detail)
+	///         case .success(let file):
+	///             print(file)
+	///     }
+	/// })
+	///
+	/// // pause:
+	/// (task as? UploadTaskResumable)?.pause()
+	///
+	/// // resume:
+	/// (task as? UploadTaskResumable)?.resume()
+	/// ```
+	///
 	/// - Parameters:
-	///   - name: file name
+	///   - name: File name.
 	///   - store: A flag indicating if we should store your outputs.
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - onProgress: A callback that will be used to report upload progress
-	///   - completionHandler: completion handler
-	/// - Returns: Upload task. Confirms to UploadTaskable protocol in anycase. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - onProgress: A callback that will be used to report upload progress.
+	///   - completionHandler: Completion handler.
+	/// - Returns: Upload task. Confirms to UploadTaskable protocol in anycase. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload.
 	@discardableResult
 	public func upload(
 		withName name: String,
@@ -214,7 +239,7 @@ public class UploadedFile: Codable {
 		_ completionHandler: ((Result<UploadedFile, UploadError>) -> Void)? = nil
 	) -> UploadTaskable? {
 		guard let fileData = self.data else {
-			completionHandler?(.failure(UploadError(status: 0, detail: "Unable to upload file: Data is empty")))
+			completionHandler?(.failure(UploadError(status: 0, detail: "Unable to upload file: Data is empty.")))
 			return nil
 		}
 		
@@ -251,6 +276,66 @@ public class UploadedFile: Codable {
 				self.s3Bucket = uploadedFile.s3Bucket
 			}
 		})
+	}
+
+	/// Upload file.
+	///
+	/// Example:
+	/// ```swift
+	/// let url = URL(string: "https://source.unsplash.com/featured")!
+	/// let data = try! Data(contentsOf: url)
+	/// let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
+	///
+	/// let uploadedFile = try await fileForUploading.upload(
+	///     withName: "my_file.jpg",
+	///     store: .store
+	/// )
+	/// ```
+	/// - Parameters:
+	///   - name: File name.
+	///   - store: A flag indicating if we should store your outputs.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - onProgress: A callback that will be used to report upload progress.
+	/// - Returns: Uploaded file.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	@discardableResult
+	public func upload(
+		withName name: String,
+		store: StoringBehavior? = nil,
+		uploadSignature: UploadSignature? = nil,
+		_ onProgress: ((Double) -> Void)? = nil
+	) async throws -> UploadedFile {
+		guard let fileData = self.data else {
+			throw UploadError(status: 0, detail: "Unable to upload file: Data is empty.")
+		}
+
+		guard let restAPI = restAPI else {
+			throw UploadError(status: 0, detail: "REST API object missing.")
+		}
+
+		self.originalFilename = name
+		self.filename = name
+
+		let uploadedFile = try await restAPI.uploadFile(fileData, withName: name, store: store ?? .store, metadata: self.metadata, uploadSignature: uploadSignature, onProgress)
+
+		self.size = uploadedFile.size
+		self.total = uploadedFile.total
+		self.done = uploadedFile.done
+		self.uuid = uploadedFile.uuid
+		self.fileId = uploadedFile.fileId
+		self.originalFilename = uploadedFile.originalFilename
+		self.filename = uploadedFile.filename
+		self.mimeType = uploadedFile.mimeType
+		self.isImage = uploadedFile.isImage
+		self.isStored = uploadedFile.isStored
+		self.isReady = uploadedFile.isReady
+		self.imageInfo = uploadedFile.imageInfo
+		self.videoInfo = uploadedFile.videoInfo
+		self.contentInfo = uploadedFile.contentInfo
+		self.metadata = uploadedFile.metadata
+		self.s3Bucket = uploadedFile.s3Bucket
+
+		return self
 	}
 }
 

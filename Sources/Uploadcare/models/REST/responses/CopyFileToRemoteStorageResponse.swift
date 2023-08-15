@@ -22,7 +22,7 @@ public enum NamesPattern: String {
 
 public struct CopyFileToRemoteStorageResponse: Codable {
 	
-	/// Default: "url"
+	/// Default: "url".
 	public var type: String
 		
 	/// URL with an s3 scheme. Your bucket name is put as a host, and an s3 object path follows.

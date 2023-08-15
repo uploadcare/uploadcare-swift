@@ -2,9 +2,9 @@
 
 ![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)
 ![swift](https://img.shields.io/badge/swift-5.5-brightgreen.svg)
-[![Build Status](https://travis-ci.com/uploadcare/uploadcare-swift.svg?branch=master)](https://travis-ci.com/uploadcare/uploadcare-swift)
+[![Build and test](https://github.com/uploadcare/uploadcare-swift/actions/workflows/test.yml/badge.svg)](https://github.com/uploadcare/uploadcare-swift/actions/workflows/test.yml)
 
-Uploadcare Swift API client for iOS, iPadOS, tvOS, macOS, and Linux handles uploads and further operations with files by wrapping Uploadcare Upload and REST APIs.
+Uploadcare Swift API client for iOS, iPadOS, tvOS and macOS handles uploads and further operations with files by wrapping Uploadcare Upload and REST APIs.
 
 Check out our [Demo App](/Demo).
 
@@ -19,7 +19,7 @@ Check out our [Demo App](/Demo).
 
 ### Swift Package Manager
 
-To use a stable version, add a dependency to your Package.swift file:
+To use a stable version, add a dependency to your `Package.swift` file:
 
 ```swift
 dependencies: [
@@ -27,7 +27,7 @@ dependencies: [
 ]
 ```
 
-If you want to try the current dev version, change dependency to:
+If you want to try the current dev version, change the dependency to:
 
 ```swift
 dependencies: [
@@ -35,12 +35,12 @@ dependencies: [
 ]
 ```
 
-To add from Xcode select File -> Swift Packages -> Add Package Dependency and enter repository URL:
+To add from Xcode select File -> Swift Packages -> Add Package Dependency and enter the repository URL:
 ```
 https://github.com/uploadcare/uploadcare-swift
 ```
 
-Or you can add it in Xcode: https://github.com/uploadcare/uploadcare-swift (select master branch).
+Or you can add it in Xcode to the packages list using that URL: https://github.com/uploadcare/uploadcare-swift (select master branch).
 
 ### Carthage
 
@@ -111,27 +111,27 @@ Keep in mind that since Uploadcare is not a singleton. You should store a strong
 
 ## Using Upload API
 
-Check the [Upload API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/Upload%20API.md) to see all available methods.
+Check the [Upload API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/Upload%20API.md) to see all available methods. Each method has an implementation with a `Result` completion handler and has an alternative `async` implementation to use with Swift concurrency.
 
 Example of uploads:
 
 ```swift
-guard let url = URL(string: "https://source.unsplash.com/random") else { return }
+guard let url = URL(string: "https://source.unsplash.com/featured") else { return }
 guard let data = try? Data(contentsOf: url) else { return }
 
-// You can create UploadedFile object to operate with it
-let fileForUploading1 = uploadcare.file(fromData: data)
-var fileForUploading2 = uploadcare.file(withContentsOf: url)!
+// You can create an UploadedFile object to operate with it
+var fileForUploading1 = uploadcare.file(fromData: data)
 fileForUploading2.metadata = ["myKey": "myValue"]
-
-// Handle error or result
-fileForUploading1.upload(withName: "random_file_name.jpg", store: .store) { result in
-}
-
-// Completion block is optional
-fileForUploading2.upload(withName: "my_file.jpg", store: .store)
+try await fileForUploading1.upload(withName: "random_file_name.jpg", store: .store)
 
 // Or you can just upload data and provide a filename
+
+var fileForUploading2 = uploadcare.file(withContentsOf: url)!
+let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
+    print("upload progress: \(progress * 100)%")
+}
+
+// Same method with a completion callback that returns a task that can be paused or canceled:
 let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .store, metadata: ["someKey": "someMetaValue"]) { progress in
     print("upload progress: \(progress * 100)%")
 } _: { result in
@@ -142,7 +142,7 @@ let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: 
         print(file)
     }
 }
-// You can cancel uploading if needed
+// Cancel uploading if needed
 task.cancel()
 
 // task will confirm UploadTaskable protocol if file size is less than 100 mb, and UploadTaskResumable if file size is >= 100mb
@@ -151,11 +151,11 @@ task.cancel()
 (task as? UploadTaskResumable)?.resume()
 ```
 
-It is possible to perform uploads in background. But implementation is a platform-specific. This lib doesn't provide default implementation. You can find an example for the iOS in our Demo app. See [FilesListStore.swift](https://github.com/uploadcare/uploadcare-swift/blob/1e6341edcdcb887589a4e798b746c525c9023b4e/Demo/Demo/Modules/FilesListStore.swift).
+It is possible to perform uploads in the background. But implementation is platform-specific. This lib doesn't provide a default implementation. You can find an example for the iOS in our Demo app. See [FilesListStore.swift](https://github.com/uploadcare/uploadcare-swift/blob/1e6341edcdcb887589a4e798b746c525c9023b4e/Demo/Demo/Modules/FilesListStore.swift).
 
 ## Using REST API
 
-Refer to the [REST API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/REST%20API.md) for all methods.
+Refer to the [REST API documentation](https://github.com/uploadcare/uploadcare-swift/blob/master/Documentation/REST%20API.md) for all methods. Each method has an implementation with a `Result` completion handler and has an alternative `async` implementation to use with Swift concurrency.
 
 Example of getting list of files:
 
@@ -171,6 +171,9 @@ func someFilesListMethod() {
         .limit(5)
 
     // Get file list
+    let list = try await filesList.get(withQuery: query)
+    
+    // Same method with a completion callback.
     filesList.get(withQuery: query) { result in
         switch result {
         case .failure(let error):
@@ -187,7 +190,11 @@ Get next page:
 ```swift
 // Check if the next page is available
 guard filesList.next != nil else { return }
-// Get the next page
+
+// Async:
+let next = try await filesList.nextPage()
+
+// With a completion callback:
 filesList.nextPage { result in
     switch result {
     case .failure(let error):
@@ -203,7 +210,11 @@ Get previous page:
 ```swift
 // Check if the previous page is available
 guard filesList.previous != nil else { return }
-// Get the previous page
+
+// Async:
+let previous = try await filesList.previousPage()
+
+// With a completion callback:
 filesList.previousPage { result in
     switch result {
     case .failure(let error):

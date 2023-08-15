@@ -8,19 +8,19 @@
 
 import Foundation
 
-/// Webhook
+/// Webhook.
 public struct Webhook: Codable {
     
-    /// Webhook ID
+    /// Webhook ID.
     public var id: Int
     
-    /// Webhook creation date-time
+    /// Webhook creation date-time.
     public var created: Date
     
     /// Webhook update date-time.
     public var updated: Date
     
-    /// Webhook event
+    /// Webhook event.
     public var event: String
     
     /// Where webhook data will be posted.
@@ -29,7 +29,7 @@ public struct Webhook: Codable {
     /// Webhook project ID.
     public var project: Int
     
-    /// Is active
+    /// Is the webhook active or not.
     public var isActive: Bool
     
     

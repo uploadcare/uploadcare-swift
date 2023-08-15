@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// Uploaded Files group info
+/// Uploaded files group details.
 public class UploadedFilesGroup: Codable {
 	
 	/// Date and time when a group was created.
@@ -104,10 +104,10 @@ public class UploadedFilesGroup: Codable {
 	
 	// MARK: - Public methods
 
-	/// Init with files
+	/// Init with files.
 	/// - Parameters:
-	///   - files: files
-	///   - uploadAPI: Upload API object
+	///   - files: Files that should be grouped.
+	///   - uploadAPI: Upload API object.
 	public init(withFiles files: [UploadedFile], uploadAPI: UploadAPI) {
 		self.datetimeCreated = Date()
 		self.filesCount = files.count
@@ -119,9 +119,25 @@ public class UploadedFilesGroup: Codable {
 		self.uploadAPI = uploadAPI
 	}
 
-	/// Create group of files
-	/// - Parameter completionHandler: completion handler
-	public func create(_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>)->Void) {
+	/// Create group of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let files: [UploadedFile] = [file1, file2]
+	/// let group = uploadcare.group(ofFiles: files)!
+	///
+	/// group.create { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error.detail)
+	///     case .success(let response):
+	///         print(response)
+	///     }
+	/// }
+	/// ```
+	///
+	/// - Parameter completionHandler: Completion handler.
+	public func create(_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void) {
 		uploadAPI?.createFilesGroup(files: self.files ?? [], { [weak self] result in
 			switch result {
 			case .failure(let error):
@@ -142,6 +158,34 @@ public class UploadedFilesGroup: Codable {
 				completionHandler(.success(self))
 			}
 		})
+	}
+
+	/// Create group of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let files: [UploadedFile] = [file1, file2]
+	/// let group = try await uploadcare.group(ofFiles: files)!.create()
+	/// print(group)
+	/// ```
+	///
+	/// - Returns: Files group.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func create() async throws -> UploadedFilesGroup {
+		guard let uploadAPI = uploadAPI else {
+			throw UploadError(status: 0, detail: "Upload API object missing.")
+		}
+
+		let createdGroup = try await uploadAPI.createFilesGroup(files: files ?? [])
+
+		datetimeCreated = createdGroup.datetimeCreated
+		filesCount = createdGroup.filesCount
+		cdnUrl = createdGroup.cdnUrl
+		files = createdGroup.files
+		url = createdGroup.url
+		id = createdGroup.id
+
+		return self
 	}
 }
 

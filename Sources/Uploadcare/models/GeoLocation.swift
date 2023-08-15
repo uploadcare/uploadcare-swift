@@ -10,7 +10,7 @@ import Foundation
 
 
 /// Geo-location of image from EXIF.
-public struct GeoLocation: Codable {
+public struct GeoLocation: Codable, Equatable {
 	
 	/// Location latitude.
 	public var latitude: Double

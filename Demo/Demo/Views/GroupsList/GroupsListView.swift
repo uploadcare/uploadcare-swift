@@ -19,14 +19,18 @@ struct GroupsListView: View {
 						GroupRowView(groupData: group)
 						.onAppear {
 							if group.group.id == viewModel.groups.last?.group.id {
-								viewModel.loadMoreIfNeed()
+								Task {
+									try await viewModel.loadMoreIfNeed()
+								}
 							}
 						}
 					}
 				}
 			}
-		}.onAppear { [self] in
-			viewModel.loadData()
+		}.onAppear {
+			Task {
+				try await viewModel.loadData()
+			}
         }.navigationBarTitle(Text("List of groups"))
 	}
 }

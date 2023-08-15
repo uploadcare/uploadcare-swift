@@ -15,8 +15,8 @@ struct Config {
 	static let cookieDomain: String = "social.uploadcare.com"
 }
 
-@available(iOS 14.0.0, OSX 10.15.0, *)
-public struct SelectSourceView: View {	
+@available(iOS 14.0.0, macOS 10.15.0, *)
+public struct SelectSourceView: View {
 	private let sources: [SocialSource] = SocialSource.Source.allCases.map { SocialSource(source: $0) }
 	private let publicKey: String
 	
@@ -123,7 +123,7 @@ public struct SelectSourceView: View {
 		return FilesListViewModel(
 			source: source,
 			cookie: source.getCookie() ?? "",
-			chunkPath: source.chunks.first!.values.first!,
+			chunkPath: source.chunks.first!.value,
 			publicKey: publicKey
 		)
 	}
@@ -187,7 +187,7 @@ public struct SelectSourceView: View {
 	}
 }
 
-//@available(iOS 13.0.0, OSX 10.15.0, *)
+//@available(iOS 13.0.0, macOS 10.15.0, *)
 //struct SelectSourceView_Previews: PreviewProvider {
 //    static var previews: some View {
 //		SelectSourceView()

@@ -47,8 +47,8 @@ internal class RequestManager {
 	}
 }
 
-// MARK: - Public methods
-extension RequestManager {
+// MARK: - Internal methods
+internal extension RequestManager {
 	/// Build URL request.
 	/// - Parameters:
 	///   - url: Request url.
@@ -149,6 +149,33 @@ extension RequestManager {
 		}
 		task.resume()
 		return task
+	}
+
+
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	@discardableResult
+	func performRequest<T: Codable>(_ request: URLRequest) async throws -> T {
+		let (data, response) = try await URLSession.shared.data(for: request)
+
+		if data.count == 0, true is T {
+			return true as! T
+		}
+
+		guard data.count > 0 else {
+			throw RequestManagerError.emptyResponse
+		}
+
+		if T.self is String.Type, let string = String(data: data, encoding: .utf8) {
+			return string as! T
+		}
+
+		if request.url?.host == RESTAPIHost {
+			try self.validateRESTAPIResponse(response: response, data: data)
+		}
+		if request.url?.host == uploadAPIHost {
+			try self.validateUploadAPIResponse(response: response, data: data)
+		}
+		return try JSONDecoder().decode(T.self, from: data)
 	}
     
 	func validateRESTAPIResponse(response: URLResponse, data: Data?) throws {

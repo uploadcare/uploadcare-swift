@@ -27,8 +27,8 @@ struct ProjectInfoView: View {
 				}
 				if viewModel.collaborators.isEmpty == false {
 					Section(header: Text("Collaborators")) {
-						ForEach(0 ..< (viewModel.collaborators).count) { [self] index in
-							CollaboratorView(viewData: viewModel.collaborators[index])
+						ForEach(viewModel.collaborators) { collaborator in
+							CollaboratorView(viewData: collaborator)
 						}
 					}
 				}
@@ -42,11 +42,11 @@ struct ProjectInfoView: View {
 			.opacity(self.isLoading ? 1 : 0)
 
 			.navigationBarTitle(Text(viewModel.name))
-		}.onAppear { [self] in
-			viewModel.loadData {
-				withAnimation { self.isLoading.toggle() }
+		}.onAppear {
+			Task {
+				try await viewModel.loadData()
+				withAnimation { isLoading.toggle() }
 			}
-			
 		}
 	}
 }

@@ -9,7 +9,7 @@
 import Combine
 import UIKit
 
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, macOS 10.15.0, *)
 class ImageLoader: ObservableObject {
 	// MARK: - Public properties
 	@Published var image: UIImage?
@@ -31,7 +31,7 @@ class ImageLoader: ObservableObject {
 }
 
 // MARK: - Public methods
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, macOS 10.15.0, *)
 extension ImageLoader {
 	func load() {
 		guard !isLoading else { return }
@@ -59,7 +59,7 @@ extension ImageLoader {
 }
 
 // MARK: - Private methods
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, macOS 10.15.0, *)
 private extension ImageLoader {
 	func onStart() {
 		isLoading = true

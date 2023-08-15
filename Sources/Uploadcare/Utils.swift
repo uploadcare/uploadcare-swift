@@ -190,6 +190,12 @@ func getSwiftVersion() -> String {
 	var swiftVersion = "5.0"
 	#if swift(>=7.0)
 		swiftVersion = "7.0"
+	#elseif swift(>=6.3)
+		swiftVersion = "6.3"
+	#elseif swift(>=6.2)
+		swiftVersion = "6.2"
+	#elseif swift(>=6.1)
+		swiftVersion = "6.1"
 	#elseif swift(>=6.0)
 		swiftVersion = "6.0"
 	#elseif swift(>=5.9)

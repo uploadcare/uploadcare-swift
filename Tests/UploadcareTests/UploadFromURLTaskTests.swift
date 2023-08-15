@@ -1,4 +1,3 @@
-#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 
@@ -9,4 +8,3 @@ final class UploadFromURLTaskTests: XCTestCase {
 		XCTAssertEqual(task.store, StoringBehavior.auto)
     }
 }
-#endif

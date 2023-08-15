@@ -8,8 +8,9 @@
 
 import Foundation
 
-struct CollaboratorViewData {
+struct CollaboratorViewData: Identifiable, Hashable {
 	// MARK: - Public properties
+	let id = UUID()
 	var name: String
 	var email: String
 }

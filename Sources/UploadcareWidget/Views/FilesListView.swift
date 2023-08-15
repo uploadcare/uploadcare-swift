@@ -29,23 +29,22 @@ struct FilesListView: View {
 					// Root chunks
 					if self.isRoot {
 						Section {
-							ForEach(0 ..< self.viewModel.source.chunks.count) { index in
-								let chunk = self.viewModel.source.chunks[index]
-								let chunkName = chunk.keys.first ?? ""
-								let chunkValue = chunk.values.first ?? ""
+							ForEach(Array(self.viewModel.source.chunks.enumerated()), id: \.element) { index, chunk in
+								let chunkName = chunk.key
+								let chunkValue = chunk.value
+
 								let isCurrent = (index == 0 && self.currentChunk.isEmpty) || (chunkValue == self.currentChunk)
+
 								HStack(spacing: 8) {
 									Text("✓")
 										.opacity(isCurrent ? 1 : 0)
 									Text(chunkName)
 								}.onTapGesture {
-									if let value = chunk.values.first {
-										self.viewModel.chunkPath = value
-										self.isLoading = true
-										self.viewModel.getSourceChunk {
-											self.isLoading = false
-											self.currentChunk = value
-										}
+									self.viewModel.chunkPath = chunk.value
+									self.isLoading = true
+									self.viewModel.getSourceChunk {
+										self.isLoading = false
+										self.currentChunk = chunk.value
 									}
 								}
 							}
@@ -172,7 +171,7 @@ struct FilesListView: View {
 		viewModel.getSourceChunk {
 			DLog("loaded first page")
 			if let firstChunk = viewModel.source.chunks.first {
-				currentChunk = firstChunk.values.first ?? ""
+				currentChunk = firstChunk.value
 			}
 			self.isLoading = false
 		}
@@ -190,7 +189,7 @@ struct FilesListView: View {
 	}
 }
 
-@available(iOS 13.0.0, OSX 10.15.0, *)
+@available(iOS 13.0.0, macOS 10.15.0, *)
 struct FilesLIstView_Previews: PreviewProvider {
     static var previews: some View {
 		Text("")

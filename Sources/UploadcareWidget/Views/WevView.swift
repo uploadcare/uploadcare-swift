@@ -7,9 +7,9 @@
 //
 
 import SwiftUI
+#if os(iOS)
 import WebKit
 
-#if os(iOS)
 @available(iOS 13.0, *)
 struct WebView: UIViewRepresentable {
 	var url: URL?

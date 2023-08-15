@@ -39,18 +39,34 @@ class FilesListStore: ObservableObject {
 	}
 	
 	// MARK: - Public methods
-	func load(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
+	func load() async throws {
+		guard let list = list else { fatalError("No list object") }
+		list.results.removeAll()
+
 		let query = PaginationQuery()
 			.limit(5)
 			.ordering(.dateTimeUploadedDESC)
-		
-		self.list?.get(withQuery: query, completionHandler)
+
+		try await list.get(withQuery: query)
+		DispatchQueue.main.async {
+			list.results.forEach { self.files.append(FileViewData( file: $0)) }
+		}
 	}
-	
-	func loadNext(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
-		self.list?.nextPage(completionHandler)
+
+	func loadNext() async throws {
+		guard let list = list else { fatalError("No list object") }
+		try await list.nextPage()
+		DispatchQueue.main.async {
+			list.results.forEach({ self.files.append(FileViewData( file: $0)) })
+		}
 	}
-	
+
+	func deleteFiles(at offsets: IndexSet) async throws {
+		let uuids = offsets.map { self.files[$0].file.uuid }
+		try await uploadcare?.deleteFiles(withUUIDs: uuids)
+		DispatchQueue.main.async { self.files.remove(atOffsets: offsets) }
+	}
+
 	func uploadFiles(_ urls: [URL], completionHandler: @escaping ([String])->Void) {
 		self.filesQueue = urls
 		var fileIds: [String] = []

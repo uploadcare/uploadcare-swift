@@ -5,7 +5,6 @@
 //  Created by Sergei Armodin on 01.02.2022.
 //
 
-#if !os(watchOS)
 import XCTest
 @testable import Uploadcare
 
@@ -154,7 +153,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 	func test05_delete_file() {
 		let expectation = XCTestExpectation(description: "test5_delete_file")
 
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -189,7 +188,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 	func test06_batch_delete_files() {
 		let expectation = XCTestExpectation(description: "test6_batch_delete_files")
 
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -224,7 +223,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 	func test07_store_file() {
 		let expectation = XCTestExpectation(description: "test7_store_file")
 
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -262,7 +261,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 	func test08_batch_store_files() {
 		let expectation = XCTestExpectation(description: "test8_batch_store_files")
 
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -421,7 +420,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 	func test13_copy_file_to_local_storage() {
 		let expectation = XCTestExpectation(description: "test13_copy_file_to_local_storage")
 
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -460,7 +459,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 	func test14_copy_file_to_remote_storage() {
 		let expectation = XCTestExpectation(description: "test14_copy_file_to_remote_storage")
 
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -585,7 +584,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 	func test19_document_conversion_and_status() {
 		let expectation = XCTestExpectation(description: "test19_document_conversion_and_status")
 
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -741,7 +740,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 	func test21_storing_shoudBeStored() {
 		let expectation = XCTestExpectation(description: "test21_storing_shoudBeStored")
 
-		let url = URL(string: "https://source.unsplash.com/random")!
+		let url = URL(string: "https://source.unsplash.com/featured")!
 		let data = try! Data(contentsOf: url)
 		let file = uploadcare.file(fromData: data)
 		let name = UUID().uuidString
@@ -782,7 +781,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				let expectedValue = NSUUID().uuidString
 
 				// update
-				self.uploadcare.updateFileMetadata(withUUID: uuid, key: "myMeta", value:expectedValue) { result in
+				self.uploadcare.updateFileMetadata(withUUID: uuid, key: "myMeta", value: expectedValue) { result in
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
@@ -945,6 +944,3 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 20.0)
 	}
 }
-
-#endif
-

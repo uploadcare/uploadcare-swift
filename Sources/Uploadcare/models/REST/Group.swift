@@ -9,8 +9,8 @@
 import Foundation
 
 
-/// Group
-public struct Group: Codable {
+/// This struct represents a group of files.
+public struct Group: Codable, Equatable {
 	
 	/// Date and time when a group was created.
 	public var datetimeCreated: Date
@@ -85,7 +85,7 @@ public struct Group: Codable {
 		
 		let filesCount = try container.decodeIfPresent(Int.self, forKey: .filesCount) ?? 1
 		let cdnUrl = try container.decodeIfPresent(String.self, forKey: .cdnUrl) ?? ""
-		let files = try container.decodeIfPresent([File].self, forKey: .files)
+		let files = try? container.decodeIfPresent([File].self, forKey: .files)
 		let url = try container.decodeIfPresent(String.self, forKey: .url) ?? ""
 		let id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
 		

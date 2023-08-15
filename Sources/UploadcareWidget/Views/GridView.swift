@@ -8,7 +8,8 @@
 
 import SwiftUI
 
-@available(iOS 13.0.0, OSX 10.15.0, *)
+#if !os(tvOS)
+@available(iOS 13.0.0, macOS 10.15.0, watchOS 6.0, *)
 struct GridView<Content: View>: View {
 	let rows: Int
 	let columns: Int
@@ -32,3 +33,4 @@ struct GridView<Content: View>: View {
 		self.content = content
 	}
 }
+#endif

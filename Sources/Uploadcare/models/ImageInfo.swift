@@ -27,7 +27,7 @@ public enum ColorMode: String, Codable {
 }
 
 
-public struct ImageInfo: Codable {
+public struct ImageInfo: Codable, Equatable {
 	/// Image height in pixels.
 	public var height: Int
 	

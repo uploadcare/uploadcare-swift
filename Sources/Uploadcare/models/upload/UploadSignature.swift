@@ -9,10 +9,10 @@
 import Foundation
 
 public struct UploadSignature {
-	/// Signature string
+	/// Signature string.
 	let signature: String
 	
-	/// Signature expire timestamp
+	/// Signature expire timestamp.
 	let expire: Int
     
 	public init(signature: String, expire: Int) {

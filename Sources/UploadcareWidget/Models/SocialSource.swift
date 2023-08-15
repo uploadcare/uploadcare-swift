@@ -55,74 +55,80 @@ public class SocialSource: Identifiable {
 			return "Huddle"
 		}
 	}
-	
-	var chunks: [[String: String]] {
-		switch self.source {
+
+	struct Chunk: Identifiable, Hashable {
+		let id = UUID()
+		let key: String
+		let value: String
+	}
+
+	var chunks: [Chunk] {
+		switch source {
 		case .facebook:
 			return [
-				["My Albums": "me"]
+				Chunk(key: "My Albums", value: "me")
 			]
 		case .instagram:
 			return [
-				["My Photos": "my"]
+				Chunk(key: "My Photos", value: "my")
 			]
 		case .vk:
 			return [
-				["My Albums": "my"],
-				["Profile Pictures": "page"],
-				["Photos with Me": "with_me"],
-				["Saved Photos": "saved"],
-				["My Friends": "friends"],
-				["My Documents": "docs"],
+				Chunk(key: "My Albums", value: "my"),
+				Chunk(key: "Profile Pictures", value: "page"),
+				Chunk(key: "Photos with Me", value: "with_me"),
+				Chunk(key: "Saved Photos", value: "saved"),
+				Chunk(key: "My Friends", value: "friends"),
+				Chunk(key: "My Documents", value: "docs")
 			]
 		case .dropbox:
 			return [
-				["Files": "root"],
-				["Team files": "team"]
+				Chunk(key: "Files", value: "root"),
+				Chunk(key: "Team files", value: "team")
 			]
 		case .gdrive:
 			return [
-				["My Files": "root"],
-				["Shared with Me": "shared"],
-				["Starred": "starred"],
-				["Team drives": "team_drives"]
+				Chunk(key: "My Files", value: "root"),
+				Chunk(key: "Shared with Me", value: "shared"),
+				Chunk(key: "Starred", value: "starred"),
+				Chunk(key: "Team drives", value: "team_drives")
 			]
 		case .gphotos:
 			return [
-				["Photos": "root"],
-				["Albums": "albums"]
+				Chunk(key: "Photos", value: "root"),
+				Chunk(key: "Albums", value: "albums")
 			]
 		case .evernote:
 			return [
-				["All Notes": "all_notes"],
-				["Notebooks": "notebooks"],
-				["Tags": "tags"]
+				Chunk(key: "All Notes", value: "all_notes"),
+				Chunk(key: "Notebooks", value: "notebooks"),
+				Chunk(key: "Tags", value: "tags")
 			]
 		case .box:
 			return [
-				["My Files": "root"]
+				Chunk(key: "My Files", value: "root")
 			]
 		case .skydrive:
 			return [
-				["My Files": "root"]
+				Chunk(key: "My Files", value: "root")
 			]
 		case .onedrive:
 			return [
-				["My drives": "root_v2"],
-				["Shared with me": "shared_v2"],
-				["SharePoint": "sharepoint"],
-				["My groups": "groups"]
+				Chunk(key: "My drives", value: "root_v2"),
+				Chunk(key: "Shared with me", value: "shared_v2"),
+				Chunk(key: "SharePoint", value: "sharepoint"),
+				Chunk(key: "My groups", value: "groups")
 			]
 		case .flickr:
 			return [
-				["Photo Stream": "photostream"],
-				["Albums": "albums"],
-				["Favorites": "favorites"],
-				["Follows": "follows"]
+				Chunk(key: "Photo Stream", value: "photostream"),
+				Chunk(key: "Albums", value: "albums"),
+				Chunk(key: "Favorites", value: "favorites"),
+				Chunk(key: "Follows", value: "follows")
 			]
 		case .huddle:
 			return [
-				["My Files": "root"]
+				Chunk(key: "My Files", value: "root")
 			]
 		}
 	}

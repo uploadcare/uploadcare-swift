@@ -9,13 +9,13 @@
 import Foundation
 
 public class DocumentConversionJobSettings {
-	/// File for conversion
+	/// File for conversion.
 	public let file: File
 	
-	/// Target format
+	/// Target format.
 	public var format: DocumentTargetFormat = .pdf
 	
-	/// String value for path
+	/// String value for path.
 	public var stringValue: String {
 		return "/\(file.uuid)/document/-/format/\(format.rawValue)/"
 	}

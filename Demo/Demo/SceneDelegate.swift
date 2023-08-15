@@ -24,9 +24,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		// If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
 		// This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
-		// Create the SwiftUI view that provides the window contents.
-		let contentView = MainView()
-
 		// Use a UIHostingController as window root view controller.
 		if let windowScene = scene as? UIWindowScene {
 		    let window = UIWindow(windowScene: windowScene)
@@ -37,11 +34,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 			)
 			
 			let apiStore = APIStore(uploadcare: uploadcare)
+
+			// Create the SwiftUI view that provides the window contents.
+			let contentView = MainView().environmentObject(apiStore)
 			
-		    window.rootViewController = UIHostingController(
-				rootView: contentView
-					.environmentObject(apiStore)
-			)
+		    window.rootViewController = UIHostingController(rootView: contentView)
 		    self.window = window
 		    window.makeKeyAndVisible()
 		}

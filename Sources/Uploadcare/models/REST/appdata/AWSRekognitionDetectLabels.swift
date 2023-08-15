@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct AWSRekognitionDetectLabels: Codable {
+public struct AWSRekognitionDetectLabels: Codable, Equatable {
 	/// An application version.
 	public let version: String
 
@@ -63,7 +63,7 @@ public struct AWSRekognitionDetectLabels: Codable {
 }
 
 extension AWSRekognitionDetectLabels {
-	public struct BoundingBox: Codable {
+	public struct BoundingBox: Codable, Equatable {
 		public let height: Double, left: Double, top: Double, width: Double
 
 		enum CodingKeys: String, CodingKey {
@@ -92,7 +92,7 @@ extension AWSRekognitionDetectLabels {
 		}
 	}
 
-	public struct Instance: Codable {
+	public struct Instance: Codable, Equatable {
 		public let boundingBox: BoundingBox
 		public let confidence: Double
 
@@ -116,7 +116,7 @@ extension AWSRekognitionDetectLabels {
 		}
 	}
 
-	public struct Parent: Codable {
+	public struct Parent: Codable, Equatable {
 		public let name: String
 
 		enum CodingKeys: String, CodingKey {
@@ -134,7 +134,7 @@ extension AWSRekognitionDetectLabels {
 		}
 	}
 
-	public struct Label: Codable {
+	public struct Label: Codable, Equatable {
 		public let confidence: Double
 		public let instances: [Instance]
 		public let name: String
@@ -166,7 +166,7 @@ extension AWSRekognitionDetectLabels {
 		}
 	}
 
-	public struct AWSRecognitionData: Codable {
+	public struct AWSRecognitionData: Codable, Equatable {
 		public let labelModelVersion: String
 		public let labels: [Label]
 

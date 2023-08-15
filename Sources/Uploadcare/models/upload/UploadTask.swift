@@ -9,34 +9,34 @@
 import Foundation
 
 public protocol UploadTaskable {
-	/// Cancel upload task
+	/// Cancel upload task.
 	func cancel()
 }
 
 public protocol UploadTaskResumable: UploadTaskable {
-	/// Pause uploading
+	/// Pause uploading.
 	func pause()
-	/// Resume uploading
+	/// Resume uploading.
 	func resume()
 }
 
-/// Simple class that stores upload request and allows to cancel uploading
+/// Simple class that stores upload request and allows to cancel uploading.
 class UploadTask: UploadTaskable {
 	// MARK: - Internal properties
 	
-	/// URLSessionUploadTask task. Stored to be able to cancel uploading
+	/// URLSessionUploadTask task. Stored to be able to cancel uploading.
 	internal let task: URLSessionUploadTask
 
-	/// Completion handler
+	/// Completion handler.
 	internal let completionHandler: TaskResultCompletionHandler
 	
-	/// Progress callback
+	/// Progress callback.
 	internal let progressCallback: TaskProgressBlock?
 	
-	/// Data buffer to store response body
+	/// Data buffer to store response body.
 	internal var dataBuffer = Data()
 	
-	/// URL to file where uploading data stored. Using it because background upload task supports uploading data from files only
+	/// URL to file where uploading data stored. Using it because background upload task supports uploading data from files only.
 	internal var localDataUrl: URL?
 	
 	// MARK: - Init
@@ -59,18 +59,18 @@ class UploadTask: UploadTaskable {
 
 class MultipartUploadTask: UploadTaskResumable {
 	
-	/// Requests array
+	/// Requests array.
 	private var requests: [URLSessionDataTask] = []
-	/// Is cancelled flag
+	/// Is cancelled flag.
 	private var _isCancelled: Bool = false
 	
-	/// Upload API
+	/// Upload API.
 	internal weak var queue: DispatchQueue?
 	
-	/// Queue for adding requests to list
+	/// Queue for adding requests to list.
 	private var listQueue = DispatchQueue(label: "com.uploadcare.multipartTasksList")
 	
-	/// Is uploading cancelled
+	/// Is uploading cancelled.
 	internal var isCancelled: Bool { _isCancelled }
 
 	internal func appendRequest(_ request: URLSessionDataTask) {
@@ -82,7 +82,8 @@ class MultipartUploadTask: UploadTaskResumable {
 	internal func complete() {
 		requests.removeAll()
 	}
-	
+
+	/// Cancel upload task.
 	func cancel() {
 		_isCancelled = true
 		
@@ -90,13 +91,15 @@ class MultipartUploadTask: UploadTaskResumable {
 		requests.removeAll()
 		DLog("task cancelled")
 	}
-	
+
+	/// Pause upload task.
 	func pause() {
 		requests.forEach{ $0.suspend() }
 		queue?.suspend()
 		DLog("task paused")
 	}
-	
+
+	/// Resume upload task.
 	func resume() {
 		requests.forEach{ $0.resume() }
 		queue?.resume()

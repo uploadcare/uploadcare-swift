@@ -29,30 +29,26 @@ class GroupsListViewModel: ObservableObject {
 
 // MARK: - Public methods
 extension GroupsListViewModel {
-	func loadData() {
+	func loadData() async throws {
+		guard let list else { return }
 		let query = GroupsListQuery()
 			.limit(5)
 			.ordering(.datetimeCreatedDESC)
-		
-		self.list?.get(withQuery: query) { [weak self] result in
-			switch result {
-			case .failure(let error):
-				DLog(error)
-			case .success(let list):
-				self?.groups.removeAll()
-				list.results.forEach { self?.groups.append(GroupViewData(group: $0)) }
+
+		let newData = try await list.get(withQuery: query)
+		DispatchQueue.main.async { [weak self] in
+			self?.groups.removeAll()
+			newData.results.forEach {
+				self?.groups.append(GroupViewData(group: $0))
 			}
 		}
 	}
-	
-	func loadMoreIfNeed() {
-		self.list?.nextPage { [weak self] result in
-			switch result {
-			case .failure(let error):
-				DLog(error)
-			case .success(let list):
-				list.results.forEach({ self?.groups.append(GroupViewData(group: $0)) })
-			}
+
+	func loadMoreIfNeed() async throws {
+		guard let list else { return }
+		let newData = try await list.nextPage()
+		DispatchQueue.main.async { [weak self] in
+			newData.results.forEach({ self?.groups.append(GroupViewData(group: $0)) })
 		}
 	}
 }

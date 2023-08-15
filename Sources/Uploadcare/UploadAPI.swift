@@ -132,10 +132,23 @@ private extension UploadAPI {
 
 // MARK: - File Info
 extension UploadAPI {
-	/// File info
+	/// Get uploaded file info.
+	///
+	/// Example:
+	/// ```swift
+	/// uploadcare.uploadAPI.fileInfo(withFileId: "fileId") { result in
+	///     switch result {
+	///         case .failure(let error):
+	///             print(error.detail)
+	///         case .success(let info):
+	///             print(info)
+	///     }
+	/// }
+	/// ```
+	///
 	/// - Parameters:
-	///   - fileId: File ID
-	///   - completionHandler: completion handler
+	///   - fileId: File ID.
+	///   - completionHandler: Completion handler.
 	public func fileInfo(
 		withFileId fileId: String,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
@@ -162,20 +175,46 @@ extension UploadAPI {
 			}
 		}
 	}
+	
+	/// Get uploaded file info.
+	///
+	/// Example:
+	/// ```swift
+	/// let info = try await uploadcare.uploadAPI.fileInfo(withFileId: "fileId")
+	/// print(info)
+	/// ```
+	///
+	/// - Parameter fileId: File ID.
+	/// - Returns: File info.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func fileInfo(withFileId fileId: String) async throws -> UploadedFile {
+		var components = URLComponents()
+		components.scheme = "https"
+		components.host = uploadAPIHost
+		components.path = "/info"
+		components.queryItems = [
+			URLQueryItem(name: "pub_key", value: publicKey),
+			URLQueryItem(name: "file_id", value: fileId)
+		]
+
+		guard let url = components.url else {
+			assertionFailure("Incorrect url")
+			throw UploadError.defaultError()
+		}
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
+
+		do {
+			let file: UploadedFile = try await requestManager.performRequest(urlRequest)
+			return file
+		} catch {
+			throw UploadError.fromError(error)
+		}
+	}
 }
 
 // MARK: - Upload from URL
 extension UploadAPI {
-	/// Upload file from url
-	/// - Parameters:
-	///   - task: upload settings
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
-	public func upload(
-		task: UploadFromURLTask,
-		uploadSignature: UploadSignature? = nil,
-		_ completionHandler: @escaping (Result<UploadFromURLResponse, UploadError>) -> Void
-	) {
+	private func createURL(fromTask task: UploadFromURLTask, uploadSignature: UploadSignature? = nil) -> URL? {
 		var components = URLComponents()
 		components.scheme = "https"
 		components.host = uploadAPIHost
@@ -222,7 +261,42 @@ extension UploadAPI {
 		}
 
 		components.queryItems = queryItems
-		guard let url = components.url else {
+		return components.url
+	}
+
+	/// Upload file from URL.
+	///
+	/// Example:
+	/// ```swift
+	/// let task = UploadFromURLTask(sourceUrl: url)
+	///     .checkURLDuplicates(true)
+	///     .saveURLDuplicates(true)
+	///     .store(.store)
+	///     .setMetadata("myValue", forKey: "someKey")
+	///
+	/// uploadcare.uploadAPI.upload(task: task) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let response):
+	///         print(response)
+	///
+	///         // Upload token that you can use to check status
+	///         let token = result.token
+	///     }
+	/// }
+	/// ```
+	///
+	/// - Parameters:
+	///   - task: Upload settings.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
+	public func upload(
+		task: UploadFromURLTask,
+		uploadSignature: UploadSignature? = nil,
+		_ completionHandler: @escaping (Result<UploadFromURLResponse, UploadError>) -> Void
+	) {
+		guard let url = createURL(fromTask: task, uploadSignature: uploadSignature) else {
 			assertionFailure("Incorrect url")
 			return
 		}
@@ -235,11 +309,100 @@ extension UploadAPI {
 			}
 		}
 	}
-
-	/// Get status for file upload from URL
+	
+	/// Upload file from URL.
+	///
+	/// Example:
+	/// ```swift
+	/// let task = UploadFromURLTask(sourceUrl: url)
+	///     .checkURLDuplicates(true)
+	///     .saveURLDuplicates(true)
+	///     .store(.store)
+	///     .setMetadata("myValue", forKey: "someKey")
+	///
+	/// let response = try await uploadcare.uploadAPI.upload(task: task)
+	/// // Upload token that you can use to check status
+	/// let token = response.token
+	/// ```
+	///
 	/// - Parameters:
-	///   - token: token recieved from upload method
-	///   - completionHandler: callback
+	///   - task: Upload settings.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Operation response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func upload(task: UploadFromURLTask, uploadSignature: UploadSignature? = nil) async throws -> UploadFromURLResponse {
+		guard let url = createURL(fromTask: task, uploadSignature: uploadSignature) else {
+			assertionFailure("Incorrect url")
+			throw UploadError.defaultError()
+		}
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+		do {
+			let responseData: UploadFromURLResponse = try await requestManager.performRequest(urlRequest)
+			return responseData
+		} catch {
+			throw UploadError.fromError(error)
+		}
+	}
+
+
+	/// Upload file from URL and wait for upload completion.
+	///
+	/// Example:
+	/// ```swift
+	/// let task = UploadFromURLTask(sourceUrl: url)
+	///     .checkURLDuplicates(true)
+	///     .saveURLDuplicates(true)
+	///     .store(.store)
+	///     .setMetadata("myValue", forKey: "someKey")
+	///
+	/// let file = try await uploadcare.uploadAPI.uploadAndWaitForCompletion(task: task)
+	/// print(file)
+	/// ```
+	/// 
+	/// - Parameters:
+	///   - task: Upload settings.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Uploaded file.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func uploadAndWaitForCompletion(task: UploadFromURLTask, uploadSignature: UploadSignature? = nil) async throws -> UploadedFile {
+		let response = try await upload(task: task, uploadSignature: uploadSignature)
+		guard let token = response.token else {
+			throw UploadError.defaultError()
+		}
+
+		while true {
+			let status = try await uploadStatus(forToken: token)
+			if status.status == .error {
+				throw UploadError(status: 0, detail: status.error ?? "Upload error")
+			}
+			if status.status == .success {
+				guard let fileInfo = status.fileInfo else {
+					throw UploadError(status: 0, detail: "File info missing")
+				}
+				return fileInfo
+			}
+
+			try await Task.sleep(nanoseconds: 5 * NSEC_PER_SEC)
+		}
+	}
+
+	/// Get status for file upload from URL.
+	///
+	/// Use a token received with Upload files from the URLs method. Example:
+	/// ```swift
+	/// uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN") { result in
+	///    switch result {
+	///    case .failure(let error):
+	///        print(error)
+	///    case .success(let status):
+	///        print(status)
+	///    }
+	/// }
+	/// ```
+	/// - Parameters:
+	///   - token: Token recieved from upload method response.
+	///   - completionHandler: Completion handler.
 	public func uploadStatus(
 		forToken token: String,
 		_ completionHandler: @escaping (Result<UploadFromURLStatus, UploadError>) -> Void
@@ -266,6 +429,41 @@ extension UploadAPI {
             }
         }
 	}
+	
+	/// Get status for file upload from URL.
+	///
+	/// Use a token received with Upload files from the URLs method. Example:
+	/// ```swift
+	/// let status = try await uploadcare.uploadAPI.uploadStatus(forToken: "UPLOAD_TOKEN")
+	/// print(status)
+	/// ```
+	///
+	/// - Parameter token: Token recieved from upload method response.
+	/// - Returns: Operation status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func uploadStatus(forToken token: String) async throws -> UploadFromURLStatus {
+		var components = URLComponents()
+		components.scheme = "https"
+		components.host = uploadAPIHost
+		components.path = "/from_url/status/"
+		components.queryItems = [
+			URLQueryItem(name: "token", value: token)
+		]
+
+		guard let url = components.url else {
+			assertionFailure("Incorrect url")
+			throw UploadError.defaultError()
+		}
+
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
+
+		do {
+			let status: UploadFromURLStatus = try await requestManager.performRequest(urlRequest)
+			return status
+		} catch {
+			throw UploadError.fromError(error)
+		}
+	}
 }
 
 // MARK: - Direct upload
@@ -275,12 +473,40 @@ extension UploadAPI {
 	}
 
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
-	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed
+	/// This method uploads data using background URLSession. Uploading will continue even if your app will be closed.
+	///
+	/// Example:
+	/// ```swift
+	/// guard let url = URL(string: "https://source.unsplash.com/featured"),
+	///       let data = try? Data(contentsOf: url) else { return }
+	///
+	/// let onProgress: (Double)->Void = { (progress) in
+	///     print("upload progress: \(progress * 100)%")
+	/// }
+	///
+	/// let task = uploadcare.uploadAPI.directUpload(
+	///     files: ["random_file_name.jpg": data],
+	///     store: .doNotStore,
+	///     metadata: metadata,
+	///    onProgress
+	/// ) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let files):
+	///         print(files)
+	///     }
+	/// }
+	///
+	/// // You can cancel the uploading if needed
+	/// task.cancel()
+	/// ```
+	///
 	/// - Parameters:
-	///   - files: Files dictionary where key is filename, value file in Data format
-	///   - store: Sets the file storing behavior
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
+	///   - files: Files dictionary where key is filename, value file in Data format.
+	///   - store: Sets the file storing behavior.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
 	@discardableResult
 	public func directUpload(
 		files: [String: Data],
@@ -303,34 +529,7 @@ extension UploadAPI {
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
-        let url = urlWithPath("/base/")
-        var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
-
-        // Making request body
-        let builder = MultipartRequestBuilder(request: urlRequest)
-        builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
-
-        if let storeVal = store {
-            builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
-        }
-
-		if let metadata = metadata {
-			for meta in metadata {
-				builder.addMultiformValue(meta.value, forName: "metadata[\(meta.key)]")
-			}
-		}
-
-		if let uploadSignature = uploadSignature ?? getSignature() {
-            builder.addMultiformValue(uploadSignature.signature, forName: "signature")
-            builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
-        }
-
-        for file in files {
-            let fileName = file.key.isEmpty ? "noname.ext" : file.key
-            builder.addMultiformData(file.value, forName: fileName)
-        }
-
-        urlRequest = builder.finalize()
+		let urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
 
         // writing data to temp file
         let tempDir = FileManager.default.temporaryDirectory
@@ -379,12 +578,49 @@ extension UploadAPI {
         uploadTask.resume()
         return backgroundUploadTask
     }
-	
+
+	private func createDirectUploadRequest(
+		files: [String: Data],
+		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
+		uploadSignature: UploadSignature? = nil
+	) -> URLRequest {
+		let url = urlWithPath("/base/")
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+		// Making request body
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+
+		if let storeVal = store {
+			builder.addMultiformValue(storeVal.rawValue, forName: "UPLOADCARE_STORE")
+		}
+
+		if let metadata = metadata {
+			for meta in metadata {
+				builder.addMultiformValue(meta.value, forName: "metadata[\(meta.key)]")
+			}
+		}
+
+		if let uploadSignature = uploadSignature ?? getSignature() {
+			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
+			builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
+		}
+
+		for file in files {
+			let fileName = file.key.isEmpty ? "noname.ext" : file.key
+			builder.addMultiformData(file.value, forName: fileName)
+		}
+
+		urlRequest = builder.finalize()
+		return urlRequest
+	}
+
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
 	/// - Parameters:
-	///   - files: Files dictionary where key is filename, value file in Data format
-	///   - store: Sets the file storing behavior
-	///   - completionHandler: callback
+	///   - files: Files dictionary where key is filename, value file in Data format.
+	///   - store: Sets the file storing behavior.
+	///   - completionHandler: Completion handler.
 	@discardableResult
 	internal func directUploadInForeground(
 		files: [String: Data],
@@ -395,20 +631,90 @@ extension UploadAPI {
 	) -> UploadTaskable {
 		return directUpload(files: files, uploadType: .foreground, store: store, metadata: metadata, onProgress, completionHandler)
 	}
+
+	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
+	/// - Parameters:
+	///   - files: Files dictionary where key is filename, value file in Data format.
+	///   - store: Sets the file storing behavior.
+	///   - metadata: File metadata.
+	/// - Returns: Dictionary where keys are file names, values are IDs of uploaded files.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	internal func directUploadInForeground(
+		files: [String: Data],
+		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
+		uploadSignature: UploadSignature? = nil
+	) async throws -> [String: String] {
+		var urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
+
+		// writing data to temp file
+		let tempDir = FileManager.default.temporaryDirectory
+		let localURL = tempDir.appendingPathComponent(UUID().uuidString)
+
+		if let data = urlRequest.httpBody {
+			try? data.write(to: localURL)
+			urlRequest.httpBody = nil
+		}
+
+		let (data, response) = try await foregroundUploadURLSession.upload(for: urlRequest, fromFile: localURL)
+		if (response as? HTTPURLResponse)?.statusCode == 200 {
+			let decodedData = try JSONDecoder().decode([String:String].self, from: data)
+			return decodedData
+		}
+
+		// error happened
+		let status: Int = (response as? HTTPURLResponse)?.statusCode ?? 0
+		let defaultErrorMessage = "Error happened or upload was cancelled"
+		let message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
+		throw UploadError(status: status, detail: message)
+	}
 }
 
 // MARK: - Multipart uploading
 extension UploadAPI {
-	@discardableResult
-	/// Multipart file uploading
+	/// Multipart file uploading. Multipart Uploads are useful when you are dealing with files larger than 100MB or you explicitly want to accelerate uploads. That method splits file into chunks and uploads them concurrently.
+	///
+	/// Example:
+	/// ```swift
+	/// guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
+	/// let data = try! Data(contentsOf: url)
+	/// let metadata = ["someKey": "someMetaValue"]
+	///
+	/// uploadcare.uploadAPI.multipartUpload(
+	///     data,
+	///     withName: "Mona_Lisa_23mb.jpg",
+	///     store: .doNotStore,
+	///     metadata: metadata,
+	///     onProgress
+	/// ) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let file):
+	///         print(file)
+	///     }
+	/// }
+	///
+	/// // You can cancel the uploading if needed
+	/// task.cancel()
+	///
+	/// // You can pause the uploading
+	/// task.pause()
+	///
+	/// // To resume the uploading:
+	/// task.resume()
+	/// ```
+	///
 	/// - Parameters:
-	///   - data: File data
-	///   - name: File name
-	///   - store: Sets the file storing behavior
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - onProgress: A callback that will be used to report upload progress
-	///   - completionHandler: Completion handler
+	///   - data: File data.
+	///   - name: File name.
+	///   - store: Sets the file storing behavior.
+	///   - metadata: File metadata.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - onProgress: A callback that will be used to report upload progress.
+	///   - completionHandler: Completion handler.
 	/// - Returns: Upload task. You can use that task to pause, resume or cancel uploading.
+	@discardableResult
 	public func multipartUpload(
 		_ data: Data,
 		withName name: String,
@@ -495,15 +801,111 @@ extension UploadAPI {
 
 		return task
 	}
-	
+
+	/// Multipart file uploading. Multipart Uploads are useful when you are dealing with files larger than 100MB or you explicitly want to accelerate uploads. That method splits file into chunks and uploads them concurrently.
+	///
+	/// Example:
+	/// ```swift
+	/// guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
+	/// let data = try! Data(contentsOf: url)
+	///
+	/// let file = try await uploadcare.uploadAPI.multipartUpload(
+	///     data,
+	///     withName: "Mona_Lisa_23mb.jpg",
+	///     store: .doNotStore,
+	///     metadata: ["someKey": "someMetaValue"]
+	/// ) { progress in
+	///     print("Upload progress: \(progress)")
+	/// }
+	/// ```
+	///
+	/// - Parameters:
+	///   - data: File data.
+	///   - name: File name.
+	///   - store: Sets the file storing behavior.
+	///   - metadata: File metadata.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - onProgress: A callback that will be used to report upload progress.
+	/// - Returns: Uploaded file details.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func multipartUpload(
+		_ data: Data,
+		withName name: String,
+		store: StoringBehavior? = nil,
+		metadata: [String: String]? = nil,
+		uploadSignature: UploadSignature? = nil,
+		_ onProgress: TaskProgressBlock? = nil
+	) async throws -> UploadedFile {
+		let totalSize = data.count
+		let fileMimeType = detectMimeType(for: data)
+		let filename = name.isEmpty ? "noname.ext" : name
+
+		let task = MultipartUploadTask()
+		task.queue = self.uploadQueue
+
+		// Starting a multipart upload transaction
+		let response = try await startMulipartUpload(
+			withName: filename,
+			size: totalSize,
+			mimeType: fileMimeType,
+			store: store ?? .store,
+			metadata: metadata,
+			uploadSignature: uploadSignature
+		)
+
+		// Uploading individual file parts
+		var offset = 0
+		var i = 0
+		var numberOfUploadedChunks = 0
+
+		try await withThrowingTaskGroup(of: String.self) { taskGroup in
+			while offset < totalSize {
+				let bytesLeft = totalSize - offset
+				let currentChunkSize = bytesLeft > Self.uploadChunkSize ? Self.uploadChunkSize : bytesLeft
+
+				// data chunk
+				let range = NSRange(location: offset, length: currentChunkSize)
+				guard let dataRange = Range(range) else {
+					throw UploadError.defaultError()
+				}
+				let chunk = data.subdata(in: dataRange)
+
+				// presigned upload url
+				let partUrl = response.parts[i]
+
+				// uploading individual part
+				taskGroup.addTask { [weak self] in
+					let value = try await self?.uploadIndividualFilePart(chunk, toPresignedUrl: partUrl, withMimeType: fileMimeType, completeMessage: nil)
+					return value ?? ""
+				}
+
+				offset += currentChunkSize
+				i += 1
+			}
+
+			for try await _ in taskGroup {
+				numberOfUploadedChunks += 1
+
+				let total = Double(response.parts.count)
+				let ready = Double(numberOfUploadedChunks)
+				let percent = round(ready * 100 / total)
+				onProgress?(percent / 100)
+			}
+		}
+
+		// Completing a multipart upload
+		return try await completeMultipartUpload(forFileUIID: response.uuid)
+	}
+
 	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
 	/// - Parameters:
 	///   - filename: An original filename
 	///   - size: Precise file size in bytes. Should not exceed your project file size cap.
 	///   - mimeType: A file MIME-type.
 	///   - store: Sets the file storing behavior.
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
+	///   - metadata: File metadata.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
 	private func startMulipartUpload(
 		withName filename: String,
 		size: Int,
@@ -542,6 +944,56 @@ extension UploadAPI {
 			case .failure(let error): completionHandler(.failure(UploadError.fromError(error)))
 			case .success(let responseData): completionHandler(.success(responseData))
 			}
+		}
+	}
+	
+	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
+	/// - Parameters:
+	///   - filename: An original filename
+	///   - size: Precise file size in bytes. Should not exceed your project file size cap.
+	///   - mimeType: A file MIME-type.
+	///   - store: Sets the file storing behavior.
+	///   - metadata: File metadata.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	private func startMulipartUpload(
+		withName filename: String,
+		size: Int,
+		mimeType: String,
+		store: StoringBehavior,
+		metadata: [String: String]? = nil,
+		uploadSignature: UploadSignature? = nil
+	) async throws -> StartMulipartUploadResponse {
+		let url = urlWithPath("/multipart/start/")
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+		// Making request body
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(filename, forName: "filename")
+		builder.addMultiformValue("\(size)", forName: "size")
+		builder.addMultiformValue(mimeType, forName: "content_type")
+		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+		builder.addMultiformValue(store.rawValue, forName: "UPLOADCARE_STORE")
+
+		if let metadata = metadata {
+			for meta in metadata {
+				builder.addMultiformValue(meta.value, forName: "metadata[\(meta.key)]")
+			}
+		}
+
+		if let uploadSignature = uploadSignature ?? getSignature() {
+			builder.addMultiformValue(uploadSignature.signature, forName: "signature")
+			builder.addMultiformValue("\(uploadSignature.expire)", forName: "expire")
+		}
+
+		urlRequest = builder.finalize()
+
+		do {
+			let response: StartMulipartUploadResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw UploadError.fromError(error)
 		}
 	}
 
@@ -612,10 +1064,48 @@ extension UploadAPI {
 		uploadQueue.async(execute: workItem)
 	}
 
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	private func uploadIndividualFilePart(
+		_ part: Data,
+		toPresignedUrl urlString: String,
+		withMimeType mimeType: String,
+		completeMessage: String? = nil
+	) async throws -> String? {
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			throw UploadError.defaultError()
+		}
+
+		var urlRequest = URLRequest(url: url)
+		urlRequest.httpMethod = RequestManager.HTTPMethod.put.rawValue
+		urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
+		urlRequest.httpBody = part
+
+		let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+		guard let response = response as? HTTPURLResponse else {
+			assertionFailure("No response")
+			throw UploadError.defaultError()
+		}
+
+		if response.statusCode == 200 {
+			if let message = completeMessage {
+				DLog(message)
+			}
+			return completeMessage
+		} else {
+			// Print error
+			let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+			DLog("Error with status \(response.statusCode): \(errorMessage)")
+
+			return try await uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, completeMessage: completeMessage)
+		}
+	}
+
 	/// Complete multipart upload transaction when all files parts are uploaded.
 	/// - Parameters:
 	///   - forFileUIID: Uploaded file UUID from multipart upload start response.
-	///   - completionHandler: callback
+	///   - completionHandler: Completion handler.
 	private func completeMultipartUpload(
 		forFileUIID: String,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
@@ -637,16 +1127,53 @@ extension UploadAPI {
             }
         }
 	}
+
+	/// Complete multipart upload transaction when all files parts are uploaded.
+	/// - Parameter forFileUIID: Uploaded file UUID from multipart upload start response.
+	/// - Returns: Uploaded file details.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	private func completeMultipartUpload(forFileUIID: String) async throws -> UploadedFile {
+		let url = urlWithPath("/multipart/complete/")
+		var urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+		// Making request body
+		let builder = MultipartRequestBuilder(request: urlRequest)
+		builder.addMultiformValue(forFileUIID, forName: "uuid")
+		builder.addMultiformValue(publicKey, forName: "UPLOADCARE_PUB_KEY")
+
+		urlRequest = builder.finalize()
+
+		do {
+			let file: UploadedFile = try await requestManager.performRequest(urlRequest)
+			return file
+		} catch {
+			throw UploadError.fromError(error)
+		}
+	}
 }
 
 
 // MARK: - Groups
 extension UploadAPI {
-	/// Create files group from a set of files
+	/// Create files group from a set of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let files: [UploadedFile] = [file1, file2]
+	/// let group = uploadcare.uploadAPI.createFilesGroup(files: files) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let group):
+	///         print(group)
+	///     }
+	/// }
+	/// ```
+	///
 	/// - Parameters:
-	///   - files: files array
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
+	///   - files: Files array.
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
 	public func createFilesGroup(
 		files: [UploadedFile],
 		uploadSignature: UploadSignature? = nil,
@@ -655,39 +1182,51 @@ extension UploadAPI {
 		let fileIds: [String] = files.map { $0.fileId }
 		createFilesGroup(fileIds: fileIds, uploadSignature: uploadSignature, completionHandler)
 	}
+	
+	/// Create files group from a set of files.
+	///
+	/// Example:
+	/// ```swift
+	/// let files: [UploadedFile] = [file1, file2]
+	/// let group = try await uploadcare.uploadAPI.createFilesGroup(files: files)
+	/// print(group)
+	/// ```
+	///
+	/// - Parameters:
+	///   - files: Files array.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Completion handler.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func createFilesGroup(files: [UploadedFile], uploadSignature: UploadSignature? = nil) async throws -> UploadedFilesGroup {
+		let fileIds: [String] = files.map { $0.fileId }
+		return try await createFilesGroup(fileIds: fileIds, uploadSignature: uploadSignature)
+	}
 
 	/// Create files group from a set of files UUIDs.
+	///
+	/// Example:
+	/// ```swift
+	/// let files = ["fileID1", "fileID2"]
+	/// let group = uploadcare.uploadAPI.createFilesGroup(fileIds: files) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let group):
+	///         print(group)
+	///     }
+	/// }
+	/// ```
+	///
 	/// - Parameters:
 	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
 	public func createFilesGroup(
 		fileIds: [String],
 		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void
 	) {
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "https"
-        urlComponents.host = uploadAPIHost
-        urlComponents.path = "/group/"
-        urlComponents.queryItems = [
-            URLQueryItem(name: "pub_key", value: publicKey)
-        ]
-
-        for (index, fileId) in fileIds.enumerated() {
-            urlComponents.queryItems?.append(
-                URLQueryItem(name: "files[\(index)]", value: fileId)
-            )
-        }
-
-		if let uploadSignature = uploadSignature ?? getSignature() {
-            urlComponents.queryItems?.append(contentsOf: [
-                URLQueryItem(name: "signature", value: uploadSignature.signature),
-                URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
-            ])
-        }
-
-        guard let url = urlComponents.url else {
+        guard let url = makeCreateFilesGroupURL(fileIds: fileIds, uploadSignature: uploadSignature) else {
 			assertionFailure("Incorrect url")
 			return
 		}
@@ -700,34 +1239,87 @@ extension UploadAPI {
             }
         }
 	}
-	
-	/// Files group info
+
+	/// Create files group from a set of files UUIDs.
+	///
+	/// Example:
+	/// ```swift
+	/// let files = ["fileID1", "fileID2"]
+	/// let group = try await uploadcare.uploadAPI.createFilesGroup(fileIds: files)
+	/// print(group)
+	/// ```
+	///
+	/// - Parameters:
+	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Files group details.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func createFilesGroup(fileIds: [String], uploadSignature: UploadSignature? = nil) async throws -> UploadedFilesGroup {
+		guard let url = makeCreateFilesGroupURL(fileIds: fileIds, uploadSignature: uploadSignature) else {
+			throw UploadError(status: 0, detail: "Bad url.")
+		}
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .post)
+
+		do {
+			let filesGroup: UploadedFilesGroup = try await requestManager.performRequest(urlRequest)
+			return filesGroup
+		} catch {
+			throw UploadError.fromError(error)
+		}
+	}
+
+	/// Make url for Create files group request
+	/// - Parameters:
+	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: URL
+	private func makeCreateFilesGroupURL(fileIds: [String], uploadSignature: UploadSignature? = nil) -> URL? {
+		var urlComponents = URLComponents()
+		urlComponents.scheme = "https"
+		urlComponents.host = uploadAPIHost
+		urlComponents.path = "/group/"
+		urlComponents.queryItems = [
+			URLQueryItem(name: "pub_key", value: publicKey)
+		]
+
+		for (index, fileId) in fileIds.enumerated() {
+			urlComponents.queryItems?.append(
+				URLQueryItem(name: "files[\(index)]", value: fileId)
+			)
+		}
+
+		if let uploadSignature = uploadSignature ?? getSignature() {
+			urlComponents.queryItems?.append(contentsOf: [
+				URLQueryItem(name: "signature", value: uploadSignature.signature),
+				URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
+			])
+		}
+
+		return urlComponents.url
+	}
+
+	/// Get files group info.
+	///
+	/// Example:
+	/// ```swift
+	/// uploadcare.uploadAPI.filesGroupInfo(groupId: "groupID") { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let group):
+	///         print(group)
+	/// }
+	/// ```
 	/// - Parameters:
 	///   - groupId: Group ID. Group IDs look like UUID~N.
-	///   - uploadSignature: Sets the signature for the upload request
-	///   - completionHandler: callback
+	///   - uploadSignature: Sets the signature for the upload request.
+	///   - completionHandler: Completion handler.
 	public func filesGroupInfo(
 		groupId: String,
 		uploadSignature: UploadSignature? = nil,
 		_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void
 	) {
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "https"
-        urlComponents.host = uploadAPIHost
-        urlComponents.path = "/group/info/"
-        urlComponents.queryItems = [
-            URLQueryItem(name: "pub_key", value: publicKey),
-            URLQueryItem(name: "group_id", value: groupId)
-        ]
-		
-		if let uploadSignature = uploadSignature ?? getSignature() {
-            urlComponents.queryItems?.append(contentsOf: [
-                URLQueryItem(name: "signature", value: uploadSignature.signature),
-                URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
-            ])
-        }
-		
-        guard let url = urlComponents.url else {
+		guard let url = createFilesGroupInfoUrl(groupId: groupId, uploadSignature: uploadSignature) else {
 			assertionFailure("Incorrect url")
 			return
 		}
@@ -739,6 +1331,57 @@ extension UploadAPI {
 			case .success(let filesGroup): completionHandler(.success(filesGroup))
             }
         }
+	}
+
+	/// Get files group info.
+	///
+	/// Example:
+	/// ```swift
+	/// let group = try await uploadcare.uploadAPI.filesGroupInfo(groupId: "groupId")
+	/// print(group)
+	/// ```
+	///
+	/// - Parameters:
+	///   - groupId: Group ID. Group IDs look like UUID~N.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: Fles group info.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func filesGroupInfo(groupId: String, uploadSignature: UploadSignature? = nil) async throws -> UploadedFilesGroup {
+		guard let url = createFilesGroupInfoUrl(groupId: groupId, uploadSignature: uploadSignature) else {
+			throw UploadError(status: 0, detail: "Bad url.")
+		}
+		let urlRequest = makeUploadAPIURLRequest(fromURL: url, method: .get)
+
+		do {
+			let filesGroup: UploadedFilesGroup = try await requestManager.performRequest(urlRequest)
+			return filesGroup
+		} catch {
+			throw UploadError.fromError(error)
+		}
+	}
+	
+	/// Build URL to get files group details.
+	/// - Parameters:
+	///   - groupId: Group ID.
+	///   - uploadSignature: Sets the signature for the upload request.
+	/// - Returns: URL.
+	private func createFilesGroupInfoUrl(groupId: String, uploadSignature: UploadSignature? = nil) -> URL? {
+		var urlComponents = URLComponents()
+		urlComponents.scheme = "https"
+		urlComponents.host = uploadAPIHost
+		urlComponents.path = "/group/info/"
+		urlComponents.queryItems = [
+			URLQueryItem(name: "pub_key", value: publicKey),
+			URLQueryItem(name: "group_id", value: groupId)
+		]
+
+		if let uploadSignature = uploadSignature ?? getSignature() {
+			urlComponents.queryItems?.append(contentsOf: [
+				URLQueryItem(name: "signature", value: uploadSignature.signature),
+				URLQueryItem(name: "expire", value: "\(uploadSignature.expire)")
+			])
+		}
+		return urlComponents.url
 	}
 }
 
