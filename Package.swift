@@ -5,10 +5,12 @@ import PackageDescription
 
 #if os(Linux)
 let dependencies: [PackageDescription.Package.Dependency] = [
-	.package(url: "https://github.com/swift-server/async-http-client.git", from: "1.18.0")
+	.package(url: "https://github.com/swift-server/async-http-client.git", from: "1.18.0"),
+    .package(url: "https://github.com/apple/swift-crypto.git", "1.0.0" ..< "3.0.0")
 ]
 let targetDependencies: [PackageDescription.Target.Dependency] = [
-	.product(name: "AsyncHTTPClient", package: "async-http-client")
+	.product(name: "AsyncHTTPClient", package: "async-http-client"),
+    .product(name: "Crypto", package: "swift-crypto")
 ]
 let products: [PackageDescription.Product] = [
     .library(name: "Uploadcare", targets: ["Uploadcare"])

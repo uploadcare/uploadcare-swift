@@ -9,6 +9,8 @@
 import Foundation
 #if !os(Linux)
 import CommonCrypto
+#else
+import Crypto
 #endif
 
 
@@ -30,7 +32,14 @@ extension String {
 		result.deallocate()
 		return String(format: hash as String)
 		#else
-		return ""
+		let d = Data(self.utf8)
+		let h = Insecure.MD5.hash(data: d)
+
+		let hash = NSMutableString(capacity: Insecure.MD5.byteCount)
+		for i in Array(h) {
+			hash.append(String(format: "%02x", arguments: [i]))
+		}
+		return String(format: hash as String)
 		#endif
 	}
 	
