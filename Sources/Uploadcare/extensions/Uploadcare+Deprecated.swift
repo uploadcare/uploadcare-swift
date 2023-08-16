@@ -8,6 +8,7 @@
 
 import Foundation
 
+#if !os(Linux)
 // MARK: - Deprecated methods
 extension Uploadcare {
 	/// Get list of files
@@ -424,3 +425,4 @@ extension Uploadcare {
 		}
 	}
 }
+#endif

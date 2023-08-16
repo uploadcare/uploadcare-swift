@@ -8,6 +8,7 @@
 
 import Foundation
 
+#if !os(Linux)
 extension UploadAPI {
 	/// File info
 	/// - Parameters:
@@ -181,3 +182,4 @@ extension UploadAPI {
 		}
 	}
 }
+#endif
