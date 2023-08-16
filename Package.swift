@@ -3,6 +3,18 @@
 
 import PackageDescription
 
+#if os(Linux)
+let dependencies: [PackageDescription.Package.Dependency] = [
+	.package(url: "https://github.com/swift-server/async-http-client.git", from: "1.0.0")
+]
+let targetDependencies: [PackageDescription.Target.Dependency] = [
+	.product(name: "AsyncHTTPClient", package: "async-http-client")
+]
+#else
+let dependencies: [PackageDescription.Package.Dependency] = []
+let targetDependencies: [PackageDescription.Target.Dependency] = []
+#endif
+
 let package = Package(
     name: "Uploadcare",
 	platforms: [
@@ -15,13 +27,13 @@ let package = Package(
         .library(name: "Uploadcare", targets: ["Uploadcare"]),
 		.library(name: "UploadcareWidget", targets: ["UploadcareWidget"])
     ],
-    dependencies: [],
+    dependencies: dependencies,
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "Uploadcare",
-            dependencies: []
+            dependencies: targetDependencies
 		),
 		.target(
 			name: "UploadcareWidget",
