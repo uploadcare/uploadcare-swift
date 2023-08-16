@@ -53,7 +53,11 @@ extension String {
         let data = Data(digest)
         return data.map { String(format: "%02hhx", $0) }.joined()
 		#else
-		return ""
+		let symmetricKey = SymmetricKey(data: key.data(using: .utf8)!)
+		let someData = self.data(using: .utf8)!
+		let mac = HMAC<Insecure.SHA1>.authenticationCode(for: someData, using: symmetricKey)
+		let data = Data(mac)
+		return data.map { String(format: "%02hhx", $0) }.joined()
 		#endif
     }
 	
@@ -68,7 +72,11 @@ extension String {
         let data = Data(digest)
         return data.map { String(format: "%02hhx", $0) }.joined()
 		#else
-		return ""
+		let symmetricKey = SymmetricKey(data: key.data(using: .utf8)!)
+		let someData = self.data(using: .utf8)!
+		let mac = HMAC<SHA256>.authenticationCode(for: someData, using: symmetricKey)
+		let data = Data(mac)
+		return data.map { String(format: "%02hhx", $0) }.joined()
 		#endif
     }
 }
