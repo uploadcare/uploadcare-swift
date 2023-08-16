@@ -7,6 +7,9 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 public typealias TaskCompletionHandler = ([String: String]?, UploadError?) -> Void
 public typealias TaskResultCompletionHandler = (Result<[String: String], UploadError>) -> Void

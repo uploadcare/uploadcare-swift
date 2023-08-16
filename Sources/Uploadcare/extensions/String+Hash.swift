@@ -7,6 +7,7 @@
 //
 
 import Foundation
+#if !os(Linux)
 import CommonCrypto
 
 
@@ -48,3 +49,4 @@ extension String {
         return data.map { String(format: "%02hhx", $0) }.joined()
     }
 }
+#endif

@@ -7,6 +7,9 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 class BackgroundSessionManager: NSObject {
 	static let instance = BackgroundSessionManager()
