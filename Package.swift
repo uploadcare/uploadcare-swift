@@ -10,9 +10,16 @@ let dependencies: [PackageDescription.Package.Dependency] = [
 let targetDependencies: [PackageDescription.Target.Dependency] = [
 	.product(name: "AsyncHTTPClient", package: "async-http-client")
 ]
+let products: [PackageDescription.Product] = [
+    .library(name: "Uploadcare", targets: ["Uploadcare"])
+]
 #else
 let dependencies: [PackageDescription.Package.Dependency] = []
 let targetDependencies: [PackageDescription.Target.Dependency] = []
+let products: [PackageDescription.Product] = [
+    .library(name: "Uploadcare", targets: ["Uploadcare"]),
+	.library(name: "UploadcareWidget", targets: ["UploadcareWidget"])
+]
 #endif
 
 let package = Package(
@@ -23,10 +30,7 @@ let package = Package(
 		.tvOS(.v11),
 		.watchOS(.v5)
     ],
-    products: [
-        .library(name: "Uploadcare", targets: ["Uploadcare"]),
-		.library(name: "UploadcareWidget", targets: ["UploadcareWidget"])
-    ],
+    products: products,
     dependencies: dependencies,
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
