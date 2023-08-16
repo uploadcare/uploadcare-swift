@@ -6,9 +6,9 @@
 //  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
+#if os(iOS)
 import SwiftUI
 
-#if os(iOS)
 @available(iOS 13.0, *)
 struct ImagePicker: UIViewControllerRepresentable {
 
