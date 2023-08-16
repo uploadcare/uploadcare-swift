@@ -9,12 +9,15 @@
 import Foundation
 #if !os(Linux)
 import CommonCrypto
+#endif
 
 
 extension String {
 	/// String -> MD5
 	/// - Returns: hash
 	func md5() -> String {
+		#if !os(Linux)
+
 		let str = self.cString(using: String.Encoding.utf8)
 		let strLen = CUnsignedInt(self.lengthOfBytes(using: String.Encoding.utf8))
 		let digestLen = Int(CC_MD5_DIGEST_LENGTH)
@@ -26,27 +29,37 @@ extension String {
 		}
 		result.deallocate()
 		return String(format: hash as String)
+		#else
+		return ""
+		#endif
 	}
 	
 	/// String -> SHA1 signed
 	/// - Parameter key: sign key
 	/// - Returns: hash
 	func hmac(key: String) -> String {
+		#if !os(Linux)
         var digest = [UInt8](repeating: 0, count: Int(CC_SHA1_DIGEST_LENGTH))
         CCHmac(CCHmacAlgorithm(kCCHmacAlgSHA1), key, key.count, self, self.count, &digest)
         let data = Data(digest)
         return data.map { String(format: "%02hhx", $0) }.joined()
+		#else
+		return ""
+		#endif
     }
 	
 	/// String -> SHA256 signed
 	/// - Parameter key: sign key
 	/// - Returns: hash
 	func sha256(key: String) -> String {
+		#if !os(Linux)
 		var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
 		CCHmac(CCHmacAlgorithm(kCCHmacAlgSHA256), key, key.count, self, self.count, &digest)
 		
         let data = Data(digest)
         return data.map { String(format: "%02hhx", $0) }.joined()
+		#else
+		return ""
+		#endif
     }
 }
-#endif

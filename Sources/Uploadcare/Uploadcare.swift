@@ -1425,26 +1425,27 @@ extension Uploadcare {
 	/// - Returns: URL to your backend.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func getAuthenticatedUrlFromUrl(_ url: URL) async throws -> String {
-		let urlString = url.absoluteString
+		// let urlString = url.absoluteString
 
-		redirectValues[urlString] = ""
+		// redirectValues[urlString] = ""
 
-		let config = URLSessionConfiguration.default
-		let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+		// let config = URLSessionConfiguration.default
+		// let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
 
-		defer { redirectValues.removeValue(forKey: urlString) }
-		let urlRequest = URLRequest(url: url)
+		// defer { redirectValues.removeValue(forKey: urlString) }
+		// let urlRequest = URLRequest(url: url)
 
-		do {
-			_ = try await urlSession.data(for: urlRequest)
-		} catch {
-			throw RESTAPIError(detail: error.localizedDescription)
-		}
+		// do {
+		// 	_ = try await urlSession.data(for: urlRequest)
+		// } catch {
+		// 	throw RESTAPIError(detail: error.localizedDescription)
+		// }
 
-		guard let redirectUrl = self.redirectValues[urlString], redirectUrl.isEmpty == false else {
-			throw RESTAPIError(detail: "No redirect happened")
-		}
-		return redirectUrl
+		// guard let redirectUrl = self.redirectValues[urlString], redirectUrl.isEmpty == false else {
+		// 	throw RESTAPIError(detail: "No redirect happened")
+		// }
+		// return redirectUrl
+		return ""
 	}
 
 	/// List of project webhooks.
@@ -2600,6 +2601,7 @@ extension Uploadcare {
 	///   - onProgress: A callback that will be used to report upload progress.
 	///   - completionHandler: Completion handler.
 	/// - Returns: Upload task. Confirms to UploadTaskable protocol in any case. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload.
+	#if !os(Linux)
 	@discardableResult
 	public func uploadFile(
 		_ data: Data,
@@ -2682,6 +2684,7 @@ extension Uploadcare {
 		// using multipart upload otherwise
 		return uploadAPI.multipartUpload(data, withName: filename, store: store, metadata: metadata, uploadSignature: uploadSignature, onProgress, completionHandler)
 	}
+	#endif
 
 
 	/// Upload file. This method will decide internally which upload method will be used (direct or multipart).

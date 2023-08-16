@@ -56,7 +56,9 @@ public class UploadAPI: NSObject {
 
 		super.init()
 
+		#if !os(Linux)
 		BackgroundSessionManager.instance.sessionDelegate = self
+		#endif
 	}
 
 	/// Init with request manager
@@ -71,8 +73,9 @@ public class UploadAPI: NSObject {
 		self.requestManager = requestManager ?? RequestManager(publicKey: publicKey, secretKey: secretKey)
 
 		super.init()
-
+		#if !os(Linux)
 		BackgroundSessionManager.instance.sessionDelegate = self
+		#endif
 	}
 }
 
@@ -510,6 +513,7 @@ extension UploadAPI {
 	///   - store: Sets the file storing behavior.
 	///   - uploadSignature: Sets the signature for the upload request.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	@discardableResult
 	public func directUpload(
 		files: [String: Data],
@@ -521,7 +525,9 @@ extension UploadAPI {
 	) -> UploadTaskable {
 		return directUpload(files: files, uploadType: .background, store: store, metadata: metadata, uploadSignature: uploadSignature, onProgress, completionHandler)
 	}
+	#endif
 
+	#if !os(Linux)
     @discardableResult
     internal func directUpload(
 		files: [String: Data],
@@ -576,11 +582,13 @@ extension UploadAPI {
 
 		let backgroundUploadTask = UploadTask(task: uploadTask, completionHandler: completionHandler, progressCallback: onProgress)
         backgroundUploadTask.localDataUrl = localURL
+		
         BackgroundSessionManager.instance.backgroundTasks[uploadTask.taskIdentifier] = backgroundUploadTask
 
         uploadTask.resume()
-        return backgroundUploadTask
+		return backgroundUploadTask
     }
+	#endif
 
 	private func createDirectUploadRequest(
 		files: [String: Data],
@@ -624,6 +632,7 @@ extension UploadAPI {
 	///   - files: Files dictionary where key is filename, value file in Data format.
 	///   - store: Sets the file storing behavior.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	@discardableResult
 	internal func directUploadInForeground(
 		files: [String: Data],
@@ -634,6 +643,7 @@ extension UploadAPI {
 	) -> UploadTaskable {
 		return directUpload(files: files, uploadType: .foreground, store: store, metadata: metadata, onProgress, completionHandler)
 	}
+	#endif
 
 	/// Direct upload comply with the RFC 7578 standard and work by making POST requests via HTTPS.
 	/// - Parameters:
@@ -648,28 +658,29 @@ extension UploadAPI {
 		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil
 	) async throws -> [String: String] {
-		var urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
+		// var urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
 
-		// writing data to temp file
-		let tempDir = FileManager.default.temporaryDirectory
-		let localURL = tempDir.appendingPathComponent(UUID().uuidString)
+		// // writing data to temp file
+		// let tempDir = FileManager.default.temporaryDirectory
+		// let localURL = tempDir.appendingPathComponent(UUID().uuidString)
 
-		if let data = urlRequest.httpBody {
-			try? data.write(to: localURL)
-			urlRequest.httpBody = nil
-		}
+		// if let data = urlRequest.httpBody {
+		// 	try? data.write(to: localURL)
+		// 	urlRequest.httpBody = nil
+		// }
 
-		let (data, response) = try await foregroundUploadURLSession.upload(for: urlRequest, fromFile: localURL)
-		if (response as? HTTPURLResponse)?.statusCode == 200 {
-			let decodedData = try JSONDecoder().decode([String:String].self, from: data)
-			return decodedData
-		}
+		// let (data, response) = try await foregroundUploadURLSession.upload(for: urlRequest, fromFile: localURL)
+		// if (response as? HTTPURLResponse)?.statusCode == 200 {
+		// 	let decodedData = try JSONDecoder().decode([String:String].self, from: data)
+		// 	return decodedData
+		// }
 
-		// error happened
-		let status: Int = (response as? HTTPURLResponse)?.statusCode ?? 0
-		let defaultErrorMessage = "Error happened or upload was cancelled"
-		let message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
-		throw UploadError(status: status, detail: message)
+		// // error happened
+		// let status: Int = (response as? HTTPURLResponse)?.statusCode ?? 0
+		// let defaultErrorMessage = "Error happened or upload was cancelled"
+		// let message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
+		// throw UploadError(status: status, detail: message)
+		return [:]
 	}
 }
 
@@ -1074,35 +1085,36 @@ extension UploadAPI {
 		withMimeType mimeType: String,
 		completeMessage: String? = nil
 	) async throws -> String? {
-		guard let url = URL(string: urlString) else {
-			assertionFailure("Incorrect url")
-			throw UploadError.defaultError()
-		}
+		// guard let url = URL(string: urlString) else {
+		// 	assertionFailure("Incorrect url")
+		// 	throw UploadError.defaultError()
+		// }
 
-		var urlRequest = URLRequest(url: url)
-		urlRequest.httpMethod = RequestManager.HTTPMethod.put.rawValue
-		urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
-		urlRequest.httpBody = part
+		// var urlRequest = URLRequest(url: url)
+		// urlRequest.httpMethod = RequestManager.HTTPMethod.put.rawValue
+		// urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
+		// urlRequest.httpBody = part
 
-		let (data, response) = try await URLSession.shared.data(for: urlRequest)
+		// let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
-		guard let response = response as? HTTPURLResponse else {
-			assertionFailure("No response")
-			throw UploadError.defaultError()
-		}
+		// guard let response = response as? HTTPURLResponse else {
+		// 	assertionFailure("No response")
+		// 	throw UploadError.defaultError()
+		// }
 
-		if response.statusCode == 200 {
-			if let message = completeMessage {
-				DLog(message)
-			}
-			return completeMessage
-		} else {
-			// Print error
-			let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-			DLog("Error with status \(response.statusCode): \(errorMessage)")
+		// if response.statusCode == 200 {
+		// 	if let message = completeMessage {
+		// 		DLog(message)
+		// 	}
+		// 	return completeMessage
+		// } else {
+		// 	// Print error
+		// 	let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+		// 	DLog("Error with status \(response.statusCode): \(errorMessage)")
 
-			return try await uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, completeMessage: completeMessage)
-		}
+		// 	return try await uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, completeMessage: completeMessage)
+		// }
+		return nil
 	}
 
 	/// Complete multipart upload transaction when all files parts are uploaded.
@@ -1413,6 +1425,7 @@ extension UploadAPI: URLSessionDataDelegate {
 }
 
 // MARK: - URLSessionTaskDelegate
+#if !os(Linux)
 extension UploadAPI: URLSessionTaskDelegate {
 	public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
 		guard let backgroundTask = BackgroundSessionManager.instance.backgroundTasks[task.taskIdentifier] else { return }
@@ -1462,3 +1475,4 @@ extension UploadAPI: URLSessionTaskDelegate {
 		}
 	}
 }
+#endif

@@ -6,7 +6,7 @@
 //  Copyright © 2021 Uploadcare, Inc. All rights reserved.
 //
 
-#if !os(tvOS)
+#if !os(tvOS) && !os(Linux)
 #if canImport(SwiftUI)
 import SwiftUI
 #endif
