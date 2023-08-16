@@ -5,7 +5,7 @@ import PackageDescription
 
 #if os(Linux)
 let dependencies: [PackageDescription.Package.Dependency] = [
-	.package(url: "https://github.com/swift-server/async-http-client.git", from: "1.0.0")
+	.package(url: "https://github.com/swift-server/async-http-client.git", from: "1.18.0")
 ]
 let targetDependencies: [PackageDescription.Target.Dependency] = [
 	.product(name: "AsyncHTTPClient", package: "async-http-client")
