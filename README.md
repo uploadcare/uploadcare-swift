@@ -123,17 +123,17 @@ guard let data = try? Data(contentsOf: url) else { return }
 // You can create an UploadedFile object to operate with it
 var fileForUploading1 = uploadcare.file(fromData: data)
 fileForUploading2.metadata = ["myKey": "myValue"]
-try await fileForUploading1.upload(withName: "random_file_name.jpg", store: .store)
+try await fileForUploading1.upload(withName: "random_file_name.jpg", store: .auto)
 
 // Or you can just upload data and provide a filename
 
 var fileForUploading2 = uploadcare.file(withContentsOf: url)!
-let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
+let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .auto) { progress in
     print("upload progress: \(progress * 100)%")
 }
 
 // Same method with a completion callback that returns a task that can be paused or canceled:
-let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .store, metadata: ["someKey": "someMetaValue"]) { progress in
+let task = uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .auto, metadata: ["someKey": "someMetaValue"]) { progress in
     print("upload progress: \(progress * 100)%")
 } _: { result in
     switch result {
