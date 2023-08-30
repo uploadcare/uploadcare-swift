@@ -745,7 +745,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		let file = uploadcare.file(fromData: data)
 		let name = UUID().uuidString
 
-		storingTestTask = file.upload(withName: name, store: .store, uploadSignature: nil) { _ in
+		storingTestTask = file.upload(withName: name, store: .doNotStore, uploadSignature: nil) { _ in
 
 		} _: { result in
 			switch result {
