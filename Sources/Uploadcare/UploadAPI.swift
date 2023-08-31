@@ -672,7 +672,7 @@ extension UploadAPI {
 
 		#if os(Linux)
 		do {
-			let response: [String:String] = try await requestManager.performRequest(urlRequest)
+			let response: [String: String] = try await requestManager.performRequest(urlRequest)
 			return response
 		} catch {
 			throw UploadError.fromError(error)
