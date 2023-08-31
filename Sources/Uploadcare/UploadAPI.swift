@@ -279,7 +279,7 @@ extension UploadAPI {
 	/// let task = UploadFromURLTask(sourceUrl: url)
 	///     .checkURLDuplicates(true)
 	///     .saveURLDuplicates(true)
-	///     .store(.store)
+	///     .store(.auto)
 	///     .setMetadata("myValue", forKey: "someKey")
 	///
 	/// uploadcare.uploadAPI.upload(task: task) { result in
@@ -327,7 +327,7 @@ extension UploadAPI {
 	/// let task = UploadFromURLTask(sourceUrl: url)
 	///     .checkURLDuplicates(true)
 	///     .saveURLDuplicates(true)
-	///     .store(.store)
+	///     .store(.auto)
 	///     .setMetadata("myValue", forKey: "someKey")
 	///
 	/// let response = try await uploadcare.uploadAPI.upload(task: task)
@@ -363,7 +363,7 @@ extension UploadAPI {
 	/// let task = UploadFromURLTask(sourceUrl: url)
 	///     .checkURLDuplicates(true)
 	///     .saveURLDuplicates(true)
-	///     .store(.store)
+	///     .store(.auto)
 	///     .setMetadata("myValue", forKey: "someKey")
 	///
 	/// let file = try await uploadcare.uploadAPI.uploadAndWaitForCompletion(task: task)
@@ -766,7 +766,7 @@ extension UploadAPI {
 			withName: filename,
 			size: totalSize,
 			mimeType: fileMimeType,
-			store: store ?? .store,
+			store: store ?? .auto,
 			metadata: metadata,
 			uploadSignature: uploadSignature) { [weak self] result in
 				guard let self = self else { return }
@@ -879,7 +879,7 @@ extension UploadAPI {
 			withName: filename,
 			size: totalSize,
 			mimeType: fileMimeType,
-			store: store ?? .store,
+			store: store ?? .auto,
 			metadata: metadata,
 			uploadSignature: uploadSignature
 		)
