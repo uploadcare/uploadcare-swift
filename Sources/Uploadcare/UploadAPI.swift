@@ -1127,8 +1127,7 @@ extension UploadAPI {
 			DLog(error)
 			throw UploadError.fromError(error)
 		}
-		#endif
-
+		#else
 		let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
 		guard let response = response as? HTTPURLResponse else {
@@ -1148,6 +1147,7 @@ extension UploadAPI {
 
 			return try await uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, completeMessage: completeMessage)
 		}
+		#endif
 	}
 
 	/// Complete multipart upload transaction when all files parts are uploaded.
