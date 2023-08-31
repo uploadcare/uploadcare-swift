@@ -233,12 +233,12 @@ internal extension RequestManager {
 		   return true as! T
 		}
 
-		guard data.count > 0 else {
-		   throw RequestManagerError.emptyResponse
-		}
-
 		if T.self is Data.Type {
 			return data as! T
+		}
+
+		guard data.count > 0 else {
+		   throw RequestManagerError.emptyResponse
 		}
 
 		if T.self is String.Type, let string = String(data: data, encoding: .utf8) {

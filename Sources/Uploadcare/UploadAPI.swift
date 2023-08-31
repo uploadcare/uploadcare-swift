@@ -1106,36 +1106,48 @@ extension UploadAPI {
 		withMimeType mimeType: String,
 		completeMessage: String? = nil
 	) async throws -> String? {
-		// guard let url = URL(string: urlString) else {
-		// 	assertionFailure("Incorrect url")
-		// 	throw UploadError.defaultError()
-		// }
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			throw UploadError.defaultError()
+		}
 
-		// var urlRequest = URLRequest(url: url)
-		// urlRequest.httpMethod = RequestManager.HTTPMethod.put.rawValue
-		// urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
-		// urlRequest.httpBody = part
+		var urlRequest = URLRequest(url: url)
+		urlRequest.httpMethod = RequestManager.HTTPMethod.put.rawValue
+		urlRequest.addValue(mimeType, forHTTPHeaderField: "Content-Type")
+		urlRequest.httpBody = part
 
-		// let (data, response) = try await URLSession.shared.data(for: urlRequest)
+		#if os(Linux)
+		do {
+			let _: Data = try await requestManager.performRequest(urlRequest)
+			if let message = completeMessage {
+				DLog(message)
+			}
+			return completeMessage
+		} catch {
+			DLog(error)
+			throw UploadError.fromError(error)
+		}
+		#endif
 
-		// guard let response = response as? HTTPURLResponse else {
-		// 	assertionFailure("No response")
-		// 	throw UploadError.defaultError()
-		// }
+		let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
-		// if response.statusCode == 200 {
-		// 	if let message = completeMessage {
-		// 		DLog(message)
-		// 	}
-		// 	return completeMessage
-		// } else {
-		// 	// Print error
-		// 	let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-		// 	DLog("Error with status \(response.statusCode): \(errorMessage)")
+		guard let response = response as? HTTPURLResponse else {
+			assertionFailure("No response")
+			throw UploadError.defaultError()
+		}
 
-		// 	return try await uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, completeMessage: completeMessage)
-		// }
-		return nil
+		if response.statusCode == 200 {
+			if let message = completeMessage {
+				DLog(message)
+			}
+			return completeMessage
+		} else {
+			// Print error
+			let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+			DLog("Error with status \(response.statusCode): \(errorMessage)")
+
+			return try await uploadIndividualFilePart(part, toPresignedUrl: urlString, withMimeType: mimeType, completeMessage: completeMessage)
+		}
 	}
 
 	/// Complete multipart upload transaction when all files parts are uploaded.
