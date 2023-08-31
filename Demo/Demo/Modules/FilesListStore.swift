@@ -121,7 +121,7 @@ class FilesListStore: ObservableObject {
 			}
 		}
 
-		self.currentTask = self.uploadcare?.uploadFile(data, withName: filename, store: .doNotStore, onProgress, { result in
+		self.currentTask = self.uploadcare?.uploadFile(data, withName: filename, store: .auto, onProgress, { result in
 			switch result {
 			case .failure(let error):
 				DLog(error)

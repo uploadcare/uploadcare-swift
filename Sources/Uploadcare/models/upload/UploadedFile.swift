@@ -207,7 +207,7 @@ public class UploadedFile: Codable {
 	///     print("progress: \(progress)")
 	/// }
 	///
-	/// let task = fileForUploading.upload(withName: "my_file.jpg", store: .store, onProgress, { result in
+	/// let task = fileForUploading.upload(withName: "my_file.jpg", store: .auto, onProgress, { result in
 	///     switch result {
 	///         case .failure(let error):
 	///             print(error.detail)
@@ -290,7 +290,7 @@ public class UploadedFile: Codable {
 	///
 	/// let uploadedFile = try await fileForUploading.upload(
 	///     withName: "my_file.jpg",
-	///     store: .store
+	///     store: .auto
 	/// )
 	/// ```
 	/// - Parameters:

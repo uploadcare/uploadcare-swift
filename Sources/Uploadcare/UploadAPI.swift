@@ -492,7 +492,7 @@ extension UploadAPI {
 	///
 	/// let task = uploadcare.uploadAPI.directUpload(
 	///     files: ["random_file_name.jpg": data],
-	///     store: .doNotStore,
+	///     store: .auto,
 	///     metadata: metadata,
 	///    onProgress
 	/// ) { result in
@@ -697,7 +697,7 @@ extension UploadAPI {
 	/// uploadcare.uploadAPI.multipartUpload(
 	///     data,
 	///     withName: "Mona_Lisa_23mb.jpg",
-	///     store: .doNotStore,
+	///     store: .auto,
 	///     metadata: metadata,
 	///     onProgress
 	/// ) { result in
@@ -826,7 +826,7 @@ extension UploadAPI {
 	/// let file = try await uploadcare.uploadAPI.multipartUpload(
 	///     data,
 	///     withName: "Mona_Lisa_23mb.jpg",
-	///     store: .doNotStore,
+	///     store: .auto,
 	///     metadata: ["someKey": "someMetaValue"]
 	/// ) { progress in
 	///     print("Upload progress: \(progress)")
