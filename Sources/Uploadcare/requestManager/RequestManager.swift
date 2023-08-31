@@ -113,6 +113,7 @@ internal extension RequestManager {
 	}
     
 
+	#if !os(Linux)
 	@discardableResult
 	func performRequest<T: Codable>(_ request: URLRequest, _ completion: @escaping(Result<T, Error>) -> Void) -> URLSessionDataTask? {
 		let task = urlSession.dataTask(with: request) { [weak self] (data, response, error) in
@@ -162,6 +163,7 @@ internal extension RequestManager {
 		task.resume()
 		return task
 	}
+	#endif
 
 
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
