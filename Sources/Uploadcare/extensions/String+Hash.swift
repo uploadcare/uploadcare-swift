@@ -19,7 +19,6 @@ extension String {
 	/// - Returns: hash
 	func md5() -> String {
 		#if !os(Linux)
-
 		let str = self.cString(using: String.Encoding.utf8)
 		let strLen = CUnsignedInt(self.lengthOfBytes(using: String.Encoding.utf8))
 		let digestLen = Int(CC_MD5_DIGEST_LENGTH)
