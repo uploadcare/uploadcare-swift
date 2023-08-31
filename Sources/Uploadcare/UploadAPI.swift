@@ -155,6 +155,7 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - fileId: File ID.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func fileInfo(
 		withFileId fileId: String,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
@@ -181,6 +182,7 @@ extension UploadAPI {
 			}
 		}
 	}
+	#endif
 	
 	/// Get uploaded file info.
 	///
@@ -297,6 +299,7 @@ extension UploadAPI {
 	///   - task: Upload settings.
 	///   - uploadSignature: Sets the signature for the upload request.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func upload(
 		task: UploadFromURLTask,
 		uploadSignature: UploadSignature? = nil,
@@ -315,6 +318,7 @@ extension UploadAPI {
 			}
 		}
 	}
+	#endif
 	
 	/// Upload file from URL.
 	///
@@ -409,6 +413,7 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - token: Token recieved from upload method response.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func uploadStatus(
 		forToken token: String,
 		_ completionHandler: @escaping (Result<UploadFromURLStatus, UploadError>) -> Void
@@ -435,6 +440,7 @@ extension UploadAPI {
             }
         }
 	}
+	#endif
 	
 	/// Get status for file upload from URL.
 	///
@@ -728,6 +734,7 @@ extension UploadAPI {
 	///   - onProgress: A callback that will be used to report upload progress.
 	///   - completionHandler: Completion handler.
 	/// - Returns: Upload task. You can use that task to pause, resume or cancel uploading.
+	#if !os(Linux)
 	@discardableResult
 	public func multipartUpload(
 		_ data: Data,
@@ -815,6 +822,7 @@ extension UploadAPI {
 
 		return task
 	}
+	#endif
 
 	/// Multipart file uploading. Multipart Uploads are useful when you are dealing with files larger than 100MB or you explicitly want to accelerate uploads. That method splits file into chunks and uploads them concurrently.
 	///
@@ -920,6 +928,7 @@ extension UploadAPI {
 	///   - metadata: File metadata.
 	///   - uploadSignature: Sets the signature for the upload request.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	private func startMulipartUpload(
 		withName filename: String,
 		size: Int,
@@ -960,6 +969,7 @@ extension UploadAPI {
 			}
 		}
 	}
+	#endif
 	
 	/// Start multipart upload. Multipart Uploads are useful when you are dealing with files larger than 100MB or explicitly want to use accelerated uploads.
 	/// - Parameters:
@@ -1011,6 +1021,7 @@ extension UploadAPI {
 		}
 	}
 
+	#if !os(Linux)
 	private func uploadIndividualFilePart(
 		_ part: Data,
 		toPresignedUrl urlString: String,
@@ -1077,6 +1088,7 @@ extension UploadAPI {
 		// using concurrent queue for parts uploading
 		uploadQueue.async(execute: workItem)
 	}
+	#endif
 
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	private func uploadIndividualFilePart(
@@ -1121,6 +1133,7 @@ extension UploadAPI {
 	/// - Parameters:
 	///   - forFileUIID: Uploaded file UUID from multipart upload start response.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	private func completeMultipartUpload(
 		forFileUIID: String,
 		_ completionHandler: @escaping (Result<UploadedFile, UploadError>) -> Void
@@ -1142,6 +1155,7 @@ extension UploadAPI {
             }
         }
 	}
+	#endif
 
 	/// Complete multipart upload transaction when all files parts are uploaded.
 	/// - Parameter forFileUIID: Uploaded file UUID from multipart upload start response.
@@ -1189,6 +1203,7 @@ extension UploadAPI {
 	///   - files: Files array.
 	///   - uploadSignature: Sets the signature for the upload request.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func createFilesGroup(
 		files: [UploadedFile],
 		uploadSignature: UploadSignature? = nil,
@@ -1197,6 +1212,7 @@ extension UploadAPI {
 		let fileIds: [String] = files.map { $0.fileId }
 		createFilesGroup(fileIds: fileIds, uploadSignature: uploadSignature, completionHandler)
 	}
+	#endif
 	
 	/// Create files group from a set of files.
 	///
@@ -1236,6 +1252,7 @@ extension UploadAPI {
 	///   - fileIds: That parameter defines a set of files you want to join in a group. Each parameter can be a file UUID or a CDN URL, with or without applied Media Processing operations.
 	///   - uploadSignature: Sets the signature for the upload request.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func createFilesGroup(
 		fileIds: [String],
 		uploadSignature: UploadSignature? = nil,
@@ -1254,6 +1271,7 @@ extension UploadAPI {
             }
         }
 	}
+	#endif
 
 	/// Create files group from a set of files UUIDs.
 	///
@@ -1329,6 +1347,7 @@ extension UploadAPI {
 	///   - groupId: Group ID. Group IDs look like UUID~N.
 	///   - uploadSignature: Sets the signature for the upload request.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func filesGroupInfo(
 		groupId: String,
 		uploadSignature: UploadSignature? = nil,
@@ -1347,6 +1366,7 @@ extension UploadAPI {
             }
         }
 	}
+	#endif
 
 	/// Get files group info.
 	///
@@ -1400,6 +1420,7 @@ extension UploadAPI {
 	}
 }
 
+#if !os(Linux)
 // MARK: - URLSessionTaskDelegate
 extension UploadAPI: URLSessionDataDelegate {
 	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
@@ -1425,7 +1446,6 @@ extension UploadAPI: URLSessionDataDelegate {
 }
 
 // MARK: - URLSessionTaskDelegate
-#if !os(Linux)
 extension UploadAPI: URLSessionTaskDelegate {
 	public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
 		guard let backgroundTask = BackgroundSessionManager.instance.backgroundTasks[task.taskIdentifier] else { return }
