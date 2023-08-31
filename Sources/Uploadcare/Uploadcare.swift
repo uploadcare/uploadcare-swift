@@ -2569,7 +2569,7 @@ extension Uploadcare {
 	/// guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "jpg") else { return }
 	/// guard let data = try? Data(contentsOf: url) else { return }
 	///
-	/// let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore, metadata: ["someKey": "someMetaValue"]) { progress in
+	/// let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .auto, metadata: ["someKey": "someMetaValue"]) { progress in
 	///     print("progress: \(progress)")
 	/// } _: { result in
 	///     switch result {
@@ -2691,7 +2691,7 @@ extension Uploadcare {
 	/// let file = try await uploadcare.uploadFile(
 	///     data,
 	///     withName: "random_file_name.jpg",
-	///     store: .doNotStore
+	///     store: .auto
 	/// ) { progress in
 	///     print("progress: \(progress)")
 	/// }

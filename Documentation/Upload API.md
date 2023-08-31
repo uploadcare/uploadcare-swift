@@ -59,12 +59,12 @@ guard let url = Bundle.main.url(forResource: "Mona_Lisa_23mb", withExtension: "j
 guard let data = try? Data(contentsOf: url) else { return }
 
 // Async:
-let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore) { progress in
+let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .auto) { progress in
     print("progress: \(progress)")
 }
 
 // With a completion callback:
-let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore, metadata: ["someKey": "someMetaValue"]) { progress in
+let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .auto, metadata: ["someKey": "someMetaValue"]) { progress in
     print("progress: \(progress)")
 } _: { result in
     switch result {
@@ -90,12 +90,12 @@ You can also create a file object (alternative syntax):
 // Async:
 var fileForUploading = uploadcare.file(withContentsOf: url)!
 fileForUploadingfileForUploading.metadata = ["myKey": "myValue"]
-let file = try await fileForUploading.upload(withName: "random_file_name.jpg", store: .doNotStore)
+let file = try await fileForUploading.upload(withName: "random_file_name.jpg", store: .auto)
 
 // With a completion callback. Progress and completion callbacks are optional:
 var fileForUploading2 = uploadcare.file(withContentsOf: url)!
 fileForUploading2.metadata = ["myKey": "myValue"]
-fileForUploading2.upload(withName: "my_file.jpg", store: .store)
+fileForUploading2.upload(withName: "my_file.jpg", store: .auto)
 ```
 
 Sometimes you don't want to have the secret key in your client app and want to get it from the backend. In that case, you can provide an upload signature directly:
@@ -104,10 +104,10 @@ Sometimes you don't want to have the secret key in your client app and want to g
 let signature = UploadSignature(signature: "signature", expire: 1658486910)
 
 // Async:
-let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .doNotStore, uploadSignature: signature)
+let file = try await uploadcare.uploadFile(data, withName: "random_file_name.jpg", store: .auto, uploadSignature: signature)
 
 // With a completion callback:
-let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .doNotStore, uploadSignature: signature) { progress in
+let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .auto, uploadSignature: signature) { progress in
     print("progress: \(progress)")
 } _: { result in
     ...
@@ -122,7 +122,7 @@ Direct uploads work with background `URLSession`, so uploading will continue if 
 guard let url = URL(string: "https://source.unsplash.com/featured"),
       let data = try? Data(contentsOf: url) else { return }
       
-let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store, metadata: ["someKey": "someMetaValue"]) { progress in
+let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .auto, metadata: ["someKey": "someMetaValue"]) { progress in
     print("upload progress: \(progress * 100)%")
 } _: { result in
     switch result {
@@ -146,7 +146,7 @@ guard let url = URL(string: "https://source.unsplash.com/featured"),
       let data = try? Data(contentsOf: url) else { return }
       
 let signature = UploadSignature(signature: "signature", expire: 1658486910)
-let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .store, uploadSignature: signature) { progress in
+let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .auto, uploadSignature: signature) { progress in
     print("upload progress: \(progress * 100)%")
 } _: { result in
     /// ...
@@ -168,12 +168,12 @@ let data = try! Data(contentsOf: url)
 let metadata = ["someKey": "someMetaValue"]
 
 // Async:
-let file = try await uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .store, metadata: metadata) { progress in
+let file = try await uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .auto, metadata: metadata) { progress in
     print("progress: \(progress)")
 }
 
 // With a completion callback:
-let task = uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .store, metadata: metadata) { progress in
+let task = uploadcare.uploadAPI.multipartUpload(data, withName: "Mona_Lisa_big.jpg", store: .auto, metadata: metadata) { progress in
     print("progress: \(progress)")
 } _: { result in
     switch result {
