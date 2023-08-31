@@ -1420,7 +1420,6 @@ extension UploadAPI {
 	}
 }
 
-#if !os(Linux)
 // MARK: - URLSessionTaskDelegate
 extension UploadAPI: URLSessionDataDelegate {
 	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
@@ -1448,6 +1447,7 @@ extension UploadAPI: URLSessionDataDelegate {
 // MARK: - URLSessionTaskDelegate
 extension UploadAPI: URLSessionTaskDelegate {
 	public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+		#if !os(Linux)
 		guard let backgroundTask = BackgroundSessionManager.instance.backgroundTasks[task.taskIdentifier] else { return }
 		
 		// remove task
@@ -1478,21 +1478,25 @@ extension UploadAPI: URLSessionTaskDelegate {
 		}
 		let error = UploadError(status: statusCode, detail: message)
 		backgroundTask.completionHandler(.failure(error))
+		#endif
 	}
 	
 	public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+		#if !os(Linux)
 		// run progress callback
 		if let backgroundTask = BackgroundSessionManager.instance.backgroundTasks[task.taskIdentifier] {
 			var progress: Double = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
 			progress = Double(round(100 * progress) / 100)
 			backgroundTask.progressCallback?(progress)
 		}
+		#endif
 	}
 	
 	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+		#if !os(Linux)
 		if let backgroundTask = BackgroundSessionManager.instance.backgroundTasks[dataTask.taskIdentifier] {
 			backgroundTask.dataBuffer.append(data)
 		}
+		#endif
 	}
 }
-#endif
