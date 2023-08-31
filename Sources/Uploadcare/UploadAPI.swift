@@ -664,29 +664,38 @@ extension UploadAPI {
 		metadata: [String: String]? = nil,
 		uploadSignature: UploadSignature? = nil
 	) async throws -> [String: String] {
-		// var urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
+		var urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
 
-		// // writing data to temp file
-		// let tempDir = FileManager.default.temporaryDirectory
-		// let localURL = tempDir.appendingPathComponent(UUID().uuidString)
+		// writing data to temp file
+		let tempDir = FileManager.default.temporaryDirectory
+		let localURL = tempDir.appendingPathComponent(UUID().uuidString)
 
-		// if let data = urlRequest.httpBody {
-		// 	try? data.write(to: localURL)
-		// 	urlRequest.httpBody = nil
-		// }
+		#if os(Linux)
+		do {
+			let response: [String:String] = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw UploadError.fromError(error)
+		}
+		
+		#else
+		if let data = urlRequest.httpBody {
+			try? data.write(to: localURL)
+			urlRequest.httpBody = nil
+		}
 
-		// let (data, response) = try await foregroundUploadURLSession.upload(for: urlRequest, fromFile: localURL)
-		// if (response as? HTTPURLResponse)?.statusCode == 200 {
-		// 	let decodedData = try JSONDecoder().decode([String:String].self, from: data)
-		// 	return decodedData
-		// }
+		let (data, response) = try await foregroundUploadURLSession.upload(for: urlRequest, fromFile: localURL)
+		if (response as? HTTPURLResponse)?.statusCode == 200 {
+			let decodedData = try JSONDecoder().decode([String: String].self, from: data)
+			return decodedData
+		}
 
-		// // error happened
-		// let status: Int = (response as? HTTPURLResponse)?.statusCode ?? 0
-		// let defaultErrorMessage = "Error happened or upload was cancelled"
-		// let message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
-		// throw UploadError(status: status, detail: message)
-		return [:]
+		// error happened
+		let status: Int = (response as? HTTPURLResponse)?.statusCode ?? 0
+		let defaultErrorMessage = "Error happened or upload was cancelled"
+		let message = String(data: data, encoding: .utf8) ?? defaultErrorMessage
+		throw UploadError(status: status, detail: message)
+		#endif
 	}
 }
 
