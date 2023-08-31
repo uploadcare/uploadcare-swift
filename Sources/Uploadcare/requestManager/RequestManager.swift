@@ -112,55 +112,55 @@ internal extension RequestManager {
 		}
 	}
     
+
 	@discardableResult
 	func performRequest<T: Codable>(_ request: URLRequest, _ completion: @escaping(Result<T, Error>) -> Void) -> URLSessionDataTask? {
-		// let task = urlSession.dataTask(with: request) { [weak self] (data, response, error) in
-		// 	guard let self = self else { return }
+		let task = urlSession.dataTask(with: request) { [weak self] (data, response, error) in
+			guard let self = self else { return }
 
-		// 	if let error = error {
-		// 		completion(.failure(error))
-		// 		return
-		// 	}
+			if let error = error {
+				completion(.failure(error))
+				return
+			}
 
-		// 	guard let response = response, let data = data else {
-		// 		completion(.failure(RequestManagerError.noResponse))
-		// 		return
-		// 	}
+			guard let response = response, let data = data else {
+				completion(.failure(RequestManagerError.noResponse))
+				return
+			}
 
-		// 	if data.count == 0, true is T {
-		// 		completion(.success(true as! T))
-		// 		return
-		// 	}
+			if data.count == 0, true is T {
+				completion(.success(true as! T))
+				return
+			}
 
-		// 	if data.count == 0 {
-		// 		completion(.failure(RequestManagerError.emptyResponse))
-		// 		return
-		// 	}
+			if data.count == 0 {
+				completion(.failure(RequestManagerError.emptyResponse))
+				return
+			}
 
-		// 	if T.self is String.Type, let string = String(data: data, encoding: .utf8) {
-		// 		completion(.success(string as! T))
-		// 		return
-		// 	}
+			if T.self is String.Type, let string = String(data: data, encoding: .utf8) {
+				completion(.success(string as! T))
+				return
+			}
 
-		// 	let responseData: T
-		// 	do {
-        //         if request.url?.host == RESTAPIHost {
-        //             try self.validateRESTAPIResponse(response: response, data: data)
-        //         }
-        //         if request.url?.host == uploadAPIHost {
-        //             try self.validateUploadAPIResponse(response: response, data: data)
-        //         }
-		// 		responseData = try JSONDecoder().decode(T.self, from: data)
-		// 	} catch let error {
-		// 		completion(.failure(error))
-		// 		return
-		// 	}
+			let responseData: T
+			do {
+				if request.url?.host == RESTAPIHost {
+					try self.validateRESTAPIResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, data: data)
+				}
+				if request.url?.host == uploadAPIHost {
+					try self.validateUploadAPIResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, data: data)
+				}
+				responseData = try JSONDecoder().decode(T.self, from: data)
+			} catch let error {
+				completion(.failure(error))
+				return
+			}
 
-		// 	completion(.success(responseData))
-		// }
-		// task.resume()
-		// return task
-		return nil
+			completion(.success(responseData))
+		}
+		task.resume()
+		return task
 	}
 
 
@@ -168,29 +168,30 @@ internal extension RequestManager {
 	@discardableResult
 	func performRequest<T: Codable>(_ request: URLRequest) async throws -> T {
 		#if !os(Linux)
-		 let (data, response) = try await URLSession.shared.data(for: request)
+		let (data, response) = try await URLSession.shared.data(for: request)
 
-		 if data.count == 0, true is T {
-		 	return true as! T
-		 }
+		if data.count == 0, true is T {
+			return true as! T
+		}
 
-		 guard data.count > 0 else {
-		 	throw RequestManagerError.emptyResponse
-		 }
+		guard data.count > 0 else {
+			throw RequestManagerError.emptyResponse
+		}
 
-		 if T.self is String.Type, let string = String(data: data, encoding: .utf8) {
-		 	return string as! T
-		 }
+		if T.self is String.Type, let string = String(data: data, encoding: .utf8) {
+			return string as! T
+		}
 
-		 if request.url?.host == RESTAPIHost {
-			 try self.validateRESTAPIResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, data: data)
-		 }
-		 if request.url?.host == uploadAPIHost {
-		 	try self.validateUploadAPIResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, data: data)
-		 }
-		 return try JSONDecoder().decode(T.self, from: data)
+		if request.url?.host == RESTAPIHost {
+			try self.validateRESTAPIResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, data: data)
+		}
+		if request.url?.host == uploadAPIHost {
+			try self.validateUploadAPIResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, data: data)
+		}
+		return try JSONDecoder().decode(T.self, from: data)
+
 		#else
-
+		
 		let httpClient: HTTPClient = HTTPClient(eventLoopGroupProvider: .createNew)
 		defer {
 			DispatchQueue.main.async {
