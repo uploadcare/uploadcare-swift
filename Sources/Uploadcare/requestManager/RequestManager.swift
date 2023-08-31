@@ -237,6 +237,10 @@ internal extension RequestManager {
 		   throw RequestManagerError.emptyResponse
 		}
 
+		if T.self is Data.Type {
+			return data as! T
+		}
+
 		if T.self is String.Type, let string = String(data: data, encoding: .utf8) {
 		   return string as! T
 		}
