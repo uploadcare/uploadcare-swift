@@ -1465,27 +1465,32 @@ extension Uploadcare {
 	/// - Returns: URL to your backend.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func getAuthenticatedUrlFromUrl(_ url: URL) async throws -> String {
-		// let urlString = url.absoluteString
+		let urlRequest = URLRequest(url: url)
+		#if os(Linux)
+		let redirect = try await requestManager.catchRedirect(urlRequest)
+		guard redirect.isEmpty == false else {
+			throw RESTAPIError(detail: "No redirect happened")
+		}
+		return redirect
+		#else
+		let urlString = url.absoluteString
+		redirectValues[urlString] = ""
+		defer { redirectValues.removeValue(forKey: urlString) }
 
-		// redirectValues[urlString] = ""
+		let config = URLSessionConfiguration.default
+		let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
 
-		// let config = URLSessionConfiguration.default
-		// let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+		do {
+			_ = try await urlSession.data(for: urlRequest)
+		} catch {
+			throw RESTAPIError(detail: error.localizedDescription)
+		}
 
-		// defer { redirectValues.removeValue(forKey: urlString) }
-		// let urlRequest = URLRequest(url: url)
-
-		// do {
-		// 	_ = try await urlSession.data(for: urlRequest)
-		// } catch {
-		// 	throw RESTAPIError(detail: error.localizedDescription)
-		// }
-
-		// guard let redirectUrl = self.redirectValues[urlString], redirectUrl.isEmpty == false else {
-		// 	throw RESTAPIError(detail: "No redirect happened")
-		// }
-		// return redirectUrl
-		return ""
+		guard let redirectUrl = self.redirectValues[urlString], redirectUrl.isEmpty == false else {
+			throw RESTAPIError(detail: "No redirect happened")
+		}
+		return redirectUrl
+		#endif
 	}
 
 	/// List of project webhooks.

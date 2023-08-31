@@ -165,6 +165,45 @@ internal extension RequestManager {
 	}
 	#endif
 
+	#if os(Linux)
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	func catchRedirect(_ request: URLRequest) async throws -> String {
+		let config = HTTPClient.Configuration(redirectConfiguration: .disallow)
+		let httpClient: HTTPClient = HTTPClient(eventLoopGroupProvider: .createNew, configuration: config)
+
+		defer {
+			DispatchQueue.main.async {
+				try? httpClient.syncShutdown()
+			}
+		}
+
+		let method =  NIOHTTP1.HTTPMethod(rawValue: request.httpMethod ?? "GET")
+		var headers = HTTPHeaders()
+		if let requestHeaders = request.allHTTPHeaderFields {
+			for header in requestHeaders {
+				headers.add(name: header.key, value: header.value)
+			}
+		}
+
+		var body: HTTPClient.Body?
+		if let requestBody = request.httpBody {
+			body = .data(requestBody)
+		}
+
+		let req = try HTTPClient.Request(
+			url: request.url?.absoluteString ?? "",
+			method: method,
+			headers: headers,
+			body: body
+		)
+
+		let response = try await httpClient
+			.execute(request: req)
+			.get()
+
+		return response.headers.first(name: "location") ?? ""
+	}
+	#endif
 
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	@discardableResult
@@ -193,7 +232,7 @@ internal extension RequestManager {
 		return try JSONDecoder().decode(T.self, from: data)
 
 		#else
-		
+
 		let httpClient: HTTPClient = HTTPClient(eventLoopGroupProvider: .createNew)
 		defer {
 			DispatchQueue.main.async {
