@@ -88,7 +88,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		DLog("size of file: \(sizeString(ofData: data))")
 
 		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
-		let uuid = resultDictionary.values.first!
+		guard let uuid = resultDictionary.values.first else {
+			XCTFail()
+			return
+		}
 		let file = try await uploadcare.deleteFile(withUUID: uuid)
 		XCTAssertEqual(uuid, file.uuid)
 	}
@@ -100,7 +103,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		DLog("size of file: \(sizeString(ofData: data))")
 
 		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
-		let uuid = resultDictionary.values.first!
+		guard let uuid = resultDictionary.values.first else {
+			XCTFail()
+			return
+		}
 
 		let response = try await uploadcare.deleteFiles(withUUIDs: [uuid, "shouldBeInProblems"])
 		XCTAssertEqual(uuid, response.result.first?.uuid)
@@ -114,7 +120,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		DLog("size of file: \(sizeString(ofData: data))")
 
 		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
-		let uuid = resultDictionary.values.first!
+		guard let uuid = resultDictionary.values.first else {
+			XCTFail()
+			return
+		}
 
 		let file = try await uploadcare.storeFile(withUUID: uuid)
 		XCTAssertEqual(uuid, file.uuid)
@@ -130,7 +139,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		DLog("size of file: \(sizeString(ofData: data))")
 
 		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
-		let uuid = resultDictionary.values.first!
+		guard let uuid = resultDictionary.values.first else {
+			XCTFail()
+			return
+		}
 
 		let response = try await uploadcare.storeFiles(withUUIDs: [uuid])
 		XCTAssertEqual(uuid, response.result.first?.uuid)
@@ -202,7 +214,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		DLog("size of file: \(sizeString(ofData: data))")
 
 		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
-		let uuid = resultDictionary.values.first!
+		guard let uuid = resultDictionary.values.first else {
+			XCTFail()
+			return
+		}
 
 		try await Task.sleep(nanoseconds: 5 * NSEC_PER_SEC)
 
@@ -220,7 +235,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		DLog("size of file: \(sizeString(ofData: data))")
 
 		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
-		let uuid = resultDictionary.values.first!
+		guard let uuid = resultDictionary.values.first else {
+			XCTFail()
+			return
+		}
 
 		do {
 			_ = try await uploadcare.copyFileToRemoteStorage(source: uuid, target: "one_more_project", pattern: .uuid)
@@ -274,7 +292,11 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		// upload random image
 		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
-		let uuid = resultDictionary.values.first!
+		guard let uuid = resultDictionary.values.first else {
+			XCTFail()
+			return
+		}
+
 		let file = try await uploadcare.fileInfo(withUUID: uuid)
 
 		try await Task.sleep(nanoseconds: 4 * NSEC_PER_SEC)
@@ -317,7 +339,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		XCTAssertTrue(response.problems.isEmpty)
 
-		let job = response.result.first!
+		guard let job = response.result.first else {
+			XCTFail()
+			return
+		}
 
 		func check() async throws {
 			let statusResponse = try await uploadcare.videoConversionJobStatus(token: job.token)
@@ -404,7 +429,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let filesList = uploadcare.listOfFiles()
 
 		let list = try await filesList.get(withQuery: query)
-		let uuid = list.results.first!.uuid
+		guard let uuid = list.results.first?.uuid else {
+			XCTFail()
+			return
+		}
 
 		let response = try await uploadcare.executeAWSRecognition(fileUUID: uuid)
 		DLog(response)
@@ -420,7 +448,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let filesList = uploadcare.listOfFiles()
 
 		let list = try await filesList.get(withQuery: query)
-		let uuid = list.results.first!.uuid
+		guard let uuid = list.results.first?.uuid else {
+			XCTFail()
+			return
+		}
 
 		let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
 		let response = try await uploadcare.executeClamav(fileUUID: uuid, parameters: parameters)
@@ -437,7 +468,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let filesList = uploadcare.listOfFiles()
 
 		let list = try await filesList.get(withQuery: query)
-		let uuid = list.results.first!.uuid
+		guard let uuid = list.results.first?.uuid else {
+			XCTFail()
+			return
+		}
 
 		let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
 		let response = try await uploadcare.executeRemoveBG(fileUUID: uuid, parameters: parameters)

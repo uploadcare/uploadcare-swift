@@ -7,6 +7,9 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 class MultipartRequestBuilder {
 	private var boundary = UUID().uuidString

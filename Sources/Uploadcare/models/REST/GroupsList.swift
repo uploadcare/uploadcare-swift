@@ -212,6 +212,7 @@ extension GroupsList {
 }
 
 // MARK: - Public methods with Result callback
+#if !os(Linux)
 extension GroupsList {
 
 	/// Get list of files.
@@ -375,6 +376,7 @@ extension GroupsList {
 
 }
 
+
 // MARK: - Deprecated methods
 extension GroupsList {
 	/// Get list of groups.
@@ -418,3 +420,4 @@ extension GroupsList {
 		}
 	}
 }
+#endif

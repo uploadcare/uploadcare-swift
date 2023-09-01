@@ -7,7 +7,11 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
+#if !os(Linux)
 class BackgroundSessionManager: NSObject {
 	static let instance = BackgroundSessionManager()
 
@@ -57,3 +61,4 @@ extension BackgroundSessionManager: URLSessionTaskDelegate {
 		(sessionDelegate as? URLSessionDataDelegate)?.urlSession?(session, dataTask: dataTask, didReceive: data)
 	}
 }
+#endif

@@ -6,9 +6,9 @@
 //  Copyright © 2021 Uploadcare, Inc. All rights reserved.
 //
 
+#if os(iOS)
 import SwiftUI
 
-#if os(iOS)
 @available(iOS 14.0.0, *)
 struct SelectFileView: View {
 	// MARK: - Public properties

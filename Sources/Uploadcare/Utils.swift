@@ -8,6 +8,10 @@
 
 import Foundation
 
+#if os(Linux)
+let NSEC_PER_SEC: UInt64 = 1000000000
+#endif
+
 /// Debug log function with printing filename, method and line number
 ///
 /// - Parameters:

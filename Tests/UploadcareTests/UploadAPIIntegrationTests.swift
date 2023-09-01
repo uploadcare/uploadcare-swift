@@ -8,6 +8,7 @@
 import XCTest
 @testable import Uploadcare
 
+#if !os(Linux)
 final class UploadAPIIntegrationTests: XCTestCase {
 //	let uploadcare = Uploadcare(withPublicKey: "demopublickey", secretKey: "demopublickey")
 	let uploadcare = Uploadcare(withPublicKey: String(cString: getenv("UPLOADCARE_PUBLIC_KEY")), secretKey: String(cString: getenv("UPLOADCARE_SECRET_KEY")))
@@ -440,3 +441,4 @@ final class UploadAPIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 180.0)
     }
 }
+#endif

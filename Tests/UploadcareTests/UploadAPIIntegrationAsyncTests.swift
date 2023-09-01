@@ -49,7 +49,10 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 			DLog("uploaded file name: \(file.key) | file id: \(file.value)")
 		}
 
-		let fileId = resultDictionary.first!.value
+		guard let fileId = resultDictionary.first?.value else {
+			XCTFail()
+			return
+		}
 		let file = try await uploadcare.uploadAPI.fileInfo(withFileId: fileId)
 
 		XCTAssertNotNil(file.contentInfo)

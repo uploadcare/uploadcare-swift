@@ -7,6 +7,14 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
+#if canImport(AsyncHTTPClient)
+import AsyncHTTPClient
+import NIOHTTP1
+#endif
 
 internal enum RequestManagerError: Error {
 	case invalidRESTAPIResponse(error: RESTAPIError)
@@ -39,6 +47,9 @@ internal class RequestManager {
 	private let secretKey: String?
 	/// URL session
 	private let urlSession: URLSession = URLSession.shared
+	
+	/// Request timeout
+	private let requestsTimeout: Int64 = 30
 
 	// MARK: - Init
 	init(publicKey: String, secretKey: String?) {
@@ -101,6 +112,8 @@ internal extension RequestManager {
 		}
 	}
     
+
+	#if !os(Linux)
 	@discardableResult
 	func performRequest<T: Codable>(_ request: URLRequest, _ completion: @escaping(Result<T, Error>) -> Void) -> URLSessionDataTask? {
 		let task = urlSession.dataTask(with: request) { [weak self] (data, response, error) in
@@ -133,12 +146,12 @@ internal extension RequestManager {
 
 			let responseData: T
 			do {
-                if request.url?.host == RESTAPIHost {
-                    try self.validateRESTAPIResponse(response: response, data: data)
-                }
-                if request.url?.host == uploadAPIHost {
-                    try self.validateUploadAPIResponse(response: response, data: data)
-                }
+				if request.url?.host == RESTAPIHost {
+					try self.validateRESTAPIResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, data: data)
+				}
+				if request.url?.host == uploadAPIHost {
+					try self.validateUploadAPIResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, data: data)
+				}
 				responseData = try JSONDecoder().decode(T.self, from: data)
 			} catch let error {
 				completion(.failure(error))
@@ -150,11 +163,52 @@ internal extension RequestManager {
 		task.resume()
 		return task
 	}
+	#endif
 
+	#if os(Linux)
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	func catchRedirect(_ request: URLRequest) async throws -> String {
+		let config = HTTPClient.Configuration(redirectConfiguration: .disallow)
+		let httpClient: HTTPClient = HTTPClient(eventLoopGroupProvider: .createNew, configuration: config)
+
+		defer {
+			DispatchQueue.main.async {
+				try? httpClient.syncShutdown()
+			}
+		}
+
+		let method =  NIOHTTP1.HTTPMethod(rawValue: request.httpMethod ?? "GET")
+		var headers = HTTPHeaders()
+		if let requestHeaders = request.allHTTPHeaderFields {
+			for header in requestHeaders {
+				headers.add(name: header.key, value: header.value)
+			}
+		}
+
+		var body: HTTPClient.Body?
+		if let requestBody = request.httpBody {
+			body = .data(requestBody)
+		}
+
+		let req = try HTTPClient.Request(
+			url: request.url?.absoluteString ?? "",
+			method: method,
+			headers: headers,
+			body: body
+		)
+
+		let response = try await httpClient
+			.execute(request: req)
+			.get()
+
+		return response.headers.first(name: "location") ?? ""
+	}
+	#endif
 
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	@discardableResult
 	func performRequest<T: Codable>(_ request: URLRequest) async throws -> T {
+		#if !os(Linux)
 		let (data, response) = try await URLSession.shared.data(for: request)
 
 		if data.count == 0, true is T {
@@ -170,17 +224,78 @@ internal extension RequestManager {
 		}
 
 		if request.url?.host == RESTAPIHost {
-			try self.validateRESTAPIResponse(response: response, data: data)
+			try self.validateRESTAPIResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, data: data)
 		}
 		if request.url?.host == uploadAPIHost {
-			try self.validateUploadAPIResponse(response: response, data: data)
+			try self.validateUploadAPIResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, data: data)
 		}
 		return try JSONDecoder().decode(T.self, from: data)
+
+		#else
+
+		let httpClient: HTTPClient = HTTPClient(eventLoopGroupProvider: .createNew)
+		defer {
+			DispatchQueue.main.async {
+				try? httpClient.syncShutdown()
+			}
+		}
+
+		let method =  NIOHTTP1.HTTPMethod(rawValue: request.httpMethod ?? "GET")
+		var headers = HTTPHeaders()
+		if let requestHeaders = request.allHTTPHeaderFields {
+			for header in requestHeaders {
+				headers.add(name: header.key, value: header.value)
+			}
+		}
+
+		var body: HTTPClient.Body?
+		if let requestBody = request.httpBody {
+			body = .data(requestBody)
+		}
+
+		let req = try HTTPClient.Request(
+			url: request.url?.absoluteString ?? "",
+			method: method,
+			headers: headers,
+			body: body
+		)
+		let response = try await httpClient
+			.execute(request: req)
+			.get()
+
+		var data = Data()
+		if var body = response.body, let bytes = body.readBytes(length: body.readableBytes) {
+			data = Data(bytes)
+		}
+
+		if data.count == 0, true is T {
+		   return true as! T
+		}
+
+		if T.self is Data.Type {
+			return data as! T
+		}
+
+		guard data.count > 0 else {
+		   throw RequestManagerError.emptyResponse
+		}
+
+		if T.self is String.Type, let string = String(data: data, encoding: .utf8) {
+		   return string as! T
+		}
+
+		if request.url?.host == RESTAPIHost {
+			try self.validateRESTAPIResponse(statusCode: Int(response.status.code), data: data)
+		}
+		if request.url?.host == uploadAPIHost {
+			try self.validateUploadAPIResponse(statusCode: Int(response.status.code), data: data)
+		}
+		return try JSONDecoder().decode(T.self, from: data)
+		#endif
 	}
-    
-	func validateRESTAPIResponse(response: URLResponse, data: Data?) throws {
-		guard let httpResponse = response as? HTTPURLResponse else { return }
-		if !(200..<300).contains(httpResponse.statusCode) {
+
+	func validateRESTAPIResponse(statusCode: Int, data: Data?) throws {
+		if !(200..<300).contains(statusCode) {
 			#if DEBUG
 			if let data = data {
 				DLog(data.toString() ?? "")
@@ -188,23 +303,22 @@ internal extension RequestManager {
 			#endif
 
 			if let data = data, let decodedData = try? JSONDecoder().decode(RESTAPIError.self, from: data) {
-                throw RequestManagerError.invalidRESTAPIResponse(error: decodedData)
+				throw RequestManagerError.invalidRESTAPIResponse(error: decodedData)
 			}
 
-            throw RequestManagerError.invalidRESTAPIResponse(error: RESTAPIError.defaultError())
+			throw RequestManagerError.invalidRESTAPIResponse(error: RESTAPIError.defaultError())
 		}
 	}
 
-    func validateUploadAPIResponse(response: URLResponse, data: Data?) throws {
-        guard let httpResponse = response as? HTTPURLResponse else { return }
-        if !(200..<300).contains(httpResponse.statusCode) {
+	func validateUploadAPIResponse(statusCode: Int, data: Data?) throws {
+		if !(200..<300).contains(statusCode) {
 
-            if let detail = data?.toString() {
-                throw RequestManagerError.invalidUploadAPIResponse(error: UploadError(status: httpResponse.statusCode, detail: detail))
-            }
+			if let detail = data?.toString() {
+				throw RequestManagerError.invalidUploadAPIResponse(error: UploadError(status: statusCode, detail: detail))
+			}
 
-            let error = UploadError.defaultError(withStatus: httpResponse.statusCode)
-            throw RequestManagerError.invalidUploadAPIResponse(error: error)
-        }
-    }
+			let error = UploadError.defaultError(withStatus: statusCode)
+			throw RequestManagerError.invalidUploadAPIResponse(error: error)
+		}
+	}
 }

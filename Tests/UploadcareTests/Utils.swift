@@ -7,6 +7,10 @@
 
 import Foundation
 
+#if os(Linux)
+let NSEC_PER_SEC: UInt64 = 1000000000
+#endif
+
 func DLog(
     _ messages: Any...,
     fullPath: String = #file,

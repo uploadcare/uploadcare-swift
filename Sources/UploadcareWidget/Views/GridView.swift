@@ -6,9 +6,11 @@
 //  Copyright © 2021 Uploadcare, Inc. All rights reserved.
 //
 
+#if !os(tvOS) && !os(Linux)
+#if canImport(SwiftUI)
 import SwiftUI
+#endif
 
-#if !os(tvOS)
 @available(iOS 13.0.0, macOS 10.15.0, watchOS 6.0, *)
 struct GridView<Content: View>: View {
 	let rows: Int

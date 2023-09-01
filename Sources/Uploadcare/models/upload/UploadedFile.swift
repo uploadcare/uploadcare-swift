@@ -230,6 +230,7 @@ public class UploadedFile: Codable {
 	///   - onProgress: A callback that will be used to report upload progress.
 	///   - completionHandler: Completion handler.
 	/// - Returns: Upload task. Confirms to UploadTaskable protocol in anycase. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload.
+	#if !os(Linux)
 	@discardableResult
 	public func upload(
 		withName name: String,
@@ -277,6 +278,7 @@ public class UploadedFile: Codable {
 			}
 		})
 	}
+	#endif
 
 	/// Upload file.
 	///
@@ -364,6 +366,7 @@ extension UploadedFile: CustomDebugStringConvertible {
 	}
 }
 
+#if !os(Linux)
 // MARK: - Deprecated methods
 extension UploadedFile {
 	@available(*, deprecated, message: "Use the same method with Result type in the callback")
@@ -415,3 +418,4 @@ extension UploadedFile {
 		})
 	}
 }
+#endif
