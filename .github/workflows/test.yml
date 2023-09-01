@@ -8,7 +8,7 @@ on:
 
 jobs:
   macos_build_and_test:
-	name: Build and test on latest macOS
+    name: Build and test on latest macOS
     runs-on: macos-latest
     
     steps:
@@ -25,7 +25,7 @@ jobs:
       run: UPLOADCARE_PUBLIC_KEY="${{ secrets.UPLOADCARE_PUBLIC_KEY }}" UPLOADCARE_SECRET_KEY="${{ secrets.UPLOADCARE_SECRET_KEY }}" swift test
 
   ubuntu:
-	name: Build and test on latest Ubuntu
+    name: Build and test on latest Ubuntu
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -42,7 +42,7 @@ jobs:
       run: UPLOADCARE_PUBLIC_KEY="${{ secrets.UPLOADCARE_PUBLIC_KEY }}" UPLOADCARE_SECRET_KEY="${{ secrets.UPLOADCARE_SECRET_KEY }}" swift test
 
   carthage:
-	name: Build Carthage targets on latest macOS
+    name: Build Carthage targets on latest macOS
     runs-on: macos-latest
     strategy:
       matrix:
