@@ -995,7 +995,6 @@ extension Uploadcare {
 		let url = urlWithPath("/files/\(uuid)/metadata/\(key)/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
 		urlRequest.httpBody = "\"\(value)\"".data(using: .utf8)!
-		urlRequest.allHTTPHeaderFields?.removeValue(forKey: "Content-Type")
 		requestManager.signRequest(&urlRequest)
 
 		do {
