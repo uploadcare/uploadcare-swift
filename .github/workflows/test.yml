@@ -4,15 +4,16 @@ on:
 #  push:
 #    branches: [ master, develop ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, develop ]
 
 jobs:
-  SwiftBuild:
+  macos_build_and_test:
+	name: Build and test on latest macOS
     runs-on: macos-latest
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v3.5.3
+      uses: actions/checkout@master
 
     - name: Swift build for iOS
       run: swift build -c release -Xswiftc "-sdk" -Xswiftc "`xcrun --sdk iphonesimulator --show-sdk-path`" -Xswiftc "-target" -Xswiftc "x86_64-apple-ios13.0-simulator"
@@ -23,7 +24,25 @@ jobs:
     - name: Swift test
       run: UPLOADCARE_PUBLIC_KEY="${{ secrets.UPLOADCARE_PUBLIC_KEY }}" UPLOADCARE_SECRET_KEY="${{ secrets.UPLOADCARE_SECRET_KEY }}" swift test
 
-  CarthageBuild:
+  ubuntu:
+	name: Build and test on latest Ubuntu
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        swift: [5.8.1, 5.7.3, 5.6.3, 5.5.3]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Swift build
+      run: swift build -c release
+
+    - name: Swift test
+      run: UPLOADCARE_PUBLIC_KEY="${{ secrets.UPLOADCARE_PUBLIC_KEY }}" UPLOADCARE_SECRET_KEY="${{ secrets.UPLOADCARE_SECRET_KEY }}" swift test
+
+  carthage:
+	name: Build Carthage targets on latest macOS
     runs-on: macos-latest
     strategy:
       matrix:
@@ -31,7 +50,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3.5.3
-      
+      uses: actions/checkout@master
+
     - name: Build Carthage target ${{matrix.target}}
       run: xcodebuild build -project Uploadcare.xcodeproj -scheme ${{matrix.target}} -configuration Release
