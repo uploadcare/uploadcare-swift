@@ -137,6 +137,7 @@ public class UploadedFilesGroup: Codable {
 	/// ```
 	///
 	/// - Parameter completionHandler: Completion handler.
+	#if !os(Linux)
 	public func create(_ completionHandler: @escaping (Result<UploadedFilesGroup, UploadError>) -> Void) {
 		uploadAPI?.createFilesGroup(files: self.files ?? [], { [weak self] result in
 			switch result {
@@ -159,6 +160,7 @@ public class UploadedFilesGroup: Codable {
 			}
 		})
 	}
+	#endif
 
 	/// Create group of files.
 	///
@@ -206,6 +208,7 @@ extension UploadedFilesGroup: CustomDebugStringConvertible {
 }
 
 
+#if !os(Linux)
 // MARK: - Deprecated methods
 extension UploadedFilesGroup {
 	@available(*, deprecated, message: "Use the same method with Result type in the callback")
@@ -232,3 +235,4 @@ extension UploadedFilesGroup {
 		})
 	}
 }
+#endif

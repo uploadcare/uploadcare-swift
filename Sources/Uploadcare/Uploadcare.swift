@@ -7,6 +7,9 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 
 public class Uploadcare: NSObject {
@@ -101,9 +104,11 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - query: Query object.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func listOfFiles(withQuery query: PaginationQuery?, _ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		listOfFiles(withQueryString: query?.stringValue, completionHandler)
 	}
+	#endif
 
 	/// Get list of files.
 	///
@@ -125,6 +130,7 @@ extension Uploadcare {
 		return try await listOfFiles(withQueryString: query?.stringValue)
 	}
 
+	#if !os(Linux)
     internal func listOfFiles(
         withQueryString query: String?,
         _ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void
@@ -148,6 +154,7 @@ extension Uploadcare {
             }
         }
     }
+	#endif
 
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	internal func listOfFiles(withQueryString query: String?) async throws -> FilesList {
@@ -189,6 +196,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuid: File UUID.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func storeFile(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
@@ -204,6 +212,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Store a single file by UUID.
 	///
@@ -245,6 +254,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuids: List of files UUIDs to store.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func storeFiles(
 		withUUIDs uuids: [String],
 		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
@@ -264,6 +274,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Batch file storing. Used to store multiple files in one go. Up to 100 files are supported per request.
 	///
@@ -311,6 +322,7 @@ extension Uploadcare {
 	///   - uuid: File UUID.
 	///   - query: Query parameters string.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func fileInfo(
 		withUUID uuid: String,
 		withQueryString query: String? = nil,
@@ -337,6 +349,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
 	///
@@ -395,6 +408,7 @@ extension Uploadcare {
 	///   - uuid: File UUID.
 	///   - query: Query parameters.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func fileInfo(
 		withUUID uuid: String,
 		withQuery query: FileInfoQuery,
@@ -402,6 +416,7 @@ extension Uploadcare {
 	) {
 		fileInfo(withUUID: uuid, withQueryString: query.stringValue, completionHandler)
 	}
+	#endif
 
 	/// File Info. Once you obtain a list of files, you might want to acquire some file-specific info.
 	///
@@ -441,6 +456,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuid: File UUID.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func deleteFile(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (Result<File, RESTAPIError>) -> Void
@@ -456,6 +472,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Delete file. Beside deleting in a multi-file mode, you can remove individual files.
 	///
@@ -500,6 +517,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuids: List of files UUIDs to store.
 	///   - completionHandler: completion handler
+	#if !os(Linux)
 	public func deleteFiles(
 		withUUIDs uuids: [String],
 		_ completionHandler: @escaping (Result<BatchFilesOperationResponse, RESTAPIError>) -> Void
@@ -519,6 +537,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Batch file delete. Used to delete multiple files in one go. Up to 100 files are supported per request.
 	///
@@ -568,6 +587,7 @@ extension Uploadcare {
 	///   - store: The parameter only applies to the Uploadcare storage. Default: "false"
 	///   - makePublic: Applicable to custom storage only. True to make copied files available via public links, false to reverse the behavior. Default: "true"
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func copyFileToLocalStorage(
 		source: String,
 		store: Bool? = nil,
@@ -594,6 +614,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Copy file to local storage. Used to copy original files or their modified versions to default storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
 	///
@@ -648,6 +669,7 @@ extension Uploadcare {
 	///   - makePublic: MUST be either true or false. true to make copied files available via public links, false to reverse the behavior.
 	///   - pattern: The parameter is used to specify file names Uploadcare passes to a custom storage. In case the parameter is omitted, we use pattern of your custom storage. Use any combination of allowed values.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func copyFileToRemoteStorage(
 		source: String,
 		target: String,
@@ -682,6 +704,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// POST requests are used to copy original files or their modified versions to a custom storage. Source files MAY either be stored or just uploaded and MUST NOT be deleted.
 	///
@@ -753,6 +776,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuid: File UUID.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func fileMetadata(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (Result<[String: String], RESTAPIError>) -> Void
@@ -774,6 +798,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Get file's metadata.
 	///
@@ -828,6 +853,7 @@ extension Uploadcare {
 	///   - key: Key of file metadata.
 	///   - uuid: File UUID.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func fileMetadataValue(
 		forKey key: String,
 		withUUID uuid: String,
@@ -847,6 +873,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Get metadata key's value.
 	///
@@ -913,6 +940,7 @@ extension Uploadcare {
 	///   - key: Key of file metadata.
 	///   - value: New value.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func updateFileMetadata(
 		withUUID uuid: String,
 		key: String,
@@ -935,6 +963,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Update metadata key's value. If the key does not exist, it will be created.
 	///
@@ -966,7 +995,6 @@ extension Uploadcare {
 		let url = urlWithPath("/files/\(uuid)/metadata/\(key)/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
 		urlRequest.httpBody = "\"\(value)\"".data(using: .utf8)!
-		urlRequest.allHTTPHeaderFields?.removeValue(forKey: "Content-Type")
 		requestManager.signRequest(&urlRequest)
 
 		do {
@@ -1001,6 +1029,7 @@ extension Uploadcare {
 	///   - key: Key of file metadata.
 	///   - uuid: File UUID.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func deleteFileMetadata(
 		forKey key: String,
 		withUUID uuid: String,
@@ -1023,6 +1052,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Delete metadata key.
 	///
@@ -1083,6 +1113,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - query: Request query object.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func listOfGroups(
 		withQuery query: GroupsListQuery?,
 		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
@@ -1093,6 +1124,7 @@ extension Uploadcare {
 		}
 		listOfGroups(withQueryString: queryString, completionHandler)
 	}
+	#endif
 
 	/// Get list of groups.
 	///
@@ -1121,6 +1153,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - query: Query string.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	internal func listOfGroups(
 		withQueryString query: String?,
 		_ completionHandler: @escaping (Result<GroupsList, RESTAPIError>) -> Void
@@ -1144,6 +1177,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 
 	/// Get list of groups.
 	/// - Parameter query: Query string.
@@ -1188,6 +1222,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuid: Group UUID.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func groupInfo(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (Result<Group, RESTAPIError>) -> Void
@@ -1203,6 +1238,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 
 	/// Get a file group by UUID.
 	///
@@ -1245,6 +1281,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - uuid: Group UUID.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func deleteGroup(
 		withUUID uuid: String,
 		_ completionHandler: @escaping (RESTAPIError?) -> Void
@@ -1265,6 +1302,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Delete a file group by its ID.
 	///
@@ -1308,6 +1346,7 @@ extension Uploadcare {
 	/// ```
 	///
 	/// - Parameter completionHandler: Completion handler.
+	#if !os(Linux)
 	public func getProjectInfo(_ completionHandler: @escaping (Result<Project, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/project/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
@@ -1320,6 +1359,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 
 	/// Getting info about account project.
 	///
@@ -1371,6 +1411,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - url: URL for request to your backend.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func getAuthenticatedUrlFromUrl(_ url: URL, _ completionHandler: @escaping (Result<String, RESTAPIError>) -> Void) {
 		let urlString = url.absoluteString
 
@@ -1398,6 +1439,7 @@ extension Uploadcare {
 		}
 		task.resume()
 	}
+	#endif
 
 	/// This method allows you to get authonticated url from your backend using redirect.
 	/// By request to that url your backend should generate authenticated url to your file and perform REDIRECT to generated url.
@@ -1422,15 +1464,20 @@ extension Uploadcare {
 	/// - Returns: URL to your backend.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func getAuthenticatedUrlFromUrl(_ url: URL) async throws -> String {
+		let urlRequest = URLRequest(url: url)
+		#if os(Linux)
+		let redirect = try await requestManager.catchRedirect(urlRequest)
+		guard redirect.isEmpty == false else {
+			throw RESTAPIError(detail: "No redirect happened")
+		}
+		return redirect
+		#else
 		let urlString = url.absoluteString
-
 		redirectValues[urlString] = ""
+		defer { redirectValues.removeValue(forKey: urlString) }
 
 		let config = URLSessionConfiguration.default
 		let urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
-
-		defer { redirectValues.removeValue(forKey: urlString) }
-		let urlRequest = URLRequest(url: url)
 
 		do {
 			_ = try await urlSession.data(for: urlRequest)
@@ -1442,6 +1489,7 @@ extension Uploadcare {
 			throw RESTAPIError(detail: "No redirect happened")
 		}
 		return redirectUrl
+		#endif
 	}
 
 	/// List of project webhooks.
@@ -1459,6 +1507,7 @@ extension Uploadcare {
 	/// ```
 	///
 	/// - Parameter completionHandler: Completion handler.
+	#if !os(Linux)
 	public func getListOfWebhooks(_ completionHandler: @escaping (Result<[Webhook], RESTAPIError>) -> Void) {
 		let url = urlWithPath("/webhooks/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
@@ -1471,6 +1520,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 
 	/// Get list of project webhooks.
 	///
@@ -1529,6 +1579,7 @@ extension Uploadcare {
 	///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
 	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func createWebhook(targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Result<Webhook, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/webhooks/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
@@ -1546,6 +1597,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 
 	/// Create a webhook.
 	///
@@ -1602,6 +1654,7 @@ extension Uploadcare {
 	///   - isActive: Marks a subscription as either active or not.
 	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func updateWebhook(id: Int, targetUrl: URL, isActive: Bool, signingSecret: String? = nil, _ completionHandler: @escaping (Result<Webhook, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/webhooks/\(id)/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .put)
@@ -1619,6 +1672,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 
 	/// Update webhook attributes.
 	///
@@ -1671,6 +1725,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - targetUrl: URL of the webhook target.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func deleteWebhook(forTargetUrl targetUrl: URL, _ completionHandler: @escaping (RESTAPIError?) -> Void) {
 		let url = urlWithPath("/webhooks/unsubscribe/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .delete)
@@ -1691,6 +1746,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 
 	/// Delete a webhook.
 	///
@@ -1734,6 +1790,7 @@ extension Uploadcare {
 	///   See [documentation](https://uploadcare.com/docs/transformations/document_conversion/#convert-url-formatting).
 	///   - store: A flag indicating if we should store your outputs.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func convertDocuments(
 		_ paths: [String],
 		store: StoringBehavior? = nil,
@@ -1758,6 +1815,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Uploadcare allows converting documents to the following target formats: DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG.
 	///
@@ -1819,6 +1877,7 @@ extension Uploadcare {
 	///   - format: Target format (DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG).
 	///   - store: A flag indicating if we should store your outputs.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func convertDocumentsWithSettings(
 		_ tasks: [DocumentConversionJobSettings],
 		store: StoringBehavior? = nil,
@@ -1828,6 +1887,7 @@ extension Uploadcare {
 		tasks.forEach({ paths.append($0.stringValue) })
 		convertDocuments(paths, store: store, completionHandler)
 	}
+	#endif
 	
 	/// Convert documents.
 	///
@@ -1882,6 +1942,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - token: Job token.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func documentConversionJobStatus(token: Int, _ completionHandler: @escaping (Result<ConvertDocumentJobStatus, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/convert/document/status/\(token)/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
@@ -1894,6 +1955,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Document conversion job status.
 	///
@@ -1957,6 +2019,7 @@ extension Uploadcare {
 	///   - tasks: Array of ``VideoConversionJobSettings`` objects which settings for conversion for every file.
 	///   - store: A flag indicating if we should store your outputs.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func convertVideosWithSettings(
 		_ tasks: [VideoConversionJobSettings],
 		store: StoringBehavior? = nil,
@@ -1966,6 +2029,7 @@ extension Uploadcare {
 		tasks.forEach({ paths.append($0.stringValue) })
 		convertVideos(paths, completionHandler)
 	}
+	#endif
 	
 	/// Convert videos with settings.
 	///
@@ -2020,6 +2084,7 @@ extension Uploadcare {
 	///   [See documentation](https://uploadcare.com/docs/transformations/video_encoding/#process-operations).
 	///   - store: A flag indicating if we should store your outputs.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func convertVideos(
 		_ paths: [String],
 		store: StoringBehavior? = nil,
@@ -2044,6 +2109,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Convert videos.
 	///
@@ -2107,6 +2173,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - token: Job token.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func videoConversionJobStatus(token: Int, _ completionHandler: @escaping (Result<ConvertVideoJobStatus, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/convert/video/status/\(token)/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
@@ -2119,6 +2186,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Video conversion job status.
 	///
@@ -2170,6 +2238,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - fileUUID: Unique ID of the file to process.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func executeAWSRecognition(fileUUID: String, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/addons/aws_rekognition_detect_labels/execute/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
@@ -2189,6 +2258,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Execute AWS Rekognition.
 	///
@@ -2237,6 +2307,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - requestID: Request ID returned by the Add-On execution request.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func checkAWSRecognitionStatus(requestID: String, _ completionHandler: @escaping (Result<AddonExecutionStatus, RESTAPIError>) -> Void) {
 		let urlString = RESTAPIBaseUrl + "/addons/aws_rekognition_detect_labels/execute/status/?request_id=\(requestID)"
 
@@ -2256,6 +2327,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Check the status of an AWS Rekognition execution request that had been started using ``executeAWSRecognition(fileUUID:)`` method.
 	///
@@ -2305,6 +2377,7 @@ extension Uploadcare {
 	///   - fileUUID: Unique ID of the file to process.
 	///   - parameters: Optional object with Add-On specific parameters.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func executeClamav(fileUUID: String, parameters: ClamAVAddonExecutionParams? = nil, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/addons/uc_clamav_virus_scan/execute/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
@@ -2321,6 +2394,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Execute ClamAV virus checking Add-On for a given target.
 	///
@@ -2373,6 +2447,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - requestID: Request ID returned by the Add-On execution request described above.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func checkClamAVStatus(requestID: String, _ completionHandler: @escaping (Result<AddonExecutionStatus, RESTAPIError>) -> Void) {
 		let urlString = RESTAPIBaseUrl + "/addons/uc_clamav_virus_scan/execute/status/?request_id=\(requestID)"
 
@@ -2392,6 +2467,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Check the status of a ClamAV Add-On execution request that had been started using ``executeClamav(fileUUID:parameters:)``  method.
 	///
@@ -2441,6 +2517,7 @@ extension Uploadcare {
 	///   - fileUUID: Unique ID of the file to process.
 	///   - parameters: Optional object with Add-On specific parameters.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func executeRemoveBG(fileUUID: String, parameters: RemoveBGAddonExecutionParams? = nil, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/addons/remove_bg/execute/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
@@ -2457,6 +2534,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Execute remove.bg background image removal Add-On for a given target.
 	///
@@ -2509,6 +2587,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - requestID: Request ID returned by the Add-On execution request described above.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func checkRemoveBGStatus(requestID: String, _ completionHandler: @escaping (Result<RemoveBGAddonAddonExecutionStatus, RESTAPIError>) -> Void) {
 		let urlString = RESTAPIBaseUrl + "/addons/remove_bg/execute/status/?request_id=\(requestID)"
 
@@ -2528,6 +2607,7 @@ extension Uploadcare {
 			}
 		}
 	}
+	#endif
 	
 	/// Check the status of a Remove.bg Add-On execution request that had been started using ``executeRemoveBG(fileUUID:parameters:)`` method.
 	///
@@ -2597,6 +2677,7 @@ extension Uploadcare {
 	///   - onProgress: A callback that will be used to report upload progress.
 	///   - completionHandler: Completion handler.
 	/// - Returns: Upload task. Confirms to UploadTaskable protocol in any case. Might confirm to UploadTaskResumable protocol (which inherits UploadTaskable)  if multipart upload was used so you can pause and resume upload.
+	#if !os(Linux)
 	@discardableResult
 	public func uploadFile(
 		_ data: Data,
@@ -2679,6 +2760,7 @@ extension Uploadcare {
 		// using multipart upload otherwise
 		return uploadAPI.multipartUpload(data, withName: filename, store: store, metadata: metadata, uploadSignature: uploadSignature, onProgress, completionHandler)
 	}
+	#endif
 
 
 	/// Upload file. This method will decide internally which upload method will be used (direct or multipart).

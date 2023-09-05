@@ -6,8 +6,8 @@
 //  Copyright © 2021 Uploadcare, Inc. All rights reserved.`
 //
 
-import SwiftUI
 #if os(iOS)
+import SwiftUI
 import WebKit
 
 @available(iOS 13.0, *)

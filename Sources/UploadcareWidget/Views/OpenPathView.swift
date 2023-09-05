@@ -6,9 +6,9 @@
 //  Copyright © 2021 Uploadcare, Inc. All rights reserved.
 //
 
+#if os(iOS)
 import SwiftUI
 
-#if os(iOS)
 @available(iOS 13.0.0, macOS 10.15.0, *)
 struct OpenPathView: View {
 	let thing: ChunkThing

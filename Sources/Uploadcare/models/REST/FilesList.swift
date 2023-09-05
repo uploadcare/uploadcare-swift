@@ -124,6 +124,7 @@ extension FilesList {
 	/// - Parameters:
 	///   - query: Query object.
 	///   - completionHandler: Completion handler.
+	#if !os(Linux)
 	public func get(
 		withQuery query: PaginationQuery? = nil,
 		_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void
@@ -149,6 +150,7 @@ extension FilesList {
 			}
 		}
 	}
+	#endif
 
 	/// Get list of files.
 	///
@@ -212,6 +214,7 @@ extension FilesList {
 	/// ```
 	///
 	/// - Parameter completionHandler: Completion handler.
+	#if !os(Linux)
 	public func nextPage(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		guard let next = next, let query = URL(string: next)?.query else {
 			self.results = []
@@ -221,6 +224,7 @@ extension FilesList {
 		
 		getPage(withQueryString: query, completionHandler)
 	}
+	#endif
 
 	/// Get next page of files list.
 	///
@@ -280,6 +284,7 @@ extension FilesList {
 	///	}
 	/// ```
 	/// - Parameter completionHandler: Completion handler.
+	#if !os(Linux)
 	public func previousPage(_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void) {
 		guard let previous = previous, let query = URL(string: previous)?.query else {
 			self.results = []
@@ -289,6 +294,7 @@ extension FilesList {
 		
 		getPage(withQueryString: query, completionHandler)
 	}
+	#endif
 
 	/// Get previous page of files list.
 	///
@@ -326,6 +332,7 @@ private extension FilesList {
 	/// - Parameters:
 	///   - query: Query string.
 	///   - completionHandler: completion handler
+	#if !os(Linux)
 	func getPage(
 		withQueryString query: String,
 		_ completionHandler: @escaping (Result<FilesList, RESTAPIError>) -> Void
@@ -351,6 +358,7 @@ private extension FilesList {
 			}
 		}
 	}
+	#endif
 
 
 	/// Get page of files list.
@@ -372,6 +380,7 @@ private extension FilesList {
 	}
 }
 
+#if !os(Linux)
 // MARK: - Deprecated methods
 extension FilesList {
 	/// Get list of files.
@@ -441,3 +450,4 @@ extension FilesList {
 		}
 	}
 }
+#endif
