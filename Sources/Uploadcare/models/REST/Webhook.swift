@@ -18,6 +18,12 @@ public struct Webhook: Codable {
 		case fileInfoUpdated = "file.info_updated"
 	}
 
+	public enum Version: String, Codable {
+		case v0_5 = "0.5"
+		case v0_6 = "0.6"
+		case v0_7 = "0.7"
+	}
+
 	/// Webhook's ID.
 	public var id: Int
 
@@ -40,7 +46,7 @@ public struct Webhook: Codable {
 	public var isActive: Bool
 
 	/// Webhook payload's version.
-	public var version: String
+	public var version: Version?
 
 	/// Optional HMAC/SHA-256 secret that, if set, will be used to calculate signatures for the webhook payloads sent to the target_url.
 	///
@@ -88,7 +94,10 @@ public struct Webhook: Codable {
 		event = try container.decodeIfPresent(Event.self, forKey: .event) ?? .fileInfoUpdated
 		targetUrl = try container.decodeIfPresent(String.self, forKey: .targetUrl) ?? ""
 		isActive = try container.decodeIfPresent(Bool.self, forKey: .isActive) ?? false
-		version = try container.decodeIfPresent(String.self, forKey: .version) ?? ""
+		
+		if let versionString = try container.decodeIfPresent(String.self, forKey: .version) {
+			version = Version(rawValue: versionString)
+		}
 		signingSecret = try container.decodeIfPresent(String.self, forKey: .signingSecret) ?? ""
 	}
 }
