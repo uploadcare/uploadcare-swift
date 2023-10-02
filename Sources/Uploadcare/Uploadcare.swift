@@ -1799,15 +1799,21 @@ extension Uploadcare {
 	public func convertDocuments(
 		_ paths: [String],
 		store: StoringBehavior? = nil,
+		saveInGroup: Bool? = nil,
 		_ completionHandler: @escaping (Result<ConvertDocumentsResponse, RESTAPIError>) -> Void
 	) {
 		let url = urlWithPath("/convert/document/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 
 		let storeValue = store == StoringBehavior.auto ? .store : store
+		var saveInGroupValue: String? = nil
+		if let saveInGroup {
+			saveInGroupValue = saveInGroup ? "true" : "false"
+		}
 		let requestData = ConvertRequestData(
 			paths: paths,
-			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue
+			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue, 
+			saveInGroup: saveInGroupValue
 		)
 
 		urlRequest.httpBody = try? JSONEncoder().encode(requestData)
@@ -1837,14 +1843,19 @@ extension Uploadcare {
 	///   - store: A flag indicating if we should store your outputs.
 	/// - Returns: Operation response.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-	public func convertDocuments(_ paths: [String], store: StoringBehavior? = nil) async throws -> ConvertDocumentsResponse {
+	public func convertDocuments(_ paths: [String], store: StoringBehavior? = nil, saveInGroup: Bool? = nil) async throws -> ConvertDocumentsResponse {
 		let url = urlWithPath("/convert/document/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 
 		let storeValue = store == StoringBehavior.auto ? .store : store
+		var saveInGroupValue: String? = nil
+		if let saveInGroup {
+			saveInGroupValue = saveInGroup ? "true" : "false"
+		}
 		let requestData = ConvertRequestData(
 			paths: paths,
-			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue
+			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue,
+			saveInGroup: saveInGroupValue
 		)
 
 		urlRequest.httpBody = try? JSONEncoder().encode(requestData)
@@ -1886,11 +1897,12 @@ extension Uploadcare {
 	public func convertDocumentsWithSettings(
 		_ tasks: [DocumentConversionJobSettings],
 		store: StoringBehavior? = nil,
+		saveInGroup: Bool? = nil,
 		_ completionHandler: @escaping (Result<ConvertDocumentsResponse, RESTAPIError>) -> Void
 	) {
 		var paths = [String]()
 		tasks.forEach({ paths.append($0.stringValue) })
-		convertDocuments(paths, store: store, completionHandler)
+		convertDocuments(paths, store: store, saveInGroup: saveInGroup, completionHandler)
 	}
 	#endif
 	
@@ -1919,10 +1931,10 @@ extension Uploadcare {
 	///   - store: A flag indicating if we should store your outputs.
 	/// - Returns: Operation response.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-	public func convertDocumentsWithSettings(_ tasks: [DocumentConversionJobSettings], store: StoringBehavior? = nil) async throws -> ConvertDocumentsResponse {
+	public func convertDocumentsWithSettings(_ tasks: [DocumentConversionJobSettings], store: StoringBehavior? = nil, saveInGroup: Bool? = nil) async throws -> ConvertDocumentsResponse {
 		var paths = [String]()
 		tasks.forEach({ paths.append($0.stringValue) })
-		return try await convertDocuments(paths, store: store)
+		return try await convertDocuments(paths, store: store, saveInGroup: saveInGroup)
 	}
 
 	/// Document conversion job status.
@@ -2101,7 +2113,8 @@ extension Uploadcare {
 		let storeValue = store == StoringBehavior.auto ? .store : store
 		let requestData = ConvertRequestData(
 			paths: paths,
-			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue
+			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue,
+			saveInGroup: nil
 		)
 
 		urlRequest.httpBody = try? JSONEncoder().encode(requestData)
@@ -2141,7 +2154,8 @@ extension Uploadcare {
 		let storeValue = store == StoringBehavior.auto ? .store : store
 		let requestData = ConvertRequestData(
 			paths: paths,
-			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue
+			store: storeValue?.rawValue ?? StoringBehavior.store.rawValue,
+			saveInGroup: nil
 		)
 
 		urlRequest.httpBody = try? JSONEncoder().encode(requestData)

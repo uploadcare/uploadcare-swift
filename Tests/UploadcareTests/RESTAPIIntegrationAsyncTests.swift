@@ -306,7 +306,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let convertSettings = DocumentConversionJobSettings(forFile: file)
 			.format(.png)
 
-		let response = try await uploadcare.convertDocumentsWithSettings([convertSettings])
+		let response = try await uploadcare.convertDocumentsWithSettings([convertSettings], saveInGroup: true)
 		XCTAssertTrue(response.problems.isEmpty)
 
 		let job = response.result.first!

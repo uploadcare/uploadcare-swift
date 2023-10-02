@@ -611,7 +611,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 							let convertSettings = DocumentConversionJobSettings(forFile: file)
 								.format(.png)
 
-							self.uploadcare.convertDocumentsWithSettings([convertSettings]) { result in
+							self.uploadcare.convertDocumentsWithSettings([convertSettings], saveInGroup: true) { result in
 								switch result {
 								case .failure(let error):
 									XCTFail(error.detail)
