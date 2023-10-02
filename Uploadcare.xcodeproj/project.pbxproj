@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -203,14 +203,6 @@
 		24464F2E28F763C400688FF0 /* MultipartRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6028F763C400688FF0 /* MultipartRequestBuilder.swift */; };
 		24464F2F28F763C400688FF0 /* MultipartRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6028F763C400688FF0 /* MultipartRequestBuilder.swift */; };
 		24464F3028F763C400688FF0 /* MultipartRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6028F763C400688FF0 /* MultipartRequestBuilder.swift */; };
-		24464F3128F763C400688FF0 /* Uploadcare+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6228F763C400688FF0 /* Uploadcare+Deprecated.swift */; };
-		24464F3228F763C400688FF0 /* Uploadcare+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6228F763C400688FF0 /* Uploadcare+Deprecated.swift */; };
-		24464F3328F763C400688FF0 /* Uploadcare+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6228F763C400688FF0 /* Uploadcare+Deprecated.swift */; };
-		24464F3428F763C400688FF0 /* Uploadcare+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6228F763C400688FF0 /* Uploadcare+Deprecated.swift */; };
-		24464F3528F763C400688FF0 /* UploadAPI+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6328F763C400688FF0 /* UploadAPI+Deprecated.swift */; };
-		24464F3628F763C400688FF0 /* UploadAPI+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6328F763C400688FF0 /* UploadAPI+Deprecated.swift */; };
-		24464F3728F763C400688FF0 /* UploadAPI+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6328F763C400688FF0 /* UploadAPI+Deprecated.swift */; };
-		24464F3828F763C400688FF0 /* UploadAPI+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6328F763C400688FF0 /* UploadAPI+Deprecated.swift */; };
 		24464F3928F763C400688FF0 /* String+Hash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6428F763C400688FF0 /* String+Hash.swift */; };
 		24464F3A28F763C400688FF0 /* String+Hash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6428F763C400688FF0 /* String+Hash.swift */; };
 		24464F3B28F763C400688FF0 /* String+Hash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24464E6428F763C400688FF0 /* String+Hash.swift */; };
@@ -298,8 +290,6 @@
 		24464E5E28F763C400688FF0 /* UploadedFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadedFile.swift; sourceTree = "<group>"; };
 		24464E5F28F763C400688FF0 /* UploadedFilesGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadedFilesGroup.swift; sourceTree = "<group>"; };
 		24464E6028F763C400688FF0 /* MultipartRequestBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipartRequestBuilder.swift; sourceTree = "<group>"; };
-		24464E6228F763C400688FF0 /* Uploadcare+Deprecated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Uploadcare+Deprecated.swift"; sourceTree = "<group>"; };
-		24464E6328F763C400688FF0 /* UploadAPI+Deprecated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UploadAPI+Deprecated.swift"; sourceTree = "<group>"; };
 		24464E6428F763C400688FF0 /* String+Hash.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Hash.swift"; sourceTree = "<group>"; };
 		24464E6528F763C400688FF0 /* Data+ToString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+ToString.swift"; sourceTree = "<group>"; };
 		24464E6628F763C400688FF0 /* Uploadcare.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Uploadcare.swift; sourceTree = "<group>"; };
@@ -501,8 +491,6 @@
 		24464E6128F763C400688FF0 /* extensions */ = {
 			isa = PBXGroup;
 			children = (
-				24464E6228F763C400688FF0 /* Uploadcare+Deprecated.swift */,
-				24464E6328F763C400688FF0 /* UploadAPI+Deprecated.swift */,
 				24464E6428F763C400688FF0 /* String+Hash.swift */,
 				24464E6528F763C400688FF0 /* Data+ToString.swift */,
 			);
@@ -848,7 +836,6 @@
 				24464F1C28F763C400688FF0 /* UploadFromURLStatus.swift in Sources */,
 				24464F3028F763C400688FF0 /* MultipartRequestBuilder.swift in Sources */,
 				24464EF428F763C400688FF0 /* RemoveBg.swift in Sources */,
-				24464F3828F763C400688FF0 /* UploadAPI+Deprecated.swift in Sources */,
 				24464EC828F763C400688FF0 /* RESTAPIError.swift in Sources */,
 				24464EE828F763C400688FF0 /* PaginationQuery.swift in Sources */,
 				24464EBC28F763C400688FF0 /* ConversionOptions.swift in Sources */,
@@ -902,7 +889,6 @@
 				24464EDC28F763C400688FF0 /* Collaborator.swift in Sources */,
 				24464F5428F763C400688FF0 /* BackgroundSessionManager.swift in Sources */,
 				24464EB028F763C400688FF0 /* VideoConversionJob.swift in Sources */,
-				24464F3428F763C400688FF0 /* Uploadcare+Deprecated.swift in Sources */,
 				24464EA028F763C400688FF0 /* ConvertDocumentJobStatus.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -914,7 +900,6 @@
 				24464F1A28F763C400688FF0 /* UploadFromURLStatus.swift in Sources */,
 				24464F2E28F763C400688FF0 /* MultipartRequestBuilder.swift in Sources */,
 				24464EF228F763C400688FF0 /* RemoveBg.swift in Sources */,
-				24464F3628F763C400688FF0 /* UploadAPI+Deprecated.swift in Sources */,
 				24464EC628F763C400688FF0 /* RESTAPIError.swift in Sources */,
 				24464EE628F763C400688FF0 /* PaginationQuery.swift in Sources */,
 				24464EBA28F763C400688FF0 /* ConversionOptions.swift in Sources */,
@@ -968,7 +953,6 @@
 				24464EDA28F763C400688FF0 /* Collaborator.swift in Sources */,
 				24464F5228F763C400688FF0 /* BackgroundSessionManager.swift in Sources */,
 				24464EAE28F763C400688FF0 /* VideoConversionJob.swift in Sources */,
-				24464F3228F763C400688FF0 /* Uploadcare+Deprecated.swift in Sources */,
 				24464E9E28F763C400688FF0 /* ConvertDocumentJobStatus.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -980,7 +964,6 @@
 				24464F1B28F763C400688FF0 /* UploadFromURLStatus.swift in Sources */,
 				24464F2F28F763C400688FF0 /* MultipartRequestBuilder.swift in Sources */,
 				24464EF328F763C400688FF0 /* RemoveBg.swift in Sources */,
-				24464F3728F763C400688FF0 /* UploadAPI+Deprecated.swift in Sources */,
 				24464EC728F763C400688FF0 /* RESTAPIError.swift in Sources */,
 				24464EE728F763C400688FF0 /* PaginationQuery.swift in Sources */,
 				24464EBB28F763C400688FF0 /* ConversionOptions.swift in Sources */,
@@ -1034,7 +1017,6 @@
 				24464EDB28F763C400688FF0 /* Collaborator.swift in Sources */,
 				24464F5328F763C400688FF0 /* BackgroundSessionManager.swift in Sources */,
 				24464EAF28F763C400688FF0 /* VideoConversionJob.swift in Sources */,
-				24464F3328F763C400688FF0 /* Uploadcare+Deprecated.swift in Sources */,
 				24464E9F28F763C400688FF0 /* ConvertDocumentJobStatus.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1046,7 +1028,6 @@
 				24464F1928F763C400688FF0 /* UploadFromURLStatus.swift in Sources */,
 				24464F2D28F763C400688FF0 /* MultipartRequestBuilder.swift in Sources */,
 				24464EF128F763C400688FF0 /* RemoveBg.swift in Sources */,
-				24464F3528F763C400688FF0 /* UploadAPI+Deprecated.swift in Sources */,
 				24464EC528F763C400688FF0 /* RESTAPIError.swift in Sources */,
 				24464EE528F763C400688FF0 /* PaginationQuery.swift in Sources */,
 				24464EB928F763C400688FF0 /* ConversionOptions.swift in Sources */,
@@ -1100,7 +1081,6 @@
 				24464ED928F763C400688FF0 /* Collaborator.swift in Sources */,
 				24464F5128F763C400688FF0 /* BackgroundSessionManager.swift in Sources */,
 				24464EAD28F763C400688FF0 /* VideoConversionJob.swift in Sources */,
-				24464F3128F763C400688FF0 /* Uploadcare+Deprecated.swift in Sources */,
 				24464E9D28F763C400688FF0 /* ConvertDocumentJobStatus.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
