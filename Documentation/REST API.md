@@ -515,10 +515,10 @@ Create and subscribe to a webhook. You can use webhooks to receive notifications
 let url = URL(string: "https://yourwebhook.com")!
 
 // Async:
-let webhook = try await uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSigningSecret")
+let webhook = try await uploadcare.createWebhook(targetUrl: url,  event: .fileUploaded, isActive: true, signingSecret: "someSigningSecret")
 
 // With a completion callback:
-uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSigningSecret") { result in
+uploadcare.createWebhook(targetUrl: url,  event: .fileUploaded, isActive: true, signingSecret: "someSigningSecret") { result in
     switch result {
     case .failure(let error):
         print(error)
@@ -537,10 +537,10 @@ let url = URL(string: "https://yourwebhook.com")!
 let webhookId = 100
 
 // Async:
-let webhook = try await uploadcare.updateWebhook(id: webhookId, targetUrl: url, isActive: false, signingSecret: "someNewSigningSecret")
+let webhook = try await uploadcare.updateWebhook(id: webhookId, targetUrl: url, event: .fileInfoUpdated, isActive: false, signingSecret: "someNewSigningSecret")
 
 // With a completion callback:
-uploadcare.updateWebhook(id: webhookId, targetUrl: url, isActive: true, signingSecret: "someNewSigningSecret") { result in
+uploadcare.updateWebhook(id: webhookId, targetUrl: url, event: .fileInfoUpdated, isActive: true, signingSecret: "someNewSigningSecret") { result in
     switch result {
     case .failure(let error):
         print(error)

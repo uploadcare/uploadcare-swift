@@ -1564,7 +1564,7 @@ extension Uploadcare {
 	/// Example:
 	/// ```swift
 	/// let url = URL(string: "https://yourwebhook.com")!
-	/// uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "someSigningSecret") { result in
+	/// uploadcare.createWebhook(targetUrl: url, event: .fileUploaded, isActive: true, signingSecret: "someSigningSecret") { result in
 	///     switch result {
 	///     case .failure(let error):
 	///         print(error)
@@ -1640,7 +1640,7 @@ extension Uploadcare {
 	/// ```swift
 	/// let url = URL(string: "https://yourwebhook.com")!
 	/// let webhookId = 100
-	/// uploadcare.updateWebhook(id: webhookId, targetUrl: url, isActive: true, signingSecret: "someNewSigningSecret") { result in
+	/// uploadcare.updateWebhook(id: webhookId, targetUrl: url, event: .fileInfoUpdated, isActive: true, signingSecret: "someNewSigningSecret") { result in
 	///     switch result {
 	///     case .failure(let error):
 	///         print(error)
@@ -1686,6 +1686,7 @@ extension Uploadcare {
 	/// let webhook = try await uploadcare.updateWebhook(
 	///     id: webhookId,
 	///     targetUrl: url,
+	///     event: .fileInfoUpdated, 
 	///     isActive: false,
 	///     signingSecret: "someNewSigningSecret"
 	/// )
