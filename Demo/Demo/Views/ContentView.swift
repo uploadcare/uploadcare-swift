@@ -60,27 +60,6 @@ struct MainView: View {
 								.environmentObject(api)
 						}
 					})
-
-					.actionSheet(isPresented: $isShowingAddFilesAlert, content: {
-						ActionSheet(
-							title: Text("Select source"),
-							message: Text(""),
-							buttons: [
-								.default(Text("Photos"), action: {
-									self.pickerType = .photos
-									self.isShowingSheetWithPicker.toggle()
-								}),
-								.default(Text("Files"), action: {
-									self.pickerType = .files
-									self.isShowingSheetWithPicker.toggle()
-								}),
-								.default(Text("External Sources"), action: {
-									self.widgetVisible = true
-								}),
-								.cancel()
-							]
-						)
-					})
 					.sheet(isPresented: $isShowingSheetWithPicker) {
 						if self.pickerType == .photos {
 							ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
@@ -155,7 +134,28 @@ struct MainView: View {
 							self.filesListStore.uploadcare = self.api.uploadcare
 						}
 						self.isShowingAddFilesAlert.toggle()
-					}.buttonStyle(NeumorphicButtonStyle(bgColor: Color.gray.opacity(0.05)))
+					}
+					.buttonStyle(NeumorphicButtonStyle(bgColor: Color.gray.opacity(0.05)))
+					.actionSheet(isPresented: $isShowingAddFilesAlert, content: {
+						ActionSheet(
+							title: Text("Select source"),
+							message: Text(""),
+							buttons: [
+								.default(Text("Photos"), action: {
+									self.pickerType = .photos
+									self.isShowingSheetWithPicker.toggle()
+								}),
+								.default(Text("Files"), action: {
+									self.pickerType = .files
+									self.isShowingSheetWithPicker.toggle()
+								}),
+								.default(Text("External Sources"), action: {
+									self.widgetVisible = true
+								}),
+								.cancel()
+							]
+						)
+					})
 				}
 			}
 		}
