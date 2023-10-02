@@ -206,33 +206,3 @@ extension UploadedFilesGroup: CustomDebugStringConvertible {
 		"""
 	}
 }
-
-
-#if !os(Linux)
-// MARK: - Deprecated methods
-extension UploadedFilesGroup {
-	@available(*, deprecated, message: "Use the same method with Result type in the callback")
-	public func create(_ completionHandler: @escaping (UploadedFilesGroup?, UploadError?)->Void) {
-		uploadAPI?.createFilesGroup(files: self.files ?? [], { [weak self] result in
-			switch result {
-			case .failure(let error):
-				completionHandler(nil, error)
-			case .success(let createdGroup):
-				guard let self = self else {
-					completionHandler(nil, UploadError.defaultError())
-					return
-				}
-
-				self.datetimeCreated = createdGroup.datetimeCreated
-				self.filesCount = createdGroup.filesCount
-				self.cdnUrl = createdGroup.cdnUrl
-				self.files = createdGroup.files
-				self.url = createdGroup.url
-				self.id = createdGroup.id
-
-				completionHandler(self, nil)
-			}
-		})
-	}
-}
-#endif

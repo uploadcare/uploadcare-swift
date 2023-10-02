@@ -375,49 +375,4 @@ extension GroupsList {
 	}
 
 }
-
-
-// MARK: - Deprecated methods
-extension GroupsList {
-	/// Get list of groups.
-	/// - Parameters:
-	///   - query: Query object.
-	///   - completionHandler: Completion hanlder.
-	@available(*, deprecated, message: "Use the same method with Result type in the callback")
-	public func get(
-		withQuery query: GroupsListQuery? = nil,
-		_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void
-	) {
-		get(withQuery: query) { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let groupsList): completionHandler(groupsList, nil)
-			}
-		}
-	}
-
-	/// Get next page of groups list.
-	/// - Parameter completionHandler: Completion handler.
-	@available(*, deprecated, message: "Use the same method with Result type in the callback")
-	public func nextPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
-		nextPage { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let groupsList): completionHandler(groupsList, nil)
-			}
-		}
-	}
-
-	/// Get previous page of groups list.
-	/// - Parameter completionHandler: Completion handler.
-	@available(*, deprecated, message: "Use the same method with Result type in the callback")
-	public func previousPage(_ completionHandler: @escaping (GroupsList?, RESTAPIError?) -> Void) {
-		previousPage { result in
-			switch result {
-			case .failure(let error): completionHandler(nil, error)
-			case .success(let groupsList): completionHandler(groupsList, nil)
-			}
-		}
-	}
-}
 #endif
