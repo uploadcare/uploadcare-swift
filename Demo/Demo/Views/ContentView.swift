@@ -22,7 +22,18 @@ struct MainView: View {
 	@State private var messageText: String = ""
 
 	@State var isUploading: Bool = false
-	
+
+	private let sources: [SocialSource] = [
+		SocialSource(source: .facebook),
+		SocialSource(source: .gdrive),
+		SocialSource(source: .gphotos),
+		SocialSource(source: .dropbox),
+		SocialSource(source: .instagram),
+		SocialSource(source: .evernote),
+		SocialSource(source: .flickr),
+		SocialSource(source: .onedrive)
+	]
+
 	var body: some View {
 		NavigationView {
 			ZStack {
@@ -42,7 +53,7 @@ struct MainView: View {
 					.navigationBarTitle(Text("Uploadcare demo"), displayMode: .automatic)
 					.sheet(isPresented: self.$widgetVisible, content: {
 						NavigationView {
-							SelectSourceView(publicKey: publicKey)
+							SelectSourceView(publicKey: publicKey, sources: sources)
 								.navigationBarItems(trailing: Button("Close") {
 									self.widgetVisible = false
 								})

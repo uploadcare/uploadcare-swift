@@ -17,7 +17,7 @@ struct Config {
 
 @available(iOS 14.0.0, macOS 10.15.0, *)
 public struct SelectSourceView: View {
-	private let sources: [SocialSource] = SocialSource.Source.allCases.map { SocialSource(source: $0) }
+	let sources: [SocialSource]
 	private let publicKey: String
 	
 	@State private var currentSource: SocialSource?
@@ -182,8 +182,9 @@ public struct SelectSourceView: View {
 		})
 	}
 	
-	public init(publicKey: String) {
+	public init(publicKey: String, sources: [SocialSource]) {
 		self.publicKey = publicKey
+		self.sources = sources
 	}
 }
 

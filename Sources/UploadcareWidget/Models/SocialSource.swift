@@ -18,7 +18,6 @@ public class SocialSource: Identifiable {
 		case gphotos
 		case evernote
 		case box
-		case skydrive
 		case onedrive
 		case flickr
 		case huddle
@@ -45,8 +44,6 @@ public class SocialSource: Identifiable {
 			return "Evernote"
 		case .box:
 			return "Box"
-		case .skydrive:
-			return "SkyDrive"
 		case .onedrive:
 			return "OneDrive"
 		case .flickr:
@@ -108,10 +105,6 @@ public class SocialSource: Identifiable {
 			return [
 				Chunk(key: "My Files", value: "root")
 			]
-		case .skydrive:
-			return [
-				Chunk(key: "My Files", value: "root")
-			]
 		case .onedrive:
 			return [
 				Chunk(key: "My drives", value: "root_v2"),
@@ -141,7 +134,7 @@ public class SocialSource: Identifiable {
 		return URL(string: Config.baseUrl + "/window3/" + source.rawValue)!
 	}
 	
-	internal init(id: UUID = UUID(), source: SocialSource.Source) {
+	public init(id: UUID = UUID(), source: SocialSource.Source) {
 		self.id = id
 		self.source = source
 	}
