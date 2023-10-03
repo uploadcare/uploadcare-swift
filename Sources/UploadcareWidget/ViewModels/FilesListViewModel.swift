@@ -113,35 +113,28 @@ extension FilesListViewModel {
 		}
 	}
 
-	func getSourceChunk(_ onComplete: @escaping ()->Void) {
-		currentChunk = nil
+	func getSourceChunk() async throws {
+		await MainActor.run {
+			self.currentChunk = nil
+		}
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
 		urlComponents.host = Config.cookieDomain
 		urlComponents.path = "/\(source.source.rawValue)/source/\(chunkPath)"
-		
+
 		guard let url = urlComponents.url else { return }
-		
+
 		var urlRequest = URLRequest(url: url)
 
 		urlRequest.setValue("auth=\(self.cookie)", forHTTPHeaderField: "Cookie")
 
-		self.performRequest(urlRequest) { (result) in
-			switch result {
-			case .failure(let error):
-				DLog(error.localizedDescription)
-				onComplete()
-			case .success(let data):
-				DispatchQueue.main.async {
-					do {
-						self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
-					} catch let error {
-						DLog(error.localizedDescription)
-						DLog(data.toString() ?? "")
-					}
-					onComplete()
-				}
+		do {
+			let data = try await performRequest(urlRequest)
+			try await MainActor.run {
+				self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
 			}
+		} catch {
+			DLog(error)
 		}
 	}
 
@@ -228,6 +221,27 @@ extension FilesListViewModel {
 // MARK: - Private methods
 @available(iOS 13.0.0, macOS 10.15.0, *)
 private extension FilesListViewModel {
+	func performRequest(_ urlRequest: URLRequest) async throws -> Data {
+		let (data, response) = try await URLSession.shared.data(for: urlRequest)
+		guard let response = response as? HTTPURLResponse else {
+			throw FilesListViewModelError.noData
+		}
+
+		guard (200...299).contains(response.statusCode) else {
+			var error = FilesListViewModelError.wrongStatus(status: response.statusCode, message: data.toString() ?? "")
+
+			if response.statusCode == NSURLErrorCancelled {
+				error = FilesListViewModelError.requestCancelled
+			}
+
+			DLog("error: \(error)")
+			DLog(data.toString() ?? "")
+			throw error
+		}
+
+		return data
+	}
+
 	func performRequest(_ urlRequest: URLRequest, _ completionHandler: @escaping (Result<Data, Error>)->Void) {
 		let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 			if let error = error {

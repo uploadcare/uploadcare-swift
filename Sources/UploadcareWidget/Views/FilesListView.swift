@@ -42,9 +42,12 @@ struct FilesListView: View {
 								}.onTapGesture {
 									self.viewModel.chunkPath = chunk.value
 									self.isLoading = true
-									self.viewModel.getSourceChunk {
-										self.isLoading = false
-										self.currentChunk = chunk.value
+									Task {
+										try await self.viewModel.getSourceChunk()
+										await MainActor.run {
+											self.isLoading = false
+											self.currentChunk = chunk.value
+										}
 									}
 								}
 							}
@@ -168,12 +171,15 @@ struct FilesListView: View {
 	func loadData() {
 		guard !didLoad else { return }
 		isLoading = true
-		viewModel.getSourceChunk {
+		Task {
+			try await self.viewModel.getSourceChunk()
 			DLog("loaded first page")
-			if let firstChunk = viewModel.source.chunks.first {
-				currentChunk = firstChunk.value
+			await MainActor.run {
+				if let firstChunk = viewModel.source.chunks.first {
+					currentChunk = firstChunk.value
+				}
+				self.isLoading = false
 			}
-			self.isLoading = false
 		}
 		didLoad = true
 	}
