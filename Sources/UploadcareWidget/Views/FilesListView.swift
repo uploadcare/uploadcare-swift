@@ -188,9 +188,13 @@ struct FilesListView: View {
 		guard let nextPage = self.viewModel.currentChunk?.next_page,
 			  let path = nextPage.chunks.first?.path_chunk else { return }
 		isLoading = true
-		viewModel.loadMore(path: path) {
+
+		Task {
+			try await self.viewModel.loadMore(path: path)
 			DLog("loaded next page")
-			self.isLoading = false
+			await MainActor.run {
+				self.isLoading = false
+			}
 		}
 	}
 }

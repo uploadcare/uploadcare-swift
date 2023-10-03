@@ -125,7 +125,6 @@ extension FilesListViewModel {
 		guard let url = urlComponents.url else { return }
 
 		var urlRequest = URLRequest(url: url)
-
 		urlRequest.setValue("auth=\(self.cookie)", forHTTPHeaderField: "Cookie")
 
 		do {
@@ -135,10 +134,11 @@ extension FilesListViewModel {
 			}
 		} catch {
 			DLog(error)
+			throw error
 		}
 	}
 
-	func loadMore(path: String, _ onComplete: @escaping ()->Void) {
+	func loadMore(path: String) async throws {
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
 		urlComponents.host = Config.cookieDomain
@@ -147,27 +147,18 @@ extension FilesListViewModel {
 		guard let url = urlComponents.url else { return }
 
 		var urlRequest = URLRequest(url: url)
-
 		urlRequest.setValue("auth=\(self.cookie)", forHTTPHeaderField: "Cookie")
 
-		self.performRequest(urlRequest) { (result) in
-			switch result {
-			case .failure(let error):
-				DLog(error.localizedDescription)
-				onComplete()
-			case .success(let data):
-				DispatchQueue.main.async {
-					do {
-						let newChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
-						self.currentChunk?.next_page = newChunk.next_page
-						newChunk.things.forEach({ self.currentChunk?.things.append($0) })
-					} catch let error {
-						DLog(error.localizedDescription)
-						DLog(data.toString() ?? "")
-					}
-					onComplete()
-				}
+		do {
+			let data = try await performRequest(urlRequest)
+			let newChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
+			await MainActor.run {
+				self.currentChunk?.next_page = newChunk.next_page
+				newChunk.things.forEach({ self.currentChunk?.things.append($0) })
 			}
+		} catch {
+			DLog(error)
+			throw error
 		}
 	}
 	
