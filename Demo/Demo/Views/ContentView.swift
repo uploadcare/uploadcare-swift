@@ -28,7 +28,8 @@ struct MainView: View {
 		SocialSource(source: .gdrive),
 		SocialSource(source: .gphotos),
 		SocialSource(source: .dropbox),
-		SocialSource(source: .instagram)
+		SocialSource(source: .instagram),
+		SocialSource(source: .onedrive)
 	]
 
 	var body: some View {
