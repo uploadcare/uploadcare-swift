@@ -57,7 +57,7 @@ extension FilesListViewModel {
 		)
 	}
 
-	func uploadFileFromPath(_ path: String) {
+	func uploadFileFromPath(_ path: String) async throws {
 		// Request to /done
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
@@ -77,40 +77,28 @@ extension FilesListViewModel {
 		builder.addMultiformValue("false", forName: "need_image")
 		urlRequest = builder.finalize()
 
-		self.performRequest(urlRequest) { (result) in
-			switch result {
-			case .failure(let error):
-				DLog(error.localizedDescription)
-			case .success(let data):
-				guard let file = try? JSONDecoder().decode(SelectedFile.self, from: data),
-					  let fileUrlString = file.url else { return }
 
-				// Calling upload from URL
-				var urlComponents = URLComponents()
-				urlComponents.scheme = "https"
-				urlComponents.host = "upload.uploadcare.com"
-				urlComponents.path = "/from_url/"
+		let data = try await self.performRequest(urlRequest)
+		let file = try JSONDecoder().decode(SelectedFile.self, from: data)
+		guard let fileUrlString = file.url else { return }
 
-				urlComponents.queryItems = [
-					URLQueryItem(name: "pub_key", value: self.publicKey),
-					URLQueryItem(name: "source_url", value: fileUrlString),
-					URLQueryItem(name: "source", value: self.source.source.rawValue),
-					URLQueryItem(name: "store", value: "1")
-				]
+		// Calling upload from URL
+		var urlComponents2 = URLComponents()
+		urlComponents2.scheme = "https"
+		urlComponents2.host = "upload.uploadcare.com"
+		urlComponents2.path = "/from_url/"
 
-				guard let url = urlComponents.url else { return }
+		urlComponents2.queryItems = [
+			URLQueryItem(name: "pub_key", value: self.publicKey),
+			URLQueryItem(name: "source_url", value: fileUrlString),
+			URLQueryItem(name: "source", value: self.source.source.rawValue),
+			URLQueryItem(name: "store", value: "1")
+		]
 
-				let urlRequest = URLRequest(url: url)
-				self.performRequest(urlRequest) { (result) in
-					switch result {
-					case .success(let data):
-						DLog(data.toString() ?? "")
-					case .failure(let error):
-						DLog(error)
-					}
-				}
-			}
-		}
+		guard let url2 = urlComponents2.url else { return }
+		let urlRequest2 = URLRequest(url: url2)
+		let data2 = try await self.performRequest(urlRequest2)
+		DLog(data2.toString() ?? "")
 	}
 
 	func getSourceChunk() async throws {

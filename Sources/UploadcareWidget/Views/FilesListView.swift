@@ -146,7 +146,11 @@ struct FilesListView: View {
 			HStack {
 				if self.pathsToUpload.count > 0 {
 					Button("Upload") {
-						self.pathsToUpload.forEach({ self.viewModel.uploadFileFromPath($0) })
+						self.pathsToUpload.forEach { path in
+							Task {
+								try await self.viewModel.uploadFileFromPath(path)
+							}
+						}
 						self.pathsToUpload.removeAll()
 
 						withAnimation {
