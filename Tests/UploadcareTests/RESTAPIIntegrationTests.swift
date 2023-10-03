@@ -549,8 +549,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 	func test18_create_update_delete_webhook() {
 		let expectation = XCTestExpectation(description: "test18_create_update_delete_webhook")
 
-		let random = (0...1000).randomElement()!
-		let url = URL(string: "https://google.com/\(random)")!
+		let url = URL(string: "https://uploadcare.com/\(NSUUID().uuidString)")!
 		uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "sss1") { result in
 			switch result {
 			case .failure(let error):
@@ -559,8 +558,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 			case .success(let webhook):
 				XCTAssertEqual(url.absoluteString, webhook.targetUrl)
 
-				let random2 = (0...1000).randomElement()!
-				let url2 = URL(string: "https://google.com/\(random2)")!
+				let url2 = URL(string: "https://uploadcare.com/\(UUID().uuidString)")!
 				self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url2, isActive: true, signingSecret: "sss2") { result in
 					switch result {
 					case .failure(let error):
