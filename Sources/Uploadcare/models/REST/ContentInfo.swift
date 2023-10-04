@@ -32,7 +32,7 @@ extension ContentInfo {
 		public var bitrate: Int
 
 		/// Audio stream metadata.
-		public var audio: [AudioMetadata]?
+		public var audio: [AudioMetadata]
 
 		/// Video stream metadata.
 		public var video: [VideoMetadata]
@@ -51,7 +51,7 @@ extension ContentInfo {
 			duration: Int,
 			format: String,
 			bitrate: Int,
-			audio: [AudioMetadata]?,
+			audio: [AudioMetadata],
 			video: [VideoMetadata]
 		) {
 			self.duration = duration
@@ -67,7 +67,7 @@ extension ContentInfo {
 			let duration = try container.decodeIfPresent(Int.self, forKey: .duration) ?? 0
 			let format = try container.decodeIfPresent(String.self, forKey: .format) ?? ""
 			let bitrate = try container.decodeIfPresent(Int.self, forKey: .bitrate) ?? 0
-			let audio = try container.decodeIfPresent([AudioMetadata].self, forKey: .audio)
+			let audio = try container.decodeIfPresent([AudioMetadata].self, forKey: .audio) ?? []
 			let video = try container.decodeIfPresent([VideoMetadata].self, forKey: .video) ?? [VideoMetadata(height: 0, width: 0, frameRate: 0, bitrate: 0, codec: "")]
 
 			self.init(

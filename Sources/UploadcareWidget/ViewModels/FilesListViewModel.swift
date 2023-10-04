@@ -57,7 +57,7 @@ extension FilesListViewModel {
 		)
 	}
 
-	func uploadFileFromPath(_ path: String) {
+	func uploadFileFromPath(_ path: String) async throws {
 		// Request to /done
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
@@ -77,75 +77,56 @@ extension FilesListViewModel {
 		builder.addMultiformValue("false", forName: "need_image")
 		urlRequest = builder.finalize()
 
-		self.performRequest(urlRequest) { (result) in
-			switch result {
-			case .failure(let error):
-				DLog(error.localizedDescription)
-			case .success(let data):
-				guard let file = try? JSONDecoder().decode(SelectedFile.self, from: data),
-					  let fileUrlString = file.url else { return }
 
-				// Calling upload from URL
-				var urlComponents = URLComponents()
-				urlComponents.scheme = "https"
-				urlComponents.host = "upload.uploadcare.com"
-				urlComponents.path = "/from_url/"
+		let data = try await self.performRequest(urlRequest)
+		let file = try JSONDecoder().decode(SelectedFile.self, from: data)
+		guard let fileUrlString = file.url else { return }
 
-				urlComponents.queryItems = [
-					URLQueryItem(name: "pub_key", value: self.publicKey),
-					URLQueryItem(name: "source_url", value: fileUrlString),
-					URLQueryItem(name: "source", value: self.source.source.rawValue),
-					URLQueryItem(name: "store", value: "1")
-				]
+		// Calling upload from URL
+		var urlComponents2 = URLComponents()
+		urlComponents2.scheme = "https"
+		urlComponents2.host = "upload.uploadcare.com"
+		urlComponents2.path = "/from_url/"
 
-				guard let url = urlComponents.url else { return }
+		urlComponents2.queryItems = [
+			URLQueryItem(name: "pub_key", value: self.publicKey),
+			URLQueryItem(name: "source_url", value: fileUrlString),
+			URLQueryItem(name: "source", value: self.source.source.rawValue),
+			URLQueryItem(name: "store", value: "1")
+		]
 
-				let urlRequest = URLRequest(url: url)
-				self.performRequest(urlRequest) { (result) in
-					switch result {
-					case .success(let data):
-						DLog(data.toString() ?? "")
-					case .failure(let error):
-						DLog(error)
-					}
-				}
-			}
-		}
+		guard let url2 = urlComponents2.url else { return }
+		let urlRequest2 = URLRequest(url: url2)
+		let data2 = try await self.performRequest(urlRequest2)
+		DLog(data2.toString() ?? "")
 	}
 
-	func getSourceChunk(_ onComplete: @escaping ()->Void) {
-		currentChunk = nil
+	func getSourceChunk() async throws {
+		await MainActor.run {
+			self.currentChunk = nil
+		}
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
 		urlComponents.host = Config.cookieDomain
 		urlComponents.path = "/\(source.source.rawValue)/source/\(chunkPath)"
-		
-		guard let url = urlComponents.url else { return }
-		
-		var urlRequest = URLRequest(url: url)
 
+		guard let url = urlComponents.url else { return }
+
+		var urlRequest = URLRequest(url: url)
 		urlRequest.setValue("auth=\(self.cookie)", forHTTPHeaderField: "Cookie")
 
-		self.performRequest(urlRequest) { (result) in
-			switch result {
-			case .failure(let error):
-				DLog(error.localizedDescription)
-				onComplete()
-			case .success(let data):
-				DispatchQueue.main.async {
-					do {
-						self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
-					} catch let error {
-						DLog(error.localizedDescription)
-						DLog(data.toString() ?? "")
-					}
-					onComplete()
-				}
+		do {
+			let data = try await performRequest(urlRequest)
+			try await MainActor.run {
+				self.currentChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
 			}
+		} catch {
+			DLog(error)
+			throw error
 		}
 	}
 
-	func loadMore(path: String, _ onComplete: @escaping ()->Void) {
+	func loadMore(path: String) async throws {
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
 		urlComponents.host = Config.cookieDomain
@@ -154,27 +135,18 @@ extension FilesListViewModel {
 		guard let url = urlComponents.url else { return }
 
 		var urlRequest = URLRequest(url: url)
-
 		urlRequest.setValue("auth=\(self.cookie)", forHTTPHeaderField: "Cookie")
 
-		self.performRequest(urlRequest) { (result) in
-			switch result {
-			case .failure(let error):
-				DLog(error.localizedDescription)
-				onComplete()
-			case .success(let data):
-				DispatchQueue.main.async {
-					do {
-						let newChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
-						self.currentChunk?.next_page = newChunk.next_page
-						newChunk.things.forEach({ self.currentChunk?.things.append($0) })
-					} catch let error {
-						DLog(error.localizedDescription)
-						DLog(data.toString() ?? "")
-					}
-					onComplete()
-				}
+		do {
+			let data = try await performRequest(urlRequest)
+			let newChunk = try JSONDecoder().decode(ChunkResponse.self, from: data)
+			await MainActor.run {
+				self.currentChunk?.next_page = newChunk.next_page
+				newChunk.things.forEach({ self.currentChunk?.things.append($0) })
 			}
+		} catch {
+			DLog(error)
+			throw error
 		}
 	}
 	
@@ -228,6 +200,27 @@ extension FilesListViewModel {
 // MARK: - Private methods
 @available(iOS 13.0.0, macOS 10.15.0, *)
 private extension FilesListViewModel {
+	func performRequest(_ urlRequest: URLRequest) async throws -> Data {
+		let (data, response) = try await URLSession.shared.data(for: urlRequest)
+		guard let response = response as? HTTPURLResponse else {
+			throw FilesListViewModelError.noData
+		}
+
+		guard (200...299).contains(response.statusCode) else {
+			var error = FilesListViewModelError.wrongStatus(status: response.statusCode, message: data.toString() ?? "")
+
+			if response.statusCode == NSURLErrorCancelled {
+				error = FilesListViewModelError.requestCancelled
+			}
+
+			DLog("error: \(error)")
+			DLog(data.toString() ?? "")
+			throw error
+		}
+
+		return data
+	}
+
 	func performRequest(_ urlRequest: URLRequest, _ completionHandler: @escaping (Result<Data, Error>)->Void) {
 		let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 			if let error = error {

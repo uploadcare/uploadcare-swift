@@ -80,6 +80,7 @@ struct WebView: UIViewRepresentable {
 				let cookies = all
 					.filter({ $0.domain == Config.cookieDomain })
 					.filter({ $0.path == "/\(self.cookiePathToDetect)/" })
+					.filter({ $0.value.count != 72 })
 				if cookies.count > 0 {
 					self.onComplete?(cookies)
 				}

@@ -267,18 +267,17 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test18_create_update_delete_webhook() async throws {
-		let random = (0...1000).randomElement()!
-		let url = URL(string: "https://google.com/\(random)")!
+		let url = URL(string: "https://uploadcare.com/\(NSUUID().uuidString)")!
 
-		var webhook = try await uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "sss1")
+		var webhook = try await uploadcare.createWebhook(targetUrl: url, event: .fileUploaded, isActive: true, signingSecret: "sss1")
 		XCTAssertEqual(url.absoluteString, webhook.targetUrl)
 		XCTAssertTrue(webhook.isActive)
+		XCTAssertEqual(Webhook.Event.fileUploaded, webhook.event)
 
-		let random2 = (0...1000).randomElement()!
-		let url2 = URL(string: "https://google.com/\(random2)")!
-
-		webhook = try await uploadcare.updateWebhook(id: webhook.id, targetUrl: url2, isActive: false, signingSecret: "sss2")
+		let url2 = URL(string: "https://uploadcare.com/\(UUID().uuidString)")!
+		webhook = try await uploadcare.updateWebhook(id: webhook.id, targetUrl: url2, event: .fileInfoUpdated, isActive: false, signingSecret: "sss2")
 		XCTAssertEqual(url2.absoluteString, webhook.targetUrl)
+		XCTAssertEqual(Webhook.Event.fileInfoUpdated, webhook.event)
 		XCTAssertFalse(webhook.isActive)
 
 		let targetUrl = URL(string: webhook.targetUrl)!
@@ -304,7 +303,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let convertSettings = DocumentConversionJobSettings(forFile: file)
 			.format(.png)
 
-		let response = try await uploadcare.convertDocumentsWithSettings([convertSettings])
+		let response = try await uploadcare.convertDocumentsWithSettings([convertSettings], saveInGroup: true)
 		XCTAssertTrue(response.problems.isEmpty)
 
 		let job = response.result.first!

@@ -17,7 +17,7 @@ struct Config {
 
 @available(iOS 14.0.0, macOS 10.15.0, *)
 public struct SelectSourceView: View {
-	private let sources: [SocialSource] = SocialSource.Source.allCases.map { SocialSource(source: $0) }
+	let sources: [SocialSource]
 	private let publicKey: String
 	
 	@State private var currentSource: SocialSource?
@@ -78,20 +78,27 @@ public struct SelectSourceView: View {
 					ImagePicker(sourceType: .camera) { (imageUrl) in
 						self.isShowingCameraPicker = false
 						self.isUploading = true
-						self.uploadFile(imageUrl) { uploadError in
-							self.isUploading = false
-							
-							if let uploadError = uploadError {
-								self.fileUploadedMessage = uploadError.detail
-							} else {
-								self.fileUploadedMessage = "File uploaded"
+						Task {
+							var message = "File uploaded"
+							do {
+								try await self.uploadFile(imageUrl)
+							} catch {
+								if let uploadError = error as? UploadError {
+									message = uploadError.detail
+								} else {
+									DLog(error)
+								}
 							}
 							
-							withAnimation {
-								self.fileUploadedMessageVisible = true
+							await MainActor.run {
+								withAnimation {
+									self.isUploading = false
+									self.fileUploadedMessage = message
+									self.fileUploadedMessageVisible = true
+								}
 							}
-
-							DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+							try await Task.sleep(nanoseconds: 2 * NSEC_PER_SEC)
+							await MainActor.run {
 								withAnimation {
 									self.fileUploadedMessageVisible = false
 								}
@@ -127,71 +134,21 @@ public struct SelectSourceView: View {
 			publicKey: publicKey
 		)
 	}
-	
-	private func uploadFile(_ url: URL, completionHandler: @escaping (UploadError?)->Void) {
-		let data: Data
-		do {
-			data = try Data(contentsOf: url)
-		} catch let error {
-			DLog(error)
-			return
+
+	private func uploadFile(_ url: URL) async throws {
+		guard let uploadcare = api.uploadcare else {
+			var error = UploadError.defaultError()
+			error.detail = "Uploadcare object missing"
+			throw error
 		}
-		
+		let data = try Data(contentsOf: url)
 		let filename = url.lastPathComponent
-
-		if data.count < UploadAPI.multipartMinFileSize {
-			self.performDirectUpload(filename: filename, data: data, completionHandler: completionHandler)
-		} else {
-			self.performMultipartUpload(filename: filename, fileUrl: url, completionHandler: completionHandler)
-		}
+		try await uploadcare.uploadFile(data, withName: filename)
 	}
 	
-	private func performDirectUpload(filename: String, data: Data, completionHandler: @escaping (UploadError?)->Void) {
-		let onProgress: (Double)->Void = { (progress) in
-			
-		}
-		self.api.uploadcare?.uploadAPI.directUpload(files: [filename: data], store: .auto, onProgress, { result in
-			switch result {
-			case .failure(let error):
-				DLog(error)
-				completionHandler(error)
-			case .success(let uploadData):
-				completionHandler(nil)
-				DLog(uploadData)
-			}
-		})
-	}
-	
-	private func performMultipartUpload(filename: String, fileUrl: URL, completionHandler: @escaping (UploadError?)->Void) {
-		let onProgress: (Double)->Void = { (progress) in
-		}
-
-		guard let fileForUploading = self.api.uploadcare?.file(withContentsOf: fileUrl) else {
-			assertionFailure("file not found")
-			return
-		}
-		
-		fileForUploading.upload(withName: filename, store: .auto, onProgress, { result in
-			switch result {
-			case .failure(let error):
-				DLog(error)
-				completionHandler(error)
-			case .success(_):
-				completionHandler(nil)
-			}
-		})
-	}
-	
-	public init(publicKey: String) {
+	public init(publicKey: String, sources: [SocialSource]) {
 		self.publicKey = publicKey
+		self.sources = sources
 	}
 }
-
-//@available(iOS 13.0.0, macOS 10.15.0, *)
-//struct SelectSourceView_Previews: PreviewProvider {
-//    static var previews: some View {
-//		SelectSourceView()
-//			.previewLayout(.sizeThatFits)
-//    }
-//}
 #endif
