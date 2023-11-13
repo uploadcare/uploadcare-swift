@@ -721,7 +721,7 @@ uploadcare.videoConversionJobStatus(token: 123456) { result in
 An Add-On is an application implemented by Uploadcare that accepts uploaded files as input and can produce other files and/or appdata as output.
 
 ### AWS Rekognition ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/awsRekognitionExecute))
-Execute AWS Rekognition Add-On for a given target to detect labels in an image. Note: Detected labels are stored in the file's appdata.
+Execute AWS Rekognition Add-On for a given target to detect labels in an image. **Note:** Detected labels are stored in the file's appdata.
 ```swift
 // Async:
 let response = try await uploadcare.executeAWSRekognition(fileUUID: "uuid")
@@ -744,6 +744,39 @@ let status = try await uploadcare.checkAWSRekognitionStatus(requestID: response.
 
 // With a completion callback:
 uploadcare.checkAWSRekognitionStatus(requestID: "requestID") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let status):
+        print(status)
+    }
+}
+```
+
+### AWS Rekognition Moderation ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons/operation/awsRekognitionDetectModerationLabelsExecute))
+Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image. **Note:** Detected moderation labels are stored in the file's appdata.
+```swift
+// Async:
+let response = try await uploadcare.executeAWSRekognitionModeration(fileUUID: "uuid")
+
+// With a completion callback:
+uploadcare.executeAWSRekognitionModeration(fileUUID: "uuid") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let response):
+        print(response) // contains requestID
+    }
+}
+```
+
+Check status:
+```swift
+// Async:
+let status = try await uploadcare.checkAWSRekognitionModerationStatus(requestID: response.requestID)
+
+// With a completion callback:
+uploadcare.checkAWSRekognitionModerationStatus(requestID: "requestID") { result in
     switch result {
     case .failure(let error):
         print(error)
