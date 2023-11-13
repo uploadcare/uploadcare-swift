@@ -958,5 +958,51 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		wait(for: [expectation], timeout: 20.0)
 	}
+
+	func test26_aws_recognition_moderation_execute_and_status() {
+		let expectation = XCTestExpectation(description: "test26_aws_recognition_moderation_execute_and_status")
+
+		// get any file from list of files
+		let query = PaginationQuery().limit(100)
+		let filesList = uploadcare.listOfFiles()
+		filesList.get(withQuery: query) { result in
+			switch result {
+			case .failure(let error):
+				XCTFail(error.detail)
+				expectation.fulfill()
+			case .success(let list):
+				guard let file = list.results.filter({ $0.isImage }).first else {
+					XCTFail("Could not finish test: empty files list")
+					expectation.fulfill()
+					return
+				}
+				let uuid = file.uuid
+
+				self.uploadcare.executeAWSRekognitionModeration(fileUUID: uuid) { result in
+					switch result {
+					case .failure(let error):
+						XCTFail(error.detail)
+						expectation.fulfill()
+					case .success(let response):
+						DLog(response)
+
+						// check status
+						self.uploadcare.checkAWSRekognitionModerationStatus(requestID: response.requestID) { result in
+							defer { expectation.fulfill() }
+
+							switch result {
+							case .failure(let error):
+								XCTFail(error.detail)
+							case .success(let status):
+								XCTAssertTrue(status != .unknown)
+							}
+						}
+					}
+				}
+			}
+		}
+
+		wait(for: [expectation], timeout: 20.0)
+	}
 }
 #endif

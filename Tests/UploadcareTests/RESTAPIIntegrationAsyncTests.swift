@@ -477,4 +477,24 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let status = try await uploadcare.checkRemoveBGStatus(requestID: response.requestID)
 		XCTAssertTrue(status.status != .unknown)
 	}
+
+	func test26_aws_recognition_moderation_execute_and_status() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(100)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
+			XCTFail()
+			return
+		}
+
+		let response = try await uploadcare.executeAWSRekognitionModeration(fileUUID: uuid)
+		DLog(response)
+
+		// check status
+		let status = try await uploadcare.checkAWSRekognitionModerationStatus(requestID: response.requestID)
+		XCTAssertTrue(status != .unknown)
+	}
+
 }

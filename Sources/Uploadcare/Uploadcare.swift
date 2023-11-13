@@ -2377,6 +2377,144 @@ extension Uploadcare {
 		}
 	}
 
+	#if !os(Linux)
+	/// Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image. **Note:** Detected moderation labels are stored in the file's appdata.
+	///
+	/// Example:
+	/// ```swift
+	/// uploadcare.executeAWSRekognitionModeration(fileUUID: "fileUUID") { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let response):
+	///         print(response) // contains requestID
+	///     }
+	/// }
+	/// ```
+	///
+	/// - Parameters:
+	///   - fileUUID: Unique ID of the file to process.
+	///   - completionHandler: Completion handler.
+	public func executeAWSRekognitionModeration(fileUUID: String, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {
+
+		let url = urlWithPath("/addons/aws_rekognition_detect_moderation_labels/execute/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let bodyDictionary = [
+			"target": fileUUID
+		]
+
+		urlRequest.httpBody = try? JSONEncoder().encode(bodyDictionary)
+
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<ExecuteAddonResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
+			}
+		}
+	}
+	#endif
+
+	/// Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image. **Note:** Detected moderation labels are stored in the file's appdata.
+	///
+	/// Example:
+	/// ```swift
+	/// let response = try await uploadcare.executeAWSRekognitionModeration(fileUUID: "fileUUID")
+	/// print(response)
+	/// ```
+	///
+	/// - Parameter fileUUID: Unique ID of the file to process.
+	/// - Returns: Execution response.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func executeAWSRekognitionModeration(fileUUID: String) async throws -> ExecuteAddonResponse {
+		let url = urlWithPath("/addons/aws_rekognition_detect_moderation_labels/execute/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let bodyDictionary = [
+			"target": fileUUID
+		]
+		urlRequest.httpBody = try? JSONEncoder().encode(bodyDictionary)
+
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
+	#if !os(Linux)
+	/// Check the status of an Add-On execution request that had been started using the ``executeAWSRekognitionModeration(fileUUID:_:)`` method.
+	///
+	/// Example:
+	/// ```swift
+	/// uploadcare.checkAWSRekognitionModerationStatus(requestID: "requestID") { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let status):
+	///         print(status)
+	///     }
+	/// }
+	/// ```
+	///
+	/// - Parameters:
+	///   - requestID: Request ID returned by the Add-On execution request.
+	///   - completionHandler: Completion handler.
+	public func checkAWSRekognitionModerationStatus(requestID: String, _ completionHandler: @escaping (Result<AddonExecutionStatus, RESTAPIError>) -> Void) {
+		let urlString = RESTAPIBaseUrl + "/addons/aws_rekognition_detect_moderation_labels/execute/status/?request_id=\(requestID)"
+
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			completionHandler(.failure(RESTAPIError.init(detail: "Incorrect url")))
+			return
+		}
+
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<ExecuteAddonStatusResponse, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response.status))
+			}
+		}
+	}
+	#endif
+
+	/// Check the status of an Add-On execution request that had been started using the ``executeAWSRekognitionModeration(fileUUID:)`` method.
+	///
+	/// Example:
+	/// ```swift
+	/// let status = try await uploadcare.checkAWSRekognitionModerationStatus(requestID: "requestID")
+	/// print(status)
+	/// ```
+	/// - Parameter requestID: Request ID returned by the Add-On execution request.
+	/// - Returns: Execution status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func checkAWSRekognitionModerationStatus(requestID: String) async throws -> AddonExecutionStatus {
+		let urlString = RESTAPIBaseUrl + "/addons/aws_rekognition_detect_moderation_labels/execute/status/?request_id=\(requestID)"
+
+		guard let url = URL(string: urlString) else {
+			assertionFailure("Incorrect url")
+			throw RESTAPIError.init(detail: "Incorrect url")
+		}
+
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ExecuteAddonStatusResponse = try await requestManager.performRequest(urlRequest)
+			return response.status
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
 	/// Execute ClamAV virus checking Add-On for a given target.
 	///
 	/// Example:
