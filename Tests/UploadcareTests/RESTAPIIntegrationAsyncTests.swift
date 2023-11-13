@@ -434,7 +434,6 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		}
 
 		let response = try await uploadcare.executeAWSRecognition(fileUUID: uuid)
-		DLog(response)
 
 		// check status
 		let status = try await uploadcare.checkAWSRecognitionStatus(requestID: response.requestID)
@@ -454,7 +453,6 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
 		let response = try await uploadcare.executeClamav(fileUUID: uuid, parameters: parameters)
-		DLog(response)
 
 		// check status
 		let status = try await uploadcare.checkClamAVStatus(requestID: response.requestID)
@@ -477,7 +475,6 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		// check status
 		let status = try await uploadcare.checkRemoveBGStatus(requestID: response.requestID)
-		DLog(status)
 		XCTAssertTrue(status.status != .unknown)
 	}
 }

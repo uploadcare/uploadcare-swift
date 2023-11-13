@@ -750,6 +750,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 			switch result {
 			case .failure(let error):
 				XCTFail(error.debugDescription)
+				expectation.fulfill()
 			case .success(let file):
 				XCTAssertEqual(file.isStored, true)
 
@@ -784,6 +785,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
+						expectation.fulfill()
 					case .success(let val):
 						XCTAssertEqual(val, expectedValue)
 
@@ -792,6 +794,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 							switch result {
 							case .failure(let error):
 								XCTFail(error.detail)
+								expectation.fulfill()
 							case .success(let value):
 								XCTAssertEqual(value, expectedValue)
 
@@ -840,9 +843,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
+						expectation.fulfill()
 					case .success(let response):
-						DLog(response)
-
 						// check status
 						self.uploadcare.checkAWSRecognitionStatus(requestID: response.requestID) { result in
 							defer { expectation.fulfill() }
@@ -881,9 +883,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
+						expectation.fulfill()
 					case .success(let response):
-						DLog(response)
-
 						// check status
 						self.uploadcare.checkClamAVStatus(requestID: response.requestID) { result in
 							defer { expectation.fulfill() }
@@ -922,6 +923,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
+						expectation.fulfill()
 					case .success(let response):
 						// check status
 						self.uploadcare.checkRemoveBGStatus(requestID: response.requestID) { result in
