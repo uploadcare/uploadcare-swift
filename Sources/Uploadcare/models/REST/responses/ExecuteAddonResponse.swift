@@ -12,7 +12,7 @@ import Foundation
 public struct ExecuteAddonResponse: Codable {
 
 	/// Request ID.
-	public var requestID: String
+	public let requestID: String
 
 
 	enum CodingKeys: String, CodingKey {
