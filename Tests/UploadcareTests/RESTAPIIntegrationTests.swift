@@ -829,7 +829,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		let expectation = XCTestExpectation(description: "test23_aws_recognition_execute_and_status")
 
 		// get any file from list of files
-		let query = PaginationQuery().limit(1)
+		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()
 		filesList.get(withQuery: query) { result in
 			switch result {
@@ -837,7 +837,12 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				expectation.fulfill()
 			case .success(let list):
-				let uuid = list.results.first!.uuid
+				guard let file = list.results.filter({ $0.isImage }).first else {
+					XCTFail("Could not finish test: empty files list")
+					expectation.fulfill()
+					return
+				}
+				let uuid = file.uuid
 
 				self.uploadcare.executeAWSRecognition(fileUUID: uuid) { result in
 					switch result {
@@ -876,7 +881,11 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				expectation.fulfill()
 			case .success(let list):
-				let uuid = list.results.first!.uuid
+				guard let uuid = list.results.first?.uuid else {
+					XCTFail("Could not finish test: empty files list")
+					expectation.fulfill()
+					return
+				}
 
 				let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
 				self.uploadcare.executeClamav(fileUUID: uuid, parameters: parameters) { result in
@@ -908,7 +917,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		let expectation = XCTestExpectation(description: "test25_removeBG_execute_and_status")
 
 		// get any file from list of files
-		let query = PaginationQuery().limit(1)
+		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()
 		filesList.get(withQuery: query) { result in
 			switch result {
@@ -916,7 +925,12 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				expectation.fulfill()
 			case .success(let list):
-				let uuid = list.results.first!.uuid
+				guard let file = list.results.filter({ $0.isImage }).first else {
+					XCTFail("Could not finish test: empty files list")
+					expectation.fulfill()
+					return
+				}
+				let uuid = file.uuid
 
 				let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
 				self.uploadcare.executeRemoveBG(fileUUID: uuid, parameters: parameters) { result in

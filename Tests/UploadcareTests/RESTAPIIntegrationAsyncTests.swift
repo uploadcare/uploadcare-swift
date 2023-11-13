@@ -424,11 +424,11 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 	func test23_aws_recognition_execute_and_status() async throws {
 		// get any file from list of files
-		let query = PaginationQuery().limit(1)
+		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()
 
 		let list = try await filesList.get(withQuery: query)
-		guard let uuid = list.results.first?.uuid else {
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
 			XCTFail()
 			return
 		}
@@ -447,7 +447,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let list = try await filesList.get(withQuery: query)
 		guard let uuid = list.results.first?.uuid else {
-			XCTFail()
+			XCTFail("Could not finish test: empty files list")
 			return
 		}
 
@@ -461,11 +461,11 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 	func test25_removeBG_execute_and_status() async throws {
 		// get any file from list of files
-		let query = PaginationQuery().limit(1)
+		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()
 
 		let list = try await filesList.get(withQuery: query)
-		guard let uuid = list.results.first?.uuid else {
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
 			XCTFail()
 			return
 		}
