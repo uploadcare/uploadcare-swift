@@ -61,6 +61,9 @@ public struct File: Codable, Equatable {
 	/// Application names and data associated with these applications.
 	public let appData: AppData?
 
+	/// The field contains a set of processing operations applied to the file when the group was created. This set is applied by default when the file is reffered via a group CDN URL and `/nth/N/` operator.
+	public let defaultEffects: String?
+
 
 	enum CodingKeys: String, CodingKey {
 		case size
@@ -79,6 +82,7 @@ public struct File: Codable, Equatable {
 		case metadata
 		case contentInfo = "content_info"
 		case appData = "appdata"
+		case defaultEffects = "default_effects"
 	}
 	
 	
@@ -98,7 +102,8 @@ public struct File: Codable, Equatable {
 		variations: [String: String]?,
 		contentInfo: ContentInfo?,
 		metadata: [String: String]?,
-		appData: AppData?
+		appData: AppData?,
+		defaultEffects: String?
 	) {
 		self.size = size
 		self.uuid = uuid
@@ -116,6 +121,7 @@ public struct File: Codable, Equatable {
 		self.contentInfo = contentInfo
 		self.metadata = metadata
 		self.appData = appData
+		self.defaultEffects = defaultEffects
 	}
 
 	public init(from decoder: Decoder) throws {
@@ -158,6 +164,7 @@ public struct File: Codable, Equatable {
 		let contentInfo = try container.decodeIfPresent(ContentInfo.self, forKey: .contentInfo)
 		let metadata = try container.decodeIfPresent([String: String].self, forKey: .metadata)
 		let appData = try container.decodeIfPresent(AppData.self, forKey: .appData)
+		let defaultEffects = try container.decodeIfPresent(String.self, forKey: .defaultEffects)
 
 		self.init(
 			size: size,
@@ -175,7 +182,8 @@ public struct File: Codable, Equatable {
 			variations: variations,
 			contentInfo: contentInfo,
 			metadata: metadata,
-			appData: appData
+			appData: appData,
+			defaultEffects: defaultEffects
 		)
 	}
 }
@@ -200,7 +208,8 @@ extension File: CustomDebugStringConvertible {
 			variations: \(String(describing: variations)),
 			contentInfo: \(String(describing: contentInfo)),
 			metadata: \(String(describing: metadata)),
-			appData: \(String(describing: appData))
+			appData: \(String(describing: appData)),
+			defaultEffects: \(String(describing: defaultEffects))
 		"""
 	}
 }
