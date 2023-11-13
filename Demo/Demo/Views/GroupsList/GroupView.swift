@@ -30,13 +30,6 @@ struct GroupView: View {
 				Text("\(viewData.group.datetimeCreated)")
 			}
 			
-			if viewData.group.datetimeStored != nil {
-				VStack(alignment: .leading) {
-					Text("Stored:").bold()
-					Text("\(viewData.group.datetimeStored!)")
-				}
-			}
-			
 			VStack(alignment: .leading) {
 				Text("CDN URL:").bold()
 				Text("\(viewData.group.cdnUrl)")
