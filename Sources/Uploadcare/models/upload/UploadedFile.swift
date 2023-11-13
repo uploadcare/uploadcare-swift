@@ -62,6 +62,9 @@ public class UploadedFile: Codable {
 	
 	/// Your custom user bucket on which file are stored. Only available of you setup foreign storage bucket for your project.
 	public var s3Bucket: String?
+	
+	/// The field contains a set of processing operations applied to the file when the group was created. This set is applied by default when the file is reffered via a group CDN URL and `/nth/N/` operator.
+	public var defaultEffects: String?
 
 	// MARK: - Private properties
 
@@ -92,6 +95,7 @@ public class UploadedFile: Codable {
 		case contentInfo = "content_info"
 		case metadata
 		case s3Bucket = "s3_bucket"
+		case defaultEffects = "default_effects"
 	}
 	
 	
@@ -112,7 +116,8 @@ public class UploadedFile: Codable {
 		videoInfo: VideoInfo?,
 		contentInfo: ContentInfo?,
 		metadata: [String: String]?,
-		s3Bucket: String?
+		s3Bucket: String?,
+		defaultEffects: String?
 	) {
 		self.size = size
 		self.total = total
@@ -130,6 +135,7 @@ public class UploadedFile: Codable {
 		self.contentInfo = contentInfo
 		self.metadata = metadata
 		self.s3Bucket = s3Bucket
+		self.defaultEffects = defaultEffects
 	}
 	
 	required public convenience init(from decoder: Decoder) throws {
@@ -151,7 +157,8 @@ public class UploadedFile: Codable {
 		let contentInfo = try container.decodeIfPresent(ContentInfo.self, forKey: .contentInfo)
 		let metadata = try container.decodeIfPresent([String: String].self, forKey: .metadata)
 		let s3Bucket = try container.decodeIfPresent(String.self, forKey: .s3Bucket)
-		
+		let defaultEffects = try container.decodeIfPresent(String.self, forKey: .defaultEffects)
+
 		self.init(
 			size: size,
 			total: total,
@@ -168,7 +175,8 @@ public class UploadedFile: Codable {
 			videoInfo: videoInfo,
 			contentInfo: contentInfo,
 			metadata: metadata,
-			s3Bucket: s3Bucket
+			s3Bucket: s3Bucket,
+			defaultEffects: defaultEffects
 		)
 	}
 	
@@ -192,6 +200,7 @@ public class UploadedFile: Codable {
 		self.contentInfo = nil
 		self.metadata = nil
 		self.s3Bucket = ""
+		self.defaultEffects = nil
 	}
 	
 	
@@ -275,6 +284,7 @@ public class UploadedFile: Codable {
 				self.contentInfo = uploadedFile.contentInfo
 				self.metadata = uploadedFile.metadata
 				self.s3Bucket = uploadedFile.s3Bucket
+				self.defaultEffects = uploadedFile.defaultEffects
 			}
 		})
 	}
@@ -336,6 +346,7 @@ public class UploadedFile: Codable {
 		self.contentInfo = uploadedFile.contentInfo
 		self.metadata = uploadedFile.metadata
 		self.s3Bucket = uploadedFile.s3Bucket
+		self.defaultEffects = uploadedFile.defaultEffects
 
 		return self
 	}
@@ -362,6 +373,7 @@ extension UploadedFile: CustomDebugStringConvertible {
 			contentInfo: \(String(describing: contentInfo))
 			metadata: \(String(describing: metadata))
 			s3Bucket: \(String(describing: s3Bucket))
+			defaultEffects: \(String(describing: defaultEffects))
 		"""
 	}
 }

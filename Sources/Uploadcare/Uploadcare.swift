@@ -2739,7 +2739,8 @@ extension Uploadcare {
 							videoInfo: nil,
 							contentInfo: nil,
 							metadata: metadata,
-							s3Bucket: nil
+							s3Bucket: nil,
+							defaultEffects: nil
 						)
 						completionHandler(.success(uploadedFile))
 						return
@@ -2766,7 +2767,8 @@ extension Uploadcare {
 								videoInfo: nil,
 								contentInfo: nil,
 								metadata: nil,
-								s3Bucket: nil
+								s3Bucket: nil, 
+								defaultEffects: nil
 							)
 
 							completionHandler(.success(uploadedFile))
@@ -2849,7 +2851,8 @@ extension Uploadcare {
 					videoInfo: nil,
 					contentInfo: nil,
 					metadata: metadata,
-					s3Bucket: nil
+					s3Bucket: nil, 
+					defaultEffects: nil
 				)
 			}
 
@@ -2870,7 +2873,8 @@ extension Uploadcare {
 				videoInfo: nil,
 				contentInfo: nil,
 				metadata: nil,
-				s3Bucket: nil
+				s3Bucket: nil,
+				defaultEffects: nil
 			)
 		}
 
