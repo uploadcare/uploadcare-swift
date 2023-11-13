@@ -422,7 +422,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		try await uploadcare.deleteFileMetadata(forKey: "myMeta", withUUID: uuid)
 	}
 
-	func test23_aws_recognition_execute_and_status() async throws {
+	func test23_aws_rekognition_execute_and_status() async throws {
 		// get any file from list of files
 		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()
@@ -433,10 +433,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 			return
 		}
 
-		let response = try await uploadcare.executeAWSRecognition(fileUUID: uuid)
+		let response = try await uploadcare.executeAWSRekognition(fileUUID: uuid)
 
 		// check status
-		let status = try await uploadcare.checkAWSRecognitionStatus(requestID: response.requestID)
+		let status = try await uploadcare.checkAWSRekognitionStatus(requestID: response.requestID)
 		XCTAssertTrue(status != .unknown)
 	}
 

@@ -825,8 +825,8 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 15.0)
 	}
 
-	func test23_aws_recognition_execute_and_status() {
-		let expectation = XCTestExpectation(description: "test23_aws_recognition_execute_and_status")
+	func test23_aws_rekognition_execute_and_status() {
+		let expectation = XCTestExpectation(description: "test23_aws_rekognition_execute_and_status")
 
 		// get any file from list of files
 		let query = PaginationQuery().limit(100)
@@ -844,14 +844,14 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				}
 				let uuid = file.uuid
 
-				self.uploadcare.executeAWSRecognition(fileUUID: uuid) { result in
+				self.uploadcare.executeAWSRekognition(fileUUID: uuid) { result in
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
 						expectation.fulfill()
 					case .success(let response):
 						// check status
-						self.uploadcare.checkAWSRecognitionStatus(requestID: response.requestID) { result in
+						self.uploadcare.checkAWSRekognitionStatus(requestID: response.requestID) { result in
 							defer { expectation.fulfill() }
 
 							switch result {

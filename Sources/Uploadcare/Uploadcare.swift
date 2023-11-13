@@ -2245,7 +2245,7 @@ extension Uploadcare {
 	///
 	/// Example:
 	/// ```swift
-	/// uploadcare.executeAWSRecognition(fileUUID: "fileUUID") { result in
+	/// uploadcare.executeAWSRekognition(fileUUID: "fileUUID") { result in
 	///     switch result {
 	///     case .failure(let error):
 	///         print(error)
@@ -2258,7 +2258,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - fileUUID: Unique ID of the file to process.
 	///   - completionHandler: Completion handler.
-	public func executeAWSRecognition(fileUUID: String, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {
+	public func executeAWSRekognition(fileUUID: String, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {
 		let url = urlWithPath("/addons/aws_rekognition_detect_labels/execute/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 
@@ -2278,19 +2278,19 @@ extension Uploadcare {
 		}
 	}
 	#endif
-	
+
 	/// Execute AWS Rekognition.
 	///
 	/// Example:
 	/// ```swift
-	/// let response = try await uploadcare.executeAWSRecognition(fileUUID: "fileUUID")
+	/// let response = try await uploadcare.executeAWSRekognition(fileUUID: "fileUUID")
 	/// print(response)
 	/// ```
 	///
 	/// - Parameter fileUUID: Unique ID of the file to process.
 	/// - Returns: Execution response.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-	public func executeAWSRecognition(fileUUID: String) async throws -> ExecuteAddonResponse {
+	public func executeAWSRekognition(fileUUID: String) async throws -> ExecuteAddonResponse {
 		let url = urlWithPath("/addons/aws_rekognition_detect_labels/execute/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
 
@@ -2314,7 +2314,7 @@ extension Uploadcare {
 	///
 	/// Example:
 	/// ```swift
-	/// uploadcare.checkAWSRecognitionStatus(requestID: "requestID") { result in
+	/// uploadcare.checkAWSRekognitionStatus(requestID: "requestID") { result in
 	///     switch result {
 	///     case .failure(let error):
 	///         print(error)
@@ -2327,7 +2327,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - requestID: Request ID returned by the Add-On execution request.
 	///   - completionHandler: Completion handler.
-	public func checkAWSRecognitionStatus(requestID: String, _ completionHandler: @escaping (Result<AddonExecutionStatus, RESTAPIError>) -> Void) {
+	public func checkAWSRekognitionStatus(requestID: String, _ completionHandler: @escaping (Result<AddonExecutionStatus, RESTAPIError>) -> Void) {
 		let urlString = RESTAPIBaseUrl + "/addons/aws_rekognition_detect_labels/execute/status/?request_id=\(requestID)"
 
 		guard let url = URL(string: urlString) else {
@@ -2348,17 +2348,17 @@ extension Uploadcare {
 	}
 	#endif
 	
-	/// Check the status of an AWS Rekognition execution request that had been started using ``executeAWSRecognition(fileUUID:)`` method.
+	/// Check the status of an AWS Rekognition execution request that had been started using ``executeAWSRekognition(fileUUID:)`` method.
 	///
 	/// Example:
 	/// ```swift
-	/// let status = try await uploadcare.checkAWSRecognitionStatus(requestID: "requestID")
+	/// let status = try await uploadcare.checkAWSRekognitionStatus(requestID: "requestID")
 	/// print(status)
 	/// ```
 	/// - Parameter requestID: Request ID returned by the Add-On execution request.
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-	public func checkAWSRecognitionStatus(requestID: String) async throws -> AddonExecutionStatus {
+	public func checkAWSRekognitionStatus(requestID: String) async throws -> AddonExecutionStatus {
 		let urlString = RESTAPIBaseUrl + "/addons/aws_rekognition_detect_labels/execute/status/?request_id=\(requestID)"
 
 		guard let url = URL(string: urlString) else {
@@ -3073,5 +3073,28 @@ extension Uploadcare: URLSessionTaskDelegate {
 			redirectValues[key] = value
 		}
 		completionHandler(request)
+	}
+}
+
+// MARK: - Deprecated
+extension Uploadcare {
+	#if !os(Linux)
+	@available(*, unavailable, renamed: "executeAWSRekognition")
+	public func executeAWSRecognition(fileUUID: String, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {}
+	#endif
+
+	@available(*, unavailable, renamed: "executeAWSRekognition")
+	public func executeAWSRecognition(fileUUID: String) async throws -> ExecuteAddonResponse {
+		return ExecuteAddonResponse(requestID: "")
+	}
+
+	#if !os(Linux)
+	@available(*, unavailable, renamed: "checkAWSRekognitionStatus")
+	public func checkAWSRecognitionStatus(requestID: String, _ completionHandler: @escaping (Result<AddonExecutionStatus, RESTAPIError>) -> Void) {}
+	#endif
+
+	@available(*, unavailable, renamed: "checkAWSRekognitionStatus")
+	public func checkAWSRecognitionStatus(requestID: String) async throws -> AddonExecutionStatus {
+		return .unknown
 	}
 }
