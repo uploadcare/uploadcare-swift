@@ -46,7 +46,6 @@ let jsonData = """
 	{
 		"id": "ec207006-882b-4184-8318-5b57ca2135d8~2",
 		"datetime_created": "2020-05-05T18:52:14.481914Z",
-		"datetime_stored": null,
 		"files_count": 2,
 		"cdn_url": "https://ucarecdn.com/ec207006-882b-4184-8318-5b57ca2135d8~2/",
 		"url": "https://api.uploadcare.com/groups/ec207006-882b-4184-8318-5b57ca2135d8~2/"

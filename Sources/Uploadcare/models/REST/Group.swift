@@ -16,6 +16,7 @@ public struct Group: Codable, Equatable {
 	public var datetimeCreated: Date
 	
 	/// Date and time when files in a group were stored.
+	@available(*, deprecated, message: "To store or remove files from a group, query the list of files in it, split the list into chunks of 100 files per chunk and then perform batch file storing or batch file removal for all the chunks.")
 	public var datetimeStored: Date?
 	
 	/// Number of files in a group.
