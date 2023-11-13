@@ -724,10 +724,10 @@ An Add-On is an application implemented by Uploadcare that accepts uploaded file
 Execute AWS Rekognition Add-On for a given target to detect labels in an image. Note: Detected labels are stored in the file's appdata.
 ```swift
 // Async:
-let response = try await uploadcare.executeAWSRecognition(fileUUID: "uuid")
+let response = try await uploadcare.executeAWSRekognition(fileUUID: "uuid")
 
 // With a completion callback:
-uploadcare.executeAWSRecognition(fileUUID: "uuid") { result in
+uploadcare.executeAWSRekognition(fileUUID: "uuid") { result in
     switch result {
     case .failure(let error):
         print(error)
@@ -740,10 +740,10 @@ uploadcare.executeAWSRecognition(fileUUID: "uuid") { result in
 Check status:
 ```swift
 // Async:
-let status = try await uploadcare.checkAWSRecognitionStatus(requestID: response.requestID)
+let status = try await uploadcare.checkAWSRekognitionStatus(requestID: response.requestID)
 
 // With a completion callback:
-uploadcare.checkAWSRecognitionStatus(requestID: "requestID") { result in
+uploadcare.checkAWSRekognitionStatus(requestID: "requestID") { result in
     switch result {
     case .failure(let error):
         print(error)
