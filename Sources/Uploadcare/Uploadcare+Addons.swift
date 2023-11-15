@@ -87,7 +87,9 @@ extension Uploadcare {
 	/// print(response)
 	/// ```
 	///
-	/// - Parameter fileUUID: Unique ID of the file to process.
+	/// - Parameters:
+	///   - fileUUID: Unique ID of the file to process.
+	///   - timeout: How long to wait for execution in seconds.
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func performAWSRekognition(fileUUID: String, timeout: Double = 60*5) async throws -> AddonExecutionStatus {
