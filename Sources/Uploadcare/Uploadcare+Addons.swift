@@ -8,7 +8,7 @@
 import Foundation
 
 
-// MARK: - Add-Ons
+// MARK: - AWS Rekognition
 extension Uploadcare {
 	#if !os(Linux)
 	/// Execute AWS Rekognition.
@@ -188,7 +188,10 @@ extension Uploadcare {
 			throw RESTAPIError.fromError(error)
 		}
 	}
+}
 
+// MARK: - AWS Rekognition Moderation
+extension Uploadcare {
 	#if !os(Linux)
 	/// Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image. **Note:** Detected moderation labels are stored in the file's appdata.
 	///
