@@ -497,4 +497,18 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertTrue(status != .unknown)
 	}
 
+	func test27_perform_aws_rekognition() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(100)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
+			XCTFail()
+			return
+		}
+
+		let status = try await uploadcare.performAWSRekognition(fileUUID: uuid)
+		XCTAssertTrue(status != .unknown)
+	}
 }

@@ -79,6 +79,48 @@ extension Uploadcare {
 		}
 	}
 
+	/// Execute AWS Rekognition and wait for execution completion.
+	///
+	/// Example:
+	/// ```swift
+	/// let status = try await uploadcare.performAWSRekognition(fileUUID: "fileUUID")
+	/// print(response)
+	/// ```
+	///
+	/// - Parameter fileUUID: Unique ID of the file to process.
+	/// - Returns: Execution status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func performAWSRekognition(fileUUID: String, timeout: Double = 60*5) async throws -> AddonExecutionStatus {
+		let url = urlWithPath("/addons/aws_rekognition_detect_labels/execute/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let bodyDictionary = [
+			"target": fileUUID
+		]
+		urlRequest.httpBody = try? JSONEncoder().encode(bodyDictionary)
+
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			var secondsPassed: Double = 0
+			while true {
+				let status = try await checkAWSRekognitionStatus(requestID: response.requestID)
+				if status != .inProgress {
+					return status
+				}
+				try await Task.sleep(nanoseconds: 5 * NSEC_PER_SEC)
+				secondsPassed += 5
+
+				if secondsPassed >= timeout {
+					throw RequestManagerError.timeout
+				}
+			}
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
 	#if !os(Linux)
 	/// Check AWS Rekognition execution status.
 	///

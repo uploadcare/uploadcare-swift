@@ -753,6 +753,12 @@ uploadcare.checkAWSRekognitionStatus(requestID: "requestID") { result in
 }
 ```
 
+Execute and wait for completion:
+```swift
+let status = try await uploadcare.performAWSRekognition(fileUUID: "uuid")
+print(status)
+```
+
 ### AWS Rekognition Moderation ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons/operation/awsRekognitionDetectModerationLabelsExecute))
 Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image. **Note:** Detected moderation labels are stored in the file's appdata.
 ```swift
