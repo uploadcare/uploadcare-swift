@@ -22,6 +22,7 @@ internal enum RequestManagerError: Error {
 	case noResponse
 	case parsingError
 	case emptyResponse
+	case timeout
 }
 
 internal class RequestManager {

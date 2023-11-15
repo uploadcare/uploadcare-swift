@@ -38,6 +38,10 @@ public struct RESTAPIError: Error, Codable {
 		if case let RequestManagerError.invalidRESTAPIResponse(requestError) = error {
 			return requestError
 		}
+
+		if case RequestManagerError.timeout = error {
+			return RESTAPIError(detail: "Operation timeout")
+		}
 		return defaultError()
 	}
 }
