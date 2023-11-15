@@ -792,6 +792,12 @@ uploadcare.checkAWSRekognitionModerationStatus(requestID: "requestID") { result 
 }
 ```
 
+Execute and wait for completion:
+```swift
+let status = try await uploadcare.performAWSRekognitionModeration(fileUUID: "uuid")
+print(status)
+```
+
 ### ClamAV ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/ucClamavVirusScanExecute))
 Execute ClamAV virus checking Add-On for a given target.
 ```swift
