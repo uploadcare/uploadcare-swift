@@ -376,7 +376,10 @@ extension Uploadcare {
 			throw RESTAPIError.fromError(error)
 		}
 	}
+}
 
+// MARK: - ClamAV virus checking
+extension Uploadcare {
 	#if !os(Linux)
 	/// Execute ClamAV virus checking Add-On for a given target.
 	///
@@ -427,6 +430,7 @@ extension Uploadcare {
 	///
 	/// print(response)
 	/// ```
+	///
 	/// - Parameters:
 	///   - fileUUID: Unique ID of the file to process.
 	///   - parameters: Optional object with Add-On specific parameters.
@@ -444,6 +448,55 @@ extension Uploadcare {
 		do {
 			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
 			return response
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
+
+	/// Execute ClamAV virus checking Add-On for a given target.
+	///
+	/// Example:
+	/// ```swift
+	/// let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+	/// let status = try await uploadcare.performClamav(
+	///     fileUUID: "fileUUID",
+	///     parameters: parameters
+	/// )
+	///
+	/// print(status)
+	/// ```
+	///
+	/// - Parameters:
+	///   - fileUUID: Unique ID of the file to process.
+	///   - parameters: Optional object with Add-On specific parameters.
+	///   - timeout: How long to wait for execution in seconds.
+	/// - Returns: Execution status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func performClamav(fileUUID: String, parameters: ClamAVAddonExecutionParams? = nil, timeout: Double = 60*5) async throws -> AddonExecutionStatus {
+		let url = urlWithPath("/addons/uc_clamav_virus_scan/execute/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let requestBody = ClamAVAddonExecutionRequestBody(target: fileUUID, params: parameters)
+		urlRequest.httpBody = try? JSONEncoder().encode(requestBody)
+
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			var secondsPassed: Double = 0
+			while true {
+				let status = try await checkClamAVStatus(requestID: response.requestID)
+				if status != .inProgress {
+					return status
+				}
+				try await Task.sleep(nanoseconds: 5 * NSEC_PER_SEC)
+				secondsPassed += 5
+
+				if secondsPassed >= timeout {
+					throw RequestManagerError.timeout
+				}
+			}
 		} catch {
 			throw RESTAPIError.fromError(error)
 		}

@@ -833,6 +833,16 @@ uploadcare.checkClamAVStatus(requestID: "requestID") { result in
 }
 ```
 
+Execute and wait for completion:
+```swift
+let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+let status = try await uploadcare.performClamav(
+    fileUUID: "fileUUID",
+	parameters: parameters
+)
+print(status)
+```
+
 ### Remove.bg ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/removeBgExecute))
 Execute remove.bg background image removal Add-On for a given target.
 ```swift

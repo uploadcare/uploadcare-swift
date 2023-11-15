@@ -526,4 +526,20 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let status = try await uploadcare.performAWSRekognitionModeration(fileUUID: uuid)
 		XCTAssertTrue(status != .unknown)
 	}
+
+	func test29_clamav() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(100)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
+			XCTFail()
+			return
+		}
+
+		let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+		let status = try await uploadcare.performClamav(fileUUID: uuid, parameters: parameters)
+		XCTAssertTrue(status != .unknown)
+	}
 }
