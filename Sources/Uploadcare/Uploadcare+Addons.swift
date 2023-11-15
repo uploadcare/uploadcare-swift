@@ -645,6 +645,55 @@ extension Uploadcare {
 		}
 	}
 
+
+	/// Execute remove.bg background image removal Add-On for a given target and wait for execution completion.
+	///
+	/// Example:
+	/// ```swift
+	/// let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
+	/// let response = try await uploadcare.performRemoveBG(
+	///     fileUUID: "fileUUID",
+	///     parameters: parameters
+	/// )
+	///
+	/// print(response)
+	/// ```
+	///
+	/// - Parameters:
+	///   - fileUUID: Unique ID of the file to process.
+	///   - parameters: Optional object with Add-On specific parameters.
+	///   - timeout: How long to wait for execution in seconds.
+	/// - Returns: Execution status.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func performRemoveBG(fileUUID: String, parameters: RemoveBGAddonExecutionParams? = nil, timeout: Double = 60*5) async throws -> RemoveBGAddonAddonExecutionStatus {
+		let url = urlWithPath("/addons/remove_bg/execute/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
+
+		let requestBody = RemoveBGAddonExecutionRequestBody(target: fileUUID, params: parameters)
+		urlRequest.httpBody = try? JSONEncoder().encode(requestBody)
+
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			var secondsPassed: Double = 0
+			while true {
+				let response = try await checkRemoveBGStatus(requestID: response.requestID)
+				if response.status != .inProgress {
+					return response
+				}
+				try await Task.sleep(nanoseconds: 5 * NSEC_PER_SEC)
+				secondsPassed += 5
+
+				if secondsPassed >= timeout {
+					throw RequestManagerError.timeout
+				}
+			}
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
 	#if !os(Linux)
 	/// Check the status of a Remove.bg Add-On execution request that had been started using ``executeRemoveBG(fileUUID:parameters:_:)`` method.
 	///

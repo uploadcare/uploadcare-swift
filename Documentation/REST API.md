@@ -878,3 +878,12 @@ uploadcare.checkRemoveBGStatus(requestID: "requestID") { result in
     }
 }
 ```
+
+Execute and wait for completion:
+```swift
+// more parameters in RemoveBGAddonExecutionParams model
+let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
+
+let status = try await uploadcare.performRemoveBG(fileUUID: "uuid", parameters: parameters)
+print(status)
+```
