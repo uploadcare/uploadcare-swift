@@ -265,7 +265,7 @@ extension Uploadcare {
 	}
 
 
-	/// Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image. **Note:** Detected moderation labels are stored in the file's appdata.
+	/// Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image and wait for execution completion. **Note:** Detected moderation labels are stored in the file's appdata.
 	///
 	/// Example:
 	/// ```swift
@@ -454,7 +454,7 @@ extension Uploadcare {
 	}
 
 
-	/// Execute ClamAV virus checking Add-On for a given target.
+	/// Execute ClamAV virus checking Add-On for a given target and wait for execution completion.
 	///
 	/// Example:
 	/// ```swift
