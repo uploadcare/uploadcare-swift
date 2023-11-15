@@ -569,7 +569,10 @@ extension Uploadcare {
 			throw RESTAPIError.fromError(error)
 		}
 	}
+}
 
+// MARK: - remove.bg
+extension Uploadcare {
 	#if !os(Linux)
 	/// Execute remove.bg background image removal Add-On for a given target.
 	///
