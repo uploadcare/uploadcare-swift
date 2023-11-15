@@ -527,7 +527,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertTrue(status != .unknown)
 	}
 
-	func test29_clamav() async throws {
+	func test29_perform_clamav() async throws {
 		// get any file from list of files
 		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()
@@ -543,7 +543,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertTrue(status != .unknown)
 	}
 
-	func test30_removebg() async throws {
+	func test30_perform_removebg() async throws {
 		// get any file from list of files
 		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()

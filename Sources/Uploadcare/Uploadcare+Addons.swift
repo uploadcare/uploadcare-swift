@@ -93,18 +93,8 @@ extension Uploadcare {
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func performAWSRekognition(fileUUID: String, timeout: Double = 60*5) async throws -> AddonExecutionStatus {
-		let url = urlWithPath("/addons/aws_rekognition_detect_labels/execute/")
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
-
-		let bodyDictionary = [
-			"target": fileUUID
-		]
-		urlRequest.httpBody = try? JSONEncoder().encode(bodyDictionary)
-
-		requestManager.signRequest(&urlRequest)
-
 		do {
-			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			let response = try await executeAWSRekognition(fileUUID: fileUUID)
 			var secondsPassed: Double = 0
 			while true {
 				let status = try await checkAWSRekognitionStatus(requestID: response.requestID)
@@ -279,18 +269,8 @@ extension Uploadcare {
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func performAWSRekognitionModeration(fileUUID: String, timeout: Double = 60*5) async throws -> AddonExecutionStatus {
-		let url = urlWithPath("/addons/aws_rekognition_detect_moderation_labels/execute/")
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
-
-		let bodyDictionary = [
-			"target": fileUUID
-		]
-		urlRequest.httpBody = try? JSONEncoder().encode(bodyDictionary)
-
-		requestManager.signRequest(&urlRequest)
-
 		do {
-			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			let response = try await executeAWSRekognitionModeration(fileUUID: fileUUID)
 			var secondsPassed: Double = 0
 			while true {
 				let status = try await checkAWSRekognitionModerationStatus(requestID: response.requestID)
@@ -474,16 +454,8 @@ extension Uploadcare {
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func performClamav(fileUUID: String, parameters: ClamAVAddonExecutionParams? = nil, timeout: Double = 60*5) async throws -> AddonExecutionStatus {
-		let url = urlWithPath("/addons/uc_clamav_virus_scan/execute/")
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
-
-		let requestBody = ClamAVAddonExecutionRequestBody(target: fileUUID, params: parameters)
-		urlRequest.httpBody = try? JSONEncoder().encode(requestBody)
-
-		requestManager.signRequest(&urlRequest)
-
 		do {
-			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			let response = try await executeClamav(fileUUID: fileUUID, parameters: parameters)
 			var secondsPassed: Double = 0
 			while true {
 				let status = try await checkClamAVStatus(requestID: response.requestID)
@@ -666,16 +638,8 @@ extension Uploadcare {
 	/// - Returns: Execution status.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 	public func performRemoveBG(fileUUID: String, parameters: RemoveBGAddonExecutionParams? = nil, timeout: Double = 60*5) async throws -> RemoveBGAddonAddonExecutionStatus {
-		let url = urlWithPath("/addons/remove_bg/execute/")
-		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .post)
-
-		let requestBody = RemoveBGAddonExecutionRequestBody(target: fileUUID, params: parameters)
-		urlRequest.httpBody = try? JSONEncoder().encode(requestBody)
-
-		requestManager.signRequest(&urlRequest)
-
 		do {
-			let response: ExecuteAddonResponse = try await requestManager.performRequest(urlRequest)
+			let response = try await executeRemoveBG(fileUUID: fileUUID, parameters: parameters)
 			var secondsPassed: Double = 0
 			while true {
 				let response = try await checkRemoveBGStatus(requestID: response.requestID)
