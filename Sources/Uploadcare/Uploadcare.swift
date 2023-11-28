@@ -2525,7 +2525,7 @@ public func executeAWSRecognition(fileUUID: String, _ completionHandler: @escapi
 #endif
 }
 
-@available(iOS 13.0.0, *)
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0,  *)
 extension Uploadcare {
 	@available(*, unavailable, renamed: "executeAWSRekognition")
 	public func executeAWSRecognition(fileUUID: String) async throws -> ExecuteAddonResponse {
