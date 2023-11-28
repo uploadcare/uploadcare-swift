@@ -656,7 +656,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		let query = PaginationQuery()
 			.stored(true)
 			.ordering(.dateTimeUploadedDESC)
-			.limit(100)
+			.limit(300)
 
 		uploadcare.listOfFiles(withQuery: query) { result in
 			switch result {
@@ -664,7 +664,11 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				expectation.fulfill()
 			case .success(let list):
-				let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" })!
+				guard let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" }) else {
+					XCTFail("No video file")
+					expectation.fulfill()
+					return
+				}
 
 				let convertSettings = VideoConversionJobSettings(forFile: videoFile)
 					.format(.webm)
@@ -750,6 +754,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 			switch result {
 			case .failure(let error):
 				XCTFail(error.debugDescription)
+				expectation.fulfill()
 			case .success(let file):
 				XCTAssertEqual(file.isStored, true)
 
@@ -784,6 +789,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
+						expectation.fulfill()
 					case .success(let val):
 						XCTAssertEqual(val, expectedValue)
 
@@ -792,6 +798,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 							switch result {
 							case .failure(let error):
 								XCTFail(error.detail)
+								expectation.fulfill()
 							case .success(let value):
 								XCTAssertEqual(value, expectedValue)
 
@@ -822,11 +829,11 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		wait(for: [expectation], timeout: 15.0)
 	}
 
-	func test23_aws_recognition_execute_and_status() {
-		let expectation = XCTestExpectation(description: "test23_aws_recognition_execute_and_status")
+	func test23_aws_rekognition_execute_and_status() {
+		let expectation = XCTestExpectation(description: "test23_aws_rekognition_execute_and_status")
 
 		// get any file from list of files
-		let query = PaginationQuery().limit(1)
+		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()
 		filesList.get(withQuery: query) { result in
 			switch result {
@@ -834,17 +841,21 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				expectation.fulfill()
 			case .success(let list):
-				let uuid = list.results.first!.uuid
+				guard let file = list.results.filter({ $0.isImage }).first else {
+					XCTFail("Could not finish test: empty files list")
+					expectation.fulfill()
+					return
+				}
+				let uuid = file.uuid
 
-				self.uploadcare.executeAWSRecognition(fileUUID: uuid) { result in
+				self.uploadcare.executeAWSRekognition(fileUUID: uuid) { result in
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
+						expectation.fulfill()
 					case .success(let response):
-						DLog(response)
-
 						// check status
-						self.uploadcare.checkAWSRecognitionStatus(requestID: response.requestID) { result in
+						self.uploadcare.checkAWSRekognitionStatus(requestID: response.requestID) { result in
 							defer { expectation.fulfill() }
 
 							switch result {
@@ -874,16 +885,19 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				expectation.fulfill()
 			case .success(let list):
-				let uuid = list.results.first!.uuid
+				guard let uuid = list.results.first?.uuid else {
+					XCTFail("Could not finish test: empty files list")
+					expectation.fulfill()
+					return
+				}
 
 				let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
 				self.uploadcare.executeClamav(fileUUID: uuid, parameters: parameters) { result in
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
+						expectation.fulfill()
 					case .success(let response):
-						DLog(response)
-
 						// check status
 						self.uploadcare.checkClamAVStatus(requestID: response.requestID) { result in
 							defer { expectation.fulfill() }
@@ -907,7 +921,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		let expectation = XCTestExpectation(description: "test25_removeBG_execute_and_status")
 
 		// get any file from list of files
-		let query = PaginationQuery().limit(1)
+		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()
 		filesList.get(withQuery: query) { result in
 			switch result {
@@ -915,13 +929,19 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				expectation.fulfill()
 			case .success(let list):
-				let uuid = list.results.first!.uuid
+				guard let file = list.results.filter({ $0.isImage }).first else {
+					XCTFail("Could not finish test: empty files list")
+					expectation.fulfill()
+					return
+				}
+				let uuid = file.uuid
 
 				let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
 				self.uploadcare.executeRemoveBG(fileUUID: uuid, parameters: parameters) { result in
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
+						expectation.fulfill()
 					case .success(let response):
 						// check status
 						self.uploadcare.checkRemoveBGStatus(requestID: response.requestID) { result in
@@ -931,8 +951,51 @@ final class RESTAPIIntegrationTests: XCTestCase {
 							case .failure(let error):
 								XCTFail(error.detail)
 							case .success(let response):
-								DLog(response)
 								XCTAssertTrue(response.status != .unknown)
+							}
+						}
+					}
+				}
+			}
+		}
+
+		wait(for: [expectation], timeout: 20.0)
+	}
+
+	func test26_aws_recognition_moderation_execute_and_status() {
+		let expectation = XCTestExpectation(description: "test26_aws_recognition_moderation_execute_and_status")
+
+		// get any file from list of files
+		let query = PaginationQuery().limit(100)
+		let filesList = uploadcare.listOfFiles()
+		filesList.get(withQuery: query) { result in
+			switch result {
+			case .failure(let error):
+				XCTFail(error.detail)
+				expectation.fulfill()
+			case .success(let list):
+				guard let file = list.results.filter({ $0.isImage }).first else {
+					XCTFail("Could not finish test: empty files list")
+					expectation.fulfill()
+					return
+				}
+				let uuid = file.uuid
+
+				self.uploadcare.executeAWSRekognitionModeration(fileUUID: uuid) { result in
+					switch result {
+					case .failure(let error):
+						XCTFail(error.detail)
+						expectation.fulfill()
+					case .success(let response):
+						// check status
+						self.uploadcare.checkAWSRekognitionModerationStatus(requestID: response.requestID) { result in
+							defer { expectation.fulfill() }
+
+							switch result {
+							case .failure(let error):
+								XCTFail(error.detail)
+							case .success(let status):
+								XCTAssertTrue(status != .unknown)
 							}
 						}
 					}

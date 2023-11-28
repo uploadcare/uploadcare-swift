@@ -321,11 +321,14 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let query = PaginationQuery()
 			.stored(true)
 			.ordering(.dateTimeUploadedDESC)
-			.limit(100)
+			.limit(300)
 
 		let list = try await uploadcare.listOfFiles(withQuery: query)
 
-		let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" })!
+		guard let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" }) else {
+			XCTFail("Could not get a video file")
+			return
+		}
 
 		let convertSettings = VideoConversionJobSettings(forFile: videoFile)
 			.format(.webm)
@@ -422,22 +425,21 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		try await uploadcare.deleteFileMetadata(forKey: "myMeta", withUUID: uuid)
 	}
 
-	func test23_aws_recognition_execute_and_status() async throws {
+	func test23_aws_rekognition_execute_and_status() async throws {
 		// get any file from list of files
-		let query = PaginationQuery().limit(1)
+		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()
 
 		let list = try await filesList.get(withQuery: query)
-		guard let uuid = list.results.first?.uuid else {
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
 			XCTFail()
 			return
 		}
 
-		let response = try await uploadcare.executeAWSRecognition(fileUUID: uuid)
-		DLog(response)
+		let response = try await uploadcare.executeAWSRekognition(fileUUID: uuid)
 
 		// check status
-		let status = try await uploadcare.checkAWSRecognitionStatus(requestID: response.requestID)
+		let status = try await uploadcare.checkAWSRekognitionStatus(requestID: response.requestID)
 		XCTAssertTrue(status != .unknown)
 	}
 
@@ -448,13 +450,12 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let list = try await filesList.get(withQuery: query)
 		guard let uuid = list.results.first?.uuid else {
-			XCTFail()
+			XCTFail("Could not finish test: empty files list")
 			return
 		}
 
 		let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
 		let response = try await uploadcare.executeClamav(fileUUID: uuid, parameters: parameters)
-		DLog(response)
 
 		// check status
 		let status = try await uploadcare.checkClamAVStatus(requestID: response.requestID)
@@ -463,11 +464,11 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 	func test25_removeBG_execute_and_status() async throws {
 		// get any file from list of files
-		let query = PaginationQuery().limit(1)
+		let query = PaginationQuery().limit(100)
 		let filesList = uploadcare.listOfFiles()
 
 		let list = try await filesList.get(withQuery: query)
-		guard let uuid = list.results.first?.uuid else {
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
 			XCTFail()
 			return
 		}
@@ -477,7 +478,86 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		// check status
 		let status = try await uploadcare.checkRemoveBGStatus(requestID: response.requestID)
-		DLog(status)
+		XCTAssertTrue(status.status != .unknown)
+	}
+
+	func test26_aws_recognition_moderation_execute_and_status() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(100)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
+			XCTFail()
+			return
+		}
+
+		let response = try await uploadcare.executeAWSRekognitionModeration(fileUUID: uuid)
+
+		// check status
+		let status = try await uploadcare.checkAWSRekognitionModerationStatus(requestID: response.requestID)
+		XCTAssertTrue(status != .unknown)
+	}
+
+	func test27_perform_aws_rekognition() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(100)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
+			XCTFail()
+			return
+		}
+
+		let status = try await uploadcare.performAWSRekognition(fileUUID: uuid)
+		XCTAssertTrue(status != .unknown)
+	}
+
+	func test28_perform_aws_rekognition_moderation() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(100)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
+			XCTFail()
+			return
+		}
+
+		let status = try await uploadcare.performAWSRekognitionModeration(fileUUID: uuid)
+		XCTAssertTrue(status != .unknown)
+	}
+
+	func test29_perform_clamav() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(100)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
+			XCTFail()
+			return
+		}
+
+		let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+		let status = try await uploadcare.performClamav(fileUUID: uuid, parameters: parameters)
+		XCTAssertTrue(status != .unknown)
+	}
+
+	func test30_perform_removebg() async throws {
+		// get any file from list of files
+		let query = PaginationQuery().limit(100)
+		let filesList = uploadcare.listOfFiles()
+
+		let list = try await filesList.get(withQuery: query)
+		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
+			XCTFail()
+			return
+		}
+
+		let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
+		let status = try await uploadcare.performRemoveBG(fileUUID: uuid, parameters: parameters)
 		XCTAssertTrue(status.status != .unknown)
 	}
 }

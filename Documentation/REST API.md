@@ -721,13 +721,13 @@ uploadcare.videoConversionJobStatus(token: 123456) { result in
 An Add-On is an application implemented by Uploadcare that accepts uploaded files as input and can produce other files and/or appdata as output.
 
 ### AWS Rekognition ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/awsRekognitionExecute))
-Execute AWS Rekognition Add-On for a given target to detect labels in an image. Note: Detected labels are stored in the file's appdata.
+Execute AWS Rekognition Add-On for a given target to detect labels in an image. **Note:** Detected labels are stored in the file's appdata.
 ```swift
 // Async:
-let response = try await uploadcare.executeAWSRecognition(fileUUID: "uuid")
+let response = try await uploadcare.executeAWSRekognition(fileUUID: "uuid")
 
 // With a completion callback:
-uploadcare.executeAWSRecognition(fileUUID: "uuid") { result in
+uploadcare.executeAWSRekognition(fileUUID: "uuid") { result in
     switch result {
     case .failure(let error):
         print(error)
@@ -740,10 +740,10 @@ uploadcare.executeAWSRecognition(fileUUID: "uuid") { result in
 Check status:
 ```swift
 // Async:
-let status = try await uploadcare.checkAWSRecognitionStatus(requestID: response.requestID)
+let status = try await uploadcare.checkAWSRekognitionStatus(requestID: response.requestID)
 
 // With a completion callback:
-uploadcare.checkAWSRecognitionStatus(requestID: "requestID") { result in
+uploadcare.checkAWSRekognitionStatus(requestID: "requestID") { result in
     switch result {
     case .failure(let error):
         print(error)
@@ -751,6 +751,51 @@ uploadcare.checkAWSRecognitionStatus(requestID: "requestID") { result in
         print(status)
     }
 }
+```
+
+Execute and wait for completion:
+```swift
+let status = try await uploadcare.performAWSRekognition(fileUUID: "uuid")
+print(status)
+```
+
+### AWS Rekognition Moderation ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons/operation/awsRekognitionDetectModerationLabelsExecute))
+Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image. **Note:** Detected moderation labels are stored in the file's appdata.
+```swift
+// Async:
+let response = try await uploadcare.executeAWSRekognitionModeration(fileUUID: "uuid")
+
+// With a completion callback:
+uploadcare.executeAWSRekognitionModeration(fileUUID: "uuid") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let response):
+        print(response) // contains requestID
+    }
+}
+```
+
+Check status:
+```swift
+// Async:
+let status = try await uploadcare.checkAWSRekognitionModerationStatus(requestID: response.requestID)
+
+// With a completion callback:
+uploadcare.checkAWSRekognitionModerationStatus(requestID: "requestID") { result in
+    switch result {
+    case .failure(let error):
+        print(error)
+    case .success(let status):
+        print(status)
+    }
+}
+```
+
+Execute and wait for completion:
+```swift
+let status = try await uploadcare.performAWSRekognitionModeration(fileUUID: "uuid")
+print(status)
 ```
 
 ### ClamAV ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/ucClamavVirusScanExecute))
@@ -788,6 +833,16 @@ uploadcare.checkClamAVStatus(requestID: "requestID") { result in
 }
 ```
 
+Execute and wait for completion:
+```swift
+let parameters = ClamAVAddonExecutionParams(purgeInfected: true)
+let status = try await uploadcare.performClamav(
+    fileUUID: "fileUUID",
+	parameters: parameters
+)
+print(status)
+```
+
 ### Remove.bg ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/removeBgExecute))
 Execute remove.bg background image removal Add-On for a given target.
 ```swift
@@ -822,4 +877,13 @@ uploadcare.checkRemoveBGStatus(requestID: "requestID") { result in
         print(status)
     }
 }
+```
+
+Execute and wait for completion:
+```swift
+// more parameters in RemoveBGAddonExecutionParams model
+let parameters = RemoveBGAddonExecutionParams(crop: true, typeLevel: .two)
+
+let status = try await uploadcare.performRemoveBG(fileUUID: "uuid", parameters: parameters)
+print(status)
 ```
