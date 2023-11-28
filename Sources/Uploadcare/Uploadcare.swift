@@ -2519,11 +2519,14 @@ extension Uploadcare: URLSessionTaskDelegate {
 
 // MARK: - Deprecated
 extension Uploadcare {
-	#if !os(Linux)
-	@available(*, unavailable, renamed: "executeAWSRekognition")
-	public func executeAWSRecognition(fileUUID: String, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {}
-	#endif
+#if !os(Linux)
+@available(*, unavailable, renamed: "executeAWSRekognition")
+public func executeAWSRecognition(fileUUID: String, _ completionHandler: @escaping (Result<ExecuteAddonResponse, RESTAPIError>) -> Void) {}
+#endif
+}
 
+@available(iOS 13.0.0, *)
+extension Uploadcare {
 	@available(*, unavailable, renamed: "executeAWSRekognition")
 	public func executeAWSRecognition(fileUUID: String) async throws -> ExecuteAddonResponse {
 		return ExecuteAddonResponse(requestID: "")
