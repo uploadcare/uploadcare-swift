@@ -951,7 +951,6 @@ final class RESTAPIIntegrationTests: XCTestCase {
 							case .failure(let error):
 								XCTFail(error.detail)
 							case .success(let response):
-								DLog(response)
 								XCTAssertTrue(response.status != .unknown)
 							}
 						}
@@ -988,8 +987,6 @@ final class RESTAPIIntegrationTests: XCTestCase {
 						XCTFail(error.detail)
 						expectation.fulfill()
 					case .success(let response):
-						DLog(response)
-
 						// check status
 						self.uploadcare.checkAWSRekognitionModerationStatus(requestID: response.requestID) { result in
 							defer { expectation.fulfill() }

@@ -493,7 +493,6 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		}
 
 		let response = try await uploadcare.executeAWSRekognitionModeration(fileUUID: uuid)
-		DLog(response)
 
 		// check status
 		let status = try await uploadcare.checkAWSRekognitionModerationStatus(requestID: response.requestID)
