@@ -656,7 +656,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		let query = PaginationQuery()
 			.stored(true)
 			.ordering(.dateTimeUploadedDESC)
-			.limit(100)
+			.limit(300)
 
 		uploadcare.listOfFiles(withQuery: query) { result in
 			switch result {
@@ -664,7 +664,11 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 				expectation.fulfill()
 			case .success(let list):
-				let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" })!
+				guard let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" }) else {
+					XCTFail("No video file")
+					expectation.fulfill()
+					return
+				}
 
 				let convertSettings = VideoConversionJobSettings(forFile: videoFile)
 					.format(.webm)

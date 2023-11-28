@@ -321,11 +321,14 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let query = PaginationQuery()
 			.stored(true)
 			.ordering(.dateTimeUploadedDESC)
-			.limit(100)
+			.limit(300)
 
 		let list = try await uploadcare.listOfFiles(withQuery: query)
 
-		let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" })!
+		guard let videoFile = list.results.first(where: { $0.mimeType == "video/mp4" || $0.mimeType == "video/quicktime" }) else {
+			XCTFail("Could not get a video file")
+			return
+		}
 
 		let convertSettings = VideoConversionJobSettings(forFile: videoFile)
 			.format(.webm)
