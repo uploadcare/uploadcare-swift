@@ -9,7 +9,7 @@
 import SwiftUI
 import Uploadcare
 
-class GroupsListViewModel: ObservableObject {
+final class GroupsListViewModel: ObservableObject {
 	// MARK: - Public properties
 	@Published var groups: [GroupViewData] = []
 	

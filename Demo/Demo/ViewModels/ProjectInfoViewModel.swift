@@ -6,12 +6,10 @@
 //  Copyright © 2020 Uploadcare, Inc. All rights reserved.
 //
 
-import Foundation
 import SwiftUI
-import Combine
 import Uploadcare
 
-class ProjectInfoViewModel: ObservableObject {
+final class ProjectInfoViewModel: ObservableObject {
 	#if DEBUG
 	static let testProject = Project(
 		name: "Test project",
@@ -24,12 +22,12 @@ class ProjectInfoViewModel: ObservableObject {
 	#endif
 	
 	// MARK: - Public properties
-	var publicKey: String { projectData?.pubKey ?? "" }
+	var publicKey: String { projectData?.pubKey ?? "..." }
 	var collaborators: [CollaboratorViewData] {
-		return projectData?.collaborators?.compactMap({ CollaboratorViewData(name: $0.name, email: $0.email) }) ?? []
+		projectData?.collaborators?.compactMap { CollaboratorViewData(name: $0.name, email: $0.email) } ?? []
 	}
-	var name: String { projectData?.name ?? "Loading" }
-	
+	var name: String { projectData?.name ?? "Loading..." }
+
 	// MARK: - Private properties
 	private var uploadcare: Uploadcare?
 	private var projectData: Project?
@@ -41,12 +39,13 @@ class ProjectInfoViewModel: ObservableObject {
 	}
 }
 
+// MARK: - Public methods
 extension ProjectInfoViewModel {
 	func loadData() async throws {
 		guard let api = uploadcare else { return }
 		let project = try await api.getProjectInfo()
 
-		DispatchQueue.main.async { [weak self] in
+		await MainActor.run { [weak self] in
 			self?.projectData = project
 		}
 	}
