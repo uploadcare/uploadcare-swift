@@ -12,31 +12,23 @@ struct GroupsListView: View {
 	@ObservedObject var viewModel: GroupsListViewModel
 	
     var body: some View {
-		ZStack {
-			List {
-				Section {
-					ForEach(self.viewModel.groups) { [self] group in
-						GroupRowView(groupData: group)
-						.onAppear {
-							if group.group.id == viewModel.groups.last?.group.id {
-								Task {
-									try await viewModel.loadMoreIfNeed()
-								}
-							}
+		Section {
+			List(viewModel.groups) { group in
+				GroupRowView(groupData: group)
+					.onAppear {
+						if group.group.id == viewModel.groups.last?.group.id {
+							Task { try await viewModel.loadMoreIfNeed() }
 						}
 					}
-				}
 			}
-		}.onAppear {
+		}
+		.onAppear {
 			Task {
 				try await viewModel.loadData()
 			}
-        }.navigationBarTitle(Text("List of groups"))
+        }
+		.navigationBarTitle(
+			Text("List of groups")
+		)
 	}
-}
-
-struct GroupsListView_Previews: PreviewProvider {
-    static var previews: some View {
-		GroupsListView(viewModel: GroupsListViewModel())
-    }
 }

@@ -36,18 +36,15 @@ extension GroupsListViewModel {
 			.ordering(.datetimeCreatedDESC)
 
 		let newData = try await list.get(withQuery: query)
-		DispatchQueue.main.async { [weak self] in
-			self?.groups.removeAll()
-			newData.results.forEach {
-				self?.groups.append(GroupViewData(group: $0))
-			}
+		await MainActor.run { [weak self] in
+			self?.groups = newData.results.map { GroupViewData(group: $0) }
 		}
 	}
 
 	func loadMoreIfNeed() async throws {
 		guard let list else { return }
 		let newData = try await list.nextPage()
-		DispatchQueue.main.async { [weak self] in
+		await MainActor.run { [weak self] in
 			newData.results.forEach({ self?.groups.append(GroupViewData(group: $0)) })
 		}
 	}
