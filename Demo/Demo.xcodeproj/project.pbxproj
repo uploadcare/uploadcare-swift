@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		241989682B339F6800E4B804 /* NeumorphicButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241989672B339F6800E4B804 /* NeumorphicButtonStyle.swift */; };
 		243A712A242CEAA200CA229B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A7129242CEAA200CA229B /* AppDelegate.swift */; };
 		243A712C242CEAA200CA229B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A712B242CEAA200CA229B /* SceneDelegate.swift */; };
 		243A712E242CEAA200CA229B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A712D242CEAA200CA229B /* ContentView.swift */; };
@@ -40,6 +41,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		241989672B339F6800E4B804 /* NeumorphicButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeumorphicButtonStyle.swift; sourceTree = "<group>"; };
 		243A7126242CEAA200CA229B /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		243A7129242CEAA200CA229B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		243A712B242CEAA200CA229B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -91,6 +93,7 @@
 			isa = PBXGroup;
 			children = (
 				2449A743242E30C50015A618 /* ActivityIndicator.swift */,
+				241989672B339F6800E4B804 /* NeumorphicButtonStyle.swift */,
 				2496853A2498FAF3006A2AF8 /* DocumentPicker.swift */,
 				24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */,
 			);
@@ -300,6 +303,7 @@
 				24FDBBA924A2A78C00F92980 /* GroupViewData.swift in Sources */,
 				247301842565285B0052BE65 /* ProjectInfoViewModel.swift in Sources */,
 				243A7148242D309000CA229B /* CollaboratorView.swift in Sources */,
+				241989682B339F6800E4B804 /* NeumorphicButtonStyle.swift in Sources */,
 				2442CF1F24A6256800B32252 /* GroupView.swift in Sources */,
 				2442CF2024A62D6800B32252 /* ImagePicker.swift in Sources */,
 				243A712A242CEAA200CA229B /* AppDelegate.swift in Sources */,
