@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		241989682B339F6800E4B804 /* NeumorphicButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241989672B339F6800E4B804 /* NeumorphicButtonStyle.swift */; };
+		2419896A2B33A04400E4B804 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241989692B33A04400E4B804 /* Utils.swift */; };
 		243A712A242CEAA200CA229B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A7129242CEAA200CA229B /* AppDelegate.swift */; };
 		243A712C242CEAA200CA229B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A712B242CEAA200CA229B /* SceneDelegate.swift */; };
 		243A712E242CEAA200CA229B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A712D242CEAA200CA229B /* ContentView.swift */; };
@@ -42,6 +43,7 @@
 
 /* Begin PBXFileReference section */
 		241989672B339F6800E4B804 /* NeumorphicButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeumorphicButtonStyle.swift; sourceTree = "<group>"; };
+		241989692B33A04400E4B804 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		243A7126242CEAA200CA229B /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		243A7129242CEAA200CA229B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		243A712B242CEAA200CA229B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 				243A7146242D307A00CA229B /* Views */,
 				243A7145242CFC6F00CA229B /* Demo.entitlements */,
 				243A7129242CEAA200CA229B /* AppDelegate.swift */,
+				241989692B33A04400E4B804 /* Utils.swift */,
 				243A712B242CEAA200CA229B /* SceneDelegate.swift */,
 				243A712F242CEAA400CA229B /* Assets.xcassets */,
 				243A7134242CEAA400CA229B /* LaunchScreen.storyboard */,
@@ -302,6 +305,7 @@
 			files = (
 				24FDBBA924A2A78C00F92980 /* GroupViewData.swift in Sources */,
 				247301842565285B0052BE65 /* ProjectInfoViewModel.swift in Sources */,
+				2419896A2B33A04400E4B804 /* Utils.swift in Sources */,
 				243A7148242D309000CA229B /* CollaboratorView.swift in Sources */,
 				241989682B339F6800E4B804 /* NeumorphicButtonStyle.swift in Sources */,
 				2442CF1F24A6256800B32252 /* GroupView.swift in Sources */,

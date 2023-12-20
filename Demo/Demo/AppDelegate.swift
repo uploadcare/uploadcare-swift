@@ -10,9 +10,6 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-
-
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 		// Override point for customization after application launch.
 		return true
@@ -31,33 +28,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		// If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
 		// Use this method to release any resources that were specific to the discarded scenes, as they will not return.
 	}
-
-
-}
-
-
-func DLog(
-    _ messages: Any...,
-    fullPath: String = #file,
-    line: Int = #line,
-    functionName: String = #function
-) {
-    let file = URL(fileURLWithPath: fullPath)
-    for message in messages {
-        #if DEBUG
-        let string = "\(file.pathComponents.last!):\(line) -> \(functionName): \(message)"
-        print(string)
-        #endif
-    }
-}
-
-
-/// Delay function using GCD.
-///
-/// - Parameters:
-///   - delay: delay in seconds
-///   - closure: block to execute after delay
-func delay(_ delay: Double, closure: @escaping ()->()) {
-    DispatchQueue.main.asyncAfter(
-        deadline: DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure)
 }

@@ -173,10 +173,11 @@ struct MainView: View {
 	}
 }
 
-struct MainView_Previews: PreviewProvider {
-    static var previews: some View {
-		MainView()
-			.environmentObject(APIStore())
-			.previewDevice(PreviewDevice(rawValue: "iPhone X"))
-    }
+#Preview {
+	MainView()
+		.environmentObject(
+			APIStore(
+				uploadcare: Uploadcare(withPublicKey: publicKey,secretKey: secretKey)
+			)
+		)
 }
