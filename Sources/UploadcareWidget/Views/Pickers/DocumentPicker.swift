@@ -9,7 +9,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-@available(iOS 14.0, *)
+@available(iOS 13.0, *)
 public struct DocumentPicker: UIViewControllerRepresentable {
 
 	@Environment(\.presentationMode)
@@ -44,13 +44,17 @@ public struct DocumentPicker: UIViewControllerRepresentable {
 	}
 
 	public func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-		let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.data, .image])
+		let documentPicker: UIDocumentPickerViewController
+		if #available(iOS 14.0, *) {
+			documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.data, .image])
+		} else {
+			documentPicker = UIDocumentPickerViewController()
+		}
 		documentPicker.delegate = context.coordinator
 		documentPicker.allowsMultipleSelection = true
 		return documentPicker
 	}
 
-	public func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: UIViewControllerRepresentableContext<DocumentPicker>) {
-	}
+	public func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: UIViewControllerRepresentableContext<DocumentPicker>) {}
 }
 #endif
