@@ -14,8 +14,7 @@ public struct DocumentPicker: UIViewControllerRepresentable {
 
 	@Environment(\.presentationMode)
 	private var presentationMode
-
-	public let onDocumentsPicked: ([URL]) -> Void
+	let onDocumentsPicked: ([URL]) -> Void
 
 	public init(onDocumentsPicked: @escaping ([URL]) -> Void) {
 		self.onDocumentsPicked = onDocumentsPicked

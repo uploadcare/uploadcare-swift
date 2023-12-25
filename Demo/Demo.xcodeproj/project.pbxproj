@@ -20,7 +20,6 @@
 		243A7144242CF1B400CA229B /* ProjectInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A7143242CF1B400CA229B /* ProjectInfoView.swift */; };
 		243A7148242D309000CA229B /* CollaboratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243A7147242D309000CA229B /* CollaboratorView.swift */; };
 		2442CF1F24A6256800B32252 /* GroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2442CF1E24A6256800B32252 /* GroupView.swift */; };
-		2442CF2024A62D6800B32252 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */; };
 		2449A746242E35FE0015A618 /* FilesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2449A745242E35FE0015A618 /* FilesListView.swift */; };
 		2449A748242E37CC0015A618 /* FileRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2449A747242E37CC0015A618 /* FileRowView.swift */; };
 		2449A74A242E42AE0015A618 /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2449A749242E42AE0015A618 /* FileView.swift */; };
@@ -62,7 +61,6 @@
 		24730186256536F30052BE65 /* CollaboratorViewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaboratorViewData.swift; sourceTree = "<group>"; };
 		2492150424A66991008D335D /* GroupFileList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupFileList.swift; sourceTree = "<group>"; };
 		24931A5D247554A6003EE044 /* uploadcare-swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "uploadcare-swift"; path = ..; sourceTree = "<group>"; };
-		24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		24BAB4382549E4070075E79A /* PickerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerType.swift; sourceTree = "<group>"; };
 		24BAB43B2549E42D0075E79A /* UploadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadState.swift; sourceTree = "<group>"; };
 		24BAB4442549E53A0075E79A /* GroupsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsStore.swift; sourceTree = "<group>"; };
@@ -91,7 +89,6 @@
 			isa = PBXGroup;
 			children = (
 				241989672B339F6800E4B804 /* NeumorphicButtonStyle.swift */,
-				24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */,
 			);
 			path = UIElements;
 			sourceTree = "<group>";
@@ -296,7 +293,6 @@
 				243A7148242D309000CA229B /* CollaboratorView.swift in Sources */,
 				241989682B339F6800E4B804 /* NeumorphicButtonStyle.swift in Sources */,
 				2442CF1F24A6256800B32252 /* GroupView.swift in Sources */,
-				2442CF2024A62D6800B32252 /* ImagePicker.swift in Sources */,
 				243A712A242CEAA200CA229B /* AppDelegate.swift in Sources */,
 				24FDBBA724A2A55200F92980 /* GroupsListView.swift in Sources */,
 				2449A746242E35FE0015A618 /* FilesListView.swift in Sources */,
