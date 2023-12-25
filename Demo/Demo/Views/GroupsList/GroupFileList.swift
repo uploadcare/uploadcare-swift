@@ -29,12 +29,13 @@ struct GroupFileList: View {
 				}
 			}
 			
-			VStack {
+			VStack(spacing: 16) {
 				ProgressView()
 					.progressViewStyle(.circular)
 					.scaleEffect(CGSize(width: 1.8, height: 1.8))
 				Text("Loading...")
-			}.opacity(self.isLoading ? 1 : 0)
+			}
+			.opacity(self.isLoading ? 1 : 0)
 		}
 		.onAppear {
 			guard self.didLoadData == false else { return }

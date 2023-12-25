@@ -68,7 +68,7 @@ struct FilesListView: View {
                 }
             }
             
-            VStack {
+			VStack(spacing: 16) {
 				ProgressView()
 					.progressViewStyle(.circular)
 					.scaleEffect(CGSize(width: 1.8, height: 1.8))
