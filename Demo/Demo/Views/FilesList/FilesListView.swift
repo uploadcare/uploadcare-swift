@@ -202,12 +202,10 @@ struct FilesListView: View {
 }
 
 // MARK: - Preview
-struct FilesListView_Previews: PreviewProvider {
-    static var previews: some View {
-		NavigationView {
-			FilesListView(filesStore: FilesStore(files: []))
-				.environmentObject(APIStore())
-				.navigationBarTitle(Text("List of files"))
-		}
-    }
+#Preview {
+	NavigationView {
+		FilesListView(filesStore: FilesStore(files: []))
+			.environmentObject(APIStore())
+			.navigationBarTitle(Text("List of files"))
+	}
 }
