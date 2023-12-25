@@ -27,7 +27,6 @@
 		247301842565285B0052BE65 /* ProjectInfoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247301832565285B0052BE65 /* ProjectInfoStore.swift */; };
 		24730187256536F30052BE65 /* CollaboratorViewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24730186256536F30052BE65 /* CollaboratorViewData.swift */; };
 		2492150524A66991008D335D /* GroupFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2492150424A66991008D335D /* GroupFileList.swift */; };
-		2496853B2498FAF3006A2AF8 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2496853A2498FAF3006A2AF8 /* DocumentPicker.swift */; };
 		249FF0D125BEDADA00BCFDD3 /* UploadcareWidget in Frameworks */ = {isa = PBXBuildFile; productRef = 249FF0D025BEDADA00BCFDD3 /* UploadcareWidget */; };
 		24BAB4392549E4070075E79A /* PickerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB4382549E4070075E79A /* PickerType.swift */; };
 		24BAB43C2549E42D0075E79A /* UploadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BAB43B2549E42D0075E79A /* UploadState.swift */; };
@@ -63,7 +62,6 @@
 		24730186256536F30052BE65 /* CollaboratorViewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaboratorViewData.swift; sourceTree = "<group>"; };
 		2492150424A66991008D335D /* GroupFileList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupFileList.swift; sourceTree = "<group>"; };
 		24931A5D247554A6003EE044 /* uploadcare-swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "uploadcare-swift"; path = ..; sourceTree = "<group>"; };
-		2496853A2498FAF3006A2AF8 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		24BAB4382549E4070075E79A /* PickerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerType.swift; sourceTree = "<group>"; };
 		24BAB43B2549E42D0075E79A /* UploadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadState.swift; sourceTree = "<group>"; };
@@ -93,7 +91,6 @@
 			isa = PBXGroup;
 			children = (
 				241989672B339F6800E4B804 /* NeumorphicButtonStyle.swift */,
-				2496853A2498FAF3006A2AF8 /* DocumentPicker.swift */,
 				24AA61DC247C5B1C000BABA9 /* ImagePicker.swift */,
 			);
 			path = UIElements;
@@ -316,7 +313,6 @@
 				2449A74A242E42AE0015A618 /* FileView.swift in Sources */,
 				243A7144242CF1B400CA229B /* ProjectInfoView.swift in Sources */,
 				24730187256536F30052BE65 /* CollaboratorViewData.swift in Sources */,
-				2496853B2498FAF3006A2AF8 /* DocumentPicker.swift in Sources */,
 				2449A748242E37CC0015A618 /* FileRowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

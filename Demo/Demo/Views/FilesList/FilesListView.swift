@@ -9,6 +9,7 @@
 import SwiftUI
 import Combine
 import Uploadcare
+import UploadcareWidget
 
 struct FilesListView: View {
 	@ObservedObject var filesStore: FilesStore
