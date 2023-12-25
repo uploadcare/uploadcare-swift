@@ -41,23 +41,24 @@ class FilesListStore: ObservableObject {
 	// MARK: - Public methods
 	func load() async throws {
 		guard let list = list else { fatalError("No list object") }
-		list.results.removeAll()
 
 		let query = PaginationQuery()
 			.limit(5)
 			.ordering(.dateTimeUploadedDESC)
 
 		try await list.get(withQuery: query)
-		DispatchQueue.main.async {
-			list.results.forEach { self.files.append(FileViewData( file: $0)) }
+		await MainActor.run { [weak self] in
+			guard let self else { return }
+			self.files = list.results.map { FileViewData(file: $0) }
 		}
 	}
 
 	func loadNext() async throws {
 		guard let list = list else { fatalError("No list object") }
 		try await list.nextPage()
-		DispatchQueue.main.async {
-			list.results.forEach({ self.files.append(FileViewData( file: $0)) })
+		await MainActor.run { [weak self] in
+			guard let self else { return }
+			list.results.forEach { self.files.append(FileViewData( file: $0)) }
 		}
 	}
 

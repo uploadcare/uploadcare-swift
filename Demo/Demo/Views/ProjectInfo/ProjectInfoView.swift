@@ -56,7 +56,9 @@ struct ProjectInfo_Previews: PreviewProvider {
 		#if DEBUG
 		NavigationView {
 			ProjectInfoView(
-				viewModel: ProjectInfoViewModel(projectData: ProjectInfoViewModel.testProject)
+				viewModel: ProjectInfoViewModel(
+					projectData: ProjectInfoViewModel.testProject
+				)
 			)
 		}
 		.previewDevice(PreviewDevice(rawValue: "iPhone X"))
