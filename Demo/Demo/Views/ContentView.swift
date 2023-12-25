@@ -40,10 +40,10 @@ struct MainView: View {
 						NavigationLink(destination: FilesListView(filesStore: self.filesStore)) {
 							Text("List of files")
 						}
-						NavigationLink(destination: GroupsListView(viewModel: GroupsListViewModel(uploadcare: api.uploadcare))) {
+						NavigationLink(destination: GroupsListView(store: GroupsStore(uploadcare: api.uploadcare))) {
 							Text("List of file groups")
 						}
-						NavigationLink(destination: ProjectInfoView(viewModel: ProjectInfoViewModel(uploadcare: api.uploadcare))) {
+						NavigationLink(destination: ProjectInfoView(store: ProjectInfoStore(uploadcare: api.uploadcare))) {
 							Text("Project info")
 						}
 					}

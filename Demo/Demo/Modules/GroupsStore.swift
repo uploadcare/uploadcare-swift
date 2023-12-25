@@ -9,7 +9,7 @@
 import SwiftUI
 import Uploadcare
 
-final class GroupsListViewModel: ObservableObject {
+final class GroupsStore: ObservableObject {
 	// MARK: - Public properties
 	@Published var groups: [GroupViewData] = []
 	
@@ -26,7 +26,7 @@ final class GroupsListViewModel: ObservableObject {
 }
 
 // MARK: - Public methods
-extension GroupsListViewModel {
+extension GroupsStore {
 	func loadData() async throws {
 		guard let list else { return }
 		let query = GroupsListQuery()

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ProjectInfoView: View {
 	// MARK: - Public properties
-	@ObservedObject var viewModel: ProjectInfoViewModel
+	@ObservedObject var store: ProjectInfoStore
 	
 	// MARK: - Private properties
 	@State private var isLoading: Bool = true
@@ -22,12 +22,12 @@ struct ProjectInfoView: View {
 					HStack {
 						Text("Public key: ")
 							.bold()
-						Text(viewModel.publicKey)
+						Text(store.publicKey)
 					}
 				}
-				if viewModel.collaborators.isEmpty == false {
+				if store.collaborators.isEmpty == false {
 					Section(header: Text("Collaborators")) {
-						ForEach(viewModel.collaborators) { collaborator in
+						ForEach(store.collaborators) { collaborator in
 							CollaboratorView(viewData: collaborator)
 						}
 					}
@@ -41,10 +41,10 @@ struct ProjectInfoView: View {
 			}
 			.opacity(self.isLoading ? 1 : 0)
 
-			.navigationBarTitle(Text(viewModel.name))
+			.navigationBarTitle(Text(store.name))
 		}.onAppear {
 			Task {
-				try await viewModel.loadData()
+				try await store.loadData()
 				withAnimation { isLoading.toggle() }
 			}
 		}
@@ -56,8 +56,8 @@ struct ProjectInfo_Previews: PreviewProvider {
 		#if DEBUG
 		NavigationView {
 			ProjectInfoView(
-				viewModel: ProjectInfoViewModel(
-					projectData: ProjectInfoViewModel.testProject
+				store: ProjectInfoStore(
+					projectData: ProjectInfoStore.testProject
 				)
 			)
 		}

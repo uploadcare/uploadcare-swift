@@ -9,7 +9,7 @@
 import SwiftUI
 import Uploadcare
 
-final class ProjectInfoViewModel: ObservableObject {
+final class ProjectInfoStore: ObservableObject {
 	#if DEBUG
 	static let testProject = Project(
 		name: "Test project",
@@ -40,7 +40,7 @@ final class ProjectInfoViewModel: ObservableObject {
 }
 
 // MARK: - Public methods
-extension ProjectInfoViewModel {
+extension ProjectInfoStore {
 	func loadData() async throws {
 		guard let api = uploadcare else { return }
 		let project = try await api.getProjectInfo()

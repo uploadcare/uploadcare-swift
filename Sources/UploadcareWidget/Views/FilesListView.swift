@@ -12,7 +12,7 @@ import SwiftUI
 @available(iOS 14.0.0, *)
 struct FilesListView: View {
 	@Environment(\.presentationMode) var presentation
-	@StateObject var viewModel: FilesListViewModel
+	@StateObject var store: FilesListViewModel
 	@State var isRoot: Bool
 	@State var didLoad: Bool = false
 	@State var currentChunk: String = ""
@@ -29,7 +29,7 @@ struct FilesListView: View {
 					// Root chunks
 					if self.isRoot {
 						Section {
-							ForEach(Array(self.viewModel.source.chunks.enumerated()), id: \.element) { index, chunk in
+							ForEach(Array(self.store.source.chunks.enumerated()), id: \.element) { index, chunk in
 								let chunkName = chunk.key
 								let chunkValue = chunk.value
 
@@ -40,10 +40,10 @@ struct FilesListView: View {
 										.opacity(isCurrent ? 1 : 0)
 									Text(chunkName)
 								}.onTapGesture {
-									self.viewModel.chunkPath = chunk.value
+									self.store.chunkPath = chunk.value
 									self.isLoading = true
 									Task {
-										try await self.viewModel.getSourceChunk()
+										try await self.store.getSourceChunk()
 										await MainActor.run {
 											self.isLoading = false
 											self.currentChunk = chunk.value
@@ -56,10 +56,10 @@ struct FilesListView: View {
 
 					// Folders (albums)
 					Section {
-						ForEach(self.viewModel.folders) { thing in
+						ForEach(self.store.folders) { thing in
 							let chunkPath = thing.action!.path?.chunks.last?.path_chunk ?? ""
-							let viewModel = self.viewModel.modelWithChunkPath(chunkPath)
-							NavigationLink(destination: FilesListView(viewModel: viewModel, isRoot: false)) {
+							let store = self.store.modelWithChunkPath(chunkPath)
+							NavigationLink(destination: FilesListView(store: store, isRoot: false)) {
 								OpenPathView(thing: thing)
 							}
 						}
@@ -67,9 +67,9 @@ struct FilesListView: View {
 
 					// Files
 					Section {
-						if self.viewModel.files.count > 0 {
+						if self.store.files.count > 0 {
 							let cols = 4
-							let num = self.viewModel.files.count
+							let num = self.store.files.count
 
 							let dev = num / cols
 							let rows = num % cols == 0 ? dev : dev + 1
@@ -77,7 +77,7 @@ struct FilesListView: View {
 							GridView(rows: rows, columns: cols) { (row, col) in
 								let index = row * cols + col
 								if index < num {
-									let thing = self.viewModel.files[index]
+									let thing = self.store.files[index]
 									let size = geometry.size.width / CGFloat(cols)
 
 									ZStack {
@@ -101,7 +101,7 @@ struct FilesListView: View {
 					}
 
 					// Pagination
-					if self.viewModel.currentChunk?.next_page != nil {
+					if self.store.currentChunk?.next_page != nil {
 						Section {
 							Button("Load more") {
 								self.loadMore()
@@ -136,19 +136,19 @@ struct FilesListView: View {
 				title: Text("Logout"),
 				message: Text("Are you sure?"),
 				primaryButton: .default(Text("Logout"), action: {
-					self.viewModel.logout()
+					self.store.logout()
 					self.presentation.wrappedValue.dismiss()
 				}),
 				secondaryButton: .cancel())
 		}
-		.navigationBarTitle(Text(viewModel.source.title))
+		.navigationBarTitle(Text(store.source.title))
 		.navigationBarItems(trailing:
 			HStack {
 				if self.pathsToUpload.count > 0 {
 					Button("Upload") {
 						self.pathsToUpload.forEach { path in
 							Task {
-								try await self.viewModel.uploadFileFromPath(path)
+								try await self.store.uploadFileFromPath(path)
 							}
 						}
 						self.pathsToUpload.removeAll()
@@ -176,10 +176,10 @@ struct FilesListView: View {
 		guard !didLoad else { return }
 		isLoading = true
 		Task {
-			try await self.viewModel.getSourceChunk()
+			try await self.store.getSourceChunk()
 			DLog("loaded first page")
 			await MainActor.run {
-				if let firstChunk = viewModel.source.chunks.first {
+				if let firstChunk = store.source.chunks.first {
 					currentChunk = firstChunk.value
 				}
 				self.isLoading = false
@@ -189,12 +189,12 @@ struct FilesListView: View {
 	}
 
 	func loadMore() {
-		guard let nextPage = self.viewModel.currentChunk?.next_page,
+		guard let nextPage = self.store.currentChunk?.next_page,
 			  let path = nextPage.chunks.first?.path_chunk else { return }
 		isLoading = true
 
 		Task {
-			try await self.viewModel.loadMore(path: path)
+			try await self.store.loadMore(path: path)
 			DLog("loaded next page")
 			await MainActor.run {
 				self.isLoading = false

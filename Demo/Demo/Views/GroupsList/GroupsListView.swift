@@ -9,22 +9,22 @@
 import SwiftUI
 
 struct GroupsListView: View {
-	@ObservedObject var viewModel: GroupsListViewModel
+	@ObservedObject var store: GroupsStore
 	
     var body: some View {
 		Section {
-			List(viewModel.groups) { group in
+			List(store.groups) { group in
 				GroupRowView(groupData: group)
 					.onAppear {
-						if group.group.id == viewModel.groups.last?.group.id {
-							Task { try await viewModel.loadMoreIfNeed() }
+						if group.group.id == store.groups.last?.group.id {
+							Task { try await store.loadMoreIfNeed() }
 						}
 					}
 			}
 		}
 		.onAppear {
 			Task {
-				try await viewModel.loadData()
+				try await store.loadData()
 			}
         }
 		.navigationBarTitle(

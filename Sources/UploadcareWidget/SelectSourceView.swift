@@ -36,7 +36,7 @@ public struct SelectSourceView: View {
 			VStack(alignment: .leading) {
 				if let source = $currentSource.wrappedValue {
 					NavigationLink(
-						destination: FilesListView(viewModel: self.createViewModelForSource(source), isRoot: true),
+						destination: FilesListView(store: self.createViewModelForSource(source), isRoot: true),
 						tag: source.source.rawValue,
 						selection: $selection
 					) {
