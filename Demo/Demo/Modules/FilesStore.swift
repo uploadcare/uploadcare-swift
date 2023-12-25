@@ -34,8 +34,8 @@ class FilesStore: ObservableObject {
 	private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
 	
 	// MARK: - Init
-	init(files: [FileViewData]) {
-		self.files = files
+	init(files: [FileViewData]? = nil) {
+		self.files = files ?? []
 	}
 	
 	// MARK: - Public methods

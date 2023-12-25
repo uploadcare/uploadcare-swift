@@ -13,7 +13,7 @@ struct GroupFileList: View {
 	var viewData: GroupViewData
 	
 	@EnvironmentObject var api: APIStore
-	@ObservedObject private var filesListStore: FilesStore = FilesStore(files: [])
+	@ObservedObject private var filesStore: FilesStore = FilesStore()
 	@State private var isLoading: Bool = true
 	@State private var alertMessage = ""
 	@State private var isShowingAlert = false
@@ -23,7 +23,7 @@ struct GroupFileList: View {
 		ZStack {
 			List {
 				Section {
-					ForEach(self.filesListStore.files) { file in
+					ForEach(self.filesStore.files) { file in
 						FileRowView(fileData: file)
 					}
 				}
@@ -59,8 +59,8 @@ struct GroupFileList: View {
 		do {
 			guard let group = try await self.api.uploadcare?.groupInfo(withUUID: self.viewData.group.id) else { return }
 			DispatchQueue.main.async {
-				self.filesListStore.files.removeAll()
-				group.files?.forEach { self.filesListStore.files.append(FileViewData( file: $0)) }
+				self.filesStore.files.removeAll()
+				group.files?.forEach { self.filesStore.files.append(FileViewData( file: $0)) }
 			}
 		} catch {
 			DispatchQueue.main.async {

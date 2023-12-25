@@ -11,7 +11,7 @@ import Combine
 import Uploadcare
 
 struct FilesListView: View {
-	@ObservedObject var filesListStore: FilesStore
+	@ObservedObject var filesStore: FilesStore
     
     @State private var isLoading: Bool = true
 	@State private var isShowingAlert = false
@@ -33,18 +33,18 @@ struct FilesListView: View {
             VStack {
                 HStack {
 					ProgressView(
-						self.filesListStore.uploadState == .paused ? "Paused" : "Uploading \(self.filesListStore.uploadedFromQueue) of \(self.filesListStore.filesQueue.count)",
-						value: self.filesListStore.progressValue, total: 1.0
+						self.filesStore.uploadState == .paused ? "Paused" : "Uploading \(self.filesStore.uploadedFromQueue) of \(self.filesStore.filesQueue.count)",
+						value: self.filesStore.progressValue, total: 1.0
 					).frame(maxWidth: 200)
 						
-					if self.filesListStore.uploadState == .uploading {
+					if self.filesStore.uploadState == .uploading {
                         Button(action: {
                             self.toggleUpload()
                         }) {
                             Image(systemName: "pause.fill")
 						}
                     }
-					if self.filesListStore.uploadState == .paused {
+					if self.filesStore.uploadState == .paused {
                         Button(action: {
                             self.toggleUpload()
                         }) {
@@ -56,10 +56,10 @@ struct FilesListView: View {
                 
                 List {
                     Section {
-                        ForEach(self.filesListStore.files) { file in
+                        ForEach(self.filesStore.files) { file in
                             FileRowView(fileData: file)
 								.onAppear {
-									if file.file.uuid == self.filesListStore.files.last?.file.uuid {
+									if file.file.uuid == self.filesStore.files.last?.file.uuid {
 										self.loadMoreIfNeed()
 									}
 								}
@@ -105,7 +105,7 @@ struct FilesListView: View {
 				ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
 					self.isUploading = true
 					
-					self.filesListStore.uploadFile(imageUrl, completionHandler: { fileId in
+					self.filesStore.uploadFile(imageUrl, completionHandler: { fileId in
 						self.isUploading = false
 						self.insertFileByFileId(fileId)
 					})
@@ -113,7 +113,7 @@ struct FilesListView: View {
 			} else {
 				DocumentPicker { (urls) in
 					self.isUploading = true
-					self.filesListStore.uploadFiles(urls, completionHandler: { fileIds in
+					self.filesStore.uploadFiles(urls, completionHandler: { fileIds in
 						self.isUploading = false
 						fileIds.forEach({ self.insertFileByFileId($0) })
 					})
@@ -132,14 +132,14 @@ struct FilesListView: View {
 	}
     
     func toggleUpload() {
-		guard let task = self.filesListStore.currentTask else { return }
-		switch self.filesListStore.uploadState {
+		guard let task = self.filesStore.currentTask else { return }
+		switch self.filesStore.uploadState {
         case .uploading:
             task.pause()
-			self.filesListStore.uploadState = .paused
+			self.filesStore.uploadState = .paused
         case .paused:
             task.resume()
-			self.filesListStore.uploadState = .uploading
+			self.filesStore.uploadState = .uploading
         default: break
         }
     }
@@ -150,7 +150,7 @@ struct FilesListView: View {
 			defer { DispatchQueue.main.async { self.isLoading = false } }
 
 			do {
-				try await filesListStore.loadNext()
+				try await filesStore.loadNext()
 			} catch let error {
 				DispatchQueue.main.async {
 					self.alertMessage = (error as? RESTAPIError)?.detail ?? error.localizedDescription
@@ -162,17 +162,17 @@ struct FilesListView: View {
     
 	func delete(at offsets: IndexSet) {
 		Task {
-			try await self.filesListStore.deleteFiles(at: offsets)
+			try await self.filesStore.deleteFiles(at: offsets)
 		}
 	}
 	
 	func loadData() {
-		filesListStore.uploadcare = self.api.uploadcare
+		filesStore.uploadcare = self.api.uploadcare
 		Task {
 			defer { DispatchQueue.main.async { self.isLoading = false } }
 
 			do {
-				try await self.filesListStore.load()
+				try await self.filesStore.load()
 				DispatchQueue.main.async { self.didLoadData = true }
 			} catch let error {
 				DispatchQueue.main.async {
@@ -193,7 +193,7 @@ struct FilesListView: View {
 				DLog(error)
 			case .success(let file):
 				let viewData = FileViewData(file: file)
-				self.filesListStore.files.insert(viewData, at: 0)
+				self.filesStore.files.insert(viewData, at: 0)
 			}
 		}
 	}
@@ -203,7 +203,7 @@ struct FilesListView: View {
 struct FilesListView_Previews: PreviewProvider {
     static var previews: some View {
 		NavigationView {
-			FilesListView(filesListStore: FilesStore(files: []))
+			FilesListView(filesStore: FilesStore(files: []))
 				.environmentObject(APIStore())
 				.navigationBarTitle(Text("List of files"))
 		}

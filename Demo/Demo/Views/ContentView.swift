@@ -12,8 +12,8 @@ import UploadcareWidget
 
 struct MainView: View {
 	@EnvironmentObject var api: APIStore
-	@ObservedObject private var filesListStore = FilesStore(files: [])
-	
+	@ObservedObject private var filesStore = FilesStore(files: [])
+
 	@State var widgetVisible: Bool = false
 
 	@State private var isShowingAddFilesAlert = false
@@ -37,7 +37,7 @@ struct MainView: View {
 			ZStack {
 				VStack {
 					List {
-						NavigationLink(destination: FilesListView(filesListStore: self.filesListStore)) {
+						NavigationLink(destination: FilesListView(filesStore: self.filesStore)) {
 							Text("List of files")
 						}
 						NavigationLink(destination: GroupsListView(viewModel: GroupsListViewModel(uploadcare: api.uploadcare))) {
@@ -65,7 +65,7 @@ struct MainView: View {
 									self.isUploading = true
 								}
 
-								self.filesListStore.uploadFile(imageUrl, completionHandler: { fileId in
+								self.filesStore.uploadFile(imageUrl, completionHandler: { fileId in
 									withAnimation(.easeOut) {
 										self.isUploading = false
 										delay(0.5) {
@@ -82,7 +82,7 @@ struct MainView: View {
 								withAnimation(.easeIn) {
 									self.isUploading = true
 								}
-								self.filesListStore.uploadFiles(urls, completionHandler: { fileIds in
+								self.filesStore.uploadFiles(urls, completionHandler: { fileIds in
 									withAnimation(.easeOut) {
 										self.isUploading = false
 										delay(0.5) {
@@ -106,18 +106,18 @@ struct MainView: View {
 					if self.isUploading {
 						HStack {
 							ProgressView(
-								self.filesListStore.uploadState == .paused ? "Paused" : "Uploading \(self.filesListStore.uploadedFromQueue) of \(self.filesListStore.filesQueue.count)",
-								value: self.filesListStore.progressValue, total: 1.0
+								self.filesStore.uploadState == .paused ? "Paused" : "Uploading \(self.filesStore.uploadedFromQueue) of \(self.filesStore.filesQueue.count)",
+								value: self.filesStore.progressValue, total: 1.0
 							).frame(maxWidth: 200)
 
-							if self.filesListStore.uploadState == .uploading {
+							if self.filesStore.uploadState == .uploading {
 								Button(action: {
 									self.toggleUpload()
 								}) {
 									Image(systemName: "pause.fill")
 								}
 							}
-							if self.filesListStore.uploadState == .paused {
+							if self.filesStore.uploadState == .paused {
 								Button(action: {
 									self.toggleUpload()
 								}) {
@@ -128,8 +128,8 @@ struct MainView: View {
 					}
 
 					Button("Upload file") {
-						if self.filesListStore.uploadcare == nil {
-							self.filesListStore.uploadcare = self.api.uploadcare
+						if self.filesStore.uploadcare == nil {
+							self.filesStore.uploadcare = self.api.uploadcare
 						}
 						self.isShowingAddFilesAlert.toggle()
 					}
@@ -160,14 +160,14 @@ struct MainView: View {
     }
 
 	func toggleUpload() {
-		guard let task = self.filesListStore.currentTask else { return }
-		switch self.filesListStore.uploadState {
+		guard let task = self.filesStore.currentTask else { return }
+		switch self.filesStore.uploadState {
 		case .uploading:
 			task.pause()
-			self.filesListStore.uploadState = .paused
+			self.filesStore.uploadState = .paused
 		case .paused:
 			task.resume()
-			self.filesListStore.uploadState = .uploading
+			self.filesStore.uploadState = .uploading
 		default: break
 		}
 	}

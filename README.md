@@ -152,7 +152,7 @@ task.cancel()
 (task as? UploadTaskResumable)?.resume()
 ```
 
-It is possible to perform uploads in the background. But implementation is platform-specific. This lib doesn't provide a default implementation. You can find an example for the iOS in our Demo app. See [FilesListStore.swift](https://github.com/uploadcare/uploadcare-swift/blob/1e6341edcdcb887589a4e798b746c525c9023b4e/Demo/Demo/Modules/FilesListStore.swift).
+It is possible to perform uploads in the background. But implementation is platform-specific. This lib doesn't provide a default implementation. You can find an example for the iOS in our Demo app. See [FilesStore.swift](https://github.com/uploadcare/uploadcare-swift/blob/master/Demo/Demo/Modules/FilesStore.swift).
 
 ## Using REST API
 
