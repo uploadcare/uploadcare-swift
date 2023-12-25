@@ -32,22 +32,65 @@ struct MainView: View {
 		SocialSource(source: .onedrive)
 	]
 
+	private var listElements: some View {
+		List {
+			NavigationLink(destination: FilesListView(filesStore: self.filesStore)) {
+				Text("List of files")
+			}
+			NavigationLink(destination: GroupsListView(store: GroupsStore(uploadcare: api.uploadcare))) {
+				Text("List of file groups")
+			}
+			NavigationLink(destination: ProjectInfoView(store: ProjectInfoStore(uploadcare: api.uploadcare))) {
+				Text("Project info")
+			}
+		}
+		.listStyle(GroupedListStyle())
+	}
+
+	private var imagesPicker: some View {
+		ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
+			withAnimation(.easeIn) {
+				self.isUploading = true
+			}
+
+			self.filesStore.uploadFile(imageUrl, completionHandler: { fileId in
+				withAnimation(.easeOut) {
+					self.isUploading = false
+					delay(0.5) {
+						self.messageText = "Upload finished"
+						delay(3) {
+							self.messageText = ""
+						}
+					}
+				}
+			})
+		}
+	}
+
+	private var documentsPicker: some View {
+		DocumentPicker { (urls) in
+			withAnimation(.easeIn) {
+				self.isUploading = true
+			}
+			self.filesStore.uploadFiles(urls, completionHandler: { fileIds in
+				withAnimation(.easeOut) {
+					self.isUploading = false
+					delay(0.5) {
+						self.messageText = "Upload finished"
+						delay(3) {
+							self.messageText = ""
+						}
+					}
+				}
+			})
+		}
+	}
+
 	var body: some View {
 		NavigationView {
 			ZStack {
 				VStack {
-					List {
-						NavigationLink(destination: FilesListView(filesStore: self.filesStore)) {
-							Text("List of files")
-						}
-						NavigationLink(destination: GroupsListView(store: GroupsStore(uploadcare: api.uploadcare))) {
-							Text("List of file groups")
-						}
-						NavigationLink(destination: ProjectInfoView(store: ProjectInfoStore(uploadcare: api.uploadcare))) {
-							Text("Project info")
-						}
-					}
-					.listStyle(GroupedListStyle())
+					listElements
 					.navigationBarTitle(Text("Uploadcare demo"), displayMode: .automatic)
 					.sheet(isPresented: self.$widgetVisible, content: {
 						NavigationView {
@@ -59,41 +102,9 @@ struct MainView: View {
 						}
 					})
 					.sheet(isPresented: $isShowingSheetWithPicker) {
-						if self.pickerType == .photos {
-							ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
-								withAnimation(.easeIn) {
-									self.isUploading = true
-								}
-
-								self.filesStore.uploadFile(imageUrl, completionHandler: { fileId in
-									withAnimation(.easeOut) {
-										self.isUploading = false
-										delay(0.5) {
-											self.messageText = "Upload finished"
-											delay(3) {
-												self.messageText = ""
-											}
-										}
-									}
-								})
-							}
-						} else {
-							DocumentPicker { (urls) in
-								withAnimation(.easeIn) {
-									self.isUploading = true
-								}
-								self.filesStore.uploadFiles(urls, completionHandler: { fileIds in
-									withAnimation(.easeOut) {
-										self.isUploading = false
-										delay(0.5) {
-											self.messageText = "Upload finished"
-											delay(3) {
-												self.messageText = ""
-											}
-										}
-									}
-								})
-							}
+						switch self.pickerType {
+						case .photos: imagesPicker
+						case .files: documentsPicker
 						}
 					}
 				}
