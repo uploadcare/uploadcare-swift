@@ -1,5 +1,5 @@
 //
-//  ProjectInfoViewModel.swift
+//  ProjectInfoStore.swift
 //  Demo
 //
 //  Created by Sergey Armodin on 18.11.2020.

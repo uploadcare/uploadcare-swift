@@ -1,5 +1,5 @@
 //
-//  GroupsListViewModel.swift
+//  GroupsStore.swift
 //  Demo
 //
 //  Created by Sergey Armodin on 28.10.2020.
