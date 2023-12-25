@@ -84,7 +84,9 @@ struct FileView: View {
 							.font(.footnote)
 					}.padding([.leading, .trailing], 8)
 				}
-				ActivityIndicator(isAnimating: .constant(true), style: .large)
+				ProgressView()
+					.progressViewStyle(.circular)
+					.scaleEffect(CGSize(width: 1.8, height: 1.8))
 					.padding(.all)
 					.opacity(self.isLoading ? 1 : 0)
 			}

@@ -35,8 +35,10 @@ struct ProjectInfoView: View {
 			}
 			.opacity(self.isLoading ? 0 : 1)
 				
-			VStack {
-				ActivityIndicator(isAnimating: .constant(true), style: .large)
+			VStack(spacing: 16) {
+				ProgressView()
+					.progressViewStyle(.circular)
+					.scaleEffect(CGSize(width: 1.8, height: 1.8))
 				Text("Loading...")
 			}
 			.opacity(self.isLoading ? 1 : 0)

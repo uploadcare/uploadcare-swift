@@ -30,7 +30,9 @@ struct GroupFileList: View {
 			}
 			
 			VStack {
-				ActivityIndicator(isAnimating: .constant(true), style: .large)
+				ProgressView()
+					.progressViewStyle(.circular)
+					.scaleEffect(CGSize(width: 1.8, height: 1.8))
 				Text("Loading...")
 			}.opacity(self.isLoading ? 1 : 0)
 		}
