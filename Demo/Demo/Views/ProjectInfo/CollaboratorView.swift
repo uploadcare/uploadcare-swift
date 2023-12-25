@@ -21,12 +21,6 @@ struct CollaboratorView: View {
     }
 }
 
-struct CollaboratorView_Previews: PreviewProvider {
-    static var previews: some View {
-		Group {
-			CollaboratorView(
-				viewData: CollaboratorViewData(name: "user 1", email: "user1@example.com")
-			).previewDevice(PreviewDevice(rawValue: "iPhone X"))
-		}
-    }
+#Preview {
+	CollaboratorView(viewData: CollaboratorViewData(name: "user 1", email: "user1@example.com"))
 }

@@ -49,10 +49,8 @@ struct DocumentPicker: UIViewControllerRepresentable {
 	}
 }
 
-struct DocumentPicker_Previews: PreviewProvider {
-    static var previews: some View {
-		DocumentPicker { (urls) in
-			
-		}
-    }
+#Preview {
+	DocumentPicker { (urls) in
+
+	}
 }

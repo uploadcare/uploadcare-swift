@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct ActivityIndicator: UIViewRepresentable {
-
     @Binding var isAnimating: Bool
     let style: UIActivityIndicatorView.Style
 
@@ -24,9 +23,7 @@ struct ActivityIndicator: UIViewRepresentable {
     }
 }
 
-struct ActivityIndicator_Previews: PreviewProvider {
-    static var previews: some View {
-		ActivityIndicator(isAnimating: .constant(true), style: .large)
-			.previewLayout(.sizeThatFits)
-    }
+#Preview {
+	ActivityIndicator(isAnimating: .constant(true), style: .large)
+		.previewLayout(.sizeThatFits)
 }

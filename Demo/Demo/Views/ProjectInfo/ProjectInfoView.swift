@@ -51,17 +51,12 @@ struct ProjectInfoView: View {
 	}
 }
 
-struct ProjectInfo_Previews: PreviewProvider {
-	static var previews: some View {
-		#if DEBUG
-		NavigationView {
-			ProjectInfoView(
-				store: ProjectInfoStore(
-					projectData: ProjectInfoStore.testProject
-				)
+#Preview {
+	NavigationView {
+		ProjectInfoView(
+			store: ProjectInfoStore(
+				projectData: ProjectInfoStore.testProject
 			)
-		}
-		.previewDevice(PreviewDevice(rawValue: "iPhone X"))
-		#endif
-    }
+		)
+	}
 }

@@ -32,16 +32,12 @@ struct GroupRowView: View {
     }
 }
 
-struct GroupRowView_Previews: PreviewProvider {
-    static var previews: some View {
-		#if DEBUG
-        GroupRowView(groupData: testGroupViewData)
-			.previewLayout(.sizeThatFits)
-		#endif
-    }
+#if DEBUG
+#Preview {
+	GroupRowView(groupData: testGroupViewData)
+		.previewLayout(.sizeThatFits)
 }
 
-#if DEBUG
 let jsonData = """
 	{
 		"id": "ec207006-882b-4184-8318-5b57ca2135d8~2",
