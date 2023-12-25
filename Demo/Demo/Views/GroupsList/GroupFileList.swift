@@ -13,7 +13,7 @@ struct GroupFileList: View {
 	var viewData: GroupViewData
 	
 	@EnvironmentObject var api: APIStore
-	@ObservedObject private var filesListStore: FilesListStore = FilesListStore(files: [])
+	@ObservedObject private var filesListStore: FilesStore = FilesStore(files: [])
 	@State private var isLoading: Bool = true
 	@State private var alertMessage = ""
 	@State private var isShowingAlert = false

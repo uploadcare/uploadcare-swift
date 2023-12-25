@@ -12,7 +12,7 @@ import UploadcareWidget
 
 struct MainView: View {
 	@EnvironmentObject var api: APIStore
-	@ObservedObject private var filesListStore = FilesListStore(files: [])
+	@ObservedObject private var filesListStore = FilesStore(files: [])
 	
 	@State var widgetVisible: Bool = false
 

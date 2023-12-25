@@ -1,5 +1,5 @@
 //
-//  FilesListStore.swift
+//  FilesStore.swift
 //  Demo
 //
 //  Created by Sergey Armodin on 28.10.2020.
@@ -11,7 +11,7 @@ import UIKit
 import Combine
 import Uploadcare
 
-class FilesListStore: ObservableObject {
+class FilesStore: ObservableObject {
 	// MARK: - Public properties
 	@Published var files: [FileViewData] = []
 	@Published var uploadState: UploadState = .notRunning
@@ -133,7 +133,7 @@ class FilesListStore: ObservableObject {
 	}
 }
 
-private extension FilesListStore {
+private extension FilesStore {
 	func registerBackgroundTask() {
 		backgroundTask = UIApplication.shared.beginBackgroundTask { [weak self] in
 			self?.endBackgroundTask()
