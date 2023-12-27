@@ -22,6 +22,7 @@ struct MainView: View {
 	@State private var messageText: String = ""
 
 	@State var isUploading: Bool = false
+	private lazy var uploader: Uploader = Uploader(uploadcare: api.uploadcare!)
 
 	private let sources: [SocialSource] = [
 		SocialSource(source: .facebook),
