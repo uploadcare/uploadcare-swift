@@ -11,18 +11,16 @@ import Uploadcare
 import UploadcareWidget
 
 struct MainView: View {
-	@ObservedObject var api: APIStore
+	@ObservedObject private var api: APIStore
 	@ObservedObject private var filesStore = FilesStore(files: [])
+	@ObservedObject private var uploader: Uploader
 
-	@State var widgetVisible: Bool = false
-
+	@State private var widgetVisible: Bool = false
 	@State private var isShowingAddFilesAlert = false
 	@State private var isShowingSheetWithPicker = false
 	@State private var pickerType: PickerType = .photos
 	@State private var messageText: String = ""
 
-	@State var isUploading: Bool = false
-	@State private var uploader: Uploader
 
 	init(api: APIStore) {
 		self.api = api
@@ -53,42 +51,42 @@ struct MainView: View {
 		.listStyle(GroupedListStyle())
 	}
 
-	private var imagesPicker: some View {
-		ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
-			withAnimation(.easeIn) {
-				self.isUploading = true
-			}
-
-			self.filesStore.uploadFile(imageUrl, completionHandler: { fileId in
-				withAnimation(.easeOut) {
-					self.isUploading = false
-					delay(0.5) {
-						self.messageText = "Upload finished"
-						delay(3) {
-							self.messageText = ""
-						}
-					}
-				}
-			})
-		}
-	}
+//	private var imagesPicker: some View {
+//		ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
+//			withAnimation(.easeIn) {
+//				self.isUploading = true
+//			}
+//
+//			self.filesStore.uploadFile(imageUrl, completionHandler: { fileId in
+//				withAnimation(.easeOut) {
+//					self.isUploading = false
+//					delay(0.5) {
+//						self.messageText = "Upload finished"
+//						delay(3) {
+//							self.messageText = ""
+//						}
+//					}
+//				}
+//			})
+//		}
+//	}
 
 	private var documentsPicker: some View {
 		DocumentPicker { (urls) in
-			withAnimation(.easeIn) {
-				self.isUploading = true
-			}
-			self.filesStore.uploadFiles(urls, completionHandler: { fileIds in
-				withAnimation(.easeOut) {
-					self.isUploading = false
-					delay(0.5) {
-						self.messageText = "Upload finished"
-						delay(3) {
-							self.messageText = ""
-						}
-					}
-				}
-			})
+//			withAnimation(.easeIn) {
+//				self.isUploading = true
+//			}
+//			self.filesStore.uploadFiles(urls, completionHandler: { fileIds in
+//				withAnimation(.easeOut) {
+//					self.isUploading = false
+//					delay(0.5) {
+//						self.messageText = "Upload finished"
+//						delay(3) {
+//							self.messageText = ""
+//						}
+//					}
+//				}
+//			})
 		}
 	}
 
@@ -108,10 +106,7 @@ struct MainView: View {
 						}
 					})
 					.sheet(isPresented: $isShowingSheetWithPicker) {
-						switch self.pickerType {
-						case .photos: imagesPicker
-						case .files: documentsPicker
-						}
+						self.uploader.picker
 					}
 				}
 
@@ -120,11 +115,11 @@ struct MainView: View {
 					if !self.messageText.isEmpty {
 						Text(self.messageText)
 					}
-					if self.isUploading {
+					if self.uploader.isUploading {
 						HStack {
 							ProgressView(
-								self.filesStore.uploadState == .paused ? "Paused" : "Uploading \(self.filesStore.uploadedFromQueue) of \(self.filesStore.filesQueue.count)",
-								value: self.filesStore.progressValue, total: 1.0
+								self.filesStore.uploadState == .paused ? "Paused" : "Uploading \(self.uploader.fileIds.count + 1) of \(self.uploader.uploadQueue.count)",
+								value: self.uploader.uploadProgress, total: 1.0
 							).frame(maxWidth: 200)
 
 							if self.filesStore.uploadState == .uploading {
@@ -157,11 +152,11 @@ struct MainView: View {
 							message: Text(""),
 							buttons: [
 								.default(Text("Photos"), action: {
-									self.pickerType = .photos
+									self.uploader.pickerType = .photos
 									self.isShowingSheetWithPicker.toggle()
 								}),
 								.default(Text("Files"), action: {
-									self.pickerType = .files
+									self.uploader.pickerType = .files
 									self.isShowingSheetWithPicker.toggle()
 								}),
 								.default(Text("External Sources"), action: {
