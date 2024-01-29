@@ -8,7 +8,8 @@
 
 import Foundation
 
-enum PickerType {
+public enum PickerType {
+	case none
 	case photos
 	case files
 }
