@@ -36,7 +36,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 			let apiStore = APIStore(uploadcare: uploadcare)
 
 			// Create the SwiftUI view that provides the window contents.
-			let contentView = MainView().environmentObject(apiStore)
+			let contentView = MainView(api: apiStore)
 			
 		    window.rootViewController = UIHostingController(rootView: contentView)
 		    self.window = window

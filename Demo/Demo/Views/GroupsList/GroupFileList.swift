@@ -12,7 +12,7 @@ import Uploadcare
 struct GroupFileList: View {
 	var viewData: GroupViewData
 	
-	@EnvironmentObject var api: APIStore
+	@ObservedObject var api: APIStore
 	@ObservedObject private var filesStore: FilesStore = FilesStore()
 	@State private var isLoading: Bool = true
 	@State private var alertMessage = ""

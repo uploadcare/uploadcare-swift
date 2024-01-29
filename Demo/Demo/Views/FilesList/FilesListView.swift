@@ -13,7 +13,8 @@ import UploadcareWidget
 
 struct FilesListView: View {
 	@ObservedObject var filesStore: FilesStore
-    
+	@ObservedObject var api: APIStore
+
     @State private var isLoading: Bool = true
 	@State private var isShowingAlert = false
     
@@ -24,9 +25,7 @@ struct FilesListView: View {
     @State private var alertMessage = ""
 	
 	@State var isUploading: Bool = false
-	
-	@EnvironmentObject var api: APIStore
-	
+
 	@State private var didLoadData: Bool = false
 	
     var body: some View {
@@ -205,8 +204,7 @@ struct FilesListView: View {
 // MARK: - Preview
 #Preview {
 	NavigationView {
-		FilesListView(filesStore: FilesStore(files: []))
-			.environmentObject(APIStore())
+		FilesListView(filesStore: FilesStore(files: []), api: APIStore())
 			.navigationBarTitle(Text("List of files"))
 	}
 }

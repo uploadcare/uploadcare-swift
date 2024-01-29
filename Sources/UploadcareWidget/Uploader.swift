@@ -14,6 +14,7 @@ public class Uploader {
 	public enum UploaderError: Error {
 		case couldNotReadDataFromURL
 	}
+
 	// MARK: - Public properties
 	@State public var isUploading = false
 	@State public var uploadQueue = [URL]()

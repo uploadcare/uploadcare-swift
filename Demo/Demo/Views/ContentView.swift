@@ -11,7 +11,7 @@ import Uploadcare
 import UploadcareWidget
 
 struct MainView: View {
-	@EnvironmentObject var api: APIStore
+	@ObservedObject var api: APIStore
 	@ObservedObject private var filesStore = FilesStore(files: [])
 
 	@State var widgetVisible: Bool = false
@@ -22,7 +22,12 @@ struct MainView: View {
 	@State private var messageText: String = ""
 
 	@State var isUploading: Bool = false
-	private lazy var uploader: Uploader = Uploader(uploadcare: api.uploadcare!)
+	@State private var uploader: Uploader
+
+	init(api: APIStore) {
+		self.api = api
+		self.uploader = Uploader(uploadcare: api.uploadcare!)
+	}
 
 	private let sources: [SocialSource] = [
 		SocialSource(source: .facebook),
@@ -35,10 +40,10 @@ struct MainView: View {
 
 	private var listElements: some View {
 		List {
-			NavigationLink(destination: FilesListView(filesStore: self.filesStore)) {
+			NavigationLink(destination: FilesListView(filesStore: self.filesStore, api: api)) {
 				Text("List of files")
 			}
-			NavigationLink(destination: GroupsListView(store: GroupsStore(uploadcare: api.uploadcare))) {
+			NavigationLink(destination: GroupsListView(store: GroupsStore(uploadcare: api.uploadcare), api: api)) {
 				Text("List of file groups")
 			}
 			NavigationLink(destination: ProjectInfoView(store: ProjectInfoStore(uploadcare: api.uploadcare))) {
@@ -186,10 +191,9 @@ struct MainView: View {
 }
 
 #Preview {
-	MainView()
-		.environmentObject(
-			APIStore(
-				uploadcare: Uploadcare(withPublicKey: publicKey,secretKey: secretKey)
-			)
+	MainView(
+		api: APIStore(
+			uploadcare: Uploadcare(withPublicKey: publicKey,secretKey: secretKey)
 		)
+	)
 }

@@ -11,9 +11,10 @@ import Uploadcare
 
 struct GroupRowView: View {
     var groupData: GroupViewData
-	
+	@ObservedObject var api: APIStore
+
     var body: some View {
-		NavigationLink(destination: GroupView(viewData: groupData)) {
+		NavigationLink(destination: GroupView(viewData: groupData, api: api)) {
 			VStack(alignment: .leading) {
 				HStack(alignment: .firstTextBaseline) {
 					Text("ID:")
@@ -34,7 +35,7 @@ struct GroupRowView: View {
 
 #if DEBUG
 #Preview {
-	GroupRowView(groupData: testGroupViewData)
+	GroupRowView(groupData: testGroupViewData, api: APIStore())
 		.previewLayout(.sizeThatFits)
 }
 

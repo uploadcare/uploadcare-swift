@@ -7,13 +7,15 @@
 //
 
 import SwiftUI
+import Uploadcare
 
 struct GroupView: View {
 	var viewData: GroupViewData
-	
+	@ObservedObject var api: APIStore
+
     var body: some View {
 		List {
-			NavigationLink(destination: GroupFileList(viewData: viewData)) {
+			NavigationLink(destination: GroupFileList(viewData: viewData, api: api)) {
 				VStack(alignment: .leading) {
 					Text("Files:").bold()
 					Text("\(viewData.group.filesCount)")
@@ -46,6 +48,6 @@ struct GroupView: View {
 
 #Preview {
 	NavigationView {
-		GroupView(viewData: testGroupViewData)
+		GroupView(viewData: testGroupViewData, api: APIStore())
 	}
 }

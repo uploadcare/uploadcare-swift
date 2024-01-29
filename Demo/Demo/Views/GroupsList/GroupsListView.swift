@@ -7,14 +7,16 @@
 //
 
 import SwiftUI
+import Uploadcare
 
 struct GroupsListView: View {
 	@ObservedObject var store: GroupsStore
-	
+	@ObservedObject var api: APIStore
+
     var body: some View {
 		Section {
 			List(store.groups) { group in
-				GroupRowView(groupData: group)
+				GroupRowView(groupData: group, api: api)
 					.onAppear {
 						if group.group.id == store.groups.last?.group.id {
 							Task { try await store.loadMoreIfNeed() }
