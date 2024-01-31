@@ -15,7 +15,7 @@ public struct UploaderView: View {
 	internal var onSelected: (([URL]) -> Void)?
 
 	// MARK: - Init
-	public init(pickerType: PickerType = .none, uploadcare: Uploadcare) {
+	internal init(pickerType: PickerType = .none) {
 		self.pickerType = pickerType
 	}
 
@@ -70,9 +70,9 @@ public class Uploader: ObservableObject {
 	// MARK: - Init
 	public init(uploadcare: Uploadcare) {
 		self.uploadcare = uploadcare
-		self.photosPicker = UploaderView(pickerType: .photos, uploadcare: uploadcare)
-		self.nonePicker = UploaderView(pickerType: .none, uploadcare: uploadcare)
-		self.docsPicker = UploaderView(pickerType: .files, uploadcare: uploadcare)
+		self.photosPicker = UploaderView(pickerType: .photos)
+		self.nonePicker = UploaderView(pickerType: .none)
+		self.docsPicker = UploaderView(pickerType: .files)
 
 		self.photosPicker.onSelected = { urls in
 			guard let imageUrl = urls.first else { return }
