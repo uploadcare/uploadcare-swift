@@ -25,6 +25,9 @@ struct MainView: View {
 	init(api: APIStore) {
 		self.api = api
 		self.uploader = Uploader(uploadcare: api.uploadcare!)
+		self.uploader.onUploadFinished = { urls in
+			DLog(urls)
+		}
 	}
 
 	private let sources: [SocialSource] = [

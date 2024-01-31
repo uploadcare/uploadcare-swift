@@ -44,7 +44,7 @@ public class Uploader: ObservableObject {
 	// MARK: - Public properties
 	@Published public var uploadQueue = [URL]()
 	public var currentUploadingNumber: Int {
-		return min (fileIds.count + 1, uploadQueue.count)
+		return min(fileIds.count + 1, uploadQueue.count)
 	}
 	@Published public var uploadProgress: Double = 0
 	@Published public var fileIds = [String]()
@@ -55,6 +55,7 @@ public class Uploader: ObservableObject {
 	private var docsPicker: UploaderView
 
 	@Published public var isUploading = false
+	public var onUploadFinished: (([String]) -> Void)?
 
 	public var picker: UploaderView {
 		switch pickerType {
@@ -66,6 +67,7 @@ public class Uploader: ObservableObject {
 
 	// MARK: - Private properties
 	private let uploadcare: Uploadcare
+	private var newFileIDs = [String]()
 
 	// MARK: - Init
 	public init(uploadcare: Uploadcare) {
@@ -74,25 +76,67 @@ public class Uploader: ObservableObject {
 		self.nonePicker = UploaderView(pickerType: .none)
 		self.docsPicker = UploaderView(pickerType: .files)
 
+		let onSelected: (([URL]) -> Void) = { [weak self] urls in
+			guard let self = self, !urls.isEmpty else { return }
+
+			withAnimation(.easeIn) { [weak self] in
+				self?.isUploading = true
+			}
+
+			urls.forEach({ self.uploadQueue.append($0) })
+			newFileIDs.removeAll()
+
+			Task { [weak self] in
+				guard let self = self else { return }
+				do {
+
+					for fileURL in urls {
+						let fileID = try await self.uploadFile(fromURL: fileURL)
+						newFileIDs.append(fileID)
+						await MainActor.run { [weak self] in
+							self?.fileIds.append(fileID)
+						}
+					}
+
+					await MainActor.run { [weak self] in
+						withAnimation(.easeOut) { [weak self] in
+							self?.isUploading = false
+						}
+						guard let self = self else { return }
+						self.onUploadFinished?(self.newFileIDs)
+					}
+					try await Task.sleep(nanoseconds: NSEC_PER_SEC * 1)
+					await MainActor.run {
+						self.fileIds = self.fileIds.filter({ self.newFileIDs.contains($0) == false })
+						self.uploadQueue = self.uploadQueue.filter({ urls.contains($0) == false })
+					}
+				} catch {
+					DLog("Could not upload file: \(String(describing: error))")
+				}
+			}
+		}
 		self.photosPicker.onSelected = { urls in
-			guard let imageUrl = urls.first else { return }
+			guard let fileURL = urls.first else { return }
 			withAnimation(.easeIn) {
 				self.isUploading = true
 			}
 
-			self.uploadQueue.append(imageUrl)
+			self.uploadQueue.append(fileURL)
 
 			Task {
 				do {
-					let fileID = try await self.uploadFile(fromURL: imageUrl)
-
+					let fileID = try await self.uploadFile(fromURL: fileURL)
 					await MainActor.run {
-						self.fileIds = [fileID]
-						self.uploadQueue.removeAll(where: { $0 == imageUrl })
-
+						self.fileIds.append(fileID)
 						withAnimation(.easeOut) {
 							self.isUploading = false
 						}
+						self.onUploadFinished?([fileID])
+					}
+					try await Task.sleep(nanoseconds: NSEC_PER_SEC * 1)
+					await MainActor.run {
+						self.fileIds = self.fileIds.filter({ $0 != fileID })
+						self.uploadQueue.removeAll(where: { $0 == fileURL })
 					}
 				} catch {
 					DLog("Could not upload file: \(String(describing: error))")
@@ -106,7 +150,6 @@ public class Uploader: ObservableObject {
 
 			Task {
 				do {
-					self.fileIds.removeAll()
 					for url in urls {
 						let fileID = try await self.uploadFile(fromURL: url)
 						self.fileIds.append(fileID)
