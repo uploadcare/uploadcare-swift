@@ -16,7 +16,7 @@ struct MainView: View {
 	@ObservedObject private var uploader: Uploader
 
 	@State private var widgetVisible: Bool = false
-	@State private var isShowingAddFilesAlert = false
+	@State private var isShowingSelectSourceSheet = false
 	@State private var isShowingSheetWithPicker = false
 	@State private var pickerType: PickerType = .photos
 	@State private var messageText: String = ""
@@ -104,10 +104,10 @@ struct MainView: View {
 						if self.filesStore.uploadcare == nil {
 							self.filesStore.uploadcare = self.api.uploadcare
 						}
-						self.isShowingAddFilesAlert.toggle()
+						self.isShowingSelectSourceSheet.toggle()
 					}
 					.buttonStyle(NeumorphicButtonStyle(bgColor: Color.gray.opacity(0.05)))
-					.actionSheet(isPresented: $isShowingAddFilesAlert, content: {
+					.actionSheet(isPresented: $isShowingSelectSourceSheet, content: {
 						ActionSheet(
 							title: Text("Select source"),
 							message: Text(""),
