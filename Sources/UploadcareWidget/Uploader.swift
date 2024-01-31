@@ -12,7 +12,7 @@ import Uploadcare
 @available(iOS 13.0, *)
 public struct UploaderView: View {
 	@State private var pickerType: PickerType
-	var onSelected: (([URL]) -> Void)?
+	internal var onSelected: (([URL]) -> Void)?
 
 	// MARK: - Init
 	public init(pickerType: PickerType = .none, uploadcare: Uploadcare) {
@@ -26,43 +26,10 @@ public struct UploaderView: View {
 		case .photos:
 			ImagePicker(sourceType: .photoLibrary) { imageUrl in
 				onSelected?([imageUrl])
-//				withAnimation(.easeIn) {
-//					self.isUploading = true
-//				}
-
-//				self.uploader.uploadQueue.append(imageUrl)
-//
-//				Task {
-//					do {
-//						let fileID = try await self.uploader.uploadFile(fromURL: imageUrl)
-//
-//						await MainActor.run {
-//							self.uploader.fileIds = [fileID]
-//						}
-//					} catch {
-//						DLog("Could not upload file: \(String(describing: error))")
-//					}
-//					self.uploader.uploadQueue.removeAll(where: { $0 == imageUrl })
-//				}
 			}
 		case .files:
 			DocumentPicker { urls in
-//				withAnimation(.easeIn) {
-//					self.uploader.isUploading = true
-//				}
-//
-//				Task {
-//					do {
-//						self.uploader.fileIds.removeAll()
-//						for url in urls {
-//							let fileID = try await self.uploader.uploadFile(fromURL: url)
-//							self.uploader.fileIds.append(fileID)
-//							self.uploader.uploadQueue.removeAll(where: { $0 == url })
-//						}
-//					} catch {
-//						DLog("Could not upload file: \(String(describing: error))")
-//					}
-//				}
+				onSelected?(urls)
 			}
 		}
 	}
@@ -76,6 +43,9 @@ public class Uploader: ObservableObject {
 
 	// MARK: - Public properties
 	@Published public var uploadQueue = [URL]()
+	public var currentUploadingNumber: Int {
+		return min (fileIds.count + 1, uploadQueue.count)
+	}
 	@Published public var uploadProgress: Double = 0
 	@Published public var fileIds = [String]()
 	@Published public var pickerType: PickerType = .none
@@ -122,12 +92,6 @@ public class Uploader: ObservableObject {
 
 						withAnimation(.easeOut) {
 							self.isUploading = false
-//							delay(0.5) {
-//								self.messageText = "Upload finished"
-//								delay(3) {
-//									self.messageText = ""
-//								}
-//							}
 						}
 					}
 				} catch {
@@ -138,6 +102,19 @@ public class Uploader: ObservableObject {
 		self.docsPicker.onSelected = { urls in
 			withAnimation(.easeIn) {
 				self.isUploading = true
+			}
+
+			Task {
+				do {
+					self.fileIds.removeAll()
+					for url in urls {
+						let fileID = try await self.uploadFile(fromURL: url)
+						self.fileIds.append(fileID)
+					}
+					self.uploadQueue.removeAll()
+				} catch {
+					DLog("Could not upload file: \(String(describing: error))")
+				}
 			}
 		}
 	}
