@@ -115,51 +115,8 @@ public class Uploader: ObservableObject {
 				}
 			}
 		}
-		self.photosPicker.onSelected = { urls in
-			guard let fileURL = urls.first else { return }
-			withAnimation(.easeIn) {
-				self.isUploading = true
-			}
-
-			self.uploadQueue.append(fileURL)
-
-			Task {
-				do {
-					let fileID = try await self.uploadFile(fromURL: fileURL)
-					await MainActor.run {
-						self.fileIds.append(fileID)
-						withAnimation(.easeOut) {
-							self.isUploading = false
-						}
-						self.onUploadFinished?([fileID])
-					}
-					try await Task.sleep(nanoseconds: NSEC_PER_SEC * 1)
-					await MainActor.run {
-						self.fileIds = self.fileIds.filter({ $0 != fileID })
-						self.uploadQueue.removeAll(where: { $0 == fileURL })
-					}
-				} catch {
-					DLog("Could not upload file: \(String(describing: error))")
-				}
-			}
-		}
-		self.docsPicker.onSelected = { urls in
-			withAnimation(.easeIn) {
-				self.isUploading = true
-			}
-
-			Task {
-				do {
-					for url in urls {
-						let fileID = try await self.uploadFile(fromURL: url)
-						self.fileIds.append(fileID)
-					}
-					self.uploadQueue.removeAll()
-				} catch {
-					DLog("Could not upload file: \(String(describing: error))")
-				}
-			}
-		}
+		self.photosPicker.onSelected = onSelected
+		self.docsPicker.onSelected = onSelected
 	}
 
 	internal func uploadFile(fromURL url: URL) async throws -> String {
@@ -174,49 +131,4 @@ public class Uploader: ObservableObject {
 		}
 		return file.fileId
 	}
-
-
-//	public var imagePicker: some View {
-//		ImagePicker(sourceType: .photoLibrary) { imageUrl in
-//			withAnimation(.easeIn) {
-//				self.isUploading = true
-//			}
-//
-//			self.uploadQueue.append(imageUrl)
-//
-//			Task {
-//				do {
-//					let fileID = try await self.uploadFile(fromURL: imageUrl)
-//
-//					await MainActor.run {
-//						self.fileIds = [fileID]
-//					}
-//				} catch {
-//					DLog("Could not upload file: \(String(describing: error))")
-//				}
-//				self.uploadQueue.removeAll(where: { $0 == imageUrl })
-//			}
-//		}
-//	}
-
-//	public var documentsPicker: some View {
-//		DocumentPicker { urls in
-//			withAnimation(.easeIn) {
-////				self.isUploading = true
-//			}
-//
-//			Task {
-//				do {
-//					self.fileIds.removeAll()
-//					for url in urls {
-//						let fileID = try await self.uploadFile(fromURL: url)
-//						self.fileIds.append(fileID)
-//						self.uploadQueue.removeAll(where: { $0 == url })
-//					}
-//				} catch {
-//					DLog("Could not upload file: \(String(describing: error))")
-//				}
-//			}
-//		}
-//	}
 }
