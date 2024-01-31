@@ -51,45 +51,6 @@ struct MainView: View {
 		.listStyle(GroupedListStyle())
 	}
 
-//	private var imagesPicker: some View {
-//		ImagePicker(sourceType: .photoLibrary) { (imageUrl) in
-//			withAnimation(.easeIn) {
-//				self.isUploading = true
-//			}
-//
-//			self.filesStore.uploadFile(imageUrl, completionHandler: { fileId in
-//				withAnimation(.easeOut) {
-//					self.isUploading = false
-//					delay(0.5) {
-//						self.messageText = "Upload finished"
-//						delay(3) {
-//							self.messageText = ""
-//						}
-//					}
-//				}
-//			})
-//		}
-//	}
-
-	private var documentsPicker: some View {
-		DocumentPicker { (urls) in
-//			withAnimation(.easeIn) {
-//				self.isUploading = true
-//			}
-//			self.filesStore.uploadFiles(urls, completionHandler: { fileIds in
-//				withAnimation(.easeOut) {
-//					self.isUploading = false
-//					delay(0.5) {
-//						self.messageText = "Upload finished"
-//						delay(3) {
-//							self.messageText = ""
-//						}
-//					}
-//				}
-//			})
-		}
-	}
-
 	var body: some View {
 		NavigationView {
 			ZStack {
