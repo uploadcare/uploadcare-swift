@@ -79,7 +79,7 @@ struct MainView: View {
 					if self.uploader.isUploading {
 						HStack {
 							ProgressView(
-								self.filesStore.uploadState == .paused ? "Paused" : "Uploading \(self.uploader.fileIds.count + 1) of \(self.uploader.uploadQueue.count)",
+								self.filesStore.uploadState == .paused ? "Paused" : "Uploading \(self.uploader.currentUploadingNumber) of \(self.uploader.uploadQueue.count)",
 								value: self.uploader.uploadProgress, total: 1.0
 							).frame(maxWidth: 200)
 
