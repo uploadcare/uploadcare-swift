@@ -149,10 +149,31 @@ struct MainView: View {
 	}
 }
 
+//#Preview {
+//	MainView(
+//		api: APIStore(
+//			uploadcare: Uploadcare(withPublicKey: publicKey,secretKey: secretKey)
+//		)
+//	)
+//}
+
+struct DemoView: View {
+	var body: some View {
+		@State var isPresented = true
+		VStack {
+			Text("Demo")
+		}.sheet(isPresented: $isPresented, content: {
+			UploaderView(
+				uploadcare: Uploadcare(
+					withPublicKey: publicKey,
+					secretKey: secretKey
+				)
+			)
+		})
+	}
+}
+
+
 #Preview {
-	MainView(
-		api: APIStore(
-			uploadcare: Uploadcare(withPublicKey: publicKey,secretKey: secretKey)
-		)
-	)
+	DemoView()
 }

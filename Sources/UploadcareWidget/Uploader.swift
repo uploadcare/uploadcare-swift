@@ -8,6 +8,49 @@
 import SwiftUI
 import Uploadcare
 
+@available(iOS 13.0, *)
+public struct UploaderView: View {
+	@ObservedObject private var uploader: Uploader
+	@State private var isShowingSheetWithPicker = false
+
+	public init(uploadcare: Uploadcare) {
+		self.uploader = Uploader(uploadcare: uploadcare)
+		self.uploader.onUploadFinished = { urls in
+			DLog(urls)
+		}
+	}
+
+	public var body: some View {
+		Spacer()
+			.frame(height: 16)
+
+		VStack(alignment: .leading, spacing: 16, content: {
+			Button(action: {
+				self.uploader.pickerType = .files
+				self.isShowingSheetWithPicker.toggle()
+			}, label: {
+				HStack(alignment: .center) {
+					Image(systemName: "folder")
+					Text("From Files")
+				}
+			})
+
+			Button(action: {
+				self.uploader.pickerType = .photos
+				self.isShowingSheetWithPicker.toggle()
+			}, label: {
+				HStack(alignment: .center) {
+					Image(systemName: "photo.on.rectangle.angled")
+					Text("From Photos")
+				}
+			})
+		}).sheet(isPresented: $isShowingSheetWithPicker) {
+			self.uploader.picker
+		}
+
+		Spacer()
+	}
+}
 
 @available(iOS 13.0, *)
 public struct UploaderSourceView: View {
