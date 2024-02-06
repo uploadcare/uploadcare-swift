@@ -10,7 +10,7 @@ import Uploadcare
 
 
 @available(iOS 13.0, *)
-public struct UploaderView: View {
+public struct UploaderSourceView: View {
 	@State private var pickerType: PickerType
 	internal var onSelected: (([URL]) -> Void)?
 
@@ -50,14 +50,14 @@ public class Uploader: ObservableObject {
 	@Published public var fileIds = [String]()
 	@Published public var pickerType: PickerType = .none
 
-	private var photosPicker: UploaderView
-	private var nonePicker: UploaderView
-	private var docsPicker: UploaderView
+	private var photosPicker: UploaderSourceView
+	private var nonePicker: UploaderSourceView
+	private var docsPicker: UploaderSourceView
 
 	@Published public var isUploading = false
 	public var onUploadFinished: (([String]) -> Void)?
 
-	public var picker: UploaderView {
+	public var picker: UploaderSourceView {
 		switch pickerType {
 		case .photos: return photosPicker
 		case .none: return nonePicker
@@ -72,9 +72,9 @@ public class Uploader: ObservableObject {
 	// MARK: - Init
 	public init(uploadcare: Uploadcare) {
 		self.uploadcare = uploadcare
-		self.photosPicker = UploaderView(pickerType: .photos)
-		self.nonePicker = UploaderView(pickerType: .none)
-		self.docsPicker = UploaderView(pickerType: .files)
+		self.photosPicker = UploaderSourceView(pickerType: .photos)
+		self.nonePicker = UploaderSourceView(pickerType: .none)
+		self.docsPicker = UploaderSourceView(pickerType: .files)
 
 		let onSelected: (([URL]) -> Void) = { [weak self] urls in
 			guard let self = self, !urls.isEmpty else { return }
