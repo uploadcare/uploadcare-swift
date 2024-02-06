@@ -158,17 +158,21 @@ struct MainView: View {
 //}
 
 struct DemoView: View {
+	@State var isSheetPresented = true
+
 	var body: some View {
-		@State var isPresented = true
 		VStack {
 			Text("Demo")
-		}.sheet(isPresented: $isPresented, content: {
+		}.sheet(isPresented: $isSheetPresented, content: {
 			UploaderView(
 				uploadcare: Uploadcare(
 					withPublicKey: publicKey,
 					secretKey: secretKey
 				)
 			)
+			.onCancelTap {
+				self.isSheetPresented.toggle()
+			}
 		})
 	}
 }

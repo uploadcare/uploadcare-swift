@@ -12,15 +12,25 @@ import Uploadcare
 public struct UploaderView: View {
 	@ObservedObject private var uploader: Uploader
 	@State private var isShowingSheetWithPicker = false
+	private var onCancelTapAction: (() -> Void)?
 
 	public init(uploadcare: Uploadcare) {
-		self.uploader = Uploader(uploadcare: uploadcare)
-		self.uploader.onUploadFinished = { urls in
+		uploader = Uploader(uploadcare: uploadcare)
+		uploader.onUploadFinished = { urls in
 			DLog(urls)
 		}
 	}
 
 	public var body: some View {
+		HStack {
+			Button(action: {
+				onCancelTapAction?()
+			}, label: {
+				Text("Cancel")
+			})
+			Spacer()
+		}.padding()
+
 		Spacer()
 			.frame(height: 16)
 
@@ -49,6 +59,12 @@ public struct UploaderView: View {
 		}
 
 		Spacer()
+	}
+
+	public func onCancelTap(action: @escaping (() -> Void)) -> some View {
+		var new = self
+		new.onCancelTapAction = action
+		return new
 	}
 }
 
