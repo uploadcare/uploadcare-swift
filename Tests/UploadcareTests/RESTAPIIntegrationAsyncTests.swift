@@ -432,7 +432,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let list = try await filesList.get(withQuery: query)
 		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
-			XCTFail()
+			XCTFail("No images found")
 			return
 		}
 
@@ -469,7 +469,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let list = try await filesList.get(withQuery: query)
 		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
-			XCTFail()
+			XCTFail("No images found")
 			return
 		}
 
@@ -488,7 +488,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let list = try await filesList.get(withQuery: query)
 		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
-			XCTFail()
+			XCTFail("No images found")
 			return
 		}
 
@@ -506,7 +506,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let list = try await filesList.get(withQuery: query)
 		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
-			XCTFail()
+			XCTFail("No images found")
 			return
 		}
 
@@ -521,7 +521,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let list = try await filesList.get(withQuery: query)
 		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
-			XCTFail()
+			XCTFail("No images found")
 			return
 		}
 
@@ -536,7 +536,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let list = try await filesList.get(withQuery: query)
 		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
-			XCTFail()
+			XCTFail("No images found")
 			return
 		}
 
@@ -552,7 +552,7 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 
 		let list = try await filesList.get(withQuery: query)
 		guard let uuid = list.results.filter({ $0.isImage }).first?.uuid else {
-			XCTFail()
+			XCTFail("No images found")
 			return
 		}
 
