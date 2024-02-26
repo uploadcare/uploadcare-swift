@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'Uploadcare'
-  s.version          = '0.13.0'
+  s.version          = '0.13.1'
   s.summary          = 'Swift integration for Uploadcare'
 
 # This description is used to generate tags and improve search results.
