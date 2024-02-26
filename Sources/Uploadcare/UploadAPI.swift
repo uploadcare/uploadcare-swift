@@ -544,7 +544,7 @@ extension UploadAPI {
 		_ onProgress: TaskProgressBlock? = nil,
 		_ completionHandler: @escaping TaskResultCompletionHandler
 	) -> UploadTaskable {
-		let urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
+		var urlRequest = createDirectUploadRequest(files: files, store: store, metadata: metadata, uploadSignature: uploadSignature)
 
         // writing data to temp file
         let tempDir = FileManager.default.temporaryDirectory
@@ -552,6 +552,8 @@ extension UploadAPI {
 
         if let data = urlRequest.httpBody {
             try? data.write(to: localURL)
+            // To avoid a runtime warning in Xcode 15, the given `URLRequest` should have a nil `HTTPBody`
+            urlRequest.httpBody = nil
         }
 
         let uploadTask: URLSessionUploadTask
@@ -640,7 +642,7 @@ extension UploadAPI {
 	///   - completionHandler: Completion handler.
 	#if !os(Linux)
 	@discardableResult
-	internal func directUploadInForeground(
+	public func directUploadInForeground(
 		files: [String: Data],
 		store: StoringBehavior? = nil,
 		metadata: [String: String]? = nil,
