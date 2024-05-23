@@ -580,5 +580,10 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertNil(documentInfo.error)
 		XCTAssertFalse(documentInfo.format.name.isEmpty)
 		XCTAssertFalse(documentInfo.format.conversionFormats.isEmpty)
+
+		let actualFormats = documentInfo.format.conversionFormats.map { $0.name }
+
+		XCTAssertTrue(actualFormats.contains("tiff"), "Expected format tiff is missing")
+		XCTAssertTrue(actualFormats.contains("webp"), "Expected format webp is missing")
 	}
 }
