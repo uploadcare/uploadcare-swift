@@ -9,19 +9,19 @@ on:
 jobs:
   macos_build_and_test:
     name: Build and test on latest macOS
-    runs-on: macOS-14
+    runs-on: macOS-latest
     
     steps:
     - name: Checkout
       uses: actions/checkout@master
 
-    - name: Swift build for iOS
-      run: swift build -c release -Xswiftc "-sdk" -Xswiftc "`xcrun --sdk iphonesimulator --show-sdk-path`" -Xswiftc "-target" -Xswiftc "x86_64-apple-ios13.0-simulator"
+    - name: Build for iOS
+      run: xcodebuild -scheme Uploadcare -destination "generic/platform=iOS"
 
-    - name: Swift build for macOS
+    - name: Build for macOS
       run: swift build -c release
       
-    - name: Swift test
+    - name: Test
       run: UPLOADCARE_PUBLIC_KEY="${{ secrets.UPLOADCARE_PUBLIC_KEY }}" UPLOADCARE_SECRET_KEY="${{ secrets.UPLOADCARE_SECRET_KEY }}" swift test
 
   ubuntu:
@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        swift: [5.9, 5.6.3]
+        swift: [5.10, 5.6.3]
 
     steps:
     - name: Checkout
