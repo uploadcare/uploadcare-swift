@@ -242,9 +242,10 @@
 		24F8B88C2BFFE11100D86B6A /* DocumentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F8B88A2BFFE11100D86B6A /* DocumentInfo.swift */; };
 		24F8B88D2BFFE11100D86B6A /* DocumentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F8B88A2BFFE11100D86B6A /* DocumentInfo.swift */; };
 		24F8B88E2BFFE11100D86B6A /* DocumentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F8B88A2BFFE11100D86B6A /* DocumentInfo.swift */; };
-		24F8B8942BFFE38D00D86B6A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 24F8B8932BFFE38D00D86B6A /* PrivacyInfo.xcprivacy */; };
 		24F8B8952BFFE38D00D86B6A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 24F8B8932BFFE38D00D86B6A /* PrivacyInfo.xcprivacy */; };
 		24F8B8962BFFE38D00D86B6A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 24F8B8932BFFE38D00D86B6A /* PrivacyInfo.xcprivacy */; };
+		24F8B8972BFFE50200D86B6A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 24F8B8932BFFE38D00D86B6A /* PrivacyInfo.xcprivacy */; };
+		24F8B8992BFFE51900D86B6A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 24F8B8932BFFE38D00D86B6A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -753,6 +754,7 @@
 			buildPhases = (
 				2495944C23B77F51006BB9BF /* Sources */,
 				2495944E23B77F51006BB9BF /* Frameworks */,
+				24F8B8982BFFE51600D86B6A /* Resources */,
 			);
 			buildRules = (
 			);
@@ -828,7 +830,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24F8B8942BFFE38D00D86B6A /* PrivacyInfo.xcprivacy in Resources */,
+				24F8B8972BFFE50200D86B6A /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -837,6 +839,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				24F8B8952BFFE38D00D86B6A /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		24F8B8982BFFE51600D86B6A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				24F8B8992BFFE51900D86B6A /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
