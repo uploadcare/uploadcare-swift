@@ -1775,6 +1775,40 @@ extension Uploadcare {
 		}
 	}
 
+	#if !os(Linux)
+	/// The method allows you to determine the document format and possible conversion formats.
+	///
+	/// Example:
+	/// ```swift
+	/// uploadcare.documentInfo(uuid) { result in
+	///     switch result {
+	///     case .failure(let error):
+	///         print(error)
+	///     case .success(let documentInfo):
+	///         print(documentInfo)
+	///     }
+	/// }
+	/// ```
+	///
+	/// - Parameters:
+	///   - uuid: File uuid.
+	///   - completionHandler: Completion handler.
+	public func documentInfo(
+		_ uuid: String,
+		_ completionHandler: @escaping (Result<DocumentInfo, RESTAPIError>) -> Void
+	) {
+		let url = urlWithPath("/convert/document/\(uuid)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+		requestManager.signRequest(&urlRequest)
+
+		requestManager.performRequest(urlRequest) { (result: Result<DocumentInfo, Error>) in
+			switch result {
+			case .failure(let error): completionHandler(.failure(RESTAPIError.fromError(error)))
+			case .success(let response): completionHandler(.success(response))
+			}
+		}
+	}
+	#endif
 
 	/// The method allows you to determine the document format and possible conversion formats.
 	///
@@ -1788,7 +1822,6 @@ extension Uploadcare {
 	public func documentInfo(_ uuid: String) async throws -> DocumentInfo {
 		let url = urlWithPath("/convert/document/\(uuid)/")
 		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
-
 		requestManager.signRequest(&urlRequest)
 
 		do {
