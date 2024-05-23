@@ -568,6 +568,25 @@ uploadcare.deleteWebhook(forTargetUrl: url) { error in
 }
 ```
 
+## Document info ([API Reference](https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Conversion/operation/documentConvertInfo)) ##
+
+The method allows you to determine the document format and possible conversion formats:
+
+```swift
+// Async:
+let documentInfo = try await uploadcare.documentInfo("fileUUID")
+
+// With a completion callback:
+uploadcare.documentInfo("fileUUID") { result in
+    switch result {
+        case .failure(let error):
+            print(error)
+        case .success(let documentInfo):
+            print(documentInfo)
+    }
+}
+```
+
 ## Convert document ([API Reference](https://uploadcare.com/docs/transformations/document_conversion/#convert)) ##
 
 You can convert multiple files with one request:

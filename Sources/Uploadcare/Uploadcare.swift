@@ -1780,7 +1780,7 @@ extension Uploadcare {
 	///
 	/// Example:
 	/// ```swift
-	/// uploadcare.documentInfo(uuid) { result in
+	/// uploadcare.documentInfo("fileUUID") { result in
 	///     switch result {
 	///     case .failure(let error):
 	///         print(error)
