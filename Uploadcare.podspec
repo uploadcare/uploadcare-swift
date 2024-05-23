@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = '11.0'
   s.watchos.deployment_target = '5.0'
 
-  s.swift_versions = ['5.6', '5.7', '5.8', '5.9']
+  s.swift_versions = ['5.6', '5.7', '5.8', '5.9', '5.10']
 
   s.source_files = 'Sources/Uploadcare/**/*'
   
