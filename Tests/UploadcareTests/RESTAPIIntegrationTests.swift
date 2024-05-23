@@ -1010,7 +1010,10 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		let expectation = XCTestExpectation(description: "test27_document_info")
 
 		let url = URL(string: "https://source.unsplash.com/featured")!
-		let data = try! Data(contentsOf: url)
+		guard let data = try? Data(contentsOf: url) else {
+			XCTFail("Could not read data from URL")
+			return
+		}
 		DLog("size of file: \(sizeString(ofData: data))")
 
 		// upload random image
