@@ -1005,5 +1005,42 @@ final class RESTAPIIntegrationTests: XCTestCase {
 
 		wait(for: [expectation], timeout: 20.0)
 	}
+
+	func test27_document_info() {
+		let expectation = XCTestExpectation(description: "test27_document_info")
+
+		let url = URL(string: "https://source.unsplash.com/featured")!
+		let data = try! Data(contentsOf: url)
+		DLog("size of file: \(sizeString(ofData: data))")
+
+		// upload random image
+		uploadcare.uploadAPI.directUpload(files: ["random_file_name.jpg": data], store: .doNotStore) { result in
+			switch result {
+			case .failure(let error):
+				expectation.fulfill()
+				XCTFail(error.detail)
+			case .success(let resultDictionary):
+				guard let uuid = resultDictionary.values.first else {
+					XCTFail()
+					expectation.fulfill()
+					return
+				}
+
+				self.uploadcare.documentInfo(uuid) { result in
+					defer { expectation.fulfill() }
+
+					switch result {
+					case .failure(let error): XCTFail(error.detail)
+					case .success(let documentInfo):
+						XCTAssertNil(documentInfo.error)
+						XCTAssertFalse(documentInfo.format.name.isEmpty)
+						XCTAssertFalse(documentInfo.format.conversionFormats.isEmpty)
+					}
+				}
+			}
+		}
+
+		wait(for: [expectation], timeout: 20.0)
+	}
 }
 #endif
