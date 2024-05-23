@@ -1777,6 +1777,11 @@ extension Uploadcare {
 
 
 	/// The method allows you to determine the document format and possible conversion formats.
+	///
+	/// Example:
+	/// ```swift
+	/// let documentInfo = try await uploadcare.documentInfo("fileUUID")
+	/// ```
 	/// - Parameter uuid: File uuid.
 	/// - Returns: Document format and possible conversion formats.
 	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
