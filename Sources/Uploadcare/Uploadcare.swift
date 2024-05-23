@@ -1775,6 +1775,25 @@ extension Uploadcare {
 		}
 	}
 
+
+	/// The method allows you to determine the document format and possible conversion formats.
+	/// - Parameter uuid: File uuid.
+	/// - Returns: Document format and possible conversion formats.
+	@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+	public func documentInfo(_ uuid: String) async throws -> DocumentInfo {
+		let url = urlWithPath("/convert/document/\(uuid)/")
+		var urlRequest = requestManager.makeUrlRequest(fromURL: url, method: .get)
+
+		requestManager.signRequest(&urlRequest)
+
+		do {
+			let response: DocumentInfo = try await requestManager.performRequest(urlRequest)
+			return response
+		} catch {
+			throw RESTAPIError.fromError(error)
+		}
+	}
+
 	#if !os(Linux)
 	/// Uploadcare allows converting documents to the following target formats: DOC, DOCX, XLS, XLSX, ODT, ODS, RTF, TXT, PDF, JPG, PNG.
 	///
