@@ -1021,7 +1021,7 @@ final class RESTAPIIntegrationTests: XCTestCase {
 				XCTFail(error.detail)
 			case .success(let resultDictionary):
 				guard let uuid = resultDictionary.values.first else {
-					XCTFail()
+					XCTFail("Failed to retrieve UUID from result dictionary")
 					expectation.fulfill()
 					return
 				}
