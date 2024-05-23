@@ -580,7 +580,5 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertNil(documentInfo.error)
 		XCTAssertFalse(documentInfo.format.name.isEmpty)
 		XCTAssertFalse(documentInfo.format.conversionFormats.isEmpty)
-
-		print(documentInfo)
 	}
 }
