@@ -39,11 +39,17 @@ let package = Package(
 		// Targets can depend on other targets in this package, and on products in packages which this package depends on.
 		.target(
 			name: "Uploadcare",
-			dependencies: targetDependencies
+			dependencies: targetDependencies,
+			resources: [
+				.process("PrivacyInfo.xcprivacy")
+			]
 		),
 		.target(
 			name: "UploadcareWidget",
-			dependencies: ["Uploadcare"]
+			dependencies: ["Uploadcare"],
+			resources: [
+				.process("PrivacyInfo.xcprivacy")
+			]
 		),
 		.testTarget(
 			name: "UploadcareTests",
