@@ -119,7 +119,7 @@ let task = uploadcare.uploadFile(data, withName: "some_file.ext", store: .auto, 
 Direct uploads work with background `URLSession`, so uploading will continue if the app goes to the background state. It supports files smaller than 100MB only
 
 ```swift
-guard let url = URL(string: "https://source.unsplash.com/featured"),
+guard let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/"),
       let data = try? Data(contentsOf: url) else { return }
       
 let task = uploadcare.uploadAPI.directUpload(files:  ["random_file_name.jpg": data], store: .auto, metadata: ["someKey": "someMetaValue"]) { progress in
@@ -142,7 +142,7 @@ task.cancel()
 Sometimes you don't want to have the secret key in your client app and want to get it from the backend. In that case, you can provide an upload signature directly:
 
 ```swift
-guard let url = URL(string: "https://source.unsplash.com/featured"),
+guard let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/"),
       let data = try? Data(contentsOf: url) else { return }
       
 let signature = UploadSignature(signature: "signature", expire: 1658486910)
@@ -203,7 +203,7 @@ The direct upload method works with background `URLSession`, so uploading will c
 ## Upload files from URLs ([API Reference](https://uploadcare.com/api-refs/upload-api/#operation/fromURLUpload/)) ##
 
 ```swift
-guard let url = URL(string: "https://source.unsplash.com/featured") else { return }
+guard let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/") else { return }
 
 // Set parameters by accessing properties
 let task1 = UploadFromURLTask(sourceUrl: url)
