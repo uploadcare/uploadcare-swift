@@ -560,4 +560,30 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		let status = try await uploadcare.performRemoveBG(fileUUID: uuid, parameters: parameters)
 		XCTAssertTrue(status.status != .unknown)
 	}
+
+	func test31_document_info() async throws {
+		let url = URL(string: "https://source.unsplash.com/featured")!
+		let data = try! Data(contentsOf: url)
+		DLog("size of file: \(sizeString(ofData: data))")
+
+		// upload random image
+		let resultDictionary = try await uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore)
+		guard let uuid = resultDictionary.values.first else {
+			XCTFail()
+			return
+		}
+
+		try await Task.sleep(nanoseconds: 1 * NSEC_PER_SEC)
+
+		let documentInfo = try await uploadcare.documentInfo(uuid)
+
+		XCTAssertNil(documentInfo.error)
+		XCTAssertFalse(documentInfo.format.name.isEmpty)
+		XCTAssertFalse(documentInfo.format.conversionFormats.isEmpty)
+
+		let actualFormats = documentInfo.format.conversionFormats.map { $0.name }
+
+		XCTAssertTrue(actualFormats.contains("tiff"), "Expected format tiff is missing")
+		XCTAssertTrue(actualFormats.contains("webp"), "Expected format webp is missing")
+	}
 }
