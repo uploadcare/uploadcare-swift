@@ -17,6 +17,7 @@
 * [Create webhook](#create-webhook-api-reference)
 * [Update webhook](#update-webhook-api-reference)
 * [Delete webhook](#delete-webhook-api-reference)
+* [Document info](#document-info-api-reference)
 * [Convert document](#convert-document-api-reference)
 * [Document conversion job status](#document-conversion-job-status-api-reference)
 * [Convert video](#convert-video-api-reference)
