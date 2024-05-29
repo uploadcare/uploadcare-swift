@@ -489,7 +489,7 @@ extension UploadAPI {
 	///
 	/// Example:
 	/// ```swift
-	/// guard let url = URL(string: "https://source.unsplash.com/featured"),
+	/// guard let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/"),
 	///       let data = try? Data(contentsOf: url) else { return }
 	///
 	/// let onProgress: (Double)->Void = { (progress) in

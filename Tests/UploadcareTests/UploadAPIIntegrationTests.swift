@@ -62,7 +62,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	func test02_DirectUpload() {
 		let expectation = XCTestExpectation(description: "test02_DirectUpload")
 
-		let url = URL(string: "https://source.unsplash.com/featured")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -92,7 +92,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	func test03_DirectUploadInForeground() {
 		let expectation = XCTestExpectation(description: "test03_DirectUploadInForeground")
 
-		let url = URL(string: "https://source.unsplash.com/featured")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -121,7 +121,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	func test04_DirectUploadInForegroundCancel() {
 		let expectation = XCTestExpectation(description: "test04_DirectUploadInForegroundCancel")
 
-		let url = URL(string: "https://source.unsplash.com/featured")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -147,7 +147,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	func test05_UploadFileInfo() {
 		let expectation = XCTestExpectation(description: "test05_UploadFileInfo")
 
-		let url = URL(string: "https://source.unsplash.com/featured?\(UUID().uuidString)")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/?\(UUID().uuidString)")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -180,7 +180,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	}
 
 	func test06_MainUpload_Cancel() {
-		let url = URL(string: "https://source.unsplash.com/featured")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/")!
 		let data = try! Data(contentsOf: url)
 
 		let expectation = XCTestExpectation(description: "test06_MainUpload_Cancel")
@@ -246,7 +246,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	func test08_fileInfo() {
 		let expectation = XCTestExpectation(description: "test08_fileInfo")
 
-		let url = URL(string: "https://source.unsplash.com/featured")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/")!
 		let data = try! Data(contentsOf: url)
 
 		uploadcare.uploadAPI.directUploadInForeground(files: ["random_file_name.jpg": data], store: .doNotStore, { (progress) in
@@ -306,7 +306,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	func test10_createFilesGroup_and_filesGroupInfo_and_delegeGroup() {
 		let expectation = XCTestExpectation(description: "test10_createFilesGroup_and_filesGroupInfo")
 
-		let url = URL(string: "https://source.unsplash.com/featured?\(UUID().uuidString)")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/?\(UUID().uuidString)")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -373,7 +373,7 @@ final class UploadAPIIntegrationTests: XCTestCase {
 	func test11_direct_upload_public_key_only() {
 		let expectation = XCTestExpectation(description: "test11_public_key_only")
 
-		let url = URL(string: "https://source.unsplash.com/featured")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/")!
 		let data = try! Data(contentsOf: url)
 		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
 
