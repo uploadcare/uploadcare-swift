@@ -8,7 +8,7 @@
 
 #if os(iOS)
 import SwiftUI
-import WebKit
+@preconcurrency import WebKit
 
 @available(iOS 13.0, *)
 struct WebView: UIViewRepresentable {
