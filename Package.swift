@@ -28,8 +28,8 @@ let package = Package(
 	name: "Uploadcare",
 	platforms: [
 		.macOS(.v10_13),
-		.iOS(.v11),
-		.tvOS(.v11),
+		.iOS(.v12),
+		.tvOS(.v12),
 		.watchOS(.v5)
 	],
 	products: products,
