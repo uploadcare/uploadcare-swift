@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Uploadcare
 
 struct FileView: View {
 	var fileData: FileViewData
@@ -33,25 +34,20 @@ struct FileView: View {
 					}
 					VStack(alignment: .leading, spacing: 12) {
 						Text("\(self.fileData.file.originalFilename)")
-							.bold()
-
-						if let width = self.fileData.file.contentInfo?.image?.width, let height = self.fileData.file.contentInfo?.image?.height {
-							VStack(alignment: .leading) {
-								Text("Size:").bold()
-								Text("\(width)x\(height) | \(self.fileData.file.size / 1024) kb")
-							}
-						} else if let width = self.fileData.file.contentInfo?.video?.video.first?.width, let height = self.fileData.file.contentInfo?.video?.video.first?.height {
-							VStack(alignment: .leading) {
-								Text("Size:").bold()
-								Text("\(width)x\(height) | \(self.fileData.file.size / 1024) kb")
-							}
-						} else {
-							VStack(alignment: .leading) {
-								Text("Size:")
-									.bold()
-								Text("\(self.fileData.file.size / 1024) kb")
-							}
-						}
+                            .font(.title)
+                        
+                        VStack(alignment: .leading) {
+                            Text("Size:")
+                                .font(.headline)
+                            
+                            if let image = self.fileData.file.contentInfo?.image {
+                                Text("\(image.width)x\(image.height) | \(self.fileData.file.readableSize)")
+                            } else if let video = self.fileData.file.contentInfo?.video?.video.first {
+                                Text("\(video.width)x\(video.height) | \(self.fileData.file.readableSize)")
+                            } else {
+                                Text("\(self.fileData.file.readableSize)")
+                            }
+                        }
 						
 						if self.imageUrl?.absoluteString != nil {
 							VStack(alignment: .leading) {
@@ -150,4 +146,13 @@ struct FileView: View {
             }
         }
 	}
+}
+
+extension File {
+    var readableSize: String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useMB] // You can specify the units you want
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: Int64(size))
+    }
 }
