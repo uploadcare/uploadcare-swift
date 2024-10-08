@@ -14,13 +14,14 @@ struct FileView: View {
 	
 	@State private var isLoading: Bool = true
 	@State private var imageUrl: URL?
+    @State private var image: UIImage?
 	
     var body: some View {
 		GeometryReader { geometry in
 			ZStack(alignment: .top) {
 				List {
-					if self.imageStore.image != nil {
-						Image(uiImage: self.imageStore.image!)
+					if let image = self.image {
+						Image(uiImage: image)
 							.resizable()
 							.aspectRatio(contentMode: .fit)
 							.frame(
@@ -84,10 +85,10 @@ struct FileView: View {
 							.font(.footnote)
 					}.padding([.leading, .trailing], 8)
 				}
+                
 				ProgressView()
 					.progressViewStyle(.circular)
-					.scaleEffect(CGSize(width: 1.8, height: 1.8))
-					.padding(.all)
+					.padding()
 					.opacity(self.isLoading ? 1 : 0)
 			}
 		}
@@ -133,15 +134,21 @@ struct FileView: View {
 	}
 	
 	func loadImage() {
-		DispatchQueue.global(qos: .utility).async {
-			guard let data = try? Data(contentsOf: self.imageUrl!, options: .mappedIfSafe) else { return }
-			let image = UIImage(data: data)
-			DispatchQueue.main.async {
-				withAnimation {
-					self.isLoading = false
-					self.imageStore.image = image
-				}
-			}
-		}
+        Task {
+            var image: UIImage?
+            do {
+                let (imageData, _) = try await URLSession.shared.data(from: self.imageUrl!)
+                image = UIImage(data: imageData)
+            } catch {
+                DLog(error.localizedDescription)
+            }
+            
+            await MainActor.run {
+                withAnimation {
+                    self.isLoading = false
+                    self.image = image
+                }
+            }
+        }
 	}
 }
