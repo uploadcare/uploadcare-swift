@@ -108,12 +108,13 @@ public struct SelectSourceView: View {
 					.ignoresSafeArea()
 				}
 			}
-			
-			ActivityIndicator(isAnimating: .constant(true), style: .large)
-				.padding(.all)
-				.background(Color.gray)
-				.cornerRadius(16)
-				.opacity(self.isUploading ? 1 : 0)
+
+            ProgressView()
+                .progressViewStyle(.circular)
+                .padding(.all)
+                .background(Color.gray.opacity(0.5))
+                .cornerRadius(8)
+                .opacity(self.isUploading ? 1 : 0)
 			
 			Text(self.fileUploadedMessage)
 				.font(.title)

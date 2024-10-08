@@ -113,11 +113,12 @@ struct FilesListView: View {
 				}
 				.listStyle(GroupedListStyle())
 
-				ActivityIndicator(isAnimating: .constant(true), style: .large)
-					.padding(.all)
-					.background(Color.gray)
-					.cornerRadius(16)
-					.opacity(self.isLoading ? 1 : 0)
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .padding(.all)
+                    .background(Color.gray.opacity(0.5))
+                    .cornerRadius(8)
+                    .opacity(self.isLoading ? 1 : 0)
 
 				Text(self.pathsToUpload.count > 1 ? "Files uploaded" : "File uploaded" )
 					.font(.title)
