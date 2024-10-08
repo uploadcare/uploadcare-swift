@@ -10,8 +10,7 @@ import SwiftUI
 
 struct FileView: View {
 	var fileData: FileViewData
-	@ObservedObject private var imageStore: ImageStore = ImageStore()
-	
+
 	@State private var isLoading: Bool = true
 	@State private var imageUrl: URL?
     @State private var image: UIImage?
