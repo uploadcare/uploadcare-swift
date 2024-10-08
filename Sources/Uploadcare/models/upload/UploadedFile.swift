@@ -294,7 +294,7 @@ public class UploadedFile: Codable {
 	///
 	/// Example:
 	/// ```swift
-	/// let url = URL(string: "https://source.unsplash.com/featured")!
+	/// let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/")!
 	/// let data = try! Data(contentsOf: url)
 	/// let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
 	///

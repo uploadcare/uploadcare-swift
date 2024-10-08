@@ -37,7 +37,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test02_DirectUploadInForeground_and_FileInfo() async throws {
-		let url = URL(string: "https://source.unsplash.com/featured")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -62,7 +62,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test03_MainUpload() async throws {
-		let url = URL(string: "https://source.unsplash.com/featured")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/")!
 		let data = try! Data(contentsOf: url)
 
 		// small file with direct uploading
@@ -96,7 +96,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 	}
 
 	func test05_createFilesGroup_and_filesGroupInfo_and_delegeGroup() async throws {
-		let url = URL(string: "https://source.unsplash.com/featured?\(UUID().uuidString)")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/?\(UUID().uuidString)")!
 		let data = try! Data(contentsOf: url)
 
 		DLog("size of file: \(sizeString(ofData: data))")
@@ -126,7 +126,7 @@ final class UploadAPIIntegrationAsyncTests: XCTestCase {
 
 	func test06_direct_upload_public_key_only() async throws {
 		// a small file that should be uploaded with multipart upload method
-		let url = URL(string: "https://source.unsplash.com/featured")!
+		let url = URL(string: "https://ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/")!
 		let data = try! Data(contentsOf: url)
 		let fileForUploading = uploadcarePublicKeyOnly.file(fromData: data)
 
