@@ -149,14 +149,6 @@ struct MainView: View {
 	}
 }
 
-//#Preview {
-//	MainView(
-//		api: APIStore(
-//			uploadcare: Uploadcare(withPublicKey: publicKey,secretKey: secretKey)
-//		)
-//	)
-//}
-
 struct DemoView: View {
 	@State var isSheetPresented = true
 
