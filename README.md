@@ -117,7 +117,7 @@ Check the [Upload API documentation](https://github.com/uploadcare/uploadcare-sw
 Example of uploads:
 
 ```swift
-guard let url = URL(string: "https://demo.ucarecdn.com/46528d0d-323c-42d7-beab-2fdc5e7077ba/") else { return }
+guard let url = URL(string: "https://demo.ucarecdn.net/46528d0d-323c-42d7-beab-2fdc5e7077ba/") else { return }
 guard let data = try? Data(contentsOf: url) else { return }
 
 // You can create an UploadedFile object to operate with it
