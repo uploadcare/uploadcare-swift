@@ -12,7 +12,7 @@ import Uploadcare
 
 #warning("Set your public key here if need")
 let publicKey = "demopublickey"
-let secretKey = "demopublickey"
+let secretKey = "demosecretkey"
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
