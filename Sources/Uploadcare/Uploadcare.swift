@@ -1577,7 +1577,7 @@ extension Uploadcare {
 	///
 	/// - Parameters:
 	///   - targetUrl: An URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
-	///   - event: An event you subscribe to.
+	///   - event: An event you subscribe to. Note: `.moderationStateChanged` is only available for webhook payload version `0.7`.
 	///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
 	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads.
 	///   - completionHandler: Completion handler.
@@ -1615,7 +1615,7 @@ extension Uploadcare {
 	///
 	/// - Parameters:
 	///   - targetUrl: An URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
-	///   - event: An event you subscribe to.
+	///   - event: An event you subscribe to. Note: `.moderationStateChanged` is only available for webhook payload version `0.7`.
 	///   - isActive: Marks a subscription as either active or not, defaults to true, otherwise false.
 	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads
 	/// - Returns: Created webhook.
@@ -1654,7 +1654,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - id: Webhook ID.
 	///   - targetUrl: Where webhook data will be posted.
-	///   - event: An event you subscribe to.
+	///   - event: An event you subscribe to. Note: `.moderationStateChanged` is only available for webhook payload version `0.7`.
 	///   - isActive: Marks a subscription as either active or not.
 	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads.
 	///   - completionHandler: Completion handler.
@@ -1695,7 +1695,7 @@ extension Uploadcare {
 	/// - Parameters:
 	///   - id: Webhook ID
 	///   - targetUrl: Where webhook data will be posted.
-	///   - event: An event you subscribe to.
+	///   - event: An event you subscribe to. Note: `.moderationStateChanged` is only available for webhook payload version `0.7`.
 	///   - isActive: Marks a subscription as either active or not.
 	///   - signingSecret: Optional secret that, if set, will be used to calculate signatures for the webhook payloads.
 	/// - Returns: Updated webhook.

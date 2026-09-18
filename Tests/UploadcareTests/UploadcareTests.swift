@@ -35,4 +35,29 @@ final class uploadcare_swiftTests: XCTestCase {
 			XCTFail(String(describing: error))
 		}
 	}
+
+	func testWebhookJSONParsingModerationStateChanged() {
+		let data = """
+		{
+				"id": 1736574,
+				"created": "2023-07-31T23:01:11.438421Z",
+				"updated": "2023-07-31T23:01:11.438438Z",
+				"event": "moderation.state_changed",
+				"target_url": "https://google.com/520",
+				"project": 87170,
+				"is_active": true,
+				"signing_secret": "sss2",
+				"version": "0.7"
+			}
+		""".data(using: .utf8)!
+		let decoder = JSONDecoder()
+
+		do {
+			let webhook = try decoder.decode(Webhook.self, from: data)
+			XCTAssertEqual(webhook.event, .moderationStateChanged)
+			XCTAssertEqual(webhook.version, .v0_7)
+		} catch {
+			XCTFail(String(describing: error))
+		}
+	}
 }
