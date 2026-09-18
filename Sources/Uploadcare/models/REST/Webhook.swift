@@ -16,6 +16,7 @@ public struct Webhook: Codable {
 		case fileStored = "file.stored"
 		case fileDeleted = "file.deleted"
 		case fileInfoUpdated = "file.info_updated"
+		case moderationStateChanged = "moderation.state_changed"
 	}
 
 	public enum Version: String, Codable {

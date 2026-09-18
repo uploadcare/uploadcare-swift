@@ -280,6 +280,12 @@ final class RESTAPIIntegrationAsyncTests: XCTestCase {
 		XCTAssertEqual(Webhook.Event.fileInfoUpdated, webhook.event)
 		XCTAssertFalse(webhook.isActive)
 
+		let url3 = URL(string: "https://uploadcare.com/\(UUID().uuidString)")!
+		webhook = try await uploadcare.updateWebhook(id: webhook.id, targetUrl: url3, event: .moderationStateChanged, isActive: true, signingSecret: "sss3")
+		XCTAssertEqual(url3.absoluteString, webhook.targetUrl)
+		XCTAssertEqual(Webhook.Event.moderationStateChanged, webhook.event)
+		XCTAssertTrue(webhook.isActive)
+
 		let targetUrl = URL(string: webhook.targetUrl)!
 		try await uploadcare.deleteWebhook(forTargetUrl: targetUrl)
 	}

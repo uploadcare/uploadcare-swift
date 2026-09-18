@@ -550,22 +550,24 @@ final class RESTAPIIntegrationTests: XCTestCase {
 		let expectation = XCTestExpectation(description: "test18_create_update_delete_webhook")
 
 		let url = URL(string: "https://uploadcare.com/\(NSUUID().uuidString)")!
-		uploadcare.createWebhook(targetUrl: url, isActive: true, signingSecret: "sss1") { result in
+		uploadcare.createWebhook(targetUrl: url, event: .fileUploaded, isActive: true, signingSecret: "sss1") { result in
 			switch result {
 			case .failure(let error):
 				XCTFail(error.detail)
 				expectation.fulfill()
 			case .success(let webhook):
 				XCTAssertEqual(url.absoluteString, webhook.targetUrl)
+				XCTAssertEqual(Webhook.Event.fileUploaded, webhook.event)
 
 				let url2 = URL(string: "https://uploadcare.com/\(UUID().uuidString)")!
-				self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url2, isActive: true, signingSecret: "sss2") { result in
+				self.uploadcare.updateWebhook(id: webhook.id, targetUrl: url2, event: .moderationStateChanged, isActive: true, signingSecret: "sss2") { result in
 					switch result {
 					case .failure(let error):
 						XCTFail(error.detail)
 						expectation.fulfill()
 					case .success(let webhook):
 						XCTAssertEqual(url2.absoluteString, webhook.targetUrl)
+						XCTAssertEqual(Webhook.Event.moderationStateChanged, webhook.event)
 
 						let url = URL(string: webhook.targetUrl)!
 						self.uploadcare.deleteWebhook(forTargetUrl: url) { error in
